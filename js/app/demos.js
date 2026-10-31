@@ -40,7 +40,7 @@ export function qrSVG(text, { dark = '#111', light = '#fff' } = {}) {
 }
 
 // "Should I open this for you?" — link demos ask instead of hijacking the tab.
-export function linkDialog(wm, { url, title }) {
+export function linkDialog(wm, { url, title, onOpen, extra }) {
   const w = wm.win('link', { title: 'Open link', width: 420, className: 'win--alert win--link', center: true, sheet: false });
   const field = h('input.field.link__url', { type: 'text', readonly: true, value: url, 'aria-label': 'Link address', onfocus: (e) => e.target.select() });
   const copy = h('button.btn.btn--sm', { type: 'button', onclick: async () => {
@@ -53,7 +53,8 @@ export function linkDialog(wm, { url, title }) {
     h('div.row', field, copy),
     h('div.alert__btns',
       h('button.btn', { type: 'button', onclick: () => w.close() }, 'Not now'),
-      h('a.btn.btn--primary', { href: url, target: '_blank', rel: 'noopener', onclick: () => setTimeout(() => w.close(), 50) }, 'Open it ↗')));
+      extra && h('button.btn', { type: 'button', onclick: () => { w.close(); extra.run(); } }, extra.label),
+      h('a.btn.btn--primary', { href: url, target: '_blank', rel: 'noopener', onclick: () => { setTimeout(() => w.close(), 50); onOpen?.(); } }, 'Open it ↗')));
   return w;
 }
 

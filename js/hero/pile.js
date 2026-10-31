@@ -6,6 +6,11 @@ const TH = 0.0042;
 
 function patch(sh, uniforms) {
   Object.assign(sh.uniforms, uniforms);
+  if (sh.fragmentShader.includes('#include <fog_fragment>')) {
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uVis; uniform vec3 uBg;')
+      .replace('#include <fog_fragment>', '#include <fog_fragment>\n  gl_FragColor.rgb = mix(uBg, gl_FragColor.rgb, uVis);');
+  }
   sh.vertexShader = sh.vertexShader
     .replace('#include <common>', '#include <common>\nattribute float aIdx; attribute float aCell; uniform float uFill;')
     .replace('#include <uv_vertex>', `#include <uv_vertex>
@@ -43,7 +48,7 @@ export class Pile {
     const edge = new THREE.MeshStandardMaterial({ map: et, roughness: 0.9 });
     const top = new THREE.MeshStandardMaterial({ map: cvTex, roughness: 0.85 });
     const bottom = new THREE.MeshStandardMaterial({ color: 0xe6dfd0, roughness: 0.9 });
-    this.uniforms = { uFill: { value: count + 100 } };
+    this.uniforms = { uFill: { value: count + 100 }, uVis: { value: 1 }, uBg: { value: new THREE.Color(0x0f0d0b) } };
     for (const m of [edge, top, bottom]) {
       m.onBeforeCompile = (sh) => patch(sh, this.uniforms);
       m.customProgramCacheKey = () => 'pile-v1';
@@ -109,6 +114,8 @@ export class Pile {
     this.group.add(mesh);
     this.height = layers * sheetSpacing;
   }
+
+  setVis(v) { this.uniforms.uVis.value = v; this.group.visible = v > 0.002; }
 
   setFill(f) { this.uniforms.uFill.value = f * (this.count + 72) - 1; }
 }

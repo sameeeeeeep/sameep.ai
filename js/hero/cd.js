@@ -46,22 +46,26 @@ void main(){
   // studio env: dark room with two softboxes
   float sb = smoothstep(0.75, 0.98, dot(Rv, L)) * 2.2 + smoothstep(0.85, 0.99, dot(Rv, L2)) * 1.1;
   vec3 env = mix(vec3(0.018, 0.016, 0.015), vec3(0.32, 0.3, 0.28), smoothstep(-0.2, 0.9, Rv.y)) + vec3(1.0, 0.95, 0.88) * sb;
-  vec3 diff = grating(R, T, L, V) * 1.5 + grating(R, T, L2, V) * 0.6;
+  vec3 diff = grating(R, T, L, V) * 0.6 + grating(R, T, L2, V) * 0.25;
+  // real CD-R diffraction is pastel: pull the spectrum toward its luminance
+  float dl = dot(diff, vec3(0.299, 0.587, 0.114));
+  diff = mix(vec3(dl), diff, 0.55);
   float r = vR;
   float ct = abs(dot(N, V));
-  vec3 film = 0.5 + 0.5 * cos(6.2832 * (vec3(0.0, 0.33, 0.67) + 1.7 * ct + r * 2.1 + uSpin * 0.05));
+  vec3 film = 0.5 + 0.5 * cos(6.2832 * (vec3(0.0, 0.33, 0.67) + 0.9 * ct + r * 0.6 + uSpin * 0.05));
+  film = mix(vec3(0.75, 0.8, 0.86), film, 0.22);
   vec3 col; float a = 1.0;
   if (r < 0.31) {               // clear polycarbonate hub
     float ring = smoothstep(0.012, 0.0, abs(r - 0.25)) * 0.6 + smoothstep(0.01, 0.0, abs(r - 0.3)) * 0.5;
     col = env * 0.35 + vec3(0.6, 0.65, 0.7) * ring * (0.4 + sb);
     a = 0.42 + ring * 0.4;
   } else if (r < 0.37) {        // mirror band
-    col = env * 0.85 + diff * 0.5;
+    col = env * vec3(0.62, 0.66, 0.72) + diff * 0.3;
   } else if (r < 0.985) {       // dye + data
-    vec3 dye = vec3(0.16, 0.42, 0.40) * (0.65 + 0.35 * film);
+    vec3 dye = vec3(0.40, 0.49, 0.6) * film;              // silver-blue with a faint thin-film tint
     float burned = smoothstep(0.79, 0.785, r);
-    dye = mix(dye, dye * vec3(0.62, 0.7, 0.85), burned * 0.8);
-    col = dye * (0.25 + env * 0.9) + diff * (1.0 - burned * 0.15) + film * 0.035 * sb;
+    dye = mix(dye, dye * vec3(0.78, 0.82, 0.9), burned * 0.7);
+    col = dye * (0.1 + env * 0.75) + diff * (1.0 - burned * 0.2);
     col += vec3(0.04) * smoothstep(0.004, 0.0, abs(r - 0.79));
   } else {                      // clear rim
     col = env * 0.5 + diff * 0.2; a = 0.65;

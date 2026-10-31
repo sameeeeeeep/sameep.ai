@@ -89,6 +89,36 @@ ${BURN_GLSL}`)
   return { mat, depth, uniforms };
 }
 
+// A sheet of fire riding each burn front: additive pass over the same geometry.
+const FLAME_VERT = /* glsl */`
+attribute float aStrip; attribute vec2 aLocal; attribute float aBN;
+varying float vStrip; varying vec2 vLocal; varying float vBN; varying float vWY;
+void main(){
+  vStrip = aStrip; vLocal = aLocal; vBN = aBN;
+  vec4 wp = modelMatrix * vec4(position, 1.0);
+  vWY = wp.y;
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}`;
+const FLAME_FRAG = /* glsl */`
+${BURN_GLSL}
+varying float vWY;
+void main(){
+  float bFront; float d = burnDist(bFront);
+  if (bFront < 0.0) discard;
+  int si = int(vStrip + 0.5);
+  float up = vLocal.y > uIgn[si].y ? 1.0 : 0.5;     // flames climb faster than they creep down
+  float t = d / (0.28 * up);                        // 0 at the edge -> 1 at the tips
+  if (t < -0.06 || t > 1.0) discard;
+  float n = fbm2(vec2(vLocal.x * 38.0 + vStrip * 3.1, vWY * 8.0 - uTime * 4.6));
+  float n2 = fbm2(vec2(vLocal.x * 95.0 - vStrip, vWY * 21.0 - uTime * 8.5));
+  float tongue = smoothstep(0.0, 0.28, n * 1.15 + n2 * 0.4 - t * 1.05 - 0.12);
+  float body = tongue * smoothstep(-0.06, 0.04, t);
+  vec3 col = mix(vec3(3.4, 2.3, 0.95), vec3(2.6, 0.75, 0.12), smoothstep(0.05, 0.45, t));
+  col = mix(col, vec3(0.9, 0.12, 0.03), smoothstep(0.5, 1.0, t));
+  float flick = 0.85 + 0.15 * sin(uTime * 19.0 + vStrip * 2.3);
+  gl_FragColor = vec4(col * body * flick * 1.2, 1.0);
+}`;
+
 export class Strips {
   constructor({ front, back, mobile }) {
     const sx = 3, sy = mobile ? 48 : 68;
@@ -141,6 +171,13 @@ export class Strips {
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
     this.mesh.frustumCulled = false;
+    this.flameMesh = new THREE.Mesh(g, new THREE.ShaderMaterial({
+      vertexShader: FLAME_VERT, fragmentShader: FLAME_FRAG, uniforms,
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+      polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+    }));
+    this.flameMesh.frustumCulled = false;
+    this.flameMesh.renderOrder = 4;
 
     // per-strip motion params
     const r = mulberry32(2026);

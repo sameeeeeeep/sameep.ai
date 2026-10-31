@@ -114,8 +114,8 @@ class Pool {
         sz *= 0.8 + 0.4 * Math.abs(Math.sin(t * 3 + s)); // tumbling flake reads as size flicker
       } else if (ty === SMOKE) {
         vx += Math.sin(py * 1.7 + t * 0.6 + s) * 0.12 * dt; vy += (0.22 - vy) * 0.8 * dt;
-        r = 0.05; g = 0.042; b = 0.036; al = Math.sin(Math.PI * a) * 0.16;
-        sz *= 1 + a * 3.5;
+        r = 0.06; g = 0.05; b = 0.045; al = Math.sin(Math.PI * a) * 0.06;
+        sz *= 1 + a * 2.0;
       }
       this.vel[p] = vx; this.vel[p + 1] = vy; this.vel[p + 2] = vz;
       this.pos[p] = px + vx * dt; this.pos[p + 1] = py + vy * dt; this.pos[p + 2] = pz + vz * dt;

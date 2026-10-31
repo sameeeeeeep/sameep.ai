@@ -157,79 +157,18 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   table.receiveShadow = true;
   scene.add(table);
 
-  // ------------------------------------------------------------------ textures
-  await fontsReady();
-  mark('fonts');
-  const W = mobile ? 900 : 1400;
-  let frontSrc = await loadImage('img/hero/cv-front.webp');
-  let backSrc = frontSrc ? await loadImage('img/hero/cv-back.webp') : null;
-  let frontCanvas = null;
-  if (!frontSrc || !backSrc) {
-    frontCanvas = drawCVFront(W);
-    frontSrc = frontCanvas;
-    backSrc = drawCVBack(frontCanvas);
-  }
-  mark('cv');
-  const cvFront = canvasTex(frontSrc, aniso);
-  const cvBack = canvasTex(backSrc, aniso);
-  cvFront.generateMipmaps = true;
-
-  // ------------------------------------------------------------------ objects
-  const atlas = canvasTex(drawPileAtlas(mobile ? 768 : 1024), aniso);
+  // ------------------------------------------------------------------ pile first (fast path to first frame)
+  const atlas = canvasTex(drawPileAtlas(mobile ? 640 : 1024), aniso);
   const pile = new Pile({ count: mobile ? 400 : 2000, cvTex: atlas, mobile });
   pile.group.position.copy(PILE_C);
   scene.add(pile.group);
-
   mark('pile');
-  const envelope = makeEnvelope(aniso);
-  scene.add(envelope);
 
-  const sheet = new Sheet(mobile ? { nx: 46, ny: 66 } : { nx: 62, ny: 88 });
-  const paperMat = paperMaterial(cvFront, cvBack);
-  const sheetMesh = new THREE.Mesh(sheet.geo, paperMat);
-  sheetMesh.castShadow = true; sheetMesh.receiveShadow = true;
-  sheetMesh.frustumCulled = false;
-  const sheetG = new THREE.Group();
-  sheetG.add(sheetMesh);
-  scene.add(sheetG);
-
-  mark('sheet');
-  const strips = new Strips({ front: cvFront, back: cvBack, mobile });
-  const stripsG = new THREE.Group();
-  stripsG.position.copy(S);
-  stripsG.add(strips.mesh);
-  scene.add(stripsG);
-
-  mark('strips');
-  const labelImg = await loadImage('img/hero/matchbox-top.webp');
-  const mb = makeMatchbox(aniso, labelImg);
-  if (labelImg) {
-    const top = mb.group.children[0].material[2];
-    top.metalness = 0.55; top.roughness = 0.38;
-  }
-  const matchImg = await loadImage('img/objects/match.webp');
-  if (matchImg) {
-    const mt = canvasTex(matchImg, aniso);
-    mt.offset.set(0.22, 0); mt.repeat.set(0.74, 1);
-    mt.center.set(0.5, 0.5); mt.rotation = Math.PI / 2;
-    mb.match.children[0].material = new THREE.MeshStandardMaterial({ map: mt, roughness: 0.85 });
-    mb.match.children[1].material.color.set(0xc4553a);
-  }
-  scene.add(mb.group, mb.match, mb.flame);
-  const strikeFlash = makeFlame(9.1);
-  scene.add(strikeFlash);
-
-  const cd = makeCD(drawCDLabel(mobile ? 768 : 1024), aniso);
-  scene.add(cd);
-  const motes = makeMotes(mobile ? 420 : 1100);
-  scene.add(motes);
-
-  const imac = await loadIMac({ height: 2.1, aniso });
-  imac.group.position.set(S.x + 0.1, imac.H / 2 - 0.02, IMAC_Z);
-  scene.add(imac.group);
-
-  mark('imac');
-  const particles = new Particles(scene, { mobile });
+  // everything else is built after the first frame (see buildRest)
+  let envelope, sheet, paperMat, sheetMesh, sheetG, strips, stripsG, mb, strikeFlash, cd, motes, imac, particles;
+  let cvFront, cvBack, frontCanvas = null, FOLD_FULL, angles, flameMat;
+  let full = false;
+  const stripFlames = [];
 
   // ------------------------------------------------------------------ temps (no per-frame allocation)
   const V = () => new THREE.Vector3();
@@ -239,7 +178,6 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   const mA = new THREE.Matrix4();
   const UP = new THREE.Vector3(0, 1, 0);
   const pt = new Float32Array(3);
-  const angles = new Array(sheet.foldCount).fill(0);
 
   // envelope rest pose in the pile
   const slot = pile.slot || { x: 0.4, y: 0.6, z: -0.75, rot: 0.15, idx: 0 };
@@ -253,9 +191,9 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   const qOriEnd = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.22, Math.PI + 0.75, 0.0));
   // flight path (relative to S); starts and ends at the stage
   const path = new THREE.CatmullRomCurve3([
-    [0, 0, 0], [0.7, 0.18, -0.35], [1.55, 0.7, -1.0], [1.6, 1.55, -1.7], [0.6, 1.85, -1.6], [0.1, 1.2, -1.0],
-    [0.55, 0.55, -0.6], [-0.6, 0.35, -1.5], [-1.55, 0.85, -1.2], [-1.2, 0.45, -0.1], [-0.35, 0.08, 0.25], [0, 0, 0],
-  ].map((p) => new THREE.Vector3(p[0] * 0.8, p[1] * 0.75, p[2] * 0.7)), false, 'centripetal', 0.5);
+    [0, 0, 0], [0.55, 0.12, -0.25], [1.0, 0.5, -0.8], [0.7, 1.05, -1.15], [-0.15, 1.0, -0.85], [-0.75, 0.55, -0.2],
+    [-0.55, 0.32, 0.9], [0.0, 0.26, 1.85], [0.42, 0.22, 2.35], [0.95, 0.12, 1.5], [0.75, 0.04, 0.55], [0.25, 0, 0.12], [0, 0, 0],
+  ].map((p) => new THREE.Vector3(...p)), false, 'centripetal', 0.5);
   const qPath = (f, out) => {
     const u = clamp(f, 0.0005, 0.9995);
     path.getTangentAt(u, tA).normalize();
@@ -280,6 +218,13 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   const mkKey = (p, T, D, w, h) => camKeys.push({ p, T: T.clone(), D: D.clone().normalize(), w, h });
 
   function layout() {
+    if (!full) {
+      camKeys.length = 0;
+      const pt0 = tC.copy(PILE_C).add(tD.set(0.0, mobile ? 1.0 : 0.95, 0));
+      mkKey(0, pt0, tB.set(0.16, 0.36, 1), aspect < 0.9 ? 4.0 : 6.6, 3.7);
+      mkKey(1.0001, pt0, tB.set(0.16, 0.36, 1), aspect < 0.9 ? 4.0 : 6.6, 3.7);
+      return;
+    }
     strips.layout(aspect);
     const portrait = aspect < 0.9;
     // ignition point = bottom of the first strip (world)
@@ -307,8 +252,8 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     mkKey(G('envelope', 1), v(S.x, S.y, S.z), d(-0.04, 0.1, 1), 1.35, 1.75);
     mkKey(G('origami', 0.55), v(S.x, S.y + 0.03, S.z), d(0.1, 0.14, 1), 1.25, 1.7);
     mkKey(G('origami', 1), v(S.x, S.y + 0.05, S.z), d(0.45, 0.3, 1), 1.15, 1.25);
-    mkKey(G('flight', 0.16), v(S.x + 0.05, S.y + 0.5, S.z - 0.6), d(0.08, 0.22, 1), portrait ? 2.8 : 3.4, 2.3);
-    mkKey(G('flight', 0.88), v(S.x - 0.05, S.y + 0.4, S.z - 0.45), d(0.0, 0.2, 1), portrait ? 2.7 : 3.3, 2.2);
+    mkKey(G('flight', 0.16), v(S.x + 0.1, S.y + 0.42, S.z - 0.2), d(0.06, 0.14, 1), portrait ? 2.3 : 2.5, 1.75);
+    mkKey(G('flight', 0.88), v(S.x + 0.05, S.y + 0.3, S.z), d(0.0, 0.14, 1), portrait ? 2.2 : 2.4, 1.7);
     mkKey(G('crumple', 0.35), v(S.x, S.y, S.z), d(0.05, 0.18, 1), 1.0, 1.0);
     mkKey(G('crumple', 1), v(S.x, S.y, S.z), d(-0.12, 0.22, 1), 0.75, 0.75);
     mkKey(G('shred', 0.28), v(S.x, S.y, S.z), d(0, 0.1, 1), 1.3, 1.75);
@@ -353,8 +298,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
     const s = (vh * dpr) / (2 * Math.tan((FOV / 2) * Math.PI / 180));
-    particles.setScale(s);
-    motes.material.uniforms.uScale.value = s;
+    if (full) { particles.setScale(s); motes.material.uniforms.uScale.value = s; }
     layout();
     dirty = true;
   }
@@ -419,6 +363,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   let doneCalled = false;
   let strikeFired = false;
   const spawnAcc = new Float32Array(NSTRIPS * 4);
+  const prevFront = new Float32Array(NSTRIPS).fill(-1);
   const screenRect = { left: 0, top: 0, width: 0, height: 0, x: 0, y: 0, right: 0, bottom: 0 };
 
   function beatOf(p) {
@@ -428,6 +373,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
 
   const PROF = new Float64Array(10); let PT = 0; window.__prof = PROF;
   function apply(p, time, dt) {
+    if (!full) p = Math.min(p, G('pile', 0.97));
     PT = performance.now();
     const bi = beatOf(p);
     const loc = (id) => seg(p, BEATS[BI[id]].a, BEATS[BI[id]].b);
@@ -444,6 +390,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     dom.counter.style.visibility = counterVis <= 0 ? 'hidden' : 'visible';
 
     if (DEBUG) PROF[0] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
+    if (full) {
     // ---- envelope + sheet
     const envVisible = p < G('envelope', 1) && (fillP * (pile.count + 72) - 1 > slot.idx || reduced || introT > 2.6);
     envelope.visible = envVisible;
@@ -615,12 +562,45 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
 
     if (DEBUG) PROF[3] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     // ---- fire particles from burn fronts
+    // edge flames
+    for (let k = 0; k < stripFlames.length; k++) {
+      const fl = stripFlames[k];
+      const f = strips.front[k];
+      if (!stripsOn || f <= 0 || !strips.isBurning(k)) { fl.visible = false; continue; }
+      const iy = strips.ign[k][1];
+      let ly = iy + f;
+      const upward = ly < SHEET_H;
+      if (!upward) ly = iy - f;
+      if (ly < 0) { fl.visible = false; continue; }
+      strips.point(k, 0.5, clamp(ly / SHEET_H, 0, 1), pt);
+      fl.visible = true;
+      fl.position.set(pt[0] + S.x, pt[1] + S.y - 0.02, pt[2] + S.z + 0.005);
+      const life = clamp(f / 0.08) * (1 - seg(f, strips.dur[k] * strips.speed - 0.2, strips.dur[k] * strips.speed));
+      const u = fl.userData.u;
+      u.uI.value = life * (upward ? 1 : 0.6) * (0.85 + 0.15 * Math.sin(time * 23 + k));
+      u.uScale.value = (upward ? 0.34 : 0.2) * (0.9 + 0.1 * Math.sin(time * 3 + k));
+      u.uTime.value = time + k;
+    }
+    // fire jumping to a new strip: a burst where it catches
+    if (stripsOn && !reduced) {
+      for (let k = 0; k < NSTRIPS; k++) {
+        const f = strips.front[k];
+        if (prevFront[k] < 0 && f >= 0 && p > lastP && p - lastP < 0.02) {
+          strips.point(k, 0.5, strips.ign[k][1] / SHEET_H, pt);
+          const x = pt[0] + S.x, y = pt[1] + S.y, z = pt[2] + S.z;
+          for (let i = 0; i < 18; i++) particles.spark(x, y, z);
+          for (let i = 0; i < 10; i++) particles.flame(x, y, z, 0.1);
+          audio.crackle(1); audio.crackle(1);
+        }
+        prevFront[k] = f;
+      }
+    }
     if (stripsOn && burnActive && !reduced) {
       const rate = mobile ? 0.55 : 1;
       for (let k = 0; k < NSTRIPS; k++) {
         if (!strips.isBurning(k)) continue;
         const base = k * 4;
-        spawnAcc[base] += dt * 70 * rate; spawnAcc[base + 1] += dt * 7 * rate; spawnAcc[base + 2] += dt * 5 * rate; spawnAcc[base + 3] += dt * 2.2 * rate;
+        spawnAcc[base] += dt * 40 * rate; spawnAcc[base + 1] += dt * 7 * rate; spawnAcc[base + 2] += dt * 5 * rate; spawnAcc[base + 3] += dt * 2.2 * rate;
         while (spawnAcc[base] >= 1) { spawnAcc[base]--; if (strips.frontPoint(k, pt)) particles.flame(pt[0] + S.x, pt[1] + S.y, pt[2] + S.z + 0.01, 0.075); }
         while (spawnAcc[base + 1] >= 1) { spawnAcc[base + 1]--; if (strips.frontPoint(k, pt)) particles.ember(pt[0] + S.x, pt[1] + S.y, pt[2] + S.z); }
         while (spawnAcc[base + 2] >= 1) { spawnAcc[base + 2]--; if (strips.frontPoint(k, pt)) particles.ash(pt[0] + S.x, pt[1] + S.y, pt[2] + S.z); }
@@ -715,7 +695,9 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     screenLight.position.set(imac.group.position.x + 0.2, imac.group.position.y + 0.2, imac.group.position.z + 0.9);
     screenLight.intensity = glow * 0.35;
 
+    }
     // ---- lights / lens per beat
+    pile.setVis(1 - smooth(seg(p, G('cd', 0.55), G('insert', 0.4))));
     const dim = easeInOut(seg(ins, 0.25, 0.85));
     key.intensity = 2.1 * (1 - 0.55 * seg(b, 0.25, 0.5) * (1 - seg(d, 0.2, 0.8))) * (1 - dim * 0.97);
     hemi.intensity = 0.3 * (1 - dim * 0.95);
@@ -755,7 +737,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     lastP = p;
 
     // ---- done
-    if (!doneCalled && ins >= 0.985) {
+    if (full && !doneCalled && ins >= 0.985) {
       doneCalled = true;
       camera.updateMatrixWorld();
       const a = tA.copy(imac.glassCorners[0]).applyMatrix4(imac.group.matrixWorld).project(camera);
@@ -773,7 +755,89 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       try { onDone?.({ screenRect: { ...screenRect }, imageRect, glass: imac.glassBox }); } catch (err) { console.error(err); }
     }
   }
-  const FOLD_FULL = sheet.fold.map((_, k) => sheet.angles[k]);
+
+  const yieldFrame = () => new Promise((r) => setTimeout(r, 0));
+  async function buildRest() {
+    // ------------------------------------------------------------------ deferred build
+    const W = mobile ? 900 : 1400;
+    const [fImg, bImg, labelImg, matchImg, imacR] = await Promise.all([
+      loadImage('img/hero/cv-front.webp'), loadImage('img/hero/cv-back.webp'),
+      loadImage('img/hero/matchbox-top.webp'), loadImage('img/objects/match.webp'),
+      loadIMac({ height: 2.1, aniso }), fontsReady(),
+    ]);
+    let frontSrc = fImg, backSrc = bImg;
+    if (!frontSrc || !backSrc) {
+      frontCanvas = drawCVFront(W);
+      frontSrc = frontCanvas;
+      backSrc = drawCVBack(frontCanvas);
+    }
+    mark('cv');
+    cvFront = canvasTex(frontSrc, aniso);
+    cvBack = canvasTex(backSrc, aniso);
+    cvFront.generateMipmaps = true;
+
+    // ------------------------------------------------------------------ objects
+    envelope = makeEnvelope(aniso);
+    scene.add(envelope);
+
+    sheet = new Sheet(mobile ? { nx: 46, ny: 66 } : { nx: 62, ny: 88 });
+    paperMat = paperMaterial(cvFront, cvBack);
+    sheetMesh = new THREE.Mesh(sheet.geo, paperMat);
+    sheetMesh.castShadow = true; sheetMesh.receiveShadow = true;
+    sheetMesh.frustumCulled = false;
+    sheetG = new THREE.Group();
+    sheetG.add(sheetMesh);
+    scene.add(sheetG);
+
+    mark('sheet');
+    await yieldFrame();
+    strips = new Strips({ front: cvFront, back: cvBack, mobile });
+    stripsG = new THREE.Group();
+    stripsG.position.copy(S);
+    stripsG.add(strips.mesh, strips.flameMesh);
+    // a licking flame sprite riding each strip's leading edge
+    for (let k = 0; k < NSTRIPS; k++) { const f = makeFlame(k * 1.37); f.visible = false; scene.add(f); stripFlames.push(f); }
+    scene.add(stripsG);
+
+    mark('strips');
+    await yieldFrame();
+    mb = makeMatchbox(aniso, labelImg);
+    if (labelImg) {
+      const top = mb.group.children[0].material[2];
+      top.metalness = 0.55; top.roughness = 0.38;
+    }
+    if (matchImg) {
+      const mt = canvasTex(matchImg, aniso);
+      mt.offset.set(0.22, 0); mt.repeat.set(0.74, 1);
+      mt.center.set(0.5, 0.5); mt.rotation = Math.PI / 2;
+      mb.match.children[0].material = new THREE.MeshStandardMaterial({ map: mt, roughness: 0.85 });
+      mb.match.children[1].material.color.set(0xc4553a);
+    }
+    scene.add(mb.group, mb.match, mb.flame);
+    strikeFlash = makeFlame(9.1);
+    scene.add(strikeFlash);
+
+    cd = makeCD(drawCDLabel(mobile ? 768 : 1024), aniso);
+    scene.add(cd);
+    motes = makeMotes(mobile ? 420 : 1100);
+    scene.add(motes);
+
+    imac = imacR;
+    imac.group.position.set(S.x + 0.1, imac.H / 2 - 0.02, IMAC_Z);
+    scene.add(imac.group);
+
+
+    particles = new Particles(scene, { mobile });
+    angles = new Array(sheet.foldCount).fill(0);
+    FOLD_FULL = sheet.fold.map((_, k) => sheet.angles[k]);
+    mark('rest');
+    full = true;
+    resize();
+    try { renderer.compile(scene, camera); } catch { /* ignore */ }
+    mark('compiled');
+    if (reduced) { rmKey = -1; }
+    dirty = true;
+  }
 
   // ------------------------------------------------------------------ loop
   let running = true, visible = true, last = performance.now(), time = 0, raf = 0;
@@ -841,11 +905,10 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   resize();
   readScroll();
   prog = target;
-  // warm up shaders so the first beat transitions don't hitch
-  try { renderer.compile(scene, camera); } catch { /* ignore */ }
-  mark('compiled');
   raf = nextFrame(frame);
   rootEl.classList.add('is-ready');
+  mark('first-frame');
+  setTimeout(() => buildRest().catch((err) => console.error('[hero] build failed', err)), 60);
 
   // dev hooks (harmless in prod)
   const api = {

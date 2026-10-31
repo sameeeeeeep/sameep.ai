@@ -70,7 +70,9 @@ export async function mountApp(root, { episodeUrl } = {}) {
     pod = new Podcast({ wm, layer: desk.area, persona, episode, onEnd: () => ctx.endCard() });
     await wait(reduced ? 0 : 500);
     pod.open();
-    pod.start();
+    const q = new URLSearchParams(location.search);
+    if (q.has('debug') && q.get('seat')) pod.studioReady.then(() => pod.seatForQA(q.get('seat')));
+    if (q.has('debug') && q.get('node')) pod.go(q.get('node'), { push: false }); else pod.start();
   } else {
     desk.notice('Episode not found. The desktop still works; the podcast is on its way.');
   }

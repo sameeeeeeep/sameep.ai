@@ -7,7 +7,7 @@ import { Puppet } from './puppet.js';
 import { spriteFrames } from './persona.js';
 import { renderSubtitle } from './subtitle.js';
 import { bestMatch } from './fuzzy.js';
-import { openDemo } from './demos.js';
+import { openDemo, linkDialog } from './demos.js';
 import { openCast, savedVisitor } from './cast.js';
 import { flowClean } from './apps.js';
 import { Studio } from './stage.js';
@@ -138,6 +138,17 @@ export class Podcast {
       this.puppets[key] = new Puppet(this.seats[sp.seat], { frames: sp.frames, label: sp.name, placeholder: ph[sp.seat] });
       this.puppets[key].load();
     }
+    // close-up puppets (full-frame cu-* frames) once the manifest says they exist
+    this.cuPuppets = {};
+    this.studioReady.then(() => {
+      for (const [key, sp] of Object.entries(this.speakers)) {
+        const frames = this.studio.cuFrames(sp.seat);
+        if (!frames) continue;
+        const pp = new Puppet(this.studio.cu[sp.seat], { frames, label: sp.name + ', close-up' });
+        this.cuPuppets[key] = pp;
+        pp.load().then(() => { if (!this.studio.cu[sp.seat].classList.contains('is-placeholder')) this.studio.hasCU[sp.seat] = true; });
+      }
+    });
 
     // transport
     this.btnBack = h('button.tbtn', { type: 'button', 'aria-label': 'Back', title: 'Back (←)', onclick: () => this.back() }, h('span.ico.ico--back'));
@@ -316,6 +327,7 @@ export class Podcast {
     this.studio.cutaway(line.cutaway ? this.#abs(line.cutaway) : null, line.text);
     this.sub.classList.toggle('is-long', words(text) > 34);
     this.sub.scrollTop = 0;
+    if (offset < 0.25 && line.offer) this.#offer();
     if (offset < 0.25) {
       if (line.sting) this.#sting(line.sting);
       if (line.demo) this.#demo(line.demo);
@@ -415,6 +427,15 @@ export class Podcast {
 
   recast() { this.#cast(); }
 
+  // dev/QA: seat a character without the picker (?debug&seat=<id>)
+  seatForQA(id, name = 'Asha') {
+    const c = this.persona.characters.find((x) => x.id === id);
+    if (!c) return;
+    this.casted = true;
+    this.visitor = { name, character: { ...c } };
+    this.#seatVisitor();
+  }
+
   #seatVisitor() {
     const v = this.visitor || {};
     const src = v.photo || v.character?.src;
@@ -431,7 +452,7 @@ export class Podcast {
   // ------------------------------------------------------------------ steering
   #renderChips() {
     const n = this.node;
-    const chips = (n.choices || []).map((c, i) => h('button.chip', { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label) }, c.label));
+    const chips = (n.choices || []).map((c, i) => h('button.chip', { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) }, c.label));
     if (!chips.length && n.next && this.ep.nodes[n.next]) {
       const nx = this.ep.nodes[n.next];
       chips.push(h('button.chip.chip--next', { type: 'button', onclick: () => this.go(n.next) }, 'Next: ' + (nx.chapter && nx.chapter !== n.chapter ? nx.chapter : 'keep going')));
@@ -473,7 +494,7 @@ export class Podcast {
     this.sayIn.value = '';
     this.#preview('');
     const it = m.item;
-    if (it.choice) return this.#pick(it.choice, q);
+    if (it.choice) return this.#pick(it.choice, q, !this.rec);
     if (it.to) return this.#pick({ to: it.to, label: q }, q);
     if (it.cmd === 'skip') this.skip();
     if (it.cmd === 'back') this.back();
@@ -483,7 +504,15 @@ export class Podcast {
   }
 
   // the visitor speaks: their seat lights up and their line shows in the lower third
-  #pick(choice, said) {
+  #pick(choice, said, gesture = false) {
+    // a choice can carry a demo ("Open it" / "Show me here")
+    if (choice.demo) {
+      const d = choice.demo;
+      const url = d.type === 'link' ? safeUrl(d.url, this.base) : null;
+      if (url && gesture) window.open(url, '_blank', 'noopener');
+      else this.#demo(d);
+    }
+    this.offerWin?.close();
     sound.tick('pick');
     const tok = ++this.token;
     this.audio.pause();
@@ -625,6 +654,22 @@ export class Podcast {
 
   askName(q) { return this.#askName(q); }
 
+  // "Shall I open that in a new tab?" — the host offers; the dialog carries the link
+  #offer() {
+    const n = this.node;
+    const linkChoice = (n.choices || []).find((c) => c.demo?.type === 'link' && c.demo.url);
+    const anyDemo = linkChoice?.demo || (n.choices || []).find((c) => c.demo?.url)?.demo || [...(n.lines || [])].reverse().find((l) => l.demo?.url)?.demo;
+    if (!anyDemo) return;
+    const url = safeUrl(anyDemo.url.replace(/\{[a-z]+\}/g, ''), this.base);
+    if (!url) return;
+    const hereChoice = (n.choices || []).find((c) => c.demo && c.demo.type !== 'link');
+    this.offerWin = linkDialog(this.wm, {
+      url, title: anyDemo.title || url,
+      onOpen: () => { if (linkChoice) setTimeout(() => this.#pick({ ...linkChoice, demo: null }, linkChoice.label), 60); },
+      extra: hereChoice ? { label: hereChoice.label, run: () => this.#pick(hereChoice, hereChoice.label, true) } : null,
+    });
+  }
+
   async #cardFor(demo) {
     const work = await (this.workP ||= loadWork(this.persona).catch(() => ({ list: [] })));
     const host = (() => { try { return new URL(demo.url.replace(/\{[a-z]+\}/g, ''), this.base).hostname.replace(/^www\./, ''); } catch { return ''; } })();
@@ -708,6 +753,7 @@ export class Podcast {
         level = Math.max(0, Math.sin(t * 11.3) * 0.6 + Math.sin(t * 4.1 + 1) * 0.4) * (0.6 + 0.4 * Math.sin(t * 1.7));
       }
       for (const [k, p] of Object.entries(this.puppets)) p.update(now, k === this.activeKey ? level : 0);
+      for (const [k, p] of Object.entries(this.cuPuppets || {})) if (!this.studio.cu[this.speakers[k].seat].hidden) p.update(now, k === this.activeKey ? level : 0);
       this.stage.style.setProperty('--level', level.toFixed(3));
       // long lines scroll with the speech so the lower third never outgrows its slot
       const over = this.sub.scrollHeight > this.sub.clientHeight + 2;
