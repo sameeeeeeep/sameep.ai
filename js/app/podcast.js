@@ -16,6 +16,7 @@ import { Monitor, resolveVisual } from './monitor.js';
 import { FlowBar } from './flowbar.js';
 import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoices, isMainHub, mins } from './chooser.js';
 import { isWispr, pick as pickVersion, shows } from '../version.js';
+import { takeAudio } from '../unlock.js';
 
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const estDur = (line) => Math.max(2.4, words(line.text) * 0.36 + 0.7);
@@ -46,10 +47,10 @@ export class Podcast {
     this.durs = [];
     this.lines = [];
     this.map = new EpisodeMap(episode, null, []);
-    this.audio = new Audio();
+    this.audio = takeAudio();
     this.audio.preload = 'auto';
     this.audio.crossOrigin = 'anonymous';
-    this.sting = new Audio();
+    this.sting = takeAudio();
     this.sting.volume = 0.55;
     this.stingN = 0;
     this.sting.addEventListener('error', () => {
@@ -60,7 +61,7 @@ export class Podcast {
       this.sting.src = list[this.stingN++ % list.length];
       this.sting.play().catch(() => {});
     });
-    this.bed = new Audio();
+    this.bed = takeAudio();
     this.bed.loop = true;
     this.bed.volume = 0.32;
     this.#resolveSpeakers();

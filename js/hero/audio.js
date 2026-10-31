@@ -1,5 +1,6 @@
 // Hero SFX. Loads audio/sfx/<name>.mp3 when present; otherwise a quiet synthesized stand-in.
 // Unlocks on the first user gesture. Never throws.
+import { sharedCtx } from '../unlock.js';
 
 const NAMES = ['paper-slide', 'paper-flip', 'paper-fold', 'whoosh', 'crumple', 'shred', 'match-strike', 'fire-loop', 'cd-whirr'];
 
@@ -20,9 +21,8 @@ export class HeroAudio {
   unlock() {
     if (this.unlocked) return;
     try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      this.ctx = new AC();
+      this.ctx = sharedCtx();
+      if (!this.ctx) return;
       this.master = this.ctx.createGain();
       this.master.gain.value = this.muted ? 0 : 0.9;
       this.master.connect(this.ctx.destination);

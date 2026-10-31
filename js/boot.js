@@ -1,6 +1,7 @@
 // boot.js — wires the hero (scroll story) to the app (inside the iMac).
 // hero → onDone → zoom into the iMac's glass → reveal #app and mount it.
 import { isWispr } from './version.js';
+import { unlockAudio } from './unlock.js';
 
 const heroEl = document.getElementById('hero');
 const appEl = document.getElementById('app');
@@ -231,6 +232,7 @@ function entryGate() {
     setTimeout(() => g.remove(), reduced ? 0 : 650);
   };
   const enter = (withSound) => {
+    unlockAudio();
     store.set('offthecv.muted', withSound ? '0' : '1');
     store.set('offthecv.sound', withSound ? 'on' : 'off');
     close();

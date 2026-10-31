@@ -2,6 +2,7 @@
 // and an analyser tap for lip-sync.
 import { renderChime, renderDialup } from './synth.js';
 import { store } from './util.js';
+import { sharedCtx } from '../unlock.js';
 
 const KEY = 'offthecv.sound';
 const listeners = new Set();
@@ -13,9 +14,8 @@ export const sound = {
 
   ensure() {
     if (this.ctx) return this.ctx;
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return null;
-    this.ctx = new AC();
+    this.ctx = sharedCtx();   // the hero's, already unlocked by the entry tap
+    if (!this.ctx) return null;
     this.master = this.ctx.createGain();
     this.master.gain.value = this.on ? 1 : 0;
     this.master.connect(this.ctx.destination);
