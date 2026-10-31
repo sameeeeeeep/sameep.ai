@@ -111,12 +111,17 @@ export class Post {
     this.scene = new THREE.Scene();
     this.scene.add(this.quad);
 
+    // one full set of render targets per quality level (0..2), pre-allocated so switching never reallocates
     const rtOpts = { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
-    this.main = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 2, depthBuffer: true });
-    this.mips = [];
-    for (let i = 0; i < this.levels; i++) this.mips.push(new THREE.WebGLRenderTarget(4, 4, rtOpts));
-    this.soft = new THREE.WebGLRenderTarget(4, 4, rtOpts);
-    this.soft2 = new THREE.WebGLRenderTarget(4, 4, rtOpts);
+    const makeSet = (samples) => ({
+      main: new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples, depthBuffer: true }),
+      mips: Array.from({ length: this.levels }, () => new THREE.WebGLRenderTarget(4, 4, rtOpts)),
+      soft: new THREE.WebGLRenderTarget(4, 4, rtOpts),
+      soft2: new THREE.WebGLRenderTarget(4, 4, rtOpts),
+    });
+    this.sets = [makeSet(0), makeSet(0), makeSet(2)];
+    this.active = 1;
+    Object.assign(this, this.sets[1]);
 
     this.down = new THREE.ShaderMaterial({
       vertexShader: VERT, fragmentShader: DOWN, depthTest: false, depthWrite: false,
@@ -139,14 +144,24 @@ export class Post {
     this.params = this.final.uniforms;
   }
 
-  setSize(w, h, dpr) {
-    const W = Math.max(2, Math.round(w * dpr)), H = Math.max(2, Math.round(h * dpr));
-    this.main.setSize(W, H);
-    let mw = W >> 2, mh = H >> 2;   // bloom starts at quarter res
-    for (const m of this.mips) { m.setSize(Math.max(2, mw), Math.max(2, mh)); mw >>= 1; mh >>= 1; }
-    this.soft.setSize(Math.max(2, W >> 2), Math.max(2, H >> 2));
-    this.soft2.setSize(Math.max(2, W >> 3), Math.max(2, H >> 3));
-    this.params.uRes.value.set(W, H);
+  // dprs: one pixel ratio per quality level (or a single number for all)
+  setSize(w, h, dprs) {
+    this.sets.forEach((set, i) => {
+      const dpr = Array.isArray(dprs) ? dprs[i] : dprs;
+      const W = Math.max(2, Math.round(w * dpr)), H = Math.max(2, Math.round(h * dpr));
+      set.main.setSize(W, H);
+      let mw = W >> 2, mh = H >> 2;   // bloom starts at quarter res
+      for (const m of set.mips) { m.setSize(Math.max(2, mw), Math.max(2, mh)); mw >>= 1; mh >>= 1; }
+      set.soft.setSize(Math.max(2, W >> 2), Math.max(2, H >> 2));
+      set.soft2.setSize(Math.max(2, W >> 3), Math.max(2, H >> 3));
+    });
+    this.use(this.active);
+  }
+
+  use(i) {
+    this.active = i;
+    Object.assign(this, this.sets[i]);
+    this.params.uRes.value.set(this.main.width, this.main.height);
   }
 
   pass(mat, target) {
@@ -193,7 +208,7 @@ export class Post {
   }
 
   dispose() {
-    [this.main, this.soft, this.soft2, ...this.mips].forEach((t) => t.dispose());
+    this.sets.forEach((st) => [st.main, st.soft, st.soft2, ...st.mips].forEach((t) => t.dispose()));
     [this.down, this.up, this.final].forEach((m) => m.dispose());
   }
 }

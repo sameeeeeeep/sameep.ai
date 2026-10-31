@@ -291,29 +291,38 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   // ------------------------------------------------------------------ sizing
   let dpr = 1;
   // adaptive quality: 2 = full, 1 = lighter, 0 = low-end (pixel budget, MSAA, particle rate)
-  const QB = [0.55, 0.75, 1], QP = [0.35, 0.6, 1], QS = [0, 0, 2];
-  let quality = 2, qAcc = 0, qN = 0, qWorst = 0, qSlow = 0, qFast = 0, qSkip = 180;
+  const QB = [0.55, 0.75, 1], QP = [0.35, 0.6, 1];
+  let quality = 1, qAcc = 0, qN = 0, qWorst = 0, qSlow = 0, qFast = 0, qSkip = 180;
+  // every level's render targets are pre-allocated (and warmed), so a switch is just a pointer swap
   function setQuality(q) {
     quality = q;
-    post.main.samples = QS[q]; post.main.dispose();
-    if (q === 0 && key.shadow.mapSize.x > 1024) { key.shadow.mapSize.set(1024, 1024); key.shadow.map?.dispose(); key.shadow.map = null; }
-    resize(false);
+    post.use(q);
+    applyPointScale();
     if (DEBUG) console.log('[hero] quality ->', q);
+  }
+  const levelDpr = [1, 1, 1];
+  function applyPointScale() {
+    const s = (vh * levelDpr[quality]) / (2 * Math.tan((FOV / 2) * Math.PI / 180));
+    if (full) { particles.setScale(s); motes.material.uniforms.uScale.value = s; }
   }
   function resize(relayout = true) {
     vw = Math.max(1, dom.stage.clientWidth); vh = Math.max(1, dom.stage.clientHeight);
     aspect = vw / vh;
     const cap = mobile ? 1.5 : 2;
-    dpr = Math.min(window.devicePixelRatio || 1, cap);
-    const budget = (mobile ? 1.4e6 : 2.0e6) * QB[quality];
-    if (vw * vh * dpr * dpr > budget) dpr = Math.max(1, Math.sqrt(budget / (vw * vh)));
+    const native = Math.min(window.devicePixelRatio || 1, cap);
+    for (let q = 0; q < 3; q++) {
+      const budget = (mobile ? 1.4e6 : 2.0e6) * QB[q];
+      levelDpr[q] = vw * vh * native * native > budget ? Math.max(0.75, Math.sqrt(budget / (vw * vh))) : native;
+    }
+    // the canvas stays at the top level's size; lower levels render smaller and the final pass upsamples
+    dpr = levelDpr[2];
     renderer.setPixelRatio(dpr);
     renderer.setSize(vw, vh, false);
-    post.setSize(vw, vh, dpr);
+    post.setSize(vw, vh, levelDpr);
+    post.use(quality);
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
-    const s = (vh * dpr) / (2 * Math.tan((FOV / 2) * Math.PI / 180));
-    if (full) { particles.setScale(s); motes.material.uniforms.uScale.value = s; }
+    applyPointScale();
     if (relayout) layout();
     dirty = true;
   }
@@ -818,7 +827,8 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
         for (const m of ms) for (const k in m) { const v = m[k]; if (v && v.isTexture) renderer.initTexture(v); }
         for (const m of ms) if (m.uniforms) for (const k in m.uniforms) { const v = m.uniforms[k].value; if (v && v.isTexture) renderer.initTexture(v); }
       });
-      post.render(scene, camera);           // also builds shadow-depth programs
+      for (let q = 0; q < 3; q++) { post.use(q); post.render(scene, camera); }   // warm every level's targets (+ shadow programs)
+      post.use(quality);
     } catch (err) { if (DEBUG) console.warn(err); }
     hidden.forEach((o) => { o.visible = false; });
     fireLight.intensity = prevFire; screenLight.intensity = prevScreen;
@@ -906,7 +916,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   }
 
   // ------------------------------------------------------------------ loop
-  const stats = { avg: 0, worst: 0 };
+  const stats = { avg: 0, worst: 0, spikes: [] };
   let running = true, visible = true, last = performance.now(), time = 0, raf = 0;
   let rmKey = -1, rmBusy = false;
   const RM_KEYS = [G('pile', 0.5), G('envelope', 0.57), G('envelope', 0.75), G('origami', 1) - 1e-4, G('flight', 0.5), G('crumple', 0.9),
@@ -922,6 +932,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     const dt = Math.min(0.05, rawDt);
     // measure real frame pacing (after warm-up), with hysteresis: step down only after two slow
     // windows in a row, step back up after three fast ones; ignore windows with a scroll jump
+    if (full && !TIMER && rawDt > 0.05 && rawDt < 2 && stats.spikes.length < 40) stats.spikes.push(`${prog.toFixed(3)}:${Math.round(rawDt * 1000)}ms:q${quality}`);
     if (full && !TIMER && rawDt < 0.5) {
       if (qSkip > 0) qSkip--;
       else {
@@ -998,7 +1009,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   // dev hooks (harmless in prod)
   const emptyScene = new THREE.Scene();
   const api = {
-    stats: () => ({ ...stats, quality }),
+    stats: () => ({ avg: stats.avg, worst: stats.worst, spikes: stats.spikes.slice(), quality }),
     beats: BEATS.map(({ id, a, b }) => ({ id, a, b })),
     jump(p) {
       const top = dom.track.getBoundingClientRect().top + scrollY + p * (dom.track.offsetHeight - dom.stage.clientHeight);
@@ -1026,7 +1037,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       }
       const s = out.slice().sort((a, b) => a - b);
       const spikes = out.map((v, i) => [v, +(p0 + (p1 - p0) * (i / (n - 1))).toFixed(3)]).filter(([v]) => v > 30).map(([v, pp]) => pp + ':' + v.toFixed(0));
-      return { avg: +(out.reduce((a, b) => a + b, 0) / n).toFixed(2), p95: +s[Math.floor(n * 0.95)].toFixed(2), worst: +s[n - 1].toFixed(2), dpr: renderer.getPixelRatio(), spikes };
+      return { avg: +(out.reduce((a, b) => a + b, 0) / n).toFixed(2), p95: +s[Math.floor(n * 0.95)].toFixed(2), worst: +s[n - 1].toFixed(2), dpr: +levelDpr[quality].toFixed(2), quality, spikes };
     },
     exportCV: () => {
       const f = drawCVFront(1400);
