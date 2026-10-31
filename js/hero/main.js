@@ -674,13 +674,13 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       if (ins > 0) {
         const go = easeInOut(seg(ins, 0.12, 0.62));
         const push = easeIn(seg(ins, 0.62, 0.82));
-        tB.copy(L.slotW).add(tC.set(0.62, 0.02, 0.85));            // in front of the slot mouth
-        tC.copy(L.slotW).add(tD.set(-0.22, 0.0, -0.55));           // inside
+        tB.copy(L.slotW).add(tC.set(0.3, 0.08, 0.6));            // in front of the slot mouth
+        tC.copy(L.slotW).add(tD.set(-0.12, 0.0, -0.5));           // inside
         tD.copy(S).lerp(tB, go);
         tD.y += Math.sin(Math.PI * go) * 0.25;
         tD.lerp(tC, push);
         cd.position.copy(tD);
-        qC.setFromEuler(eA.set(Math.PI / 2, 0, 0));                 // data side down, label up
+        qC.setFromEuler(eA.set(Math.PI / 2 - 0.42, 0, 0));          // label up, tipped toward camera
         qA.setFromAxisAngle(tE.set(0, 0, 1), -imac.slotTilt);
         qC.premultiply(qA);
         qA.setFromAxisAngle(UP, 0.55);
