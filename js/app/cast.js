@@ -1,6 +1,6 @@
-// cast.js — "pull up a chair": the visitor picks who they're playing at the
-// table (or uses their own photo, processed in this tab only) and a name the
-// host can use in the subtitles.
+// cast.js — "join the audience": the visitor picks an audience avatar (or uses
+// their own photo, processed in this tab only) and a name the host can use.
+// The avatar shows in the option cards; the visitor is never put on the set.
 import { h, store } from './util.js';
 import { sound } from './audio.js';
 
@@ -59,8 +59,8 @@ export function openCast(host, { persona, hostName }) {
     let photo = null;
 
     const nameIn = h('input.cast__name', { type: 'text', id: 'cast-name', maxlength: '24', autocomplete: 'given-name', placeholder: 'Your first name', value: prev.name || '', enterkeyhint: 'done' });
-    const go = h('button.btn.btn--primary.cast__go', { type: 'submit' }, 'Take a seat');
-    const grid = h('div.cast__grid', { role: 'radiogroup', 'aria-label': 'Choose your character' });
+    const go = h('button.btn.btn--primary.cast__go', { type: 'submit' }, 'Join the audience');
+    const grid = h('div.cast__grid', { role: 'radiogroup', 'aria-label': 'Choose your audience avatar' });
     const fileIn = h('input', { type: 'file', accept: 'image/*', hidden: true });
     const photoCard = h('button.cast__card.cast__card--photo', { type: 'button', role: 'radio', 'aria-checked': 'false' },
       h('span.cast__portrait', h('span.cast__plus', { 'aria-hidden': 'true' }, '+')),
@@ -106,9 +106,9 @@ export function openCast(host, { persona, hostName }) {
 
     const el = h('div.cast', { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'cast-title' },
       h('div.cast__inner',
-        h('p.cast__kicker', 'A seat just opened at the table'),
-        h('h2.cast__title#cast-title', 'Pull up a chair.'),
-        h('p.cast__lede', 'You’re the third voice on this show. Pick who you’re playing, then steer the conversation: tap a thread or just say it.'),
+        h('p.cast__kicker', 'Live studio audience'),
+        h('h2.cast__title#cast-title', 'Grab a seat in the audience.'),
+        h('p.cast__lede', 'Pick who you are in the crowd. You steer the show from your seat: tap a card, or just say where to go next.'),
         grid,
         form,
         skip));

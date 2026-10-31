@@ -39,6 +39,18 @@ function phraseScore(qn, qt, phrase) {
   return s;
 }
 
+// items → every item scored, best first: [{ item, score }]
+export function rankMatches(query, items) {
+  const qn = norm(query);
+  const qt = toks(query);
+  if (!qn) return [];
+  return items.map((it) => {
+    let s = 0;
+    for (const p of it.phrases) s = Math.max(s, phraseScore(qn, qt, p));
+    return { item: it, score: s * (it.weight ?? 1) };
+  }).sort((a, b) => b.score - a.score);
+}
+
 // items: [{ key, phrases: [..], weight? }] → best { item, score } or null
 export function bestMatch(query, items, min = 0.5) {
   const qn = norm(query);

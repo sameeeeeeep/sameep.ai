@@ -68,7 +68,17 @@
      "who": "sameep",
      "text": "Yeah, so, the brief literally said don't apply with a CV. They got two thousand applications, all CVs, all kind of the same, really difficult to differentiate. And Wispr destroyed a keyboard in their own campaign, so I thought, okay, I'll destroy the CV.",
      "messy": "Yeah so the, um, the brief literally said don't apply with a CV, right? They got like two thousand applications, all CVs, all kind of, all kind of the same, really difficult to differentiate. And Wispr, they destroyed a keyboard in their campaign, so I thought okay, I'll, I'll destroy the CV.",
-     "audio": "audio/clips/cold-open-02.mp3"
+     "audio": "audio/clips/cold-open-02.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The brief",
+      "kpis": [
+       {
+        "n": 2000,
+        "label": "applications, all CVs"
+       }
+      ]
+     }
     },
     {
      "id": "cold-open-03",
@@ -97,7 +107,9 @@
     }
    ],
    "choices": [],
-   "next": "intro"
+   "next": "intro",
+   "title": "Cold open",
+   "blurb": "Why a burning CD instead of a CV, and why the dial-up."
   },
   "intro": {
    "chapter": "Intro",
@@ -124,7 +136,9 @@
     }
    ],
    "choices": [],
-   "next": "hub-first"
+   "next": "hub-first",
+   "title": "Intro",
+   "blurb": "Meet the host, the AI guest, and how you steer the show."
   },
   "hub-first": {
    "chapter": "Menu",
@@ -147,7 +161,8 @@
       "sales",
       "marketing"
      ],
-     "to": "g-intro"
+     "to": "g-intro",
+     "recommended": true
     },
     {
      "label": "The startup that didn't work",
@@ -223,7 +238,9 @@
      "to": "meta-intro"
     }
    ],
-   "next": "g-intro"
+   "next": "g-intro",
+   "title": "Menu",
+   "blurb": "Tonight's menu: pick where to start."
   },
   "hub": {
    "chapter": "Menu",
@@ -270,7 +287,8 @@
       "notch",
       "metamask"
      ],
-     "to": "sb-intro"
+     "to": "sb-intro",
+     "recommended": true
     },
     {
      "label": "ppt.live",
@@ -334,7 +352,9 @@
      "to": "outro-make"
     }
    ],
-   "next": "outro-make"
+   "next": "outro-make",
+   "title": "Menu",
+   "blurb": "Back to the menu to pick another thread."
   },
   "g-intro": {
    "chapter": "Growth: pre-buzz",
@@ -363,7 +383,8 @@
       "hot pink",
       "pink friday"
      ],
-     "to": "g-nykaa"
+     "to": "g-nykaa",
+     "recommended": true
     },
     {
      "label": "What about Nailinit?",
@@ -419,7 +440,9 @@
      "to": "hub"
     }
    ],
-   "next": "g-hub"
+   "next": "g-hub",
+   "title": "Growth: pre-buzz",
+   "blurb": "Building the noise before a launch: Nykaa sales, a launch, games, a Diwali invite."
   },
   "g-hub": {
    "chapter": "Growth: pre-buzz",
@@ -471,7 +494,8 @@
       "matchbox",
       "mela"
      ],
-     "to": "g-diwali"
+     "to": "g-diwali",
+     "recommended": true
     },
     {
      "label": "The sleepover application",
@@ -497,7 +521,9 @@
      "to": "hub"
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "More growth",
+   "blurb": "The other growth stories."
   },
   "g-nykaa": {
    "chapter": "Growth: pre-buzz",
@@ -533,7 +559,31 @@
      "id": "g-nykaa-05",
      "who": "sameep",
      "text": "Ha, kind of. I also owned conversion from the landing page to cart to order. Landing pages were my domain. These numbers are on my CV, so they're public: landing page conversion up nine percent, sale conversion up thirty percent, on-site ads earning thirty-five percent more.",
-     "audio": "audio/clips/g-nykaa-05.mp3"
+     "audio": "audio/clips/g-nykaa-05.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Nykaa sales · public, from the CV",
+      "kpis": [
+       {
+        "n": 9,
+        "label": "landing page conversion",
+        "pre": "+",
+        "suf": "%"
+       },
+       {
+        "n": 30,
+        "label": "sale conversion",
+        "pre": "+",
+        "suf": "%"
+       },
+       {
+        "n": 35,
+        "label": "on-site ads earning",
+        "pre": "+",
+        "suf": "%"
+       }
+      ]
+     }
     },
     {
      "id": "g-nykaa-06",
@@ -561,6 +611,15 @@
      "to": "g-games"
     },
     {
+     "label": "Show me the Diwali invite",
+     "say": [
+      "diwali",
+      "invite"
+     ],
+     "to": "g-diwali",
+     "recommended": true
+    },
+    {
      "label": "Back to growth",
      "say": [
       "growth",
@@ -580,7 +639,9 @@
      "to": "hub"
     }
    ],
-   "next": "g-hub"
+   "next": "g-hub",
+   "title": "Nykaa sales",
+   "blurb": "Product lead for the big sales: pre-sale reveals, games, and the conversion numbers."
   },
   "g-nailinit": {
    "chapter": "Growth: pre-buzz",
@@ -645,7 +706,8 @@
       "diwali",
       "invite"
      ],
-     "to": "g-diwali"
+     "to": "g-diwali",
+     "recommended": true
     },
     {
      "label": "Back to growth",
@@ -667,7 +729,10 @@
      "to": "hub"
     }
    ],
-   "next": "g-hub"
+   "next": "g-hub",
+   "title": "Nailinit and Nia",
+   "blurb": "Chief of staff now, and Nia: a company that runs on one dashboard.",
+   "work": "nia"
   },
   "g-games": {
    "chapter": "Growth: pre-buzz",
@@ -706,7 +771,8 @@
       "invite",
       "show me"
      ],
-     "to": "g-diwali"
+     "to": "g-diwali",
+     "recommended": true
     },
     {
      "label": "The sleepover application",
@@ -737,7 +803,10 @@
      "to": "hub"
     }
    ],
-   "next": "g-hub"
+   "next": "g-hub",
+   "title": "Games as growth",
+   "blurb": "The thread that keeps repeating: games make people come back.",
+   "work": "diwali"
   },
   "g-diwali": {
    "chapter": "Growth: pre-buzz",
@@ -792,7 +861,77 @@
      "who": "sameep",
      "text": "For the party invite: nine hundred and forty-two personal invites, and ninety-two percent of them got opened. Two thousand two hundred and forty-three opens in total. Sixteen hundred and twenty-nine games played, and the parrot alone got seven hundred and seventy. Five hundred and twenty-seven people said yes. And two hundred and seven results got pinned to the public party wall.",
      "messy": "For the party invite, um, nine hundred and forty-two personal invites, and ninety-two percent of them got opened. Two thousand two hundred and forty-three opens in total. Sixteen hundred and twenty-nine games played, the parrot alone got seven hundred and seventy. Five hundred and twenty-seven people said yes. And two hundred and seven results got, got pinned to the public party wall.",
-     "audio": "audio/clips/g-diwali-07.mp3"
+     "audio": "audio/clips/g-diwali-07.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Diwali party invite · 23–30 Oct",
+      "size": "full",
+      "kpis": [
+       {
+        "n": 942,
+        "label": "personal invites"
+       },
+       {
+        "n": 92,
+        "label": "opened (868)",
+        "suf": "%"
+       },
+       {
+        "n": 2243,
+        "label": "opens in total"
+       },
+       {
+        "n": 527,
+        "label": "said yes"
+       },
+       {
+        "n": 207,
+        "label": "results pinned to the wall"
+       }
+      ],
+      "funnel": {
+       "title": "Invite funnel",
+       "rows": [
+        [
+         "Invited",
+         942
+        ],
+        [
+         "Opened",
+         868
+        ],
+        [
+         "RSVP'd",
+         580
+        ],
+        [
+         "Said yes",
+         527
+        ]
+       ]
+      },
+      "bars": {
+       "title": "1,629 game plays",
+       "rows": [
+        [
+         "Tota (parrot)",
+         770
+        ],
+        [
+         "Gubbara (balloons)",
+         325
+        ],
+        [
+         "Lucky draw",
+         298
+        ],
+        [
+         "Chhalla (ring toss)",
+         236
+        ]
+       ]
+      }
+     }
     },
     {
      "id": "g-diwali-08",
@@ -805,13 +944,37 @@
      "id": "g-diwali-09",
      "who": "sameep",
      "text": "Every card counts opens per person, every result becomes a card you can pin, and there's a make-your-own button inside, so the invite is its own loop. Also, the match that burned my CV at the start? Same mechanic. It's from this invite.",
-     "audio": "audio/clips/g-diwali-09.mp3"
+     "audio": "audio/clips/g-diwali-09.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "They came back",
+      "kpis": [
+       {
+        "n": 1375,
+        "label": "re-opens"
+       },
+       {
+        "n": 448,
+        "label": "guests who opened it again"
+       }
+      ]
+     }
     },
     {
      "id": "g-diwali-10",
      "who": "sameep",
      "text": "Learnings were small and kind of humbling. The ring toss was way too hard on phones, so I made it much easier. The match strike got more forgiving after a few misses. And there are five hundred and forty fortunes, and I rewrote the cheeky ones to be warm. Nothing negative goes in a Diwali card.",
-     "audio": "audio/clips/g-diwali-10.mp3"
+     "audio": "audio/clips/g-diwali-10.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The parrot's deck",
+      "kpis": [
+       {
+        "n": 540,
+        "label": "fortunes, rewritten to be warm"
+       }
+      ]
+     }
     },
     {
      "id": "g-diwali-offer",
@@ -873,10 +1036,14 @@
       "move on",
       "next topic"
      ],
-     "to": "hub"
+     "to": "hub",
+     "recommended": true
     }
    ],
-   "next": "g-hub"
+   "next": "g-hub",
+   "title": "The Diwali invite",
+   "blurb": "Strike a match, play the mela: the invite, live, with its real numbers.",
+   "work": "diwali"
   },
   "g-slumber": {
    "chapter": "Growth: pre-buzz",
@@ -927,7 +1094,8 @@
       "diwali",
       "invite"
      ],
-     "to": "g-diwali"
+     "to": "g-diwali",
+     "recommended": true
     },
     {
      "label": "Games as a growth lever",
@@ -956,7 +1124,9 @@
      "to": "hub"
     }
    ],
-   "next": "g-hub"
+   "next": "g-hub",
+   "title": "The sleepover application",
+   "blurb": "An application that felt like a DM, tracked question by question."
   },
   "often-intro": {
    "chapter": "The one that didn't work",
@@ -972,7 +1142,18 @@
      "id": "often-intro-02",
      "who": "sameep",
      "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, servicing those trips taught us more than anything we planned.",
-     "audio": "audio/clips/often-intro-02.mp3"
+     "audio": "audio/clips/often-intro-02.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Often / Trippy",
+      "kpis": [
+       {
+        "n": 1200,
+        "label": "trips powered",
+        "pre": "~"
+       }
+      ]
+     }
     }
    ],
    "choices": [
@@ -984,7 +1165,8 @@
       "what went wrong",
       "fail"
      ],
-     "to": "often-why"
+     "to": "often-why",
+     "recommended": true
     },
     {
      "label": "What's the biggest lesson?",
@@ -1007,7 +1189,10 @@
      "to": "hub"
     }
    ],
-   "next": "often-why"
+   "next": "often-why",
+   "title": "The one that didn't work",
+   "blurb": "Often and Trippy: AI for travel hacking, and what servicing trips taught.",
+   "work": "often"
   },
   "often-why": {
    "chapter": "The one that didn't work",
@@ -1048,7 +1233,8 @@
       "learning",
       "biggest lesson"
      ],
-     "to": "often-lesson"
+     "to": "often-lesson",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -1062,7 +1248,10 @@
      "to": "hub"
     }
    ],
-   "next": "often-lesson"
+   "next": "often-lesson",
+   "title": "Why it didn't work",
+   "blurb": "The real problem with travel: who commands the supply.",
+   "work": "often"
   },
   "often-lesson": {
    "chapter": "The one that didn't work",
@@ -1116,7 +1305,8 @@
       "something that worked",
       "success"
      ],
-     "to": "g-intro"
+     "to": "g-intro",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -1130,7 +1320,10 @@
      "to": "hub"
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "The lesson",
+   "blurb": "Low stickiness, slow referrals, and running out of runway.",
+   "work": "often"
   },
   "sb-intro": {
    "chapter": "Switchboard",
@@ -1241,7 +1434,8 @@
       "apps",
       "wrapp"
      ],
-     "to": "sb-wrapps"
+     "to": "sb-wrapps",
+     "recommended": true
     },
     {
      "label": "What about local models?",
@@ -1265,7 +1459,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Switchboard",
+   "blurb": "Plumbing built once so every app can borrow your own Claude.",
+   "work": "switchboard"
   },
   "sb-hub": {
    "chapter": "Switchboard",
@@ -1328,7 +1525,8 @@
       "make your own",
       "template"
      ],
-     "to": "outro-make"
+     "to": "outro-make",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -1342,7 +1540,10 @@
      "to": "hub"
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "More Switchboard",
+   "blurb": "Lineage, the notch, wrapps, local models.",
+   "work": "switchboard"
   },
   "sb-lineage": {
    "chapter": "Switchboard",
@@ -1357,7 +1558,17 @@
      "id": "sb-lineage-02",
      "who": "sameep",
      "text": "No, no. Long road. In January I made ARIA, a chat that keeps thinking in the background on a local Llama. Two days later it became AutoClawd. Always-on mic, your screen, a small local model. Two hundred and seventy-one commits. And it got big. A pixel world, camera, face, gestures, a call mode.",
-     "audio": "audio/clips/sb-lineage-02.mp3"
+     "audio": "audio/clips/sb-lineage-02.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "AutoClawd",
+      "kpis": [
+       {
+        "n": 271,
+        "label": "commits"
+       }
+      ]
+     }
     },
     {
      "id": "sb-lineage-03",
@@ -1370,7 +1581,24 @@
      "id": "sb-lineage-04",
      "who": "sameep",
      "text": "It was a garage! So on the twelfth of March I cut it all. Pixel world, call mode, camera, face, text to speech, gestures. Gone, for focus. Then came Autoclaw: hold the F N key, speak, and it writes the prompt for Claude Code. And then, on the seventh of July, Switchboard, born out of Brand Brain. It's at six hundred and forty-eight commits now.",
-     "audio": "audio/clips/sb-lineage-04.mp3"
+     "audio": "audio/clips/sb-lineage-04.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The lineage",
+      "bars": {
+       "title": "Commits",
+       "rows": [
+        [
+         "AutoClawd",
+         271
+        ],
+        [
+         "Switchboard",
+         648
+        ]
+       ]
+      }
+     }
     },
     {
      "id": "sb-lineage-05",
@@ -1394,7 +1622,8 @@
      "say": [
       "notch"
      ],
-     "to": "sb-notch"
+     "to": "sb-notch",
+     "recommended": true
     },
     {
      "label": "Back to Switchboard",
@@ -1416,7 +1645,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Where it came from",
+   "blurb": "ARIA to AutoClawd to Switchboard: what got cut, and the commit counts.",
+   "work": "switchboard"
   },
   "sb-local": {
    "chapter": "Switchboard",
@@ -1454,7 +1686,8 @@
      "say": [
       "notch"
      ],
-     "to": "sb-notch"
+     "to": "sb-notch",
+     "recommended": true
     },
     {
      "label": "What are wrapps?",
@@ -1484,7 +1717,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Local models",
+   "blurb": "Small models are good at senses, not judgment: the bouncer pattern.",
+   "work": "switchboard"
   },
   "sb-notch": {
    "chapter": "Switchboard",
@@ -1546,7 +1782,8 @@
       "wrapps",
       "wraps"
      ],
-     "to": "sb-wrapps"
+     "to": "sb-wrapps",
+     "recommended": true
     },
     {
      "label": "Back to Switchboard",
@@ -1568,7 +1805,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Why the notch",
+   "blurb": "Claude's decisions as a card in the notch, spun out as Ask Notch.",
+   "work": "asknotch"
   },
   "sb-wrapps": {
    "chapter": "Switchboard",
@@ -1584,7 +1824,17 @@
      "who": "sameep",
      "text": "Both. A wrapp is a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety-four. Brand Brain, Flow, the notch and Guru, voice cloning, annotating HTML, thinking of HTML as a video. A lot of them. Pick one.",
      "messy": "Both, honestly. A wrapp is a, a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety-four. Brand Brain, Flow, the notch and Guru, voice cloning, annotating HTML, thinking of HTML as a, as a video. A lot of them. Pick one.",
-     "audio": "audio/clips/sb-wrapps-02.mp3"
+     "audio": "audio/clips/sb-wrapps-02.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Wrapps",
+      "kpis": [
+       {
+        "n": 94,
+        "label": "wrapps in the README"
+       }
+      ]
+     }
     }
    ],
    "choices": [
@@ -1594,7 +1844,8 @@
       "brand brain",
       "brandbrain"
      ],
-     "to": "w-brandbrain"
+     "to": "w-brandbrain",
+     "recommended": true
     },
     {
      "label": "Flow",
@@ -1671,7 +1922,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Wrapps",
+   "blurb": "One task end to end, on your own Claude. Pick one to hear about.",
+   "work": "switchboard"
   },
   "sb-wrapps-again": {
    "chapter": "Switchboard",
@@ -1745,7 +1999,8 @@
       "astrology",
       "tarot"
      ],
-     "to": "w-prophexy"
+     "to": "w-prophexy",
+     "recommended": true
     },
     {
      "label": "Back to Switchboard",
@@ -1767,7 +2022,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Another wrapp",
+   "blurb": "Pick another wrapp.",
+   "work": "switchboard"
   },
   "w-brandbrain": {
    "chapter": "Switchboard",
@@ -1776,7 +2034,21 @@
      "id": "w-brandbrain-01",
      "who": "sameep",
      "text": "Brand Brain is a launch and growth hub for D2C brands. It had thirty-two API routes, and the whole Switchboard idea was, I moved all thirty-two to run in your browser tab, on your own Claude. No backend. No new API key.",
-     "audio": "audio/clips/w-brandbrain-01.mp3"
+     "audio": "audio/clips/w-brandbrain-01.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Brand Brain → Switchboard",
+      "kpis": [
+       {
+        "n": 32,
+        "label": "API routes moved to the browser"
+       },
+       {
+        "n": 0,
+        "label": "backends, new API keys"
+       }
+      ]
+     }
     },
     {
      "id": "w-brandbrain-02",
@@ -1831,7 +2103,8 @@
       "url": "https://brandbrain.thelastprompt.ai",
       "title": "Brand Brain",
       "work": "brandbrain"
-     }
+     },
+     "recommended": true
     },
     {
      "label": "Another wrapp",
@@ -1862,7 +2135,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Brand Brain",
+   "blurb": "Thirty-two API routes moved into your browser tab, and a three-day bug.",
+   "work": "brandbrain"
   },
   "w-flow": {
    "chapter": "Switchboard",
@@ -1911,7 +2187,8 @@
       "switchboard",
       "back"
      ],
-     "to": "sb-hub"
+     "to": "sb-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -1925,7 +2202,9 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Flow (the small one)",
+   "blurb": "Dictation inside Switchboard. Yes, about that name."
   },
   "w-voice": {
    "chapter": "Switchboard",
@@ -1973,7 +2252,8 @@
       "switchboard",
       "back"
      ],
-     "to": "sb-hub"
+     "to": "sb-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -1987,7 +2267,9 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Voice cloning",
+   "blurb": "On-device voice cloning: the voice you are hearing came out of it."
   },
   "w-cut": {
    "chapter": "Switchboard",
@@ -2023,7 +2305,8 @@
       "switchboard",
       "back"
      ],
-     "to": "sb-hub"
+     "to": "sb-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -2037,7 +2320,9 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Cut",
+   "blurb": "The page is a film and every knob is an intent: directing HTML like a video."
   },
   "w-annotate": {
    "chapter": "Switchboard",
@@ -2072,7 +2357,8 @@
       "switchboard",
       "back"
      ],
-     "to": "sb-hub"
+     "to": "sb-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -2086,7 +2372,9 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Annotating HTML",
+   "blurb": "Draw on the HTML Claude makes, then hand it back with notes."
   },
   "w-cartridge": {
    "chapter": "Switchboard",
@@ -2145,7 +2433,8 @@
       "switchboard",
       "back"
      ],
-     "to": "sb-hub"
+     "to": "sb-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -2159,7 +2448,9 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Cartridge",
+   "blurb": "Describe a game and your own Claude builds it."
   },
   "w-prophexy": {
    "chapter": "Switchboard",
@@ -2217,7 +2508,8 @@
       "url": "https://thelastprompt.ai/prophexy/",
       "title": "Prophexy",
       "work": "prophexy"
-     }
+     },
+     "recommended": true
     },
     {
      "label": "Another wrapp",
@@ -2248,7 +2540,10 @@
      "to": "hub"
     }
    ],
-   "next": "sb-hub"
+   "next": "sb-hub",
+   "title": "Prophexy",
+   "blurb": "One computed reading a day, from your Claude, your device or pure maths.",
+   "work": "prophexy"
   },
   "ppt-intro": {
    "chapter": "ppt.live",
@@ -2279,7 +2574,21 @@
      "id": "ppt-intro-04",
      "who": "sameep",
      "text": "But the tools only had a handful of question types, and they only sold annual plans, for one party. So last month, when I hosted a gathering of creators, I built my own. Your slides go on a TV, the room scans a QR, and phones vote, answer, ask, play. No app, no signup. We load-tested it with fifty phones. Zero errors.",
-     "audio": "audio/clips/ppt-intro-04.mp3"
+     "audio": "audio/clips/ppt-intro-04.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Load test",
+      "kpis": [
+       {
+        "n": 50,
+        "label": "phones at once"
+       },
+       {
+        "n": 0,
+        "label": "errors"
+       }
+      ]
+     }
     },
     {
      "id": "ppt-intro-offer",
@@ -2349,7 +2658,8 @@
       "games",
       "game"
      ],
-     "to": "ppt-games"
+     "to": "ppt-games",
+     "recommended": true
     },
     {
      "label": "Play a game now",
@@ -2373,7 +2683,10 @@
      "to": "hub"
     }
    ],
-   "next": "ppt-hub"
+   "next": "ppt-hub",
+   "title": "ppt.live",
+   "blurb": "A deck that ran off to a rave: phones vote, answer and play.",
+   "work": "pptlive"
   },
   "ppt-hub": {
    "chapter": "ppt.live",
@@ -2433,10 +2746,14 @@
       "move on",
       "next topic"
      ],
-     "to": "hub"
+     "to": "hub",
+     "recommended": true
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "More ppt.live",
+   "blurb": "The rules, the use cases, the games.",
+   "work": "pptlive"
   },
   "ppt-more": {
    "chapter": "ppt.live",
@@ -2445,7 +2762,23 @@
      "id": "ppt-more-01",
      "who": "sameep",
      "text": "The rules I baked in: change the room's state every four to seven minutes. First interaction within three minutes. Test, don't just tell. And never end on the rating.",
-     "audio": "audio/clips/ppt-more-01.mp3"
+     "audio": "audio/clips/ppt-more-01.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "House rules",
+      "kpis": [
+       {
+        "n": 3,
+        "label": "first interaction within",
+        "suf": " min"
+       },
+       {
+        "t": "4–7",
+        "suf": " min",
+        "label": "change the room's state every"
+       }
+      ]
+     }
     },
     {
      "id": "ppt-more-02",
@@ -2483,7 +2816,8 @@
       "games",
       "game"
      ],
-     "to": "ppt-games"
+     "to": "ppt-games",
+     "recommended": true
     },
     {
      "label": "Play a game now",
@@ -2507,7 +2841,10 @@
      "to": "hub"
     }
    ],
-   "next": "ppt-hub"
+   "next": "ppt-hub",
+   "title": "The rules",
+   "blurb": "The room-state rules baked in, and the Claude connector.",
+   "work": "pptlive"
   },
   "ppt-uses": {
    "chapter": "ppt.live",
@@ -2543,7 +2880,8 @@
       "games",
       "game"
      ],
-     "to": "ppt-games"
+     "to": "ppt-games",
+     "recommended": true
     },
     {
      "label": "Play a game now",
@@ -2567,7 +2905,10 @@
      "to": "hub"
     }
    ],
-   "next": "ppt-hub"
+   "next": "ppt-hub",
+   "title": "Use cases",
+   "blurb": "All-hands to sangeets, five people to a few hundred.",
+   "work": "pptlive"
   },
   "ppt-games": {
    "chapter": "ppt.live",
@@ -2576,7 +2917,17 @@
      "id": "ppt-games-01",
      "who": "sameep",
      "text": "Thirty-four of them. Word Spies, Mafia, Antakshari, Housie, Dumb Charades. And a bluffing one called Unicorn. Two secret cards, two crore, bluff your way to be the last founder standing.",
-     "audio": "audio/clips/ppt-games-01.mp3"
+     "audio": "audio/clips/ppt-games-01.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "ppt.live",
+      "kpis": [
+       {
+        "n": 34,
+        "label": "games"
+       }
+      ]
+     }
     },
     {
      "id": "ppt-games-02",
@@ -2595,7 +2946,8 @@
       "qr",
       "scan"
      ],
-     "to": "ppt-play"
+     "to": "ppt-play",
+     "recommended": true
     },
     {
      "label": "More about ppt.live",
@@ -2629,7 +2981,10 @@
      "to": "hub"
     }
    ],
-   "next": "ppt-hub"
+   "next": "ppt-hub",
+   "title": "The games",
+   "blurb": "Thirty-four games, including a bluffing one called Unicorn.",
+   "work": "pptlive"
   },
   "ppt-play": {
    "chapter": "ppt.live",
@@ -2691,10 +3046,14 @@
       "move on",
       "next topic"
      ],
-     "to": "hub"
+     "to": "hub",
+     "recommended": true
     }
    ],
-   "next": "ppt-hub"
+   "next": "ppt-hub",
+   "title": "Play now",
+   "blurb": "Scan the QR and start or join a room.",
+   "work": "pptlive"
   },
   "tools-intro": {
    "chapter": "The toolbox",
@@ -2722,7 +3081,8 @@
       "video",
       "video to ai"
      ],
-     "to": "t-video"
+     "to": "t-video",
+     "recommended": true
     },
     {
      "label": "/refs",
@@ -2773,7 +3133,9 @@
      "to": "hub"
     }
    ],
-   "next": "tools-hub"
+   "next": "tools-hub",
+   "title": "The toolbox",
+   "blurb": "When Claude can't do something, give it the ability."
   },
   "tools-hub": {
    "chapter": "The toolbox",
@@ -2841,10 +3203,13 @@
       "move on",
       "next topic"
      ],
-     "to": "hub"
+     "to": "hub",
+     "recommended": true
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "More tools",
+   "blurb": "video2ai, /refs, the ADHD hacks."
   },
   "t-video": {
    "chapter": "The toolbox",
@@ -2874,13 +3239,40 @@
      "id": "t-video-04",
      "who": "sameep",
      "text": "Okay. Frame selection is a vector math problem, not an LLM problem. Apple's engine, already on your Mac, gives each frame a fingerprint, and you keep only the ones where the picture actually changed. A video goes from about a hundred and seventy thousand tokens to about a hundred and fifty lines. Way faster, way more effective, and easy to give references.",
-     "audio": "audio/clips/t-video-04.mp3"
+     "audio": "audio/clips/t-video-04.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "One video, before and after",
+      "kpis": [
+       {
+        "n": 170000,
+        "label": "tokens, before",
+        "pre": "~"
+       },
+       {
+        "n": 150,
+        "label": "lines, after",
+        "pre": "~"
+       }
+      ]
+     }
     },
     {
      "id": "t-video-05",
      "who": "sameep",
      "text": "And the mistake: I tried CLIP first. It ate two gigs of RAM. Apple's thing was already sitting on the machine.",
-     "audio": "audio/clips/t-video-05.mp3"
+     "audio": "audio/clips/t-video-05.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The CLIP mistake",
+      "kpis": [
+       {
+        "n": 2,
+        "label": "of RAM, eaten by CLIP",
+        "suf": " GB"
+       }
+      ]
+     }
     },
     {
      "id": "t-video-offer",
@@ -2915,7 +3307,8 @@
       "references",
       "slash refs"
      ],
-     "to": "t-refs"
+     "to": "t-refs",
+     "recommended": true
     },
     {
      "label": "The ADHD hacks",
@@ -2947,7 +3340,10 @@
      "to": "hub"
     }
    ],
-   "next": "tools-hub"
+   "next": "tools-hub",
+   "title": "video2ai",
+   "blurb": "Teaching Claude to watch video: frame selection as vector maths.",
+   "work": "video2ai"
   },
   "t-refs": {
    "chapter": "The toolbox",
@@ -3009,7 +3405,8 @@
       "paste deck",
       "paste"
      ],
-     "to": "t-adhd"
+     "to": "t-adhd",
+     "recommended": true
     },
     {
      "label": "Back to the toolbox",
@@ -3031,7 +3428,10 @@
      "to": "hub"
     }
    ],
-   "next": "tools-hub"
+   "next": "tools-hub",
+   "title": "/refs",
+   "blurb": "Real references before Claude designs anything.",
+   "work": "refs"
   },
   "t-adhd": {
    "chapter": "The toolbox",
@@ -3087,7 +3487,8 @@
       "toolbox",
       "back"
      ],
-     "to": "tools-hub"
+     "to": "tools-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3101,7 +3502,10 @@
      "to": "hub"
     }
    ],
-   "next": "tools-hub"
+   "next": "tools-hub",
+   "title": "The ADHD hacks",
+   "blurb": "PasteDeck and a recorder that tells you to sleep.",
+   "work": "pastedeck"
   },
   "fun-intro": {
    "chapter": "Fun and unfinished",
@@ -3129,7 +3533,8 @@
       "wallpaper",
       "behind us"
      ],
-     "to": "f-wallpap"
+     "to": "f-wallpap",
+     "recommended": true
     },
     {
      "label": "psspss",
@@ -3199,7 +3604,9 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "Fun and unfinished",
+   "blurb": "wallpap, psspss, and a drawer of small recent things."
   },
   "fun-hub": {
    "chapter": "Fun and unfinished",
@@ -3228,7 +3635,8 @@
       "pss pss",
       "cats on your phone"
      ],
-     "to": "f-psspss"
+     "to": "f-psspss",
+     "recommended": true
     },
     {
      "label": "The Mac cat",
@@ -3289,7 +3697,9 @@
      "to": "hub"
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "Another one",
+   "blurb": "Pick another from the drawer."
   },
   "f-wallpap": {
    "chapter": "Fun and unfinished",
@@ -3304,7 +3714,17 @@
      "id": "f-wallpap-02",
      "who": "sameep",
      "text": "That is wallpap! Live wallpapers for your Mac. Twelve scenes. Koi that come for food when you click, cats that follow your cursor, singing bowls you can ring. It follows your real weather and time of day, and rests at about zero energy when you're not looking.",
-     "audio": "audio/clips/f-wallpap-02.mp3"
+     "audio": "audio/clips/f-wallpap-02.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "wallpap",
+      "kpis": [
+       {
+        "n": 12,
+        "label": "live scenes"
+       }
+      ]
+     }
     },
     {
      "id": "f-wallpap-03",
@@ -3359,7 +3779,8 @@
       "url": "https://wallpap.live",
       "title": "wallpap.live",
       "work": "wallpap"
-     }
+     },
+     "recommended": true
     },
     {
      "label": "Another one",
@@ -3382,7 +3803,10 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "wallpap",
+   "blurb": "Live wallpapers for your Mac: the one behind this window.",
+   "work": "wallpap"
   },
   "f-psspss": {
    "chapter": "Fun and unfinished",
@@ -3439,7 +3863,8 @@
       "more",
       "next"
      ],
-     "to": "fun-hub"
+     "to": "fun-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3453,7 +3878,10 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "psspss",
+   "blurb": "A household of AI cats on your phone, on your own Claude.",
+   "work": "psspss"
   },
   "f-maccat": {
    "chapter": "Fun and unfinished",
@@ -3510,7 +3938,8 @@
       "more",
       "next"
      ],
-     "to": "fun-hub"
+     "to": "fun-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3524,7 +3953,9 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "MacCat",
+   "blurb": "A pixel cat in your menu bar that fights your doomscrolling."
   },
   "f-bluetune": {
    "chapter": "Fun and unfinished",
@@ -3533,7 +3964,22 @@
      "id": "f-bluetune-01",
      "who": "sameep",
      "text": "Bluetune. You send text or images between devices, as sound. Proper modem stuff, error correction, the works. Built in one day. And then I spent the next hour making fourteen logos.",
-     "audio": "audio/clips/f-bluetune-01.mp3"
+     "audio": "audio/clips/f-bluetune-01.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Bluetune",
+      "kpis": [
+       {
+        "n": 1,
+        "label": "to build",
+        "suf": " day"
+       },
+       {
+        "n": 14,
+        "label": "logos after that"
+       }
+      ]
+     }
     },
     {
      "id": "f-bluetune-02",
@@ -3575,7 +4021,8 @@
       "more",
       "next"
      ],
-     "to": "fun-hub"
+     "to": "fun-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3589,7 +4036,9 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "Files as sound",
+   "blurb": "Bluetune: text and images between devices, as sound."
   },
   "f-agentbar": {
    "chapter": "Fun and unfinished",
@@ -3647,7 +4096,8 @@
       "url": "https://thelastprompt.ai/agentbreakroom/",
       "title": "The Agent Bar",
       "work": "agent-bar"
-     }
+     },
+     "recommended": true
     },
     {
      "label": "Another one",
@@ -3670,7 +4120,10 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "The Agent Bar",
+   "blurb": "A 3D bar where AI agents check in and keep a daily journal.",
+   "work": "agentbar"
   },
   "f-alter": {
    "chapter": "Fun and unfinished",
@@ -3727,7 +4180,8 @@
       "more",
       "next"
      ],
-     "to": "fun-hub"
+     "to": "fun-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3741,7 +4195,9 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "Singing bowls you draw",
+   "blurb": "Alter: the shape you draw is the shape the bowl vibrates in."
   },
   "f-vibedj": {
    "chapter": "Fun and unfinished",
@@ -3792,7 +4248,8 @@
       "more",
       "next"
      ],
-     "to": "fun-hub"
+     "to": "fun-hub",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3806,7 +4263,9 @@
      "to": "hub"
     }
    ],
-   "next": "fun-hub"
+   "next": "fun-hub",
+   "title": "An AI DJ",
+   "blurb": "Vibe DJ beatmatches and reads the room. The crowd is imaginary so far."
   },
   "meta-intro": {
    "chapter": "How this was made",
@@ -3857,7 +4316,8 @@
       "make one",
       "make your own"
      ],
-     "to": "outro-make"
+     "to": "outro-make",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3871,7 +4331,9 @@
      "to": "hub"
     }
    ],
-   "next": "meta-90s"
+   "next": "meta-90s",
+   "title": "How this was made",
+   "blurb": "All of it dictated, then built with Claude."
   },
   "meta-90s": {
    "chapter": "How this was made",
@@ -3898,7 +4360,8 @@
       "make one",
       "make your own"
      ],
-     "to": "outro-make"
+     "to": "outro-make",
+     "recommended": true
     },
     {
      "label": "Back to the menu",
@@ -3912,7 +4375,9 @@
      "to": "hub"
     }
    ],
-   "next": "outro-make"
+   "next": "outro-make",
+   "title": "Why the nineties",
+   "blurb": "When everyone has the same model, differentiate on everything else."
   },
   "outro-make": {
    "chapter": "Make your own",
@@ -3937,7 +4402,10 @@
     }
    ],
    "choices": [],
-   "next": "outro"
+   "next": "outro",
+   "title": "Make your own",
+   "blurb": "Anyone's Claude can make one of these, through Switchboard.",
+   "work": "switchboard"
   },
   "outro": {
    "chapter": "Outro",
@@ -3971,7 +4439,8 @@
       "back",
       "more"
      ],
-     "to": "hub"
+     "to": "hub",
+     "recommended": true
     },
     {
      "label": "Start over",
@@ -3984,7 +4453,21 @@
      "to": "cold-open"
     }
    ],
-   "next": "hub"
+   "next": "hub",
+   "title": "Outro",
+   "blurb": "Credits, and where the code lives."
   }
+ },
+ "route": {
+  "label": "Recommended route",
+  "blurb": "Growth (Nykaa, then the Diwali invite), Switchboard, ppt.live, then make your own.",
+  "stops": [
+   "g-intro",
+   "g-nykaa",
+   "g-diwali",
+   "sb-intro",
+   "ppt-intro",
+   "outro-make"
+  ]
  }
 }

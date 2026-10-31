@@ -1,20 +1,29 @@
 // podcast.js — the core: a studio where the host and the guest lip-sync to
-// their clips, Wispr-style subtitles, chapters, transport, branch chips and a
-// "Say it with Flow…" field that steers the episode.
+// their clips, clean subtitles, a chapter map, transport, option cards and a
+// "say where to go" field that steers the episode. The visitor is the audience:
+// their avatar sits in the chooser, never on the studio set.
 import { h, clamp, fillName, words, isNarrow, safeUrl, reducedMotion } from './util.js';
 import { sound } from './audio.js';
 import { Puppet } from './puppet.js';
 import { spriteFrames } from './persona.js';
 import { renderSubtitle } from './subtitle.js';
-import { bestMatch } from './fuzzy.js';
+import { bestMatch, rankMatches } from './fuzzy.js';
 import { openDemo, linkDialog } from './demos.js';
 import { openCast, savedVisitor } from './cast.js';
-import { flowClean } from './apps.js';
 import { Studio } from './stage.js';
-import { loadWork } from './work.js';
+import { loadWork, openWork } from './work.js';
+import { Monitor, resolveVisual } from './monitor.js';
+import { FlowBar } from './flowbar.js';
+import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, isUtility, chapterMap, mins } from './chooser.js';
+import { isWispr, pick as pickVersion, shows } from '../version.js';
 
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const estDur = (line) => Math.max(2.4, words(line.text) * 0.36 + 0.7);
+const COPY = isWispr
+  ? { placeholder: 'Say it with Flow…', hint: 'Hold your Wispr Flow key and talk. It lands in the field wherever you are. Or type. Or tap.', mic: 'Mic blocked. Type instead, or use your Wispr Flow key.' }
+  : { placeholder: 'Say or type where to go…', hint: 'Type or dictate where to go. It lands in the field wherever you are. Or tap a card.', mic: 'Mic blocked. Type instead.' };
+// auto-pick: how sure the match must be, and how long the "Heard" note waits
+const SURE = 0.8, MARGIN = 0.12, SETTLE = 650, CONFIRM = 1500;
 
 export class Podcast {
   constructor({ wm, layer, persona, episode, onEnd }) {
@@ -25,13 +34,16 @@ export class Podcast {
     this.onEnd = onEnd;
     this.base = persona.base;
     this.reduced = reducedMotion();
-    this.visitor = savedVisitor() ? { ...savedVisitor(), character: null } : { name: '' };
+    const sv = savedVisitor();
+    this.visitor = sv ? { name: sv.name || '', character: persona.characters.find((c) => c.id === sv.character) || null } : { name: '' };
     this.casted = false;
     this.history = [];
     this.visited = new Set();
     this.playing = false;
     this.token = 0;
     this.durs = [];
+    this.lines = [];
+    this.map = new EpisodeMap(episode, null, []);
     this.audio = new Audio();
     this.audio.preload = 'auto';
     this.audio.crossOrigin = 'anonymous';
@@ -67,7 +79,7 @@ export class Podcast {
     };
   }
 
-  // where the "pick your character" moment happens
+  // where the "pick your avatar" moment happens
   #castNode() {
     const N = this.ep.nodes || {};
     this.castAt = Object.keys(N).find((k) => N[k].cast || (N[k].lines || []).some((l) => l.action === 'cast'))
@@ -89,6 +101,7 @@ export class Podcast {
       (n.choices || []).forEach((c) => q.push(c.to));
       if (n.next) q.push(n.next);
     }
+    if (!this.ep.chapters) this.ep.chapters = out;
     return out;
   }
 
@@ -108,12 +121,30 @@ export class Podcast {
       label: 'Podcast player',
       onClose: () => this.pause(),
     });
-    this.win.onShow = () => this.#layout();
-    this.#build(this.win.body);
+    this.win.onShow = () => { this.#layout(); this.flow?.ensureFocus(); };
     this.chapterList = this.#chapters();
+    this.#build(this.win.body);
     this.#renderChapters();
+    this.#loadMeta();
     this.#loop();
     return this;
+  }
+
+  // durations (from ffprobe, data/durations.json) + work.json for visuals and tags
+  async #loadMeta() {
+    const durP = this.persona.isCustom ? Promise.resolve(null)
+      : fetch(safeUrl('data/durations.json', this.base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    const workP = (this.workP ||= loadWork(this.persona).catch(() => ({ list: [], base: this.base })));
+    const [dur, work] = await Promise.all([durP, workP]);
+    this.workList = work.list || [];
+    this.workBase = work.base || this.base;
+    this.map = new EpisodeMap(this.ep, dur, this.workList);
+    this.#renderChapters();
+    if (this.node) {
+      this.#renderChips(); this.#renderChooser();
+      const l = this.lines[this.li];
+      if (l && this.mode) this.#visual(l, this.speakers[l.who]?.seat || 'host');
+    }
   }
 
   #build(body) {
@@ -121,15 +152,15 @@ export class Podcast {
     this.studio = new Studio({ persona: P, speakers: this.speakers, hostKey: this.hostKey, guestKey: this.guestKey, reduced: this.reduced });
     const stage = this.studio.el;
     this.seats = this.studio.seats;
-    this.youSeat = this.studio.youSeat;
     this.onAir = this.studio.onAir;
     this.studioReady = this.studio.init();
     this.name = h('p.lower3__name');
     this.sub = h('p.lower3__sub', { 'aria-live': 'polite' });
-    this.tag = h('span.lower3__tag', { 'aria-hidden': 'true' });
-    const lower3 = h('div.lower3', h('div.lower3__head', this.name, this.tag), this.sub);
+    const lower3 = h('div.lower3', h('div.lower3__head', this.name), this.sub);
     if (isNarrow()) stage.classList.add('stage--narrow');
     this.stage = stage;
+    this.monitor = new Monitor(stage, { base: this.base, reduced: this.reduced, onOpenWork: (id) => openWork(this.wm, this.persona, { focusId: id }) });
+    this.monitor.onSkip = () => { this.visSkip = this.nodeId; };
 
     // puppets
     const ph = { host: { color: '#7b4fd6', skin: '#e0b48c', hair: '#c7c7c7' }, guest: { color: '#0a8fa8', skin: '#b07a52', hair: '#1c120c' } };
@@ -164,31 +195,34 @@ export class Podcast {
     const transport = h('div.transport', this.btnBack, this.btnPlay, this.btnSkip, this.scrub, this.time);
     this.#wireScrub();
 
-    // steering
+    // steering: the audience badge, quick chips, the say field
+    this.audBadge = h('span.steer__aud');
     this.chips = h('div.chips', { role: 'group', 'aria-label': 'Pull a thread' });
-    this.sayIn = h('input.say__input', { type: 'text', placeholder: 'Say it with Flow…', 'aria-label': 'Say or type where to go next', autocomplete: 'off', enterkeyhint: 'go', spellcheck: 'false' });
-    this.sayMsg = h('p.say__msg', { 'aria-live': 'polite' });
+    this.sayIn = h('input.say__input', { type: 'text', placeholder: COPY.placeholder, 'aria-label': 'Say or type where to go next', autocomplete: 'off', enterkeyhint: 'go', spellcheck: 'false', autocapitalize: 'off' });
+    this.sayMsg = h('div.say__msg', { 'aria-live': 'polite' });
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.mic = SR ? h('button.say__mic', { type: 'button', 'aria-label': 'Speak (uses your browser’s speech recognition)', title: 'Speak', onclick: () => this.#listen(SR) }, h('span.ico.ico--mic')) : null;
-    const say = h('form.say', { onsubmit: (e) => { e.preventDefault(); this.#steer(this.sayIn.value); } },
-      h('span.say__flow', { 'aria-hidden': 'true' }, h('img', { src: 'img/ui/wispr.svg', alt: '', width: 20, height: 20 })),
+    this.sayForm = h('form.say', { onsubmit: (e) => { e.preventDefault(); this.#steer(this.sayIn.value); } },
+      h('span.say__flow', { 'aria-hidden': 'true' }, isWispr ? h('img', { src: 'img/ui/wispr.svg', alt: '', width: 20, height: 20 }) : h('span.say__caret', '›')),
       this.sayIn, this.mic, h('button.say__go', { type: 'submit', 'aria-label': 'Go' }, 'Go'));
-    this.sayIn.addEventListener('input', () => this.#preview(this.sayIn.value));
-    this.sayIn.addEventListener('focus', () => this.youSeat.classList.add('is-listening'));
-    this.sayIn.addEventListener('blur', () => this.youSeat.classList.remove('is-listening'));
-    const steer = h('div.steer', h('p.steer__label', h('span', 'Pull a thread'), this.nodeLabel), this.chips, say, this.sayMsg);
+    const steer = h('div.steer', h('div.steer__label', this.audBadge, h('span.steer__k', 'Pull a thread'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
 
-    // chapters
-    this.chapEl = h('ol.chapters');
-    const side = h('aside.pod__side', h('h3.side__title', 'Chapters'), this.chapEl,
-      h('p.side__hint', 'Hold your Wispr Flow key and talk into the field. Or type. Or tap.'));
-    const chapDrawer = h('details.chap-drawer', h('summary', 'Chapters'), h('div.chap-drawer__body'));
+    // the chooser (cards) — overlays the picture at a fork on desktop, sits in the flow on phones
+    this.chooser = h('section.chooser', { hidden: true, 'aria-label': 'Choose what’s next' });
 
-    this.stageBox = h('div.stage-box', h('div.stage-col', stage, lower3));
-    this.root = h('div.pod',
-      h('div.pod__main', this.stageBox, transport, steer, chapDrawer),
-      side);
+    // chapters (a map of the episode)
+    this.chapEl = h('ol.chapters.cmap');
+    this.routeSide = h('div.side__route');
+    const side = h('aside.pod__side', h('h3.side__title', 'Episode map'), this.routeSide, this.chapEl,
+      h('p.side__hint', COPY.hint));
+    const chapDrawer = h('details.chap-drawer', h('summary', h('span', 'Episode map'), h('span.chap-drawer__meta')), h('div.chap-drawer__body'));
+
+    this.stageCol = h('div.stage-col', stage, lower3);
+    this.stageBox = h('div.stage-box', this.stageCol);
+    this.main = h('div.pod__main', this.stageBox, transport, steer, chapDrawer);
+    this.root = h('div.pod', this.main, side);
     this.lower3 = lower3;
+    this.steer = steer;
     this.chapDrawer = chapDrawer;
     body.append(this.root);
     this.#layout();
@@ -203,6 +237,18 @@ export class Podcast {
       else if (e.key === 'ArrowRight' && e.target !== this.scrub) this.skip();
       else if (e.key === 'ArrowLeft' && e.target !== this.scrub) this.back();
     });
+
+    // dictation / typing / paste, however it arrives
+    this.flow = new FlowBar({
+      input: this.sayIn,
+      scope: this.win.el,
+      isLive: () => !this.win.el.hidden && !this.win.body.querySelector('.cast'),
+      onValue: (v, how) => this.#heardChange(v, how),
+      onSubmit: (v) => this.#steer(v),
+      onKey: (k) => { if (k === ' ') this.toggle(); else if (k === 'ArrowRight') this.skip(); else this.back(); },
+    });
+    this.sayIn.addEventListener('focus', () => this.root.classList.add('is-listening'));
+    this.sayIn.addEventListener('blur', () => this.root.classList.remove('is-listening'));
 
     // audio graph for lip-sync
     const ctx = sound.ensure();
@@ -227,20 +273,26 @@ export class Podcast {
     this.audio.addEventListener('loadedmetadata', () => {
       if (isFinite(this.audio.duration) && this.mode === 'audio') { this.durs[this.li] = this.audio.duration; this.#ticks(); }
     });
+    this.#renderAudience();
   }
 
   #layout() {
     const narrow = isNarrow();
     const side = this.root.querySelector('.pod__side');
     const drawer = this.chapDrawer.querySelector('.chap-drawer__body');
-    if (narrow && this.chapEl.parentElement !== drawer) drawer.append(this.chapEl);
-    if (!narrow && this.chapEl.parentElement !== side) side.insertBefore(this.chapEl, side.querySelector('.side__hint'));
+    if (narrow && this.chapEl.parentElement !== drawer) drawer.append(this.routeSide, this.chapEl);
+    if (!narrow && this.chapEl.parentElement !== side) side.insertBefore(this.chapEl, side.querySelector('.side__hint')), side.insertBefore(this.routeSide, this.chapEl);
     this.stage.classList.toggle('stage--narrow', narrow);
-    // short desktop screens: chapters live in the transport row as a popover
+    this.monitor.narrow = narrow;
+    this.monitor.panelHost = this.stageCol;
+    // the chooser: over the picture on desktop, under the say field on phones
+    if (narrow && this.chooser.parentElement !== this.main) this.steer.after(this.chooser);
+    if (!narrow && this.chooser.parentElement !== this.stageCol) this.stageCol.append(this.chooser);
+    // short desktop screens: the map lives in the transport row as a popover
     const short = !narrow && matchMedia('(max-height: 780px)').matches;
     const transport = this.root.querySelector('.transport');
     if (short && this.chapDrawer.parentElement !== transport) transport.append(this.chapDrawer);
-    if (!short && this.chapDrawer.parentElement === transport) this.root.querySelector('.pod__main').append(this.chapDrawer);
+    if (!short && this.chapDrawer.parentElement === transport) this.main.append(this.chapDrawer);
     // keep the window fitted to the screen
     if (!narrow && this.win && !this.win.el.classList.contains('win--sheet')) {
       const L = this.layer.getBoundingClientRect();
@@ -249,27 +301,31 @@ export class Podcast {
       const top = parseFloat(this.win.el.style.top) || 12;
       if (top + hh > L.height - 8) this.win.el.style.top = Math.max(8, L.height - hh - 12) + 'px';
     }
-    // the lower third hangs under the picture so it never hides the visitor's stool
   }
 
   #renderChapters() {
-    this.chapEl.replaceChildren(...this.chapterList.map((c, i) => h('li',
-      h('button.chap', { type: 'button', dataset: { to: c.to }, onclick: () => { this.chapDrawer.open = false; this.go(c.to, { from: 'chapter' }); } },
-        h('span.chap__n', String(i + 1).padStart(2, '0')), h('span.chap__t', c.label)))));
+    if (!this.chapEl) return;
+    const cur = this.node?.chapter;
+    this.chapEl.replaceChildren(...chapterMap(this.map, {
+      visited: this.visited, currentChapter: cur,
+      onGo: (to) => { this.chapDrawer.open = false; this.go(to, { from: 'chapter' }); },
+    }));
+    const r = routeEl(this.map, this.visited, { onJump: (s) => this.go(s, { from: 'chapter' }) });
+    this.routeSide.replaceChildren(...(r ? [r] : []));
+    const meta = this.chapDrawer.querySelector('.chap-drawer__meta');
+    const p = this.map.routeProgress(this.visited);
+    if (meta) meta.textContent = p.total ? `route ${p.done}/${p.total}${p.left && p.done < p.total ? ' · ≈ ' + mins(p.left) + ' left' : ''}` : '';
   }
 
   #markChapter() {
-    const n = this.ep.nodes[this.nodeId];
-    const label = n?.chapter;
-    this.chapEl.querySelectorAll('.chap').forEach((b) => {
-      const c = this.chapterList.find((x) => x.to === b.dataset.to);
-      const visited = [...this.visited].some((id) => this.ep.nodes[id]?.chapter === c?.label);
-      b.classList.toggle('is-visited', visited);
-      const cur = c && c.label === label;
-      b.classList.toggle('is-current', cur);
-      b.setAttribute('aria-current', cur ? 'true' : 'false');
-    });
-    this.nodeLabel.textContent = label ? '· ' + label : '';
+    const label = this.node?.chapter;
+    this.#renderChapters();
+    this.nodeLabel.textContent = label ? '· ' + (this.node.title && this.node.title !== label ? `${label} · ${this.node.title}` : label) : '';
+  }
+
+  #renderAudience(line) {
+    this.audBadge.replaceChildren(avatarEl(this.visitor, 'steer__av'), h('span.steer__you', this.visitor?.name ? `${this.visitor.name}, in the audience` : 'You, in the audience'));
+    if (this.chooserAud) this.chooserAud.replaceWith((this.chooserAud = audienceEl(this.visitor, line)));
   }
 
   // ------------------------------------------------------------------ playback
@@ -282,24 +338,31 @@ export class Podcast {
     this.nodeId = id;
     this.node = node;
     this.visited.add(id);
-    this.durs = (node.lines || []).map(estDur);
-    this.#preloadDurations(node);
+    // this version's lines (text/audio overrides, version-only lines)
+    this.lines = (node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l) }));
+    this.durs = this.lines.map(estDur);
+    this.#preloadDurations();
+    this.visSkip = null;
+    this.monitor.hide();
+    this.#cancelConfirm();
     this.#renderChips();
     this.#markChapter();
     this.#ticks();
-    this.sayMsg.textContent = '';
+    this.#msg('');
     this.root.classList.remove('is-waiting');
+    this.chooser.hidden = true;
     if (from) this.studio.loading();
     if (node.sting) this.#sting(node.sting);
     this.playing = true;
     this.#setPlayIcon();
-    if (!node.lines?.length) return this.#nodeEnded();
+    this.flow.ensureFocus();
+    if (!this.lines.length) return this.#nodeEnded();
     this.#playLine(0, 0);
   }
 
-  #preloadDurations(node) {
+  #preloadDurations() {
     const tok = this.nodeId;
-    (node.lines || []).forEach((l, i) => {
+    this.lines.forEach((l, i) => {
       const u = this.#abs(l.audio);
       if (!u) return;
       const a = new Audio();
@@ -310,7 +373,7 @@ export class Podcast {
   }
 
   #playLine(i, offset = 0) {
-    const line = this.node.lines[i];
+    const line = this.lines[i];
     if (!line) return this.#nodeEnded();
     const tok = ++this.token;
     this.li = i;
@@ -318,27 +381,24 @@ export class Podcast {
     const who = this.speakers[line.who] ? line.who : (line.who === 'guest' ? this.guestKey : this.hostKey);
     this.activeKey = who;
     for (const [k, p] of Object.entries(this.puppets)) p.setActive(k === who);
-    this.youSeat.classList.remove('is-active');
     const seat = this.speakers[who]?.seat || 'host';
     // shot grammar: wide to open a segment, medium on a change of speaker,
     // close-up on punchlines (or when the script says so)
     const prevSeat = this.studio.who;
     this.studio.setSpeaker(seat);
+    this.studio.look?.(seat, line);
     if (offset < 0.25) {
       const wc = words(line.text);
       const punch = line.shot === 'cu' || (wc <= 12 && /[!?]["”’]?$/.test(line.text.trim()));
       const shot = line.shot || (i === 0 && !this.cutIn ? 'wide' : punch ? 'cu' : seat !== prevSeat || this.studio.shot === 'wide' ? 'ms' : this.studio.shot === 'cu' ? 'ms' : this.studio.shot);
       this.cutIn = false;
-      this.studio.cut(shot === 'ms' || shot === 'cu' ? shot : shot, seat);
+      this.studio.cut(shot, seat);
     }
     this.name.textContent = this.speakers[who]?.name || who;
-    const name = this.visitor?.name;
-    const text = fillName(line.text, name);
-    const messy = line.messy ? fillName(line.messy, name) : null;
-    this.tag.textContent = messy ? 'RAW' : '';
-    this.tag.classList.toggle('is-clean', false);
-    this.subCtl = renderSubtitle(this.sub, { text, messy: offset > 0.5 ? null : messy, reduced: this.reduced, onClean: () => { this.tag.textContent = 'FLOW'; this.tag.classList.add('is-clean'); } });
+    const text = fillName(line.text, this.visitor?.name);
+    this.subCtl = renderSubtitle(this.sub, { text });
     this.studio.cutaway(line.cutaway ? this.#abs(line.cutaway) : null, line.text);
+    this.#visual(line, seat);
     this.sub.classList.toggle('is-long', words(text) > 34);
     this.sub.scrollTop = 0;
     if (offset < 0.25 && line.offer) this.#offer();
@@ -354,6 +414,23 @@ export class Podcast {
       return;
     }
     this.#startLine(line, offset, tok);
+  }
+
+  // the studio monitor: a line's own visual, else the node's project on the
+  // guest's lines; host lines keep whatever is up. × skips visuals for the node.
+  #visual(line, seat) {
+    if (this.visSkip === this.nodeId || line.cutaway || line.visual === 'none') { if (line.cutaway || line.visual === 'none') this.monitor.hide(); return; }
+    const work = this.workList || [];
+    if (line.visual) {
+      const v = resolveVisual(line.visual, work, this.workBase || this.base);
+      if (v) return this.monitor.show(v, 'line:' + line.id);
+    }
+    if (seat === 'host') return; // keep what's showing
+    if (this.node.work && work.length) {
+      const v = resolveVisual({ type: 'work', work: this.node.work }, work, this.workBase || this.base);
+      if (v) return this.monitor.show(v, 'work:' + this.node.work);
+    }
+    this.monitor.hide();
   }
 
   #startLine(line, offset, tok) {
@@ -384,7 +461,7 @@ export class Podcast {
     const url = this.audio.src;
     (this.failed ||= new Set()).add(url);
     const at = this.audio.currentTime || 0;
-    this.durs[this.li] = estDur(this.node.lines[this.li]);
+    this.durs[this.li] = estDur(this.lines[this.li]);
     this.#timerMode(Math.min(at, this.durs[this.li] - 0.5));
     this.#ticks();
   }
@@ -400,7 +477,7 @@ export class Podcast {
     if (tok !== this.token) return;
     const next = this.li + 1;
     this.mode = null;
-    if (next < this.node.lines.length) {
+    if (next < this.lines.length) {
       setTimeout(() => { if (tok === this.token && this.playing) this.#playLine(next, 0); else if (tok === this.token) { this.li = next; this.pendingLine = true; } }, 280);
     } else this.#nodeEnded();
   }
@@ -409,7 +486,7 @@ export class Podcast {
     const tok = ++this.token;
     this.mode = null;
     for (const p of Object.values(this.puppets)) p.setActive(false);
-    // the cast call: after the host introduces the show, the visitor takes a seat
+    // the cast call: after the host introduces the show, the visitor joins the audience
     if (!this.casted && this.nodeId === this.castAt) {
       this.casted = true;
       await this.#cast();
@@ -421,7 +498,12 @@ export class Podcast {
       this.root.classList.add('is-waiting');
       this.playing = false;
       this.#setPlayIcon();
-      if (!isNarrow()) setTimeout(() => this.sayIn.focus({ preventScroll: true }), 50);
+      this.monitor.hide();
+      this.#renderChooser();
+      this.chooser.hidden = false;
+      setTimeout(() => this.flow.ensureFocus(), 50);
+      // something was said while the answer played: use it now
+      if (this.queued) { const q = this.queued; this.queued = null; this.#heard(q, { atFork: true }); }
     } else if (n.next) {
       setTimeout(() => { if (tok === this.token) this.go(n.next); }, 900);
     } else {
@@ -434,39 +516,36 @@ export class Podcast {
     this.pause();
     const v = await openCast(this.win.body, { persona: this.persona, hostName: this.speakers[this.hostKey]?.name });
     this.visitor = v;
-    this.#seatVisitor();
+    this.#renderAudience();
     this.playing = true;
     this.#setPlayIcon();
+    this.flow.ensureFocus();
   }
 
   recast() { this.#cast(); }
 
-  // dev/QA: seat a character without the picker (?debug&seat=<id>)
+  // dev/QA: set an audience avatar without the picker (?debug&seat=<id>)
   seatForQA(id, name = 'Asha') {
     const c = this.persona.characters.find((x) => x.id === id);
     if (!c) return;
     this.casted = true;
     this.visitor = { name, character: { ...c } };
-    this.#seatVisitor();
-  }
-
-  #seatVisitor() {
-    const v = this.visitor || {};
-    const src = v.photo || v.character?.src;
-    if (!src) { this.youSeat.hidden = true; return; }
-    const holder = this.youSeat.querySelector('.seat-you__img');
-    const img = h('img', { src, alt: v.name ? `${v.name}, on the studio iMac` : 'You, on the studio iMac' });
-    img.onerror = () => { const t = this.persona.characters.find((c) => c.id === v.character?.id)?.thumb; if (t && img.src !== t) img.src = t; };
-    holder.replaceChildren(img);
-    this.youSeat.hidden = false;
-    this.youSeat.classList.add('is-arriving');
-    setTimeout(() => this.youSeat.classList.remove('is-arriving'), 1200);
+    this.#renderAudience();
+    if (this.node) this.#renderChooser();
   }
 
   // ------------------------------------------------------------------ steering
   #renderChips() {
     const n = this.node;
-    const chips = (n.choices || []).map((c, i) => h('button.chip', { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) }, c.label));
+    const rec = this.map.recommended(this.nodeId, this.visited);
+    const chips = (n.choices || []).map((c, i) => {
+      const util = isUtility(this.map, c);
+      const to = c.to;
+      const entry = this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== n.chapter;
+      const m = util ? '' : mins(entry ? this.map.chapterSec(to) : this.map.sec(to));
+      return h('button.chip' + (i === rec ? '.is-rec' : '') + (util ? '.chip--util' : ''), { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) },
+        c.label, m && h('span.chip__m', m));
+    });
     if (!chips.length && n.next && this.ep.nodes[n.next]) {
       const nx = this.ep.nodes[n.next];
       chips.push(h('button.chip.chip--next', { type: 'button', onclick: () => this.go(n.next) }, 'Next: ' + (nx.chapter && nx.chapter !== n.chapter ? nx.chapter : 'keep going')));
@@ -474,10 +553,31 @@ export class Podcast {
     this.chips.replaceChildren(...chips);
   }
 
+  #renderChooser() {
+    const n = this.node;
+    if (!n?.choices?.length) { this.chooser.replaceChildren(); return; }
+    const rec = this.map.recommended(this.nodeId, this.visited);
+    const ctx = { visited: this.visited, current: this.nodeId, onPick: (c, said, g) => this.#pick(c, said, g) };
+    const cards = [], utils = [];
+    n.choices.forEach((c, i) => {
+      if (isUtility(this.map, c)) utils.push(h('button.ubtn' + (c.demo?.type === 'link' ? '.ubtn--link' : '') + (i === rec ? '.is-rec' : ''), { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) }, c.label + (c.demo?.type === 'link' ? ' ↗' : '')));
+      else cards.push(cardEl(this.map, c, i, { ...ctx, rec: i === rec }));
+    });
+    const host = this.speakers[this.hostKey]?.name?.split(' ')[0] || 'The host';
+    this.chooserAud = audienceEl(this.visitor, `${host} is waiting on you`);
+    const total = this.map.D.totalSec;
+    this.chooser.replaceChildren(...[
+      h('div.chooser__head', this.chooserAud, h('button.chooser__min', { type: 'button', 'aria-label': 'Hide the options and see the studio', title: 'See the studio', onclick: () => this.chooser.classList.toggle('is-min') }, h('span', { 'aria-hidden': 'true' }, '▾'))),
+      h('div.chooser__cards', cards),
+      utils.length ? h('div.chooser__utils', utils) : null,
+      h('div.chooser__foot', routeEl(this.map, this.visited, { onJump: (s) => this.go(s, { from: 'chapter' }) }), total ? h('span.chooser__all', `Whole episode ≈ ${Math.round(total / 60)} min`) : null)].filter(Boolean));
+    this.chooser.classList.remove('is-min');
+  }
+
   #items() {
     const n = this.node;
-    const items = (n.choices || []).map((c, i) => ({ key: 'c' + i, choice: c, phrases: [c.label, ...(c.say || [])] }));
-    this.chapterList.forEach((c) => items.push({ key: 'ch:' + c.to, to: c.to, phrases: [c.label], weight: 0.8 }));
+    const items = (n.choices || []).map((c, i) => ({ key: 'c' + i, choice: c, phrases: [c.label, ...(c.say || []), this.map.title(c.to)].filter(Boolean) }));
+    this.chapterList.forEach((c) => items.push({ key: 'ch:' + c.to, to: c.to, label: c.label, phrases: [c.label, this.map.title(c.to)], weight: 0.8 }));
     items.push(
       { key: 'skip', cmd: 'skip', phrases: ['skip', 'next', 'continue', 'go on', 'keep going', 'move on'], weight: 0.95 },
       { key: 'back', cmd: 'back', phrases: ['back', 'go back', 'previous', 'rewind'], weight: 0.95 },
@@ -490,23 +590,93 @@ export class Podcast {
 
   #preview(q) {
     const m = q.trim().length > 1 ? bestMatch(q, this.#items().filter((i) => i.choice), 0.45) : null;
-    this.chips.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-match', !!m && c.dataset.i === m.item.key.slice(1)));
+    const k = m ? m.item.key.slice(1) : null;
+    this.root.querySelectorAll('.chip[data-i], .card[data-i], .ubtn[data-i]').forEach((c) => c.classList.toggle('is-match', k != null && c.dataset.i === k));
+  }
+
+  #msg(content, kind = '') {
+    this.sayMsg.className = 'say__msg' + (kind ? ' say__msg--' + kind : '');
+    this.sayMsg.replaceChildren(...[].concat(content || []));
+  }
+
+  #targetLabel(it) {
+    if (it.choice) return it.choice.demo?.type === 'link' ? it.choice.label : this.map.title(it.choice.to) || it.choice.label;
+    if (it.to) return it.label || this.map.title(it.to);
+    return { skip: 'skip', back: 'back', pause: 'pause', play: 'play', menu: 'the menu' }[it.cmd];
+  }
+
+  // any change to the field, however it arrived: debounce, then decide
+  #heardChange(v) {
+    this.#preview(v);
+    clearTimeout(this.settleT);
+    if (this.confirm && v.trim() !== this.confirm.q) this.#cancelConfirm(true);
+    if (!v.trim()) { if (!this.confirm) this.#msg(''); return; }
+    this.settleT = setTimeout(() => this.#heard(v), SETTLE);
+  }
+
+  #heard(raw, { atFork = false } = {}) {
+    const q = String(raw || '').trim();
+    if (q.length < 3) return;
+    const ranked = rankMatches(q, this.#items());
+    const [a, b] = ranked;
+    const waiting = atFork || this.root.classList.contains('is-waiting');
+    if (!a || a.score < 0.5) {
+      if (!this.node.choices?.length && !waiting) {
+        // nothing to pick from yet: hold it for when the options appear
+        this.queued = q;
+        this.#msg([h('span.say__k', 'Heard'), ` “${q}”. I’ll match it when the options come up.`], 'queued');
+      } else this.#msg([h('span.say__k', 'Heard'), ` “${q}”. No thread by that name yet. Try a card, or say “skip”.`], 'miss');
+      return;
+    }
+    const tgt = (it) => it.choice?.to || it.to || it.cmd;
+    const sure = a.score >= SURE && (!b || a.score - b.score >= MARGIN || (tgt(b.item) === tgt(a.item) && !a.item.choice?.demo));
+    const label = this.#targetLabel(a.item);
+    if (!sure) {
+      this.#msg([h('span.say__k', 'Heard'), ` “${q}”. Did you mean `, h('button.say__link', { type: 'button', onclick: () => this.#steer(q) }, label), '? Press Enter.'], 'maybe');
+      return;
+    }
+    if (a.item.cmd && a.item.cmd !== 'menu') return this.#steer(q); // transport commands act at once
+    if (!waiting) {
+      // mid-answer: queue it, go when the options appear (or now, if they say so)
+      this.queued = q;
+      this.#msg([h('span.say__k', 'Heard'), ` “${q}” → ${label}, after this answer. `,
+        h('button.say__link', { type: 'button', onclick: () => { this.queued = null; this.#steer(q); } }, 'Go now'), ' · ',
+        h('button.say__link', { type: 'button', onclick: () => { this.queued = null; this.flow.set(''); this.#preview(''); this.#msg(''); } }, 'Cancel')], 'queued');
+      return;
+    }
+    // at a fork: a short visible confirmation, then go
+    this.#cancelConfirm();
+    const bar = h('i.say__bar', { style: { animationDuration: CONFIRM + 'ms' } });
+    this.#msg([h('span.say__k', 'Heard'), ` “${q}” → going to ${label} `, bar,
+      h('button.say__link', { type: 'button', 'data-keep-focus': '', onclick: () => { this.#cancelConfirm(true); this.flow.set(''); this.#preview(''); this.#msg('Cancelled. Pick again.'); } }, 'Cancel')], 'go');
+    this.confirm = { q, t: setTimeout(() => { this.confirm = null; this.#steer(q); }, this.reduced ? 500 : CONFIRM) };
+  }
+
+  #cancelConfirm(quiet) {
+    if (!this.confirm) return;
+    clearTimeout(this.confirm.t);
+    this.confirm = null;
+    if (!quiet) this.#msg('');
   }
 
   #steer(q) {
-    q = q.trim();
+    q = String(q || '').trim();
+    clearTimeout(this.settleT);
+    this.#cancelConfirm(true);
     if (!q) return;
     const m = bestMatch(q, this.#items(), 0.5);
     if (!m) {
-      this.sayMsg.textContent = 'No thread by that name yet. Try one of the chips, or say “skip”.';
-      this.root.querySelector('.say').classList.remove('is-miss');
+      this.#msg([h('span.say__k', 'Heard'), ` “${q}”. No thread by that name yet. Try a card, or say “skip”.`], 'miss');
+      this.sayForm.classList.remove('is-miss');
       void this.root.offsetWidth;
-      this.root.querySelector('.say').classList.add('is-miss');
+      this.sayForm.classList.add('is-miss');
       sound.tick('error');
       return;
     }
-    this.sayIn.value = '';
+    this.flow.set('');
+    this.queued = null;
     this.#preview('');
+    this.#msg('');
     const it = m.item;
     if (it.choice) return this.#pick(it.choice, q, !this.rec);
     if (it.to) return this.#pick({ to: it.to, label: q }, q);
@@ -517,7 +687,7 @@ export class Podcast {
     if (it.cmd === 'menu') { const hub = this.ep.nodes.hub ? 'hub' : this.ep.start; this.#pick({ to: hub, label: q }, q); }
   }
 
-  // the visitor speaks: their seat lights up and their line shows in the lower third
+  // the audience picks: the card flashes, the host takes it from there
   #pick(choice, said, gesture = false) {
     // a choice can carry a demo ("Open it" / "Show me here")
     if (choice.demo) {
@@ -527,27 +697,20 @@ export class Podcast {
       else this.#demo(d);
     }
     this.offerWin?.close();
+    this.queued = null;
+    this.#cancelConfirm(true);
     sound.tick('pick');
     const tok = ++this.token;
     this.audio.pause();
     this.subCtl?.cancel();
-    for (const p of Object.values(this.puppets)) p.setActive(false);
-    this.studio.cutaway(null);
-    this.studio.setSpeaker('you');
-    if (!this.youSeat.hidden) this.studio.cut('ms', 'you');
-    this.youSeat.classList.add('is-active');
-    this.name.textContent = this.visitor?.name ? `${this.visitor.name} (you)` : 'You';
-    // the visitor's words get the Flow treatment too
-    const clean = flowClean(said);
-    this.tag.textContent = clean && clean !== said ? 'RAW' : '';
-    this.tag.classList.remove('is-clean');
-    this.subCtl = renderSubtitle(this.sub, { text: clean || said, messy: clean && clean !== said ? said : null, reduced: this.reduced, onClean: () => { this.tag.textContent = 'FLOW'; this.tag.classList.add('is-clean'); } });
-    if (!this.youSeat.hidden) this.studio.sayBubble(said);
+    const i = (this.node.choices || []).indexOf(choice);
+    this.root.querySelectorAll(`.card[data-i="${i}"], .chip[data-i="${i}"]`).forEach((c) => c.classList.add('is-picked'));
+    this.audBadge.classList.add('is-picked');
+    setTimeout(() => this.audBadge.classList.remove('is-picked'), 900);
     setTimeout(() => {
       if (tok !== this.token) return;
-      this.youSeat.classList.remove('is-active');
       this.go(choice.to, { from: 'pick' });
-    }, this.reduced ? 200 : clean && clean !== said ? 2300 : 1100);
+    }, this.reduced ? 120 : 320);
   }
 
   #listen(SR) {
@@ -558,19 +721,17 @@ export class Podcast {
     rec.maxAlternatives = 1;
     this.rec = rec;
     this.mic.classList.add('is-on');
-    this.youSeat.classList.add('is-listening');
     let finalText = '';
     rec.onresult = (e) => {
       let s = '';
       for (const r of e.results) { s += r[0].transcript; if (r.isFinal) finalText = s; }
-      this.sayIn.value = s;
+      this.flow.set(s);
       this.#preview(s);
     };
-    rec.onerror = (e) => { this.sayMsg.textContent = e.error === 'not-allowed' ? 'Mic blocked. Type instead, or use your Wispr Flow key.' : 'Didn’t catch that.'; };
+    rec.onerror = (e) => { this.#msg(e.error === 'not-allowed' ? COPY.mic : 'Didn’t catch that.', 'miss'); };
     rec.onend = () => {
       this.rec = null;
       this.mic.classList.remove('is-on');
-      this.youSeat.classList.remove('is-listening');
       if (finalText) this.#steer(finalText);
     };
     try { rec.start(); } catch { this.rec = null; this.mic.classList.remove('is-on'); }
@@ -582,8 +743,9 @@ export class Podcast {
     if (this.root.classList.contains('is-waiting') && this.mode == null) {
       // replay the last line of a finished node
       this.root.classList.remove('is-waiting');
+      this.chooser.hidden = true;
       this.playing = true; this.#setPlayIcon();
-      return this.#playLine(Math.max(0, this.node.lines.length - 1), 0);
+      return this.#playLine(Math.max(0, this.lines.length - 1), 0);
     }
     this.playing = true;
     this.#setPlayIcon();
@@ -602,21 +764,25 @@ export class Podcast {
   skip() {
     if (!this.node) return;
     if (this.root.classList.contains('is-waiting')) {
-      // at a fork: skip takes the default path
-      if (this.node.next) this.go(this.node.next);
+      // at a fork: skip takes the recommended card, else the default path
+      const rec = this.map.recommended(this.nodeId, this.visited);
+      const c = this.node.choices?.[rec];
+      if (c) this.#pick(c, c.label);
+      else if (this.node.next) this.go(this.node.next);
       return;
     }
     this.playing = true; this.#setPlayIcon();
-    if (this.li + 1 < this.node.lines.length) this.#playLine(this.li + 1, 0);
+    if (this.li + 1 < this.lines.length) this.#playLine(this.li + 1, 0);
     else { this.audio.pause(); this.#nodeEnded(); }
   }
   back() {
     if (!this.node) return;
     this.root.classList.remove('is-waiting');
+    this.chooser.hidden = true;
     this.playing = true; this.#setPlayIcon();
     if (this.mode && this.t > 2) return this.#playLine(this.li, 0);
     if (this.li > 0 && this.mode) return this.#playLine(this.li - 1, 0);
-    if (!this.mode && this.node.lines.length) return this.#playLine(Math.max(0, this.node.lines.length - 1), 0);
+    if (!this.mode && this.lines.length) return this.#playLine(Math.max(0, this.lines.length - 1), 0);
     const prev = this.history.pop();
     if (prev) this.go(prev, { push: false });
     else this.#playLine(0, 0);
@@ -672,7 +838,7 @@ export class Podcast {
   #offer() {
     const n = this.node;
     const linkChoice = (n.choices || []).find((c) => c.demo?.type === 'link' && c.demo.url);
-    const anyDemo = linkChoice?.demo || (n.choices || []).find((c) => c.demo?.url)?.demo || [...(n.lines || [])].reverse().find((l) => l.demo?.url)?.demo;
+    const anyDemo = linkChoice?.demo || (n.choices || []).find((c) => c.demo?.url)?.demo || [...this.lines].reverse().find((l) => l.demo?.url)?.demo;
     if (!anyDemo) return;
     const url = safeUrl(anyDemo.url.replace(/\{[a-z]+\}/g, ''), this.base);
     if (!url) return;
@@ -701,7 +867,7 @@ export class Podcast {
     return new Promise((resolve) => {
       const w = this.wm.win(null, { title: 'One quick thing', width: 380, className: 'win--alert', modal: true, center: true, sheet: false });
       const inp = h('input.cast__name', { type: 'text', maxlength: '24', placeholder: 'Your first name', value: this.visitor?.name || '' });
-      const done = (val) => { w.close(); if (val) this.visitor = { ...(this.visitor || {}), name: val }; resolve(val || ''); };
+      const done = (val) => { w.close(); if (val) { this.visitor = { ...(this.visitor || {}), name: val }; this.#renderAudience(); } resolve(val || ''); };
       w.body.append(h('form.ask', { onsubmit: (e) => { e.preventDefault(); done(inp.value.trim()); } },
         h('label', h('span', q), inp),
         h('div.alert__btns', h('button.btn', { type: 'button', onclick: () => done('') }, 'Skip'), h('button.btn.btn--primary', { type: 'submit' }, 'OK'))));
@@ -725,11 +891,12 @@ export class Podcast {
   }
 
   #seekFrac(f) {
-    if (!this.node?.lines?.length) return;
+    if (!this.lines.length) return;
     let target = clamp(f, 0, 0.999) * this.total;
     let i = 0;
     while (i < this.durs.length - 1 && target > this.durs[i]) { target -= this.durs[i]; i++; }
     this.root.classList.remove('is-waiting');
+    this.chooser.hidden = true;
     if (!this.playing) { this.playing = true; this.#setPlayIcon(); }
     this.#playLine(i, target);
   }
