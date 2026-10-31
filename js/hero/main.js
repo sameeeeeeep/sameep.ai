@@ -968,6 +968,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   setTimeout(() => buildRest().catch((err) => console.error('[hero] build failed', err)), 60);
 
   // dev hooks (harmless in prod)
+  const emptyScene = new THREE.Scene();
   const api = {
     stats: () => ({ ...stats, quality }),
     beats: BEATS.map(({ id, a, b }) => ({ id, a, b })),
@@ -988,7 +989,10 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       for (let i = 0; i < n; i++) {
         const t0 = performance.now();
         prog = p0 + (p1 - p0) * (i / (n - 1)); time += 1 / 60; introT += 1 / 60;
-        apply(prog, time, 1 / 60); post.render(scene, camera);
+        apply(prog, time, 1 / 60);
+        if (api.dbgMode === 'scene') { renderer.setRenderTarget(null); renderer.render(scene, camera); }
+        else if (api.dbgMode === 'post') { post.render(emptyScene, camera); }
+        else if (api.dbgMode !== 'cpu') post.render(scene, camera);
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
         out.push(performance.now() - t0);
       }
