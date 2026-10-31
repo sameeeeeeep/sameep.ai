@@ -16,6 +16,17 @@
 //     normalised against a decaying peak, attack/release envelope, bands with
 //     hysteresis, 60–90 ms holds and a little vowel variation.
 // Blinks are random every 2–6 s and only land while the mouth is closed.
+//
+// Life (the head rig, bank.json "rig", built by videoframes.py --region head):
+// once loaded the seat is drawn on one canvas each frame, drawImage only:
+//   body  = the closed frame with the head's hard core cut out
+//   head  = the current frame (closed / blink / cue shape) through a soft head
+//           mask, plus the bank's mouth patch, then nodded / tilted about the
+//           neck by a couple of pixels: the talking video's own head motion
+//           for the frame being shown (front, close-up), or eased noise
+//           (side; livelier while speaking, small nods while listening)
+//   breath = a ~0.25 Hz one-pixel rise of everything above the desk line
+// prefers-reduced-motion: no breathing, no head motion (mouth and blinks stay).
 import { h, clamp } from './util.js';
 import { manifestReady } from './stage.js';
 
@@ -48,7 +59,7 @@ function cuesFor(src) {
   return c;
 }
 const LEAD = 0.03; // mouth leads the sound a touch
-const MIN_HOLD = 50;
+const MIN_HOLD = 80; // a cue shape is held at least this long (no flapping)
 function playingCues() {
   const list = speech ? [speech, ...media] : media;
   for (const el of list) {
@@ -129,7 +140,14 @@ export class Puppet {
     this.nextBlink = performance.now() + 1500 + Math.random() * 3000;
     this.t = 0;
     this.ci = 0; // cue index cache
-    this.banks = {}; // look → { cv, ctx, img, meta, cur, next }
+    this.banks = {}; // look → { img, meta, cur, next, dir, quietSince }
+    this.rigs = {}; // look → { body, heads, scratch, sctx, meta }
+    this.reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.phase = Math.random() * Math.PI * 2; // breathing: every character on their own rhythm
+    this.seed = Math.random() * 100;
+    this.head = { x: 0, y: 0, r: 0 }; // eased head pose
+    this.nodAt = 0; this.nodUntil = 0; this.nextNod = performance.now() + 2500 + Math.random() * 3000;
+    this.amp = 0; // eased "how animated" (0 listening .. 1 speaking)
   }
 
   // Work out every frame this seat has: explicit set, else the manifest entry
@@ -204,42 +222,78 @@ export class Puppet {
     if (this.dir) {
       const root = this.dir.replace(/img\/sprites\/.*$/, '');
       loadCues(root + 'data/visemes.json');
-      this.#loadBanks(); // no await: the seat works without it
+      // no await: the seat works without it. Wait for the studio to be on screen first.
+      const later = (fn) => setTimeout(() => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 1500 }) : fn()), 700);
+      later(() => this.#loadBanks());
     }
     return this;
   }
 
-  // frame banks for whichever looks this seat has (bank.json lists poses)
+  // frame banks + head rigs for whichever looks this seat has (bank.json lists poses)
   async #loadBanks() {
     let idx = null;
     try { const r = await fetch(this.dir + 'bank.json', { cache: 'no-cache' }); idx = r.ok ? await r.json() : null; } catch { idx = null; }
     if (!idx) return;
     for (const look of Object.keys(this.src)) {
-      const twin = Object.keys(this.banks).find((k) => this.src[k] === this.src[look]);
-      if (twin) { this.banks[look] = this.banks[twin]; continue; } // a front-only seat reuses one bank
+      const twin = Object.keys(this.rigs).find((k) => this.src[k] === this.src[look]);
+      if (twin) { this.banks[look] = this.banks[twin]; this.rigs[look] = this.rigs[twin]; continue; } // a front-only seat
       const closed = this.src[look].closed || '';
       const pose = /\/cu-front-closed\.webp/.test(closed) ? 'cu-front' : /\/cu-closed\.webp/.test(closed) ? null : look;
-      const meta = pose && idx[pose];
-      if (!meta?.frames?.length) continue;
-      const img = await load(this.dir + meta.sheet);
-      if (!img) continue;
-      const cv = h('canvas.puppet__img.puppet__bank.is-off', { width: meta.size[0], height: meta.size[1], 'aria-hidden': 'true' });
-      this.seat.append(cv);
-      const fr = meta.frames;
-      // a frame "continues" its predecessor when they are neighbours in the source video
-      const step = fr.length > 1 ? Math.min(...fr.slice(1).map((f, i) => f[0] - fr[i][0]).filter((d) => d > 0)) : 1;
-      this.banks[look] = { cv, ctx: cv.getContext('2d'), img, meta, step, cur: meta.rest ?? 0, drawn: -1, next: 0, quietSince: 0 };
+      if (!pose) continue;
+      const meta = idx[pose];
+      const R = idx.rig?.[pose];
+      const [img, mask, cut] = await Promise.all([
+        meta?.frames?.length ? load(this.dir + meta.sheet) : null,
+        R ? load(this.dir + R.mask) : null,
+        R?.cut ? load(this.dir + R.cut) : null]);
+      if (img) this.banks[look] = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
+      if (mask && (!R.cut || cut)) this.rigs[look] = this.#buildRig(look, R, mask, cut);
     }
+    if (Object.keys(this.rigs).length) this.#useCanvas();
   }
 
-  #drawBank(b, i) {
-    if (b.drawn === i) return;
-    const [px, py, pw, ph] = b.meta.patch;
-    const [tw, th] = b.meta.tile || [pw, ph]; // close-up sheets are stored at half size
-    const c = b.meta.cols;
-    b.ctx.clearRect(px, py, pw, ph);
-    b.ctx.drawImage(b.img, (i % c) * tw, Math.floor(i / c) * th, tw, th, px, py, pw, ph);
-    b.drawn = i;
+  // pre-cut the layers once (load time): the body without its head, and one
+  // masked head per mouth/eye frame, cropped to the head's box
+  #buildRig(look, R, mask, cut) {
+    const base = this.imgs[`${look}:closed`];
+    const W = base.naturalWidth, H = base.naturalHeight;
+    const [bx, by, bw, bh] = R.box;
+    const cv = (w, hh) => { const c = document.createElement('canvas'); c.width = w; c.height = hh; return c; };
+    const body = cv(W, H);
+    const b = body.getContext('2d');
+    b.drawImage(base, 0, 0);
+    if (cut) { b.globalCompositeOperation = 'destination-out'; b.drawImage(cut, bx, by); }
+    const heads = {};
+    const made = new Map();
+    for (const k of SHAPES) {
+      const im = this.imgs[`${look}:${k}`];
+      let c = made.get(im);
+      if (!c) {
+        c = cv(bw, bh);
+        const x = c.getContext('2d');
+        x.drawImage(im, -bx, -by);
+        x.globalCompositeOperation = 'destination-in';
+        x.drawImage(mask, 0, 0);
+        made.set(im, c);
+      }
+      heads[k] = c;
+    }
+    const scratch = cv(bw, bh);
+    return { body, heads, scratch, sctx: scratch.getContext('2d'), meta: R, W, H, opaque: !R.cut };
+  }
+
+  // one canvas replaces the <img> stack. Alpha seats get a few px of headroom
+  // above the sprite so a nod never clips the hair.
+  #useCanvas() {
+    const r = Object.values(this.rigs)[0];
+    const pad = r.opaque ? 0 : 8;
+    this.pad = pad;
+    this.cv = h('canvas.puppet__img.puppet__rig', { width: r.W, height: r.H + pad, 'aria-hidden': 'true' });
+    if (pad) Object.assign(this.cv.style, { top: (-pad / r.H) * 100 + '%', height: ((r.H + pad) / r.H) * 100 + '%', inset: 'auto 0 0 0' });
+    this.ctx = this.cv.getContext('2d');
+    this.seat.append(this.cv);
+    this.rigSince = performance.now();
+    this.drawnKey = null;
   }
 
   // play the bank like the video it came from: straight through (ping-pong at the ends) while
@@ -260,11 +314,27 @@ export class Puppet {
     b.cur = Math.max(0, Math.min(fr.length - 1, n));
   }
 
+  // listening: no talking, but not frozen either. A slow walk through the
+  // closed-mouth frames (small smiles, the head drifting with them).
+  #idleBank(b, now) {
+    if (now < b.idleNext) return;
+    b.idleNext = now + 110;
+    const fr = b.meta.frames;
+    for (let s = 1; s < 30; s++) {
+      let n = b.cur + b.dir * s;
+      if (n < 0 || n >= fr.length) { b.dir = -b.dir; n = b.cur + b.dir; }
+      n = Math.max(0, Math.min(fr.length - 1, n));
+      if (fr[n][1] < 0.2) { b.cur = n; return; }
+    }
+  }
+
   get hasFront() { return !!this.src?.front; }
 
   #show(look, shape) {
     const key = `${look}:${shape}`;
     if (key === this.key) return;
+    if (this.rigOn && this.rigs[look]) { this.key = key; this.shape = shape; return; } // drawn by #render
+    if (this.rigOn) { this.rigOn = false; this.cv.classList.add('is-off'); }
     const next = this.imgs[key];
     const prev = this.imgs[this.key];
     if (next && next !== prev) {
@@ -305,14 +375,17 @@ export class Puppet {
       target = clamp(this.env, 0, 1) * 0.95;
     }
 
-    // 2. frame bank over a closed base, when this look has one and someone is talking
+    // 2. frame bank: the mouth as it comes in the video frames. Once the rig is
+    // up the bank always draws (speaking: play; pause: wind down and hold;
+    // listening: slow idle walk), so nothing pops between bank and stills.
     const bank = this.banks[look];
-    const useBank = bank && speaking && (pc || level > 0 || this.env > 0.02);
-    for (const b of Object.values(this.banks)) if (b !== bank || !useBank) b.cv.classList.add('is-off');
-    if (useBank) {
-      this.#stepBank(bank, now, target, ROUND[want] || 0, want === 'closed');
-      this.#drawBank(bank, bank.cur);
-      bank.cv.classList.remove('is-off');
+    const rig = this.cv && this.rigs[look];
+    const talking = speaking && (pc || level > 0 || this.env > 0.02);
+    let patch = -1;
+    if (bank && rig) {
+      if (talking) this.#stepBank(bank, now, target, ROUND[want] || 0, want === 'closed');
+      else this.#idleBank(bank, now);
+      patch = bank.cur;
       want = 'closed'; // the base under the patch (eyes can still blink)
     }
 
@@ -333,6 +406,85 @@ export class Puppet {
       if (want !== this.shape) this.holdUntil = now + (pc ? MIN_HOLD : 60 + Math.random() * 30);
       this.#show(look, want);
     }
+    if (rig) this.#render(now, dt, look, rig, bank, patch, speaking, pc ? target : clamp(this.env, 0, 1));
+  }
+
+  // ---- the rig, drawn every frame
+  #render(now, dt, look, rig, bank, patch, speaking, open) {
+    if (this.seat.hidden) return;
+    if (!this.rigOn) { // hand over from the <img> stack
+      this.rigOn = true;
+      for (const im of Object.values(this.imgs)) im.classList.add('is-off');
+      this.cv.classList.remove('is-off');
+    }
+    const t = now / 1000;
+    const ease = (tau) => 1 - Math.exp(-dt / tau);
+    this.amp += ((speaking ? 1 : 0) - this.amp) * ease(600);
+    const live = this.reduced ? 0 : Math.min(1, (now - this.rigSince) / 600); // motion fades in after the swap
+    // target head pose
+    let x = 0, y = 0, r = 0;
+    const R = rig.meta;
+    const big = rig.opaque ? 1.6 : 1; // close-ups: the art's pixels are bigger
+    const nz = (f, k) => Math.sin(t * f + this.seed * k) * 0.6 + Math.sin(t * f * 2.31 + this.seed * k * 1.7) * 0.4;
+    if (bank?.meta.head && patch >= 0) {
+      // the video's own nods and tilts for the frame on screen (idle walk: calmer)
+      const hm = bank.meta.head[patch] || [0, 0, 0];
+      const k = 0.35 + 0.65 * this.amp;
+      x = hm[0] * k; y = hm[1] * k; r = hm[2] * k; // already in this pose's px
+      x += nz(0.7, 1) * 0.3 * big; y += nz(0.5, 2) * 0.25 * big;
+    } else {
+      // profile: eased noise. Speaking: livelier, with a little lift on open vowels.
+      const a = 0.35 + 0.65 * this.amp;
+      const fwd = R.faces || 1;
+      r = (nz(0.9, 3) * 0.55 * a + nz(0.33, 4) * 0.35) * fwd;
+      y = nz(0.8, 5) * 0.7 * a - open * 0.6 * this.amp;
+      x = nz(0.45, 6) * 0.6 * a * fwd;
+      // listening: an occasional small nod towards the speaker
+      if (!speaking && now > this.nextNod) { this.nodAt = now; this.nodUntil = now + 700; this.nextNod = now + 3000 + Math.random() * 5000; }
+      if (now < this.nodUntil) { const p = (now - this.nodAt) / 700; const s = Math.sin(p * Math.PI); r += s * 1.1 * fwd; y += s * 1.0; }
+    }
+    // ease towards it (no jumps when the bank skips or the look changes)
+    const hd = this.head;
+    const e = ease(70);
+    hd.x += (x * live - hd.x) * e; hd.y += (y * live - hd.y) * e; hd.r += (r * live - hd.r) * e;
+    const breath = live * Math.sin(t * Math.PI * 2 * 0.25 + this.phase); // -1..1
+
+    // compose the head: frame through the mask, then the mouth patch on top
+    const [bx, by, bw, bh] = R.box;
+    const sc = rig.sctx;
+    sc.globalCompositeOperation = 'copy';
+    sc.drawImage(rig.heads[this.shape] || rig.heads.closed, 0, 0);
+    if (bank && patch >= 0) {
+      const m = bank.meta;
+      const [px, py, pw, ph] = m.patch;
+      const [tw, th] = m.tile || [pw, ph];
+      const i = m.frames[patch] ? patch : 0;
+      sc.globalCompositeOperation = 'source-atop'; // the patch only where the head is
+      sc.drawImage(bank.img, (i % m.cols) * tw, Math.floor(i / m.cols) * th, tw, th, px - bx, py - by, pw, ph);
+    }
+    sc.globalCompositeOperation = 'source-over';
+
+    const c = this.ctx;
+    const pad = this.pad;
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.clearRect(0, 0, this.cv.width, this.cv.height);
+    if (rig.opaque) {
+      // close-up: the frame stays put; the head (and a soft margin of room behind it) moves
+      c.drawImage(rig.body, 0, 0);
+      hd.yb = breath * 1.5;
+    } else {
+      // breathing: stretch about the desk line, so hands stay put and the head rises ~1 px
+      const anchor = rig.H * 0.86;
+      const k = (breath * 1.0) / anchor;
+      c.setTransform(1, 0, 0, 1 + k, 0, pad - anchor * k);
+      c.drawImage(rig.body, 0, 0);
+      hd.yb = 0;
+    }
+    const [pvx, pvy] = R.pivot;
+    c.translate(pvx + hd.x, pvy + hd.y + hd.yb);
+    c.rotate((hd.r * Math.PI) / 180);
+    c.drawImage(rig.scratch, bx - pvx, by - pvy);
+    c.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   // loudness → shape (the fallback when a clip has no cue timeline)
