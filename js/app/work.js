@@ -12,7 +12,8 @@ export async function loadWork(persona) {
       if (r.ok) {
         const d = await r.json();
         const list = Array.isArray(d) ? d : d.items || d.work || [];
-        if (list.length) return { list, base: url };
+        // site work.json paths are site-relative; a custom bundle's are relative to its own file
+        if (list.length) return { list, base: persona.isCustom ? url : persona.base };
       }
     } catch { /* fall through */ }
   }
@@ -64,7 +65,9 @@ export async function openWork(wm, persona, { focusId } = {}) {
       frameWrap.append(load);
       parts.push(h('div.work__live', h('p.small', 'Live embed. If it stays blank, the site refuses framing: use Open ↗.'), frameWrap));
     }
-    if (it.explainer) parts.push(h('div.work__explainer', ...String(it.explainer).split(/\n{2,}/).map((p) => h('p', p))));
+    const explainerVideo = /\.(mp4|webm|mov)(\?|$)/i.test(String(it.explainer || '')) ? media(it.explainer, base) : null;
+    if (explainerVideo) parts.push(h('div.work__explainer', h('p.small', 'The 30-second explainer'), h('video.work__video', { src: explainerVideo, controls: true, playsinline: true, preload: 'none' })));
+    else if (it.explainer) parts.push(h('div.work__explainer', ...String(it.explainer).split(/\n{2,}/).map((p) => h('p', p))));
     if (links.length) parts.push(h('div.work__links', links.map((l) => h('a.btn', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗'))));
     detail.replaceChildren(...parts.filter(Boolean));
     detail.scrollTop = 0;

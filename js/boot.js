@@ -16,6 +16,8 @@ const EPISODE_URL = 'data/episode.json';
 const IMAC_SRC = 'img/imac/imac-front.webp';
 // Fallback glass rect inside imac-front.webp (normalized). Overridden by img/manifest.json → imac.screen.
 let IMAC_SCREEN = { x: 0.362, y: 0.152, w: 0.44, h: 0.568 };
+// Glass corners TL,TR,BR,BL (normalized to the image): the iMac sits at 3/4, so the glass is a quad.
+let IMAC_QUAD = [[0.3559, 0.1478], [0.7558, 0.1642], [0.8019, 0.6642], [0.4049, 0.7254]];
 
 let appModule = null;
 const loadApp = () => (appModule ||= import('./app/main.js'));
@@ -35,6 +37,8 @@ async function readManifest() {
     const s = m?.imac?.screen;
     if (Array.isArray(s) && s.length === 4) IMAC_SCREEN = { x: s[0], y: s[1], w: s[2], h: s[3] };
     else if (s && typeof s.x === 'number') IMAC_SCREEN = s;
+    const q = m?.imac?.screenQuad;
+    if (Array.isArray(q) && q.length === 4) IMAC_QUAD = q;
   } catch { /* no manifest yet */ }
 }
 
@@ -57,9 +61,20 @@ async function handoff(info = {}) {
   window.scrollTo(0, 0);
   appEl.hidden = false;
 
+  // the CRT boot runs inside #app: lift the zoom overlay off it once the tube has painted
+  // (mountApp only resolves after boot + dial-up, far too late to keep the overlay up)
+  const lift = () => {
+    const layer = document.querySelector('.boot-zoom');
+    if (!layer) return;
+    layer.style.transition = 'opacity .35s ease-out';
+    layer.style.opacity = '0';
+    setTimeout(() => layer.remove(), 420);
+  };
   try {
     const { mountApp } = await modP;
-    await mountApp(appEl, { episodeUrl: EPISODE_URL });
+    const mounted = mountApp(appEl, { episodeUrl: EPISODE_URL });
+    await nextFrame(); await wait(120); lift();
+    await mounted;
   } catch (err) {
     console.error('[boot] app failed to mount', err);
     appEl.innerHTML = '<div class="boot-fail"><p>The disc skipped. <a href="./?skip">Try again</a></p></div>';
@@ -120,6 +135,10 @@ async function zoomIntoScreen(screenRect, imageRect) {
     left: IMAC_SCREEN.x * 100 + '%', top: IMAC_SCREEN.y * 100 + '%',
     width: IMAC_SCREEN.w * 100 + '%', height: IMAC_SCREEN.h * 100 + '%',
   });
+  // clip the dark glass to the perspective quad so it never spills over the bezel
+  const qx = IMAC_QUAD.map((c) => c[0]), qy = IMAC_QUAD.map((c) => c[1]);
+  const bx = Math.min(...qx), by = Math.min(...qy), bw = Math.max(...qx) - bx, bh = Math.max(...qy) - by;
+  glass.style.clipPath = 'polygon(' + IMAC_QUAD.map(([x, y]) => `${((x - bx) / bw * 100).toFixed(2)}% ${((y - by) / bh * 100).toFixed(2)}%`).join(', ') + ')';
   stage.append(glass);
   document.body.append(layer);
 
@@ -138,6 +157,9 @@ async function zoomIntoScreen(screenRect, imageRect) {
   const s = Math.max(innerWidth / gw, innerHeight / gh) * 1.02;
   const tx = innerWidth / 2 - (gx + gw / 2) * s;
   const ty = innerHeight / 2 - (gy + gh / 2) * s;
+  // as we dolly in, the glass squares up to fill the frame (no bezel corners at the end)
+  glass.style.transition = 'clip-path 1.15s cubic-bezier(.7,0,.25,1)';
+  glass.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
   const anim = layer.animate(
     [{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${tx}px, ${ty}px) scale(${s})` }],
     { duration: 1150, easing: 'cubic-bezier(.7,0,.25,1)', fill: 'forwards' },

@@ -773,9 +773,14 @@ export class Podcast {
       const over = this.sub.scrollHeight > this.sub.clientHeight + 2;
       if (over !== this.subOver) { this.subOver = over; this.sub.classList.toggle('is-scroll', over); }
       if (this.mode && over) {
+        // page by whole lines so the window never shows a half-cut line
         const d = this.durs[this.li] || 1;
-        this.sub.scrollTop = (this.sub.scrollHeight - this.sub.clientHeight) * clamp((this.t - 0.15 * d) / (0.75 * d), 0, 1);
-      }
+        const lh = parseFloat(getComputedStyle(this.sub).lineHeight) || 20;
+        const max = this.sub.scrollHeight - this.sub.clientHeight;
+        const top = Math.min(max, Math.round(max * clamp((this.t - 0.15 * d) / (0.75 * d), 0, 1) / lh) * lh);
+        if (Math.abs(this.sub.scrollTop - top) > 1) this.sub.scrollTop = top;
+        this.subMore = true; this.sub.classList.toggle('is-more', top < max - 1);
+      } else if (this.subMore !== false) { this.subMore = false; this.sub.classList.remove('is-more'); }
       // scrub
       const cur = this.dragFrac != null ? this.dragFrac * this.total : this.#nodeTime();
       const f = clamp(cur / (this.total || 1), 0, 1);

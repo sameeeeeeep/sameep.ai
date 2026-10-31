@@ -136,7 +136,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 pre.cmd {
   background: var(--crt-black, #050807); color: var(--crt-glow, #b8ffe9);
   font: 400 13px/1.5 var(--f-ui); padding: 12px; overflow-x: auto; margin: 10px 0 0;
-  border: 1.5px solid var(--line); white-space: pre;
+  border: 1.5px solid var(--line); white-space: pre-wrap; overflow-wrap: anywhere;
 }
 
 /* ---------- checklist ---------- */
@@ -194,6 +194,9 @@ footer a { color: inherit; }
   .step-num { font-size: 34px; }
   .step-head h2 { font-size: 20px; }
   .clips div { grid-template-columns: 1fr; }
+  .top a.home { display: inline-flex; align-items: center; min-height: 40px; }
+  select { min-height: 40px; }
+  footer a { display: inline-block; padding: 12px 0; }
 }
 
 /* grid children must be allowed to shrink below their <pre> content */

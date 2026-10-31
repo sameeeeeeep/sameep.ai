@@ -63,7 +63,7 @@ export function buildApps(ctx) {
         ta, h('div.wf__row', go), out,
         h('p.wf__fine', 'This whole site was built by talking into the real one. Reimagined here as 1999 software; not affiliated, just a fan.')));
     } },
-    { id: 'flowother', label: 'Flow (no, the other one)', icon: 'flowother', open: async () => {
+    { id: 'flowother', label: 'Flow (not that one)', icon: 'flowother', open: async () => {
       const r = await alert({ icon: 'img/ui/note.svg', title: 'Flow', message: 'This is Flow, a Switchboard wrapp Sameep named before he’d heard of Wispr Flow. Different Flow. Smaller Flow. Under review by a naming committee of one.', buttons: [{ label: 'Rename it' }, { label: 'Open the real one', primary: true }] });
       if (r === 1) ctx.open('wispr');
       else alert({ icon: 'img/ui/note.svg', title: 'Rename', message: 'Renaming “Flow” to “Flo”… The committee says that’s worse. Request denied.', buttons: [{ label: 'Fair', primary: true }] });
@@ -176,7 +176,7 @@ export function buildApps(ctx) {
       w.body.append(board, h('p.small', 'Multiplayer: 1 cursor (you). Drag to draw.'));
     } },
     { id: 'switchboard', label: 'Make your own', icon: 'switchboard', open: () => ctx.endCard(true) },
-    { id: 'wallpap', label: 'wallpap Control Panel', icon: 'wallpap', open() {
+    { id: 'wallpap', label: 'wallpap Controls', icon: 'wallpap', open() {
       const w = wm.win('wallpap', { title: 'wallpap Control Panel', width: 360 });
       const hour = new Date().getHours();
       const out = h('output.dot', String(hour).padStart(2, '0') + ':00');
