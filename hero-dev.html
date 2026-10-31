@@ -23,6 +23,14 @@
     const el = document.getElementById('hero');
     const t0 = performance.now();
     window.__done = null;
+    // dev: capture canvas frames at progress values (needs the local dev server's /__shot endpoint)
+    window.__shoot = async (list, frames = 30) => {
+      for (const [name, p] of list) {
+        const d = await window.__hero.shot(p, { frames });
+        await fetch('/__shot/' + name + '.jpg', { method: 'POST', body: d }).catch(() => {});
+      }
+      return list.length;
+    };
     mountHero(el, {
       onDone: (info) => { window.__done = info; document.getElementById('after').textContent = '[ onDone fired ]'; console.log('[hero] onDone', info); },
       onProgress: (p) => { window.__p = p; },

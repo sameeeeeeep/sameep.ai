@@ -59,7 +59,7 @@ export async function openWork(wm, persona, { focusId } = {}) {
     if (embed) {
       const frameWrap = h('div.work__embed');
       const load = h('button.btn', { type: 'button', onclick: () => {
-        frameWrap.replaceChildren(h('iframe', { src: embed, title: it.title + ' (live)', loading: 'lazy', allow: 'autoplay; fullscreen; clipboard-write', referrerpolicy: 'strict-origin-when-cross-origin' }));
+        frameWrap.replaceChildren(h('iframe', { sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox', src: embed, title: it.title + ' (live)', loading: 'lazy', allow: 'autoplay; fullscreen; clipboard-write', referrerpolicy: 'strict-origin-when-cross-origin' }));
       } }, 'Load the live version here');
       frameWrap.append(load);
       parts.push(h('div.work__live', h('p.small', 'Live embed. If it stays blank, the site refuses framing: use Open ↗.'), frameWrap));

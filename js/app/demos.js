@@ -94,7 +94,7 @@ export async function openDemo(demo, ctx) {
 
   if (type === 'iframe') {
     const frame = h('iframe.demo__frame', {
-      src: url, title, loading: 'lazy',
+      sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox', src: url, title, loading: 'lazy',
       allow: 'autoplay; fullscreen; clipboard-write',
       referrerpolicy: 'strict-origin-when-cross-origin',
     });

@@ -255,7 +255,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   const path = new THREE.CatmullRomCurve3([
     [0, 0, 0], [0.7, 0.18, -0.35], [1.55, 0.7, -1.0], [1.6, 1.55, -1.7], [0.6, 1.85, -1.6], [0.1, 1.2, -1.0],
     [0.55, 0.55, -0.6], [-0.6, 0.35, -1.5], [-1.55, 0.85, -1.2], [-1.2, 0.45, -0.1], [-0.35, 0.08, 0.25], [0, 0, 0],
-  ].map((p) => new THREE.Vector3(...p)), false, 'centripetal', 0.5);
+  ].map((p) => new THREE.Vector3(p[0] * 0.8, p[1] * 0.75, p[2] * 0.7)), false, 'centripetal', 0.5);
   const qPath = (f, out) => {
     const u = clamp(f, 0.0005, 0.9995);
     path.getTangentAt(u, tA).normalize();
@@ -307,8 +307,8 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     mkKey(G('envelope', 1), v(S.x, S.y, S.z), d(-0.04, 0.1, 1), 1.35, 1.75);
     mkKey(G('origami', 0.55), v(S.x, S.y + 0.03, S.z), d(0.1, 0.14, 1), 1.25, 1.7);
     mkKey(G('origami', 1), v(S.x, S.y + 0.05, S.z), d(0.45, 0.3, 1), 1.15, 1.25);
-    mkKey(G('flight', 0.16), v(S.x + 0.05, S.y + 0.6, S.z - 0.85), d(0.08, 0.28, 1), portrait ? 3.4 : 4.3, 2.9);
-    mkKey(G('flight', 0.88), v(S.x - 0.05, S.y + 0.45, S.z - 0.6), d(0.0, 0.25, 1), portrait ? 3.2 : 4.1, 2.7);
+    mkKey(G('flight', 0.16), v(S.x + 0.05, S.y + 0.5, S.z - 0.6), d(0.08, 0.22, 1), portrait ? 2.8 : 3.4, 2.3);
+    mkKey(G('flight', 0.88), v(S.x - 0.05, S.y + 0.4, S.z - 0.45), d(0.0, 0.2, 1), portrait ? 2.7 : 3.3, 2.2);
     mkKey(G('crumple', 0.35), v(S.x, S.y, S.z), d(0.05, 0.18, 1), 1.0, 1.0);
     mkKey(G('crumple', 1), v(S.x, S.y, S.z), d(-0.12, 0.22, 1), 0.75, 0.75);
     mkKey(G('shred', 0.28), v(S.x, S.y, S.z), d(0, 0.1, 1), 1.3, 1.75);

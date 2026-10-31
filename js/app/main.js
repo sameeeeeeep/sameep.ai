@@ -34,6 +34,10 @@ export async function mountApp(root, { episodeUrl } = {}) {
   }
   const { persona: P, episode } = await dataP;
   persona = P;
+  if (P.isCustom) {
+    // Third-party bundles run on this domain, so say plainly whose content it is.
+    document.body.append(h('div.thirdparty', { role: 'note', style: 'position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:99999;padding:6px 12px;border-radius:999px;background:#1a1a1a;color:#f3eee2;font:500 12px/1.4 "Spline Sans Mono",monospace' }, `You're viewing ${P.name || 'someone'}'s bundle. It isn't made or checked by Sameep.`));
+  }
   document.title = `${persona.showName} — ${persona.name}`;
 
   // ------------------------------------------------------------ desktop
@@ -78,7 +82,7 @@ export async function mountApp(root, { episodeUrl } = {}) {
 function buildDesktop(screen, persona) {
   const hour = new Date().getHours();
   const wallSrc = (hr) => safeUrl(fillUrl(persona.wallpaper?.url || 'https://wallpap.live/scenes/koi.html?hour={hour}&weather=clear&muted=1', '').replace(/hour=\d+/, 'hour=' + hr));
-  const wall = h('iframe.desk__wall', { title: persona.wallpaper?.title || 'Live wallpaper', tabindex: '-1', 'aria-hidden': 'true', loading: 'lazy', allow: 'autoplay' });
+  const wall = h('iframe.desk__wall', { sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox', title: persona.wallpaper?.title || 'Live wallpaper', tabindex: '-1', 'aria-hidden': 'true', loading: 'lazy', allow: 'autoplay' });
   // load the live wallpaper once the desktop is up (it's heavy; the gradient carries until then)
   setTimeout(() => { wall.src = wallSrc(hour); }, 600);
   wall.addEventListener('load', () => wall.classList.add('is-loaded'));

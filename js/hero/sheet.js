@@ -210,6 +210,8 @@ export class Sheet {
   }
 
   setFold(angles) {
+    if (this.mode === 'fold' && this._last && angles.every((a, i) => a === this._last[i])) return;
+    this._last = (this._last || []); for (let i = 0; i < angles.length; i++) this._last[i] = angles[i];
     this._fold(angles, this.out);
     if (this.mode !== 'fold') { this.ao.fill(1); this.geo.attributes.aAO.needsUpdate = true; }
     this.mode = 'fold';
@@ -218,6 +220,8 @@ export class Sheet {
 
   // c: 0 = folded plane, 1 = ball
   setCrumple(c) {
+    if (this.mode === 'crumple' && this._lc === c) return;
+    this._lc = c;
     const n = this.n, o = this.out, F = this.folded, B = this.ball, K = this.crinkle, L = this.lag, A = this.ao;
     for (let v = 0; v < n; v++) {
       const t = smooth(clamp(c * 1.45 - L[v]));
@@ -235,6 +239,8 @@ export class Sheet {
 
   // u: 0 = ball, 1 = flat (with creases)
   setUncrumple(u) {
+    if (this.mode === 'uncrumple' && this._lu === u) return;
+    this._lu = u;
     const n = this.n, o = this.out, F = this.flat, B = this.ball, K = this.crinkle, L = this.lag, A = this.ao;
     for (let v = 0; v < n; v++) {
       const t = smooth(clamp(u * 1.45 - (0.42 - L[v])));
