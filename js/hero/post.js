@@ -102,7 +102,7 @@ export class Post {
   constructor(renderer, { mobile }) {
     this.r = renderer;
     this.mobile = mobile;
-    this.levels = mobile ? 4 : 5;
+    this.levels = mobile ? 3 : 4;
     this.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
@@ -112,7 +112,7 @@ export class Post {
     this.scene.add(this.quad);
 
     const rtOpts = { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
-    this.main = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: mobile ? 2 : 4, depthBuffer: true });
+    this.main = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType, samples: 2, depthBuffer: true });
     this.mips = [];
     for (let i = 0; i < this.levels; i++) this.mips.push(new THREE.WebGLRenderTarget(4, 4, rtOpts));
     this.soft = new THREE.WebGLRenderTarget(4, 4, rtOpts);
@@ -142,7 +142,7 @@ export class Post {
   setSize(w, h, dpr) {
     const W = Math.max(2, Math.round(w * dpr)), H = Math.max(2, Math.round(h * dpr));
     this.main.setSize(W, H);
-    let mw = W >> 1, mh = H >> 1;
+    let mw = W >> 2, mh = H >> 2;   // bloom starts at quarter res
     for (const m of this.mips) { m.setSize(Math.max(2, mw), Math.max(2, mh)); mw >>= 1; mh >>= 1; }
     this.soft.setSize(Math.max(2, W >> 2), Math.max(2, H >> 2));
     this.soft2.setSize(Math.max(2, W >> 3), Math.max(2, H >> 3));

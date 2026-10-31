@@ -123,7 +123,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas: dom.canvas, antialias: false, alpha: false, powerPreference: 'high-performance', stencil: false });
   renderer.setClearColor(0x0f0d0b, 1);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   const post = new Post(renderer, { mobile });
 
@@ -138,7 +138,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   key.position.set(-0.6, 6.8, 4.6);
   key.target.position.set(1.2, 0.6, -0.5);
   key.castShadow = true;
-  key.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
+  key.shadow.mapSize.set(mobile ? 1024 : 1536, mobile ? 1024 : 1536);
   key.shadow.camera.near = 2; key.shadow.camera.far = 16;
   key.shadow.bias = -0.0012; key.shadow.normalBias = 0.0; key.shadow.radius = 3;
   const rim = new THREE.DirectionalLight(0xa9c2ff, 0.9);
@@ -291,7 +291,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   // ------------------------------------------------------------------ sizing
   let dpr = 1;
   // adaptive quality: 2 = full, 1 = lighter, 0 = low-end (pixel budget, MSAA, particle rate)
-  const QB = [0.5, 0.72, 1], QP = [0.35, 0.6, 1], QS = [0, 2, mobile ? 2 : 4];
+  const QB = [0.55, 0.75, 1], QP = [0.35, 0.6, 1], QS = [0, 0, 2];
   let quality = 2, qAcc = 0, qN = 0, qWorst = 0;
   function setQuality(q) {
     quality = q;
@@ -305,7 +305,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     aspect = vw / vh;
     const cap = mobile ? 1.5 : 2;
     dpr = Math.min(window.devicePixelRatio || 1, cap);
-    const budget = (mobile ? 1.6e6 : 2.8e6) * QB[quality];
+    const budget = (mobile ? 1.4e6 : 2.0e6) * QB[quality];
     if (vw * vh * dpr * dpr > budget) dpr = Math.max(1, Math.sqrt(budget / (vw * vh)));
     renderer.setPixelRatio(dpr);
     renderer.setSize(vw, vh, false);
@@ -734,6 +734,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     }
     // ---- lights / lens per beat
     pile.setVis(1 - smooth(seg(p, G('cd', 0.55), G('insert', 0.4))));
+    pile.mesh.castShadow = p < G('origami', 0.2);   // background after the envelope: skip it in the shadow pass
     const dim = easeInOut(seg(ins, 0.25, 0.85));
     key.intensity = 2.1 * (1 - 0.55 * seg(b, 0.25, 0.5) * (1 - seg(d, 0.2, 0.8))) * (1 - dim * 0.97);
     hemi.intensity = 0.3 * (1 - dim * 0.95);
@@ -801,6 +802,24 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   }
 
   const yieldFrame = () => new Promise((r) => setTimeout(r, 0));
+  // compile every program (incl. shadow-depth variants) and upload every texture up front,
+  // so no beat pays a first-use hitch mid-scroll
+  function warmup() {
+    const hidden = [];
+    scene.traverse((o) => { if (!o.visible) { hidden.push(o); o.visible = true; } });
+    const prevFire = fireLight.intensity, prevScreen = screenLight.intensity;
+    try {
+      renderer.compile(scene, camera);
+      scene.traverse((o) => {
+        const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+        for (const m of ms) for (const k in m) { const v = m[k]; if (v && v.isTexture) renderer.initTexture(v); }
+        for (const m of ms) if (m.uniforms) for (const k in m.uniforms) { const v = m.uniforms[k].value; if (v && v.isTexture) renderer.initTexture(v); }
+      });
+      post.render(scene, camera);           // also builds shadow-depth programs
+    } catch (err) { if (DEBUG) console.warn(err); }
+    hidden.forEach((o) => { o.visible = false; });
+    fireLight.intensity = prevFire; screenLight.intensity = prevScreen;
+  }
   async function buildRest() {
     // ------------------------------------------------------------------ deferred build
     const W = mobile ? 900 : 1400;
@@ -877,7 +896,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     mark('rest');
     full = true;
     resize();
-    try { renderer.compile(scene, camera); } catch { /* ignore */ }
+    warmup();
     mark('compiled');
     if (reduced) { rmKey = -1; }
     dirty = true;
