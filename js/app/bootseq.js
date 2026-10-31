@@ -176,7 +176,7 @@ export async function runBoot({ crt, root, persona, reduced }) {
   const steps = persona.installSteps || [
     'Installing the host…',
     `Installing ${persona.shortName || 'Sameep'} (AI)…`,
-    'Teaching subtitles to clean up after themselves…',
+    'Teaching the host to wait for your pick…',
     'Removing CV.pdf…',
     'Converting experience to conversation…',
     'Warming up the modem…',

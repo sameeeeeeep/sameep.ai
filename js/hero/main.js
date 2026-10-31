@@ -34,6 +34,10 @@ const TOTAL = BEATS.reduce((a, b) => a + b.len, 0);
 }
 const BI = Object.fromEntries(BEATS.map((b, i) => [b.id, i]));
 const G = (id, local) => { const b = BEATS[BI[id]]; return b.a + (b.b - b.a) * local; };
+// Scroll grooves: resting poses the page snaps to, so a scroll never stops mid-fold.
+// One gesture moves one groove (scroll-snap-stop: always).
+const GROOVES = () => [0, G('envelope', 0.57), G('envelope', 0.75), G('envelope', 1), G('origami', 1) - 1e-4, G('flight', 0.5),
+  G('crumple', 0.9), G('shred', 1) - 1e-4, G('burn', 0.3), G('burn', 0.62), G('cd', 0.95), 1];
 
 const S = new THREE.Vector3(2.5, 1.15, 0.7);       // the stage, where the sheet performs
 const PILE_C = new THREE.Vector3(-0.35, 0, -2.0);
@@ -119,6 +123,80 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   const mark = (s) => { if (DEBUG) console.log('[hero]', s, Math.round(performance.now() - T0)); };
   const dom = buildDOM(rootEl, reduced);
   const audio = new HeroAudio();
+
+  // ------------------------------------------------------------------ grooves
+  // Each wheel flick, swipe or arrow key glides to the next resting pose; trackpad inertia is
+  // swallowed, and a scrollbar drag that stops mid-fold settles to the nearest pose.
+  const groovesOn = !/[?&](debug|timer)\b/.test(location.search);
+  let gTop = [], gAnim = 0, gBusy = false, gQuiet = 0, gAcc = 0, gIdle = 0, gLive = groovesOn;
+  const layoutGrooves = () => {
+    const base = dom.track.getBoundingClientRect().top + scrollY;
+    const total = dom.track.offsetHeight - dom.stage.clientHeight;
+    gTop = GROOVES().map((p) => Math.round(base + p * total));
+  };
+  layoutGrooves();
+  const glide = (to) => {
+    cancelAnimationFrame(gAnim);
+    const from = scrollY, d = to - from;
+    if (Math.abs(d) < 2) return;
+    const dur = reduced ? 1 : Math.min(1300, 650 + Math.abs(d) * 0.18);
+    const t0 = performance.now(); gBusy = true;
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur);
+      scrollTo(0, from + d * (k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2));
+      if (k < 1) gAnim = requestAnimationFrame(step); else gBusy = false;
+    };
+    gAnim = requestAnimationFrame(step);
+  };
+  const go = (dir) => {
+    const y = scrollY;
+    const to = dir > 0 ? gTop.find((t) => t > y + 4) : [...gTop].reverse().find((t) => t < y - 4);
+    if (to !== undefined) glide(to);
+    else if (dir > 0 && y >= gTop[gTop.length - 1] - 4) return false;   // past the last pose: let the page scroll on
+    return true;
+  };
+  const inHero = () => gLive && scrollY <= gTop[gTop.length - 1] + 4;
+  const onWheel = (e) => {
+    if (!inHero() || e.ctrlKey) return;
+    if (e.deltaY > 0 && scrollY >= gTop[gTop.length - 1] - 4) return;
+    e.preventDefault();
+    const now = performance.now();
+    const fresh = now - gQuiet > 220; gQuiet = now;
+    if (gBusy || !fresh && gAcc === Infinity) return;            // still gliding, or the tail of the same flick
+    gAcc = (fresh ? 0 : gAcc) + e.deltaY * (e.deltaMode === 1 ? 32 : 1);
+    if (Math.abs(gAcc) > 24) { go(Math.sign(gAcc)); gAcc = Infinity; }
+  };
+  let ty = null;
+  const onTouchStart = (e) => { ty = e.touches[0].clientY; };
+  const onTouchMove = (e) => { if (inHero() && ty !== null) e.preventDefault(); };
+  const onTouchEnd = (e) => {
+    if (ty === null || !inHero()) return;
+    const dy = ty - (e.changedTouches[0]?.clientY ?? ty); ty = null;
+    if (Math.abs(dy) > 30 && !gBusy) go(Math.sign(dy));
+  };
+  const onKey = (e) => {
+    if (!inHero() || e.target.closest?.('input, textarea, [contenteditable], button')) return;
+    const dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
+    if (dir && go(dir)) e.preventDefault();
+  };
+  const onSettle = () => {   // scrollbar drags and anything else: settle to the nearest pose
+    clearTimeout(gIdle);
+    if (gBusy || !inHero()) return;
+    gIdle = setTimeout(() => {
+      if (gBusy || !inHero()) return;
+      const y = scrollY, near = gTop.reduce((a, t) => (Math.abs(t - y) < Math.abs(a - y) ? t : a), gTop[0]);
+      if (Math.abs(near - y) > 4) glide(near);
+    }, 180);
+  };
+  const snap = (on) => {
+    gLive = on && groovesOn;
+    const m = on && groovesOn ? addEventListener : removeEventListener;
+    m('wheel', onWheel, { passive: false }); m('touchstart', onTouchStart, { passive: true });
+    m('touchmove', onTouchMove, { passive: false }); m('touchend', onTouchEnd, { passive: true });
+    m('keydown', onKey); m('scroll', onSettle, { passive: true });
+    if (!on) cancelAnimationFrame(gAnim);
+  };
+  snap(true);
 
   // ------------------------------------------------------------------ renderer
   const renderer = new THREE.WebGLRenderer({ canvas: dom.canvas, antialias: false, alpha: false, powerPreference: 'high-performance', stencil: false });
@@ -810,6 +888,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
         left: r.left + (ia.x * 0.5 + 0.5) * r.width, top: r.top + (-ia.y * 0.5 + 0.5) * r.height,
         width: (ib.x - ia.x) * 0.5 * r.width, height: (ia.y - ib.y) * 0.5 * r.height,
       };
+      snap(false);
       try { onDone?.({ screenRect: { ...screenRect }, imageRect, glass: imac.glassBox }); } catch (err) { console.error(err); }
     }
   }
@@ -995,7 +1074,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     scene.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; ms.forEach((m) => { for (const k in m) if (m[k]?.isTexture) m[k].needsUpdate = true; m.needsUpdate = true; }); });
     resize(); running = document.visibilityState !== 'hidden' || TIMER;
   }, false);
-  const ro = new ResizeObserver(() => resize());
+  const ro = new ResizeObserver(() => { resize(); layoutGrooves(); });
   ro.observe(dom.stage);
   const io = new IntersectionObserver((ents) => { visible = ents[0].isIntersecting; }, { threshold: 0 });
   io.observe(dom.track);
@@ -1052,6 +1131,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       cancelAnimationFrame(raf); clearTimeout(raf); ro.disconnect(); io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
       removeEventListener('scroll', readScroll);
+      snap(false);
       scene.traverse((o) => {
         o.geometry?.dispose?.();
         const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
