@@ -193,7 +193,15 @@
     "closed",
     "mid",
     "open",
-    "blink"
+    "wide",
+    "oo",
+    "blink",
+    "front-closed",
+    "front-mid",
+    "front-open",
+    "front-wide",
+    "front-oo",
+    "front-blink"
    ],
    "box": [
     0.0,
@@ -217,8 +225,16 @@
     "cu-closed",
     "cu-mid",
     "cu-open",
-    "cu-blink"
-   ]
+    "cu-blink",
+    "cu-front-closed",
+    "cu-front-mid",
+    "cu-front-open",
+    "cu-front-wide",
+    "cu-front-oo",
+    "cu-front-blink"
+   ],
+   "_looks": "side = facing the other seat (closed..blink); front-* = same seat, looking into the camera. All 12 frames share box/canvas; only head (front) or mouth/eyes differ. Close-ups use cu-front-* (cu-* side set kept as fallback).",
+   "mouthShapes": "closed < mid < open < wide by loudness; oo = rounded vowel variant; blink = eyes shut, mouth closed"
   },
   "sameep": {
    "dir": "img/sprites/sameep",
@@ -226,7 +242,15 @@
     "closed",
     "mid",
     "open",
-    "blink"
+    "wide",
+    "oo",
+    "blink",
+    "front-closed",
+    "front-mid",
+    "front-open",
+    "front-wide",
+    "front-oo",
+    "front-blink"
    ],
    "box": [
     0.4384,
@@ -250,8 +274,16 @@
     "cu-closed",
     "cu-mid",
     "cu-open",
-    "cu-blink"
-   ]
+    "cu-blink",
+    "cu-front-closed",
+    "cu-front-mid",
+    "cu-front-open",
+    "cu-front-wide",
+    "cu-front-oo",
+    "cu-front-blink"
+   ],
+   "_looks": "side = facing the other seat (closed..blink); front-* = same seat, looking into the camera. All 12 frames share box/canvas; only head (front) or mouth/eyes differ. Close-ups use cu-front-* (cu-* side set kept as fallback).",
+   "mouthShapes": "closed < mid < open < wide by loudness; oo = rounded vowel variant; blink = eyes shut, mouth closed"
   }
  },
  "characters": {

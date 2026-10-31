@@ -4,7 +4,7 @@
 // camera crops that canvas for medium shots (manifest.studio.medium boxes);
 // close-ups swap to full-frame cu-* frames; inserts use the hands-and-CD plate
 // with a live HTML item card. Hard cuts only.
-import { h, safeUrl, wait } from './util.js';
+import { h, safeUrl, wait, words } from './util.js';
 
 const loadOK = (src) => new Promise((r) => { if (!src) return r(null); const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
 
@@ -12,6 +12,27 @@ let manifestP = null;
 export function loadManifest(base) {
   manifestP ||= fetch(safeUrl('img/manifest.json', base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   return manifestP;
+}
+// the manifest the Studio already asked for (puppets read their frame lists from it)
+export const manifestReady = () => manifestP || Promise.resolve({});
+
+// Who looks where on a line. The speaker turns to camera when talking to the
+// viewer; the listener always looks across at the speaker. line.look
+// ('front' | 'side') in episode.json wins when present.
+const TO_VIEWER = /\b(listeners?|menu|where to next|or shall we|pick one|click|chips?|out loud|third guest|new tab|your host|off the cv|you cannot see me|my favourite segment|tonight|our show|good night|my darlings|thank you to)\b|^(more|another) [^?]{1,24}\?/i;
+const TO_GUEST = /\?|\b(you|your|you're|yourself|tell me|spill|explain|go on)\b/i;
+const QUICK_REPLY = /^(yeah|yes|exactly|ha|haha|no|yours|fair|okay|ok|right|true)\b/i;
+export function decideLook(seat, line) {
+  if (line && (line.look === 'front' || line.look === 'side')) return line.look;
+  const t = String((typeof line === 'string' ? line : line?.text) || '').trim();
+  if (seat === 'guest') return t && words(t) <= 14 && QUICK_REPLY.test(t) && !/new tab/i.test(t) ? 'side' : 'front';
+  if (seat === 'host') {
+    if (!t) return 'side';
+    if (TO_VIEWER.test(t)) return 'front';
+    if (TO_GUEST.test(t)) return 'side';
+    return words(t) <= 16 ? 'front' : 'side'; // a short aside to camera
+  }
+  return 'side';
 }
 
 const box = (b) => (Array.isArray(b) && b.length === 4 ? { left: b[0], top: b[1], w: b[2], h: b[3] } : null);
@@ -37,7 +58,7 @@ export class Studio {
     // z-order per manifest: bg → visitor → sprites → desk
     this.set.append(this.bg, this.spot, this.youSeat, this.seats.host, this.seats.guest, this.fg, this.youBubble, this.think);
     // close-up layers (full frame), one per speaker
-    this.cu = { host: h('div.cu', { hidden: true }), guest: h('div.cu', { hidden: true }) };
+    this.cu = { host: h('div.cu', { hidden: true, dataset: { look: 'front' } }), guest: h('div.cu', { hidden: true, dataset: { look: 'front' } }) };
     this.insertEl = h('div.insert', { hidden: true }, h('img', { alt: 'Hands holding a CD' }));
     this.cardEl = h('div.itemcard', { 'aria-live': 'polite' });
     this.cutEl = h('div.cutaway', { hidden: true }, h('img', { alt: '' }));
@@ -108,14 +129,29 @@ export class Studio {
     return this;
   }
 
-  // full-frame close-up frames for a speaker (cu-closed/mid/open/blink)
+  // full-frame close-up frames for a speaker. Close-ups always look into the
+  // camera, so only the cu-front-* set is loaded when it exists (cu-* otherwise).
   cuFrames(who) {
     const key = who === 'host' ? this.hostKey : this.guestKey;
     const sp = this.manifest?.sprites?.[key];
     if (!sp?.dir || !sp.closeup) return null;
     const dir = sp.dir.replace(/\/$/, '');
-    const f = (n) => safeUrl(`${dir}/cu-${n}.webp`, this.P.base);
-    return { closed: f('closed'), mid: f('mid'), open: f('open'), blink: f('blink') };
+    const f = (n) => safeUrl(`${dir}/${n}.webp`, this.P.base);
+    const names = sp.closeup;
+    const pick = names.some((n) => n.startsWith('cu-front-')) ? names.filter((n) => n.startsWith('cu-front-')) : names;
+    const front = {};
+    for (const n of pick) front[n.replace(/^cu-(front-)?/, '')] = f(n);
+    return { ...front, set: { front } };
+  }
+
+  // Point the seats: the speaker per the line, the listener across at them.
+  look(who, line) {
+    this.lookSet = true;
+    this.#applyLook(who, decideLook(who, line));
+  }
+
+  #applyLook(who, look) {
+    for (const k of ['host', 'guest']) this.seats[k].dataset.look = who === 'you' ? 'front' : k === who ? look : 'side';
   }
 
   // Hard cut. shot: wide | ms | cu | insert ; who: host | guest | you
@@ -195,6 +231,9 @@ export class Studio {
   }
 
   async cutaway(src, alt = '') {
+    // podcast.js calls this once per line with the line text: use it to aim
+    // the speaker unless look(who, line) already did for this line
+    if (!this.lookSet && alt && this.who) { this.lookSet = true; this.#applyLook(this.who, decideLook(this.who, alt)); }
     const tok = (this.cutTok = (this.cutTok || 0) + 1);
     if (!src) { this.cutEl.hidden = true; return; }
     const ok = await loadOK(src);
@@ -206,6 +245,8 @@ export class Studio {
 
   setSpeaker(who) {
     this.who = who;
+    this.lookSet = false;
+    this.#applyLook(who, decideLook(who, null)); // default until the line text arrives
     this.el.dataset.speaker = who;
     const r = this.rects[who];
     if (r) this.spot.style.setProperty('--sx', (r.left + r.w / 2) * 100 + '%');
