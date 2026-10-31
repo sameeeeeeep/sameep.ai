@@ -16,16 +16,16 @@ import { makeFireWall } from './firewall.js';
 import { isWispr } from '../version.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
 
-const BEATS = [
-  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you got 2,000 CVs.' : 'You get thousands of CVs.' },
-  { id: 'envelope', len: 1.4, cap: isWispr ? 'I didn’t want to be another one of them.' : 'They all look the same. Here’s mine.' },
-  { id: 'origami', len: 1.3, cap: 'I folded it,' },
-  { id: 'flight', len: 0.8, cap: 'threw it,' },
-  { id: 'crumple', len: 0.7, cap: 'crushed it,' },
-  { id: 'shred', len: 1.1, cap: 'shredded it,' },
-  { id: 'burn', len: 1.8, cap: 'and burned it…' },
-  { id: 'cd', len: 1.0, cap: '…onto a CD.' },
-  { id: 'insert', len: 0.9, cap: 'Put it in. Press play.' },
+const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
+  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you got <b>2,000</b> CVs.' : 'You get <b>thousands</b> of CVs.' },
+  { id: 'envelope', len: 1.4, cap: isWispr ? 'CVs are <i>so</i> <b>2025</b>. I didn’t want to be another one.' : 'CVs are <i>so</i> <b>2025</b>. Here’s mine.' },
+  { id: 'origami', len: 1.3, cap: 'I <i>folded</i> it,' },
+  { id: 'flight', len: 0.8, cap: '<b>threw</b> it,' },
+  { id: 'crumple', len: 0.7, cap: '<s>crushed</s> it,' },
+  { id: 'shred', len: 1.1, cap: '<u>shredded</u> it,' },
+  { id: 'burn', len: 1.8, cap: 'and <em>burned</em> it…' },
+  { id: 'cd', len: 1.0, cap: '…onto a <b>CD</b>.' },
+  { id: 'insert', len: 0.9, cap: 'Put it in. Press <i>play</i>.' },
 ];
 const TOTAL = BEATS.reduce((a, b) => a + b.len, 0);
 {
@@ -457,7 +457,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     dom.cap.classList.remove('is-in');
     void dom.cap.offsetWidth;
     dom.capN.textContent = String(i + 1).padStart(2, '0');
-    dom.capT.textContent = BEATS[i].cap;
+    dom.capT.innerHTML = BEATS[i].cap;
     dom.cap.classList.add('is-in');
   }
 

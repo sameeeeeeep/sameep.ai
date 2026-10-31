@@ -197,11 +197,12 @@ function entryGate() {
   g.innerHTML = `
     <div class="gate__in">
       <p class="gate__mark"><span>Sameep Rehlan</span><span class="gate__sep">/</span><span>Off the CV</span></p>
-      <h1 class="gate__title">${isWispr ? 'Heard you got 2,000 CVs.' : 'No point in another CV.'}</h1>
+      ${isWispr ? '<p class="gate__aside">heard you got 2,000 of them…</p>' : ''}
+      <h1 class="gate__title"><span class="gate__t1">CVs are</span> <span class="gate__t2">so 2025<i aria-hidden="true"></i></span></h1>
       <div class="gate__bar" aria-hidden="true"><i></i></div>
       <p class="gate__status" aria-live="polite">Setting up the studio… <span>0</span>%</p>
       <div class="gate__actions">
-        <button type="button" class="gate__enter" disabled>Enter <span>· sound on</span></button>
+        <button type="button" class="gate__enter" disabled><span aria-hidden="true">▶</span> Enter <span>· sound on</span></button>
         <button type="button" class="gate__quiet" disabled>Enter muted</button>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work</button>' : ''}
       </div>
@@ -217,9 +218,9 @@ function entryGate() {
     const t = (performance.now() - t0) / 1000;
     const goal = done ? 100 : 90 * (1 - Math.exp(-t / 2.2));
     p += (goal - p) * (done ? 0.25 : 0.12);
-    bar.style.transform = `scaleX(${p / 100})`;
+    bar.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
     pct.textContent = String(Math.round(p));
-    if (done && p > 99.5) { bar.style.transform = 'scaleX(1)'; pct.textContent = '100'; return; }
+    if (done && p > 99.5) { bar.style.clipPath = 'none'; pct.textContent = '100'; return; }
     raf = requestAnimationFrame(paint);
   };
   raf = requestAnimationFrame(paint);
