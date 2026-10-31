@@ -292,15 +292,15 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   let dpr = 1;
   // adaptive quality: 2 = full, 1 = lighter, 0 = low-end (pixel budget, MSAA, particle rate)
   const QB = [0.55, 0.75, 1], QP = [0.35, 0.6, 1], QS = [0, 0, 2];
-  let quality = 2, qAcc = 0, qN = 0, qWorst = 0;
+  let quality = 2, qAcc = 0, qN = 0, qWorst = 0, qSlow = 0, qFast = 0, qSkip = 180;
   function setQuality(q) {
     quality = q;
     post.main.samples = QS[q]; post.main.dispose();
-    if (q === 0) { key.shadow.mapSize.set(1024, 1024); key.shadow.map?.dispose(); key.shadow.map = null; }
-    resize();
+    if (q === 0 && key.shadow.mapSize.x > 1024) { key.shadow.mapSize.set(1024, 1024); key.shadow.map?.dispose(); key.shadow.map = null; }
+    resize(false);
     if (DEBUG) console.log('[hero] quality ->', q);
   }
-  function resize() {
+  function resize(relayout = true) {
     vw = Math.max(1, dom.stage.clientWidth); vh = Math.max(1, dom.stage.clientHeight);
     aspect = vw / vh;
     const cap = mobile ? 1.5 : 2;
@@ -314,7 +314,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     camera.updateProjectionMatrix();
     const s = (vh * dpr) / (2 * Math.tan((FOV / 2) * Math.PI / 180));
     if (full) { particles.setScale(s); motes.material.uniforms.uScale.value = s; }
-    layout();
+    if (relayout) layout();
     dirty = true;
   }
 
@@ -362,7 +362,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   let lastP = 0;
 
   // ------------------------------------------------------------------ captions
-  let capIdx = -1;
+  let capIdx = -1, lastCount = -1, lastProgUI = -1, lastCounterVis = -1;
   function setCaption(i) {
     if (i === capIdx) return;
     capIdx = i;
@@ -399,10 +399,13 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     const fillP = easeOutQuart(clamp(introT / 2.6));
     pile.setFill(fillP);
     const count = Math.round(2000 * fillP);
-    dom.num.textContent = count.toLocaleString('en-US');
+    if (count !== lastCount) { lastCount = count; dom.num.textContent = count.toLocaleString('en-US'); }
     const counterVis = 1 - seg(p, G('pile', 0.75), G('envelope', 0.1));
-    dom.counter.style.opacity = counterVis.toFixed(3);
-    dom.counter.style.visibility = counterVis <= 0 ? 'hidden' : 'visible';
+    if (counterVis !== lastCounterVis) {
+      lastCounterVis = counterVis;
+      dom.counter.style.opacity = counterVis.toFixed(3);
+      dom.counter.style.visibility = counterVis <= 0 ? 'hidden' : 'visible';
+    }
 
     if (DEBUG) PROF[0] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     if (full) {
@@ -768,7 +771,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     if (DEBUG) PROF[8] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     // ---- UI
     setCaption(bi);
-    dom.prog.style.transform = `scaleX(${p.toFixed(4)})`;
+    if (Math.abs(p - lastProgUI) > 0.0005) { lastProgUI = p; dom.prog.style.transform = `scaleX(${p.toFixed(4)})`; }
     rootEl.classList.toggle('is-scrolled', p > 0.004);
     rootEl.classList.toggle('is-end', ins > 0.6);
 
@@ -917,14 +920,20 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     if (!running || !visible) { last = now; return; }
     const rawDt = (now - last) / 1000;
     const dt = Math.min(0.05, rawDt);
-    // measure real frame pacing after the intro; step quality down if we're consistently slow
+    // measure real frame pacing (after warm-up), with hysteresis: step down only after two slow
+    // windows in a row, step back up after three fast ones; ignore windows with a scroll jump
     if (full && !TIMER && rawDt < 0.5) {
-      qAcc += rawDt; qN++; qWorst = Math.max(qWorst, rawDt);
-      if (qN >= 90) {
-        const avg = qAcc / qN;
-        stats.avg = avg; stats.worst = qWorst;
-        if (avg > 0.024 && quality > 0) setQuality(quality - 1);
-        qAcc = 0; qN = 0; qWorst = 0;
+      if (qSkip > 0) qSkip--;
+      else {
+        qAcc += rawDt; qN++; qWorst = Math.max(qWorst, rawDt);
+        if (qN >= 120) {
+          const avg = qAcc / qN;
+          stats.avg = avg; stats.worst = qWorst;
+          if (avg > 0.026) { qSlow++; qFast = 0; } else if (avg < 0.014) { qFast++; qSlow = 0; } else { qSlow = 0; qFast = 0; }
+          if (qSlow >= 2 && quality > 0) { setQuality(quality - 1); qSlow = 0; qSkip = 90; }
+          else if (qFast >= 3 && quality < 2) { setQuality(quality + 1); qFast = 0; qSkip = 90; }
+          qAcc = 0; qN = 0; qWorst = 0;
+        }
       }
     }
     last = now;
@@ -953,7 +962,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     // smooth scroll (critically damped-ish), snap on big jumps (skip)
     const tgt = full ? target : Math.min(target, G('pile', 0.97));
     const diff = tgt - prog;
-    if (Math.abs(diff) > 0.3) { prog = tgt; camSnap = true; }
+    if (Math.abs(diff) > 0.3) { prog = tgt; camSnap = true; qSkip = Math.max(qSkip, 30); }
     else prog += diff * (1 - Math.exp(-dt * 5.5));
     if (Math.abs(tgt - prog) < 0.00005) prog = tgt;
     pointer.sx += (pointer.x - pointer.sx) * (1 - Math.exp(-dt * 4));
@@ -1016,7 +1025,8 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
         out.push(performance.now() - t0);
       }
       const s = out.slice().sort((a, b) => a - b);
-      return { avg: +(out.reduce((a, b) => a + b, 0) / n).toFixed(2), p95: +s[Math.floor(n * 0.95)].toFixed(2), worst: +s[n - 1].toFixed(2), dpr: renderer.getPixelRatio() };
+      const spikes = out.map((v, i) => [v, +(p0 + (p1 - p0) * (i / (n - 1))).toFixed(3)]).filter(([v]) => v > 30).map(([v, pp]) => pp + ':' + v.toFixed(0));
+      return { avg: +(out.reduce((a, b) => a + b, 0) / n).toFixed(2), p95: +s[Math.floor(n * 0.95)].toFixed(2), worst: +s[n - 1].toFixed(2), dpr: renderer.getPixelRatio(), spikes };
     },
     exportCV: () => {
       const f = drawCVFront(1400);
