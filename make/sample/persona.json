@@ -1,0 +1,11 @@
+{
+  "name": "Rowan Vale",
+  "tagline": "A sample bundle: a fictional maker of pocket synthesizers. Replace everything here with your own.",
+  "sprites": "sprites/guest",
+  "host": { "name": "The Host", "sprite": "../../img/sprites/host" },
+  "episodeUrl": "episode.json",
+  "links": [
+    { "label": "Make your own", "url": "https://sameep.ai/make/" },
+    { "label": "Source", "url": "https://github.com/sameeeeeeep/sameep.ai" }
+  ]
+}

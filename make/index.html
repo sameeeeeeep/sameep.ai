@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Make your own OFF THE CV</title>
+  <meta name="description" content="Turn your own work into a talk-to-it podcast portfolio: your context, your face, your voice. Built with your own Claude through Switchboard.">
+  <meta name="theme-color" content="#f3eee2">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Ccircle cx=%228%22 cy=%228%22 r=%227%22 fill=%22%230a8fa8%22/%3E%3Ccircle cx=%228%22 cy=%228%22 r=%222%22 fill=%22%23f3eee2%22/%3E%3C/svg%3E">
+  <link rel="canonical" href="https://sameep.ai/make/">
+  <meta property="og:title" content="Make your own OFF THE CV">
+  <meta property="og:description" content="Your work, your face, your voice: a podcast portfolio people steer by talking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Doto:wght@500;800&family=Spline+Sans+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="make.css">
+  <script src="vendor/jszip.min.js" defer></script>
+  <script type="module" src="make.js"></script>
+</head>
+<body>
+  <div class="band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <header class="top">
+      <a class="home" href="../">&larr; Back to the episode</a>
+      <div class="status" id="status" data-state="detecting" role="status" aria-live="polite">
+        <span class="led" aria-hidden="true"></span><span id="status-text">Looking for Switchboard&hellip;</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1><span class="dot">OFF THE CV MAKER 1.0</span>Make your own.</h1>
+      <div>
+        <p class="lede">Your work, your face, your voice, turned into a podcast people steer by talking. Your own Claude writes it. Nothing runs on my server, because there isn't one.</p>
+        <p class="ver">Writes a bundle: persona.json + episode.json + 4 sprite frames + voice clips. Preview it here, then download it.</p>
+      </div>
+    </section>
+
+    <!-- ============ NOT CONNECTED ============ -->
+    <section id="absent" class="win" hidden>
+      <div class="bar"><span class="t">Switchboard not found</span></div>
+      <div class="body">
+        <div class="what">
+          <div>
+            <h3>What Switchboard is</h3>
+            <p>A free Mac app that lends <b>your own Claude</b> (and your local voice engine) to web pages, one consent at a time. With it, this page can read your work, write your episode and render your voice, and you pay me nothing because I pay nothing.</p>
+            <div class="row">
+              <a class="btn primary" href="https://thelastprompt.ai/switchboard" target="_blank" rel="noopener">Get Switchboard</a>
+              <button type="button" id="recheck">I installed it, check again</button>
+            </div>
+          </div>
+          <div>
+            <h3>Or do it all from Claude Code</h3>
+            <p>Install the skill, then type <code>/off-the-cv</code>. It reads your repos, writes the episode, makes the sprites, clones your voice locally and deploys to GitHub Pages.</p>
+            <pre class="cmd" id="skill-cmd">mkdir -p ~/.claude/skills/off-the-cv
+curl -fsSL https://sameep.ai/skill/off-the-cv/SKILL.md \
+  -o ~/.claude/skills/off-the-cv/SKILL.md</pre>
+            <div class="row"><button type="button" data-copy="#skill-cmd">Copy</button></div>
+          </div>
+        </div>
+        <p class="note">You can still use the steps below without it: copy the prompt into any Claude, paste the JSON back, make the sprites here, and record a voice sample to clone later.</p>
+      </div>
+    </section>
+
+    <!-- ============ STEP 0: CONNECT ============ -->
+    <section id="s0" class="win" hidden>
+      <div class="bar"><span class="t">Connect</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">00</span><div>
+          <h2 id="s0-title">Switchboard found</h2>
+          <p>Connecting asks Switchboard for permission to use your Claude from this page. You approve it in Switchboard, and you can narrow or revoke it there any time.</p>
+        </div></div>
+        <div class="row">
+          <button type="button" class="primary" id="connect">Connect my Switchboard</button>
+          <span id="who" class="note"></span>
+        </div>
+        <details style="margin-top:14px">
+          <summary>What your Claude is told the moment it connects</summary>
+          <pre class="cmd" id="brief" style="white-space:pre-wrap"></pre>
+        </details>
+        <div class="log" id="s0-log"></div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 1: CONTEXT ============ -->
+    <section id="s1" class="win">
+      <div class="bar"><span class="t">Step 1 of 6 &middot; Context</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">01</span><div>
+          <h2>What should it know about you?</h2>
+          <p>Public GitHub repos, a pasted bio, links. Nothing is sent anywhere until you press a button.</p>
+        </div></div>
+        <div class="grid2">
+          <div>
+            <label class="f" for="gh">GitHub username</label>
+            <div class="row" style="margin-top:0">
+              <input type="text" id="gh" placeholder="octocat" autocomplete="off" spellcheck="false" style="flex:1;min-width:0">
+              <button type="button" id="gh-load">Load repos</button>
+            </div>
+            <div class="repos" id="repos"></div>
+            <label class="f" for="links">Links (one per line)</label>
+            <textarea id="links" placeholder="https://your-site.com&#10;https://your-project.dev" style="min-height:80px"></textarea>
+          </div>
+          <div>
+            <label class="f" for="name">Your name</label>
+            <input type="text" id="name" placeholder="How the host introduces you" autocomplete="off">
+            <label class="f" for="bio">Bio, notes, a rambling voice memo transcript</label>
+            <textarea id="bio" placeholder="What you build, what you learned, what you'd want a stranger to ask you about."></textarea>
+          </div>
+        </div>
+        <div class="row" id="ctx-sb" hidden>
+          <button type="button" id="ctx-pick">Use a context saved in Switchboard</button>
+          <span class="note" id="ctx-note"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 2: WRITE ============ -->
+    <section id="s2" class="win">
+      <div class="bar"><span class="t">Step 2 of 6 &middot; Write the episode</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">02</span><div>
+          <h2>Your Claude writes the show</h2>
+          <p>Host questions, a short answer that leaves threads hanging, a deeper answer for each thread, choices the visitor can say out loud, and demos.</p>
+        </div></div>
+        <div class="row">
+          <button type="button" class="primary" id="write" disabled>Write it with my Claude</button>
+          <button type="button" id="copy-prompt">Copy the prompt instead</button>
+          <button type="button" id="load-sample">Load the sample</button>
+        </div>
+        <p class="note" id="write-note">Without Switchboard: paste the prompt into any Claude and paste its JSON reply below.</p>
+        <div class="log" id="s2-log"></div>
+        <label class="f" for="json">persona.json + episode.json (editable)</label>
+        <textarea id="json" class="code" spellcheck="false" placeholder='{"persona": {...}, "episode": {...}}'></textarea>
+        <div class="row">
+          <button type="button" id="validate">Check it</button>
+          <span id="valid" class="note"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 3: AVATAR ============ -->
+    <section id="s3" class="win">
+      <div class="bar"><span class="t">Step 3 of 6 &middot; Avatar</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">03</span><div>
+          <h2>Your face, four frames</h2>
+          <p>Mouth closed, mid, open, and a blink. Drop a photo: this page makes a duotone set in your browser. Drag the pink dot to your mouth and the blue dots to your eyes.</p>
+        </div></div>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a photo">
+          <div><b>Drop a photo</b> or tap to choose one<br><span class="note">Face toward the camera, shoulders up. It stays in this tab.</span></div>
+        </div>
+        <input type="file" id="photo" accept="image/*" hidden>
+        <div id="avatar-work" hidden>
+          <div class="row">
+            <div class="stage" id="stage"><canvas id="src-canvas" width="400" height="500"></canvas></div>
+          </div>
+          <div class="row">
+            <label class="note" for="tone">Duotone</label>
+            <select id="tone" style="width:auto">
+              <option value="bondi">Bondi</option><option value="tangerine">Tangerine</option>
+              <option value="strawberry">Strawberry</option><option value="grape">Grape</option>
+              <option value="lime">Lime</option><option value="none">Original colour</option>
+            </select>
+            <button type="button" class="primary" id="make-frames">Make the 4 frames</button>
+          </div>
+          <div class="frames" id="frames"></div>
+          <div class="talk" id="talk" hidden><img id="talk-img" alt="Your avatar talking"><span class="note">Lip-sync test: this is how the player flips frames.</span></div>
+        </div>
+        <div class="honest" id="avatar-honest">
+          <b>Want painted or illustrated frames instead?</b> Generating images isn't something Switchboard lends to web pages. Your Claude Code can do it with your own image tool: the <code>off-the-cv</code> skill has an avatar step that makes the 4 frames from this same photo. You can also drop your own 4 frames into the bundle's <code>sprites/guest/</code> folder.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 4: VOICE ============ -->
+    <section id="s4" class="win">
+      <div class="bar"><span class="t">Step 4 of 6 &middot; Voice</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">04</span><div>
+          <h2>Your voice, cloned on your Mac</h2>
+          <p>Switchboard's local voice engine (Pocket TTS on MLX) clones a voice from a short clip, on your machine. No cloud, no credits.</p>
+        </div></div>
+        <div class="row">
+          <button type="button" id="probe-voice">Look for my voice engine</button>
+          <span class="note" id="voice-status"></span>
+        </div>
+        <div id="voice-pick" hidden>
+          <label class="f" for="voice-select">Use an existing voice for you</label>
+          <select id="voice-select"></select>
+        </div>
+        <label class="f">Or record a 60-second sample</label>
+        <p class="note" style="margin-top:0">Read this out loud at your normal pace. One take is fine.</p>
+        <div class="read" id="read-text">I build things mostly to find out whether they should exist. Some of them work. Most of them teach me something, and a few of them change how I work for good. If you're listening to this, you're hearing a copy of my voice reading words my own Claude helped me write, which is either very cool or a little strange. Probably both. Ask me about anything on the screen, and I'll tell you the version I'd tell a friend over coffee.</div>
+        <div class="row">
+          <button type="button" class="rec" id="rec">Record</button>
+          <span class="timer" id="rec-t">0:00</span>
+          <audio id="rec-play" controls hidden></audio>
+        </div>
+        <div class="meter" aria-hidden="true"><i id="rec-level"></i></div>
+        <div class="row">
+          <input type="text" id="voice-name" placeholder="voice name, e.g. ada" style="max-width:220px" spellcheck="false">
+          <button type="button" id="clone" disabled>Clone it with my voice engine</button>
+          <button type="button" id="rec-dl" disabled>Download the sample</button>
+        </div>
+        <div class="row">
+          <label class="note" for="host-voice">Host voice</label>
+          <select id="host-voice" style="width:auto;min-width:160px"></select>
+          <button type="button" class="primary" id="render" disabled>Render all clips</button>
+        </div>
+        <div class="log" id="s4-log"></div>
+        <div class="clips" id="clips"></div>
+        <div class="honest">
+          <b>What's real here:</b> rendering uses <code>claude_speak</code>, the speech method Switchboard lends to pages. Cloning isn't a Switchboard method yet, so the Clone button talks straight to your local voice engine at <code>127.0.0.1:7897</code>, the same way Switchboard's own Clone wrapp does. Your browser may ask to allow access to devices on your local network. If it can't reach the engine, download the sample and let the skill clone it.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STEP 5: PREVIEW ============ -->
+    <section id="s5" class="win">
+      <div class="bar"><span class="t">Step 5 of 6 &middot; Preview</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">05</span><div>
+          <h2>Play it</h2>
+          <p>Opens the real player with your bundle loaded from this tab. Keep this tab open while you preview.</p>
+        </div></div>
+        <div class="row">
+          <button type="button" class="primary" id="preview">Open my episode</button>
+          <a class="btn" href="../?persona=make/sample/persona.json&amp;skip" target="_blank" rel="noopener">Play the sample</a>
+        </div>
+        <p class="note" id="preview-note"></p>
+      </div>
+    </section>
+
+    <!-- ============ STEP 6: EXPORT ============ -->
+    <section id="s6" class="win">
+      <div class="bar"><span class="t">Step 6 of 6 &middot; Ship it</span></div>
+      <div class="body">
+        <div class="step-head"><span class="step-num">06</span><div>
+          <h2>Download, then publish</h2>
+          <p>A zip with everything. Put it on any static host.</p>
+        </div></div>
+        <div class="row">
+          <button type="button" class="primary" id="zip">Download bundle (.zip)</button>
+          <button type="button" id="save-sb" hidden>Save draft to Switchboard</button>
+        </div>
+        <div class="log" id="s6-log"></div>
+        <ol class="check">
+          <li>Fork <a href="https://github.com/sameeeeeeep/sameep.ai" target="_blank" rel="noopener">sameeeeeeep/sameep.ai</a> (MIT).</li>
+          <li>Unzip into <code>me/</code> at the repo root, so you have <code>me/persona.json</code>.</li>
+          <li>Settings &rarr; Pages &rarr; deploy from <code>main</code>, root folder.</li>
+          <li>Share <code>https://&lt;you&gt;.github.io/sameep.ai/?persona=me/persona.json</code>, or point your own domain at it.</li>
+        </ol>
+        <p class="note">Or host the bundle anywhere with CORS on, and share <code>https://sameep.ai/?persona=https://your.host/persona.json</code>.</p>
+      </div>
+    </section>
+
+    <footer>
+      Open source, MIT. <a href="https://github.com/sameeeeeeep/sameep.ai">Source</a> &middot;
+      <a href="../skill/off-the-cv/SKILL.md">The Claude Code skill</a> &middot;
+      <a href="https://thelastprompt.ai/switchboard">Switchboard</a>
+    </footer>
+  </div>
+</body>
+</html>

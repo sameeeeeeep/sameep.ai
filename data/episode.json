@@ -1,0 +1,3990 @@
+{
+ "title": "OFF THE CV",
+ "speakers": {
+  "host": {
+   "name": "Delphine Marchbanks",
+   "sprite": "img/sprites/host"
+  },
+  "sameep": {
+   "name": "Sameep (AI)",
+   "sprite": "img/sprites/sameep"
+  }
+ },
+ "start": "cold-open",
+ "chapters": [
+  {
+   "label": "Cold open",
+   "to": "cold-open"
+  },
+  {
+   "label": "Menu",
+   "to": "hub"
+  },
+  {
+   "label": "The growth stuff: pre-buzz",
+   "to": "g-intro"
+  },
+  {
+   "label": "The startup that didn't work",
+   "to": "often-intro"
+  },
+  {
+   "label": "Switchboard",
+   "to": "sb-intro"
+  },
+  {
+   "label": "ppt.live",
+   "to": "ppt-intro"
+  },
+  {
+   "label": "The toolbox: video2ai and Claude mods",
+   "to": "tools-intro"
+  },
+  {
+   "label": "Fun and unfinished things",
+   "to": "fun-intro"
+  },
+  {
+   "label": "How was this made?",
+   "to": "meta-intro"
+  },
+  {
+   "label": "Make your own",
+   "to": "outro-make"
+  }
+ ],
+ "nodes": {
+  "cold-open": {
+   "chapter": "Cold open",
+   "lines": [
+    {
+     "id": "cold-open-01",
+     "who": "host",
+     "text": "Hello, hello, my precious little listeners. You have just watched a man's résumé get folded into an aeroplane, thrown about, crumpled, shredded, and set on fire. And now it is a compact disc. I have never been prouder of someone I have only just met.",
+     "audio": "audio/clips/cold-open-01.mp3"
+    },
+    {
+     "id": "cold-open-02",
+     "who": "sameep",
+     "text": "Yeah, so, the brief literally said don't apply with a CV. They got two thousand applications, all CVs, all kind of the same, really difficult to differentiate. And Wispr destroyed a keyboard in their own campaign, so I thought, okay, I'll destroy the CV.",
+     "messy": "Yeah so the, um, the brief literally said don't apply with a CV, right? They got like two thousand applications, all CVs, all kind of, all kind of the same, really difficult to differentiate. And Wispr, they destroyed a keyboard in their campaign, so I thought okay, I'll, I'll destroy the CV.",
+     "audio": "audio/clips/cold-open-02.mp3"
+    },
+    {
+     "id": "cold-open-03",
+     "who": "host",
+     "text": "And then you burned it. Into a CD. Explain yourself.",
+     "audio": "audio/clips/cold-open-03.mp3"
+    },
+    {
+     "id": "cold-open-04",
+     "who": "sameep",
+     "text": "Burning a CD! That's the whole pun. The burning burns a CD, it goes into the iMac, and the portfolio plays. And the CD isn't a recording, it's an app. Imagine an AI app from the nineties, not for interviewing you, but for taking someone through your work.",
+     "audio": "audio/clips/cold-open-04.mp3"
+    },
+    {
+     "id": "cold-open-05",
+     "who": "host",
+     "text": "With a dial-up modem. I heard the screech, darling. I aged.",
+     "audio": "audio/clips/cold-open-05.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "cold-open-06",
+     "who": "sameep",
+     "text": "With all the beeps, yes. That's the era where the internet just became reachable for ordinary people. Retro-futuristic, as if this tech existed back in the day.",
+     "audio": "audio/clips/cold-open-06.mp3"
+    }
+   ],
+   "choices": [],
+   "next": "intro"
+  },
+  "intro": {
+   "chapter": "Intro",
+   "lines": [
+    {
+     "id": "intro-01",
+     "who": "host",
+     "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
+     "sting": "audio/music/sting-intro.mp3",
+     "audio": "audio/clips/intro-01.mp3"
+    },
+    {
+     "id": "intro-02",
+     "who": "sameep",
+     "text": "Hi! Quick disclaimer: I'm the AI version. I talk about the learnings the same way he dictated them, a bit rambling. And I won't cover everything. Pick a door, let's go. You also have a say here, FYI.",
+     "messy": "Hi! Quick, um, quick disclaimer, I'm the AI version. I talk about the learnings the same way he dictated them, a bit rambling, sorry. And I won't cover everything. Pick a door, let's go. You, um, you also have a say here, FYI.",
+     "audio": "audio/clips/intro-02.mp3"
+    },
+    {
+     "id": "intro-03",
+     "who": "host",
+     "text": "Yes, our third guest tonight is you. Click a little chip, or simply say it out loud with your Flow. I shall pretend I heard you perfectly.",
+     "audio": "audio/clips/intro-03.mp3"
+    }
+   ],
+   "choices": [],
+   "next": "hub-first"
+  },
+  "hub-first": {
+   "chapter": "Menu",
+   "lines": [
+    {
+     "id": "hub-first-01",
+     "who": "host",
+     "text": "So. Tonight's menu. We have growth: sales, launches, games, and a Diwali invite I am told absolutely slaps. We have a startup that did not work, which is my favourite genre. We have Switchboard, ppt.live, a box of little Claude contraptions, and some fun, unfinished things. Where shall we begin?",
+     "audio": "audio/clips/hub-first-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "The growth stuff: pre-buzz",
+     "say": [
+      "growth",
+      "pre-buzz",
+      "prebuzz",
+      "nykaa",
+      "sales",
+      "marketing"
+     ],
+     "to": "g-intro"
+    },
+    {
+     "label": "The startup that didn't work",
+     "say": [
+      "startup",
+      "didn't work",
+      "failure",
+      "mistakes",
+      "often",
+      "trippy",
+      "travel"
+     ],
+     "to": "often-intro"
+    },
+    {
+     "label": "Switchboard",
+     "say": [
+      "switchboard",
+      "plumbing",
+      "wrapps",
+      "notch",
+      "metamask"
+     ],
+     "to": "sb-intro"
+    },
+    {
+     "label": "ppt.live",
+     "say": [
+      "ppt",
+      "powerpoint",
+      "slides",
+      "live show",
+      "qr"
+     ],
+     "to": "ppt-intro"
+    },
+    {
+     "label": "The toolbox: video2ai and Claude mods",
+     "say": [
+      "toolbox",
+      "tools",
+      "video2ai",
+      "video",
+      "claude mods",
+      "refs",
+      "pastedeck"
+     ],
+     "to": "tools-intro"
+    },
+    {
+     "label": "Fun and unfinished things",
+     "say": [
+      "fun",
+      "unfinished",
+      "wallpap",
+      "wallpaper",
+      "psspss",
+      "cats",
+      "small"
+     ],
+     "to": "fun-intro"
+    },
+    {
+     "label": "How was this made?",
+     "say": [
+      "how was this made",
+      "made",
+      "wispr",
+      "flow",
+      "dictated",
+      "behind the scenes"
+     ],
+     "to": "meta-intro"
+    }
+   ],
+   "next": "g-intro"
+  },
+  "hub": {
+   "chapter": "Menu",
+   "lines": [
+    {
+     "id": "hub-01",
+     "who": "host",
+     "text": "Right. Back to the menu, darling. Where to next?",
+     "audio": "audio/clips/hub-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "The growth stuff: pre-buzz",
+     "say": [
+      "growth",
+      "pre-buzz",
+      "prebuzz",
+      "nykaa",
+      "sales",
+      "marketing"
+     ],
+     "to": "g-intro"
+    },
+    {
+     "label": "The startup that didn't work",
+     "say": [
+      "startup",
+      "didn't work",
+      "failure",
+      "mistakes",
+      "often",
+      "trippy",
+      "travel"
+     ],
+     "to": "often-intro"
+    },
+    {
+     "label": "Switchboard",
+     "say": [
+      "switchboard",
+      "plumbing",
+      "wrapps",
+      "notch",
+      "metamask"
+     ],
+     "to": "sb-intro"
+    },
+    {
+     "label": "ppt.live",
+     "say": [
+      "ppt",
+      "powerpoint",
+      "slides",
+      "live show",
+      "qr"
+     ],
+     "to": "ppt-intro"
+    },
+    {
+     "label": "The toolbox: video2ai and Claude mods",
+     "say": [
+      "toolbox",
+      "tools",
+      "video2ai",
+      "video",
+      "claude mods",
+      "refs",
+      "pastedeck"
+     ],
+     "to": "tools-intro"
+    },
+    {
+     "label": "Fun and unfinished things",
+     "say": [
+      "fun",
+      "unfinished",
+      "wallpap",
+      "wallpaper",
+      "psspss",
+      "cats",
+      "small"
+     ],
+     "to": "fun-intro"
+    },
+    {
+     "label": "How was this made?",
+     "say": [
+      "how was this made",
+      "made",
+      "wispr",
+      "flow",
+      "dictated",
+      "behind the scenes"
+     ],
+     "to": "meta-intro"
+    },
+    {
+     "label": "Let's wrap it up",
+     "say": [
+      "wrap up",
+      "wrap it up",
+      "end",
+      "finish",
+      "goodbye",
+      "make your own"
+     ],
+     "to": "outro-make"
+    }
+   ],
+   "next": "outro-make"
+  },
+  "g-intro": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-intro-01",
+     "who": "host",
+     "text": "You are applying to a growth team. So, growth. What is the thing you actually know how to do? And don't say synergy.",
+     "sting": "audio/music/sting-1.mp3",
+     "audio": "audio/clips/g-intro-01.mp3"
+    },
+    {
+     "id": "g-intro-02",
+     "who": "sameep",
+     "text": "Pre-buzz, I think. Building the noise before a launch or a sale. At Nykaa it was the big sales, at Nailinit it was a launch. And somewhere along the way I realised games are kind of the cheat code. Then there's a Diwali invite, and a party application that looked like a DM.",
+     "audio": "audio/clips/g-intro-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Tell me about the Nykaa sales",
+     "say": [
+      "nykaa",
+      "pink",
+      "sales",
+      "hot pink",
+      "pink friday"
+     ],
+     "to": "g-nykaa"
+    },
+    {
+     "label": "What about Nailinit?",
+     "say": [
+      "nailinit",
+      "nails",
+      "launch",
+      "nia",
+      "dashboard"
+     ],
+     "to": "g-nailinit"
+    },
+    {
+     "label": "Games as a growth lever",
+     "say": [
+      "games",
+      "game",
+      "growth lever"
+     ],
+     "to": "g-games"
+    },
+    {
+     "label": "The Diwali invite",
+     "say": [
+      "diwali",
+      "invite",
+      "matchbox",
+      "mela"
+     ],
+     "to": "g-diwali"
+    },
+    {
+     "label": "The sleepover application",
+     "say": [
+      "sleepover",
+      "slumber",
+      "party",
+      "application",
+      "dm",
+      "chat"
+     ],
+     "to": "g-slumber"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "g-hub"
+  },
+  "g-hub": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-hub-01",
+     "who": "host",
+     "text": "More growth, or shall we move along?",
+     "audio": "audio/clips/g-hub-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Tell me about the Nykaa sales",
+     "say": [
+      "nykaa",
+      "pink",
+      "sales",
+      "hot pink",
+      "pink friday"
+     ],
+     "to": "g-nykaa"
+    },
+    {
+     "label": "What about Nailinit?",
+     "say": [
+      "nailinit",
+      "nails",
+      "launch",
+      "nia",
+      "dashboard"
+     ],
+     "to": "g-nailinit"
+    },
+    {
+     "label": "Games as a growth lever",
+     "say": [
+      "games",
+      "game",
+      "growth lever"
+     ],
+     "to": "g-games"
+    },
+    {
+     "label": "The Diwali invite",
+     "say": [
+      "diwali",
+      "invite",
+      "matchbox",
+      "mela"
+     ],
+     "to": "g-diwali"
+    },
+    {
+     "label": "The sleepover application",
+     "say": [
+      "sleepover",
+      "slumber",
+      "party",
+      "application",
+      "dm",
+      "chat"
+     ],
+     "to": "g-slumber"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "hub"
+  },
+  "g-nykaa": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-nykaa-01",
+     "who": "host",
+     "text": "Nykaa! The pink empire. Tell me everything. Leave nothing out.",
+     "audio": "audio/clips/g-nykaa-01.mp3"
+    },
+    {
+     "id": "g-nykaa-02",
+     "who": "sameep",
+     "text": "So at Nykaa I was the product lead for all the sale stuff that used to go live. The Hot Pink Sale, the Pink Friday sale, the Birthday Sale. We had features like the Pink Box, which was essentially a wishlist that automatically became your cart.",
+     "messy": "So at Nykaa I was the, the product lead for all of the sale related stuff that used to go live. Hot Pink Sale, the Pink Friday sale, the Birthday Sale. We had features like the Pink Box, which was essentially a wish list that, um, automatically became your cart.",
+     "audio": "audio/clips/g-nykaa-02.mp3",
+     "cutaway": "img/cutaways/pinkbox-wishlist-to-cart.webp"
+    },
+    {
+     "id": "g-nykaa-03",
+     "who": "sameep",
+     "text": "Then pre-sale features where we'd reveal the prices of products beforehand. Slash and Save. Games for people to play. People came back again and again just to see what was next. Keep them engaged till the sale went live, and then convert them all in one go.",
+     "audio": "audio/clips/g-nykaa-03.mp3"
+    },
+    {
+     "id": "g-nykaa-04",
+     "who": "host",
+     "text": "Convert them all in one go. You make it sound like a heist.",
+     "audio": "audio/clips/g-nykaa-04.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "g-nykaa-05",
+     "who": "sameep",
+     "text": "Ha, kind of. I also owned conversion from the landing page to cart to order. Landing pages were my domain. These numbers are on my CV, so they're public: landing page conversion up nine percent, sale conversion up thirty percent, on-site ads earning thirty-five percent more.",
+     "audio": "audio/clips/g-nykaa-05.mp3"
+    },
+    {
+     "id": "g-nykaa-06",
+     "who": "sameep",
+     "text": "The learning I took away: the buzz is a product, not a post. If you build the reason to come back, the sale day kind of takes care of itself.",
+     "audio": "audio/clips/g-nykaa-06.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "So what did you do at Nailinit?",
+     "say": [
+      "nailinit",
+      "launch",
+      "next"
+     ],
+     "to": "g-nailinit"
+    },
+    {
+     "label": "Tell me about the games",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "g-games"
+    },
+    {
+     "label": "Back to growth",
+     "say": [
+      "growth",
+      "back to growth"
+     ],
+     "to": "g-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "g-hub"
+  },
+  "g-nailinit": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-nailinit-01",
+     "who": "host",
+     "text": "And now you are at Nailinit. Nails! Glamour! Spill. Carefully. I sense lawyers.",
+     "audio": "audio/clips/g-nailinit-01.mp3"
+    },
+    {
+     "id": "g-nailinit-02",
+     "who": "sameep",
+     "text": "Yeah, it's where I am right now, I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder described it as building the Lenskart for nails.",
+     "messy": "Yeah, it's, it's where I am right now, I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder described it as, um, building the Lenskart for nails.",
+     "audio": "audio/clips/g-nailinit-02.mp3"
+    },
+    {
+     "id": "g-nailinit-03",
+     "who": "sameep",
+     "text": "We did the launch with a campaign with K K.",
+     "audio": "audio/clips/g-nailinit-03.mp3"
+    },
+    {
+     "id": "g-nailinit-04",
+     "who": "sameep",
+     "text": "And the pre-buzz was the same instinct as Nykaa: give people a reason to show up before the thing is even out.",
+     "audio": "audio/clips/g-nailinit-04.mp3"
+    },
+    {
+     "id": "g-nailinit-05",
+     "who": "sameep",
+     "text": "The thing I can talk about more is Nia. Nia is Nailinit's internal OS that I created, in order to make the company run on a dashboard. Sales, finance, inventory, content, tasks, all in one place. The modules are still getting defined. The recent one is the warehouse.",
+     "audio": "audio/clips/g-nailinit-05.mp3"
+    },
+    {
+     "id": "g-nailinit-06",
+     "who": "host",
+     "text": "A company that runs on a dashboard. I have run my entire life off a cocktail napkin.",
+     "audio": "audio/clips/g-nailinit-06.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "g-nailinit-07",
+     "who": "sameep",
+     "text": "Ha. One rule I kept with Nia: nothing fake. No pretend buttons. And anything that sends something out, drafts it first and waits for a human to approve.",
+     "audio": "audio/clips/g-nailinit-07.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Games as a growth lever",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "g-games"
+    },
+    {
+     "label": "The Diwali invite",
+     "say": [
+      "diwali",
+      "invite"
+     ],
+     "to": "g-diwali"
+    },
+    {
+     "label": "Back to growth",
+     "say": [
+      "growth",
+      "back to growth"
+     ],
+     "to": "g-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "g-hub"
+  },
+  "g-games": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-games-01",
+     "who": "host",
+     "text": "You keep saying games. In a growth context. Explain yourself, young man.",
+     "audio": "audio/clips/g-games-01.mp3"
+    },
+    {
+     "id": "g-games-02",
+     "who": "sameep",
+     "text": "So this is the thread that keeps repeating. Nykaa had games before the sales. The Diwali invite has a whole mela.",
+     "messy": "So this is the, the thread that keeps repeating, right? Nykaa had games before the sales. The Diwali invite has a whole, a whole mela.",
+     "audio": "audio/clips/g-games-02.mp3"
+    },
+    {
+     "id": "g-games-03",
+     "who": "sameep",
+     "text": "And a sleepover event we ran had an arcade with leaderboards, after you applied.",
+     "audio": "audio/clips/g-games-03.mp3"
+    },
+    {
+     "id": "g-games-04",
+     "who": "sameep",
+     "text": "And every time, the same thing happens: people open it again and again, they play, and they show it to someone. There's a social factor a normal page just doesn't have. So now I think of a game as a reason to re-open. And a re-open is the cheapest marketing there is, because the person is already there.",
+     "audio": "audio/clips/g-games-04.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Show me the Diwali invite",
+     "say": [
+      "diwali",
+      "invite",
+      "show me"
+     ],
+     "to": "g-diwali"
+    },
+    {
+     "label": "The sleepover application",
+     "say": [
+      "sleepover",
+      "slumber",
+      "party"
+     ],
+     "to": "g-slumber"
+    },
+    {
+     "label": "Back to growth",
+     "say": [
+      "growth",
+      "back to growth"
+     ],
+     "to": "g-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "g-hub"
+  },
+  "g-diwali": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-diwali-01",
+     "who": "host",
+     "text": "Diwali! Which, if my calendar is correct, is about a week away. Tell me about this famous invite.",
+     "audio": "audio/clips/g-diwali-01.mp3"
+    },
+    {
+     "id": "g-diwali-02",
+     "who": "sameep",
+     "text": "So this week I made our Diwali party invite, digital, but so much fun. You strike a match, light it up to reveal the invite. Then you play games, this old mela vibe: a parrot that tells your fortune, a balloon shoot, ring toss, and a lucky draw. And the same idea took different forms: an invite, a wish, a postcard.",
+     "messy": "So this week I made our Diwali party invite, digital but, but so much fun. You strike a match, light it up to reveal the invite. Then you play games, this old, um, mela vibe, a parrot that tells your fortune, balloon shoot, ring toss, and a lucky draw. And the same idea took different forms, an invite, a wish, a postcard.",
+     "audio": "audio/clips/g-diwali-02.mp3"
+    },
+    {
+     "id": "g-diwali-03",
+     "who": "sameep",
+     "text": "Oh, you know what? Let me just show it to you.",
+     "demo": {
+      "type": "iframe",
+      "url": "https://diwaliparty.live/?name=",
+      "title": "Diwali invite: type your name, strike the match"
+     },
+     "audio": "audio/clips/g-diwali-03.mp3"
+    },
+    {
+     "id": "g-diwali-04",
+     "who": "host",
+     "text": "Ha! Oh, there's a song! Darling, there is a song. I am dancing. You cannot see me, but I am dancing.",
+     "audio": "audio/clips/g-diwali-04.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "g-diwali-05",
+     "who": "sameep",
+     "text": "And people were opening it again and again. Someone opened it more than fifty times, just to strike that match again. People played the four games more than twenty times each.",
+     "audio": "audio/clips/g-diwali-05.mp3",
+     "cutaway": "img/cutaways/diwali-match-50x.webp"
+    },
+    {
+     "id": "g-diwali-06",
+     "who": "host",
+     "text": "Fifty times! I haven't opened my own front door fifty times.",
+     "audio": "audio/clips/g-diwali-06.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "g-diwali-07",
+     "who": "sameep",
+     "text": "For the party invite: nine hundred and forty-two personal invites, and ninety-two percent of them got opened. Two thousand two hundred and forty-three opens in total. Sixteen hundred and twenty-nine games played, and the parrot alone got seven hundred and seventy. Five hundred and twenty-seven people said yes. And two hundred and seven results got pinned to the public party wall.",
+     "messy": "For the party invite, um, nine hundred and forty-two personal invites, and ninety-two percent of them got opened. Two thousand two hundred and forty-three opens in total. Sixteen hundred and twenty-nine games played, the parrot alone got seven hundred and seventy. Five hundred and twenty-seven people said yes. And two hundred and seven results got, got pinned to the public party wall.",
+     "audio": "audio/clips/g-diwali-07.mp3"
+    },
+    {
+     "id": "g-diwali-08",
+     "who": "host",
+     "text": "Seven hundred and seventy fortunes from one parrot. That bird should have an agent.",
+     "audio": "audio/clips/g-diwali-08.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "g-diwali-09",
+     "who": "sameep",
+     "text": "Every card counts opens per person, every result becomes a card you can pin, and there's a make-your-own button inside, so the invite is its own loop. Also, the match that burned my CV at the start? Same mechanic. It's from this invite.",
+     "audio": "audio/clips/g-diwali-09.mp3"
+    },
+    {
+     "id": "g-diwali-10",
+     "who": "sameep",
+     "text": "Learnings were small and kind of humbling. The ring toss was way too hard on phones, so I made it much easier. The match strike got more forgiving after a few misses. And there are five hundred and forty fortunes, and I rewrote the cheeky ones to be warm. Nothing negative goes in a Diwali card.",
+     "audio": "audio/clips/g-diwali-10.mp3"
+    },
+    {
+     "id": "g-diwali-offer",
+     "who": "host",
+     "text": "Shall I open that in a new tab for you, darling?",
+     "audio": "audio/clips/offer-host.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "g-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://diwaliparty.live/?name=",
+      "title": "Diwali invite",
+      "work": "diwali"
+     }
+    },
+    {
+     "label": "The sleepover application",
+     "say": [
+      "sleepover",
+      "slumber",
+      "party",
+      "dm"
+     ],
+     "to": "g-slumber"
+    },
+    {
+     "label": "Games as a growth lever",
+     "say": [
+      "games"
+     ],
+     "to": "g-games"
+    },
+    {
+     "label": "Back to growth",
+     "say": [
+      "growth",
+      "back to growth"
+     ],
+     "to": "g-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "g-hub"
+  },
+  "g-slumber": {
+   "chapter": "Growth: pre-buzz",
+   "lines": [
+    {
+     "id": "g-slumber-01",
+     "who": "host",
+     "text": "And this sleepover? It sounds like a crime.",
+     "audio": "audio/clips/g-slumber-01.mp3"
+    },
+    {
+     "id": "g-slumber-02",
+     "who": "sameep",
+     "text": "It was a sleepover event we ran.",
+     "audio": "audio/clips/g-slumber-02.mp3"
+    },
+    {
+     "id": "g-slumber-03",
+     "who": "sameep",
+     "text": "About thirty-five spots, and you had to apply. But the application wasn't a form. It was a DM, on a little pink CRT, from the host. You get a message, I have a secret to share, and you reply one line at a time.",
+     "audio": "audio/clips/g-slumber-03.mp3"
+    },
+    {
+     "id": "g-slumber-04",
+     "who": "host",
+     "text": "So you tricked people into filling in a form by making it look like texting.",
+     "audio": "audio/clips/g-slumber-04.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "g-slumber-05",
+     "who": "sameep",
+     "text": "Exactly. And that's why the fill rate was so good, because we kept the interface sort of like a chat. Each question is a tiny reply. It feels like being let in, not like paperwork.",
+     "messy": "Exactly. And that's, that's why the fill rate was so good, because we kept the interface sort of like a chat, right. Each question is just a tiny reply. It feels like, um, being let in, not like paperwork.",
+     "audio": "audio/clips/g-slumber-05.mp3"
+    },
+    {
+     "id": "g-slumber-06",
+     "who": "sameep",
+     "text": "And I tracked every single question separately, because started-the-form doesn't tell you where people drop. Per question does. Then after you applied, there was an arcade with leaderboards, so people stuck around and came back to chase scores. Games again.",
+     "audio": "audio/clips/g-slumber-06.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "The Diwali invite",
+     "say": [
+      "diwali",
+      "invite"
+     ],
+     "to": "g-diwali"
+    },
+    {
+     "label": "Games as a growth lever",
+     "say": [
+      "games"
+     ],
+     "to": "g-games"
+    },
+    {
+     "label": "Back to growth",
+     "say": [
+      "growth",
+      "back to growth"
+     ],
+     "to": "g-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "g-hub"
+  },
+  "often-intro": {
+   "chapter": "The one that didn't work",
+   "lines": [
+    {
+     "id": "often-intro-01",
+     "who": "host",
+     "text": "And now, my favourite segment. The one that did not work. Tell me about Often, and please, be devastated.",
+     "sting": "audio/music/sting-2.mp3",
+     "audio": "audio/clips/often-intro-01.mp3"
+    },
+    {
+     "id": "often-intro-02",
+     "who": "sameep",
+     "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, servicing those trips taught us more than anything we planned.",
+     "audio": "audio/clips/often-intro-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "So why didn't it work?",
+     "say": [
+      "why",
+      "didn't work",
+      "what went wrong",
+      "fail"
+     ],
+     "to": "often-why"
+    },
+    {
+     "label": "What's the biggest lesson?",
+     "say": [
+      "lesson",
+      "learning",
+      "learned"
+     ],
+     "to": "often-lesson"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "often-why"
+  },
+  "often-why": {
+   "chapter": "The one that didn't work",
+   "lines": [
+    {
+     "id": "often-why-01",
+     "who": "host",
+     "text": "So what went wrong? Was it the name? It is always the name.",
+     "audio": "audio/clips/often-why-01.mp3"
+    },
+    {
+     "id": "often-why-02",
+     "who": "sameep",
+     "text": "Through a lot of actual user pain points while servicing these trips, we figured out the eventual problem with travel. And that problem was having to command the supply, at the end of the day. Which makes it less of a consumer play and more of a B2B play.",
+     "messy": "So through a lot of actual user pain points, while servicing these trips, we figured out the, the eventual problem with travel. And that problem was having to command the supply, at the end of the day. Which makes it less of a consumer side and more of a, of a B2B play.",
+     "audio": "audio/clips/often-why-02.mp3"
+    },
+    {
+     "id": "often-why-03",
+     "who": "host",
+     "text": "So you built a gorgeous shop window, and realised the real game is who owns the shelves.",
+     "audio": "audio/clips/often-why-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "often-why-04",
+     "who": "sameep",
+     "text": "Yeah. Exactly that.",
+     "audio": "audio/clips/often-why-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "And the biggest lesson?",
+     "say": [
+      "lesson",
+      "learning",
+      "biggest lesson"
+     ],
+     "to": "often-lesson"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "often-lesson"
+  },
+  "often-lesson": {
+   "chapter": "The one that didn't work",
+   "lines": [
+    {
+     "id": "often-lesson-01",
+     "who": "host",
+     "text": "And the lesson? There is always a lesson. I keep mine in a drawer.",
+     "audio": "audio/clips/often-lesson-01.mp3"
+    },
+    {
+     "id": "often-lesson-02",
+     "who": "sameep",
+     "text": "Switching is very difficult, because stickiness is very little. Which means your referral speed needs to be extremely rapid. You can't really be small and grow out to be big.",
+     "audio": "audio/clips/often-lesson-02.mp3"
+    },
+    {
+     "id": "often-lesson-03",
+     "who": "host",
+     "text": "So what happened? Don't spare me. I have a fainting couch.",
+     "audio": "audio/clips/often-lesson-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "often-lesson-04",
+     "who": "sameep",
+     "text": "We ran out of runway. At the company, and personally. In an infrequent category, it becomes very difficult to build something sticky, because referrals also don't work if it's not sticky. The exact opposite of something like Wispr, which is used a lot more regularly.",
+     "audio": "audio/clips/often-lesson-04.mp3",
+     "cutaway": "img/cutaways/often-empty-calendar.webp"
+    },
+    {
+     "id": "often-lesson-05",
+     "who": "host",
+     "text": "Flattery! On my podcast! I'll allow it.",
+     "audio": "audio/clips/often-lesson-05.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "often-lesson-06",
+     "who": "sameep",
+     "text": "Hard lesson. Moved on. But you'll notice, everything I've built since has the sharing built into the thing itself.",
+     "audio": "audio/clips/often-lesson-06.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Show me something that worked",
+     "say": [
+      "worked",
+      "growth",
+      "something that worked",
+      "success"
+     ],
+     "to": "g-intro"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "hub"
+  },
+  "sb-intro": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-intro-01",
+     "who": "host",
+     "text": "Switchboard. Someone told me it is MetaMask for AI, and I understood none of it. What did you actually use it for, when you started making it?",
+     "sting": "audio/music/sting-3.mp3",
+     "audio": "audio/clips/sb-intro-01.mp3"
+    },
+    {
+     "id": "sb-intro-02",
+     "who": "sameep",
+     "text": "I was creating Brand Brain, and Brand Brain didn't have that plumbing, I had to create it. Every time I wanted an AI feature, I had to rely on API keys, extra charges over and above the subscription I already had. Then I realised I had to create it every single time, for every different AI app that I make.",
+     "messy": "So I was creating Brand Brain, and Brand Brain didn't have that, that plumbing, I had to create it. Every time I wanted an AI feature I had to rely on API keys, extra charges over and above the subscription I already had. Then I realised I had to create it every single time, for every, every different AI app that I make.",
+     "audio": "audio/clips/sb-intro-02.mp3",
+     "cutaway": "img/cutaways/brandbrain-apikeys-bill.webp"
+    },
+    {
+     "id": "sb-intro-03",
+     "who": "sameep",
+     "text": "So I built the plumbing once, so I could route it through my existing compute, context and connectors. And then I realised, wait, I can do this for any app. Any web page, for that matter. A Chrome extension gets the compute and the connectors from a Mac app.",
+     "audio": "audio/clips/sb-intro-03.mp3",
+     "cutaway": "img/cutaways/switchboard-plumbing.webp"
+    },
+    {
+     "id": "sb-intro-04",
+     "who": "host",
+     "text": "So every app borrows your Claude, instead of asking for its own.",
+     "audio": "audio/clips/sb-intro-04.mp3"
+    },
+    {
+     "id": "sb-intro-05",
+     "who": "sameep",
+     "text": "Exactly. With your permission. Why not make it once, for every different use case.",
+     "audio": "audio/clips/sb-intro-05.mp3"
+    },
+    {
+     "id": "sb-intro-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://thelastprompt.ai/switchboard",
+      "title": "Switchboard",
+      "work": "switchboard"
+     }
+    },
+    {
+     "label": "Show me here",
+     "say": [
+      "show me here",
+      "show me",
+      "here",
+      "show it"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "iframe",
+      "url": "https://thelastprompt.ai/switchboard",
+      "title": "Switchboard",
+      "work": "switchboard"
+     }
+    },
+    {
+     "label": "Where did it come from?",
+     "say": [
+      "where",
+      "come from",
+      "origin",
+      "history",
+      "lineage",
+      "autoclawd",
+      "auto claude"
+     ],
+     "to": "sb-lineage"
+    },
+    {
+     "label": "Why the notch?",
+     "say": [
+      "notch",
+      "why the notch",
+      "ask notch"
+     ],
+     "to": "sb-notch"
+    },
+    {
+     "label": "What are wrapps?",
+     "say": [
+      "wrapps",
+      "wraps",
+      "apps",
+      "wrapp"
+     ],
+     "to": "sb-wrapps"
+    },
+    {
+     "label": "What about local models?",
+     "say": [
+      "local",
+      "local models",
+      "qwen",
+      "llama"
+     ],
+     "to": "sb-local"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "sb-hub": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-hub-01",
+     "who": "host",
+     "text": "More Switchboard? Or have I had enough plumbing for one evening?",
+     "audio": "audio/clips/sb-hub-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Where did it come from?",
+     "say": [
+      "where",
+      "come from",
+      "origin",
+      "history",
+      "lineage",
+      "autoclawd",
+      "auto claude"
+     ],
+     "to": "sb-lineage"
+    },
+    {
+     "label": "Why the notch?",
+     "say": [
+      "notch",
+      "why the notch",
+      "ask notch"
+     ],
+     "to": "sb-notch"
+    },
+    {
+     "label": "What are wrapps?",
+     "say": [
+      "wrapps",
+      "wraps",
+      "apps",
+      "wrapp"
+     ],
+     "to": "sb-wrapps"
+    },
+    {
+     "label": "What about local models?",
+     "say": [
+      "local",
+      "local models",
+      "qwen",
+      "llama"
+     ],
+     "to": "sb-local"
+    },
+    {
+     "label": "Could anyone make one of these?",
+     "say": [
+      "anyone",
+      "make one",
+      "make your own",
+      "template"
+     ],
+     "to": "outro-make"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "hub"
+  },
+  "sb-lineage": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-lineage-01",
+     "who": "host",
+     "text": "And it sprang fully formed from your head, like a Greek goddess?",
+     "audio": "audio/clips/sb-lineage-01.mp3"
+    },
+    {
+     "id": "sb-lineage-02",
+     "who": "sameep",
+     "text": "No, no. Long road. In January I made ARIA, a chat that keeps thinking in the background on a local Llama. Two days later it became AutoClawd. Always-on mic, your screen, a small local model. Two hundred and seventy-one commits. And it got big. A pixel world, camera, face, gestures, a call mode.",
+     "audio": "audio/clips/sb-lineage-02.mp3"
+    },
+    {
+     "id": "sb-lineage-03",
+     "who": "host",
+     "text": "It sounds like a garage. A very cluttered garage.",
+     "audio": "audio/clips/sb-lineage-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "sb-lineage-04",
+     "who": "sameep",
+     "text": "It was a garage! So on the twelfth of March I cut it all. Pixel world, call mode, camera, face, text to speech, gestures. Gone, for focus. Then came Autoclaw: hold the F N key, speak, and it writes the prompt for Claude Code. And then, on the seventh of July, Switchboard, born out of Brand Brain. It's at six hundred and forty-eight commits now.",
+     "audio": "audio/clips/sb-lineage-04.mp3"
+    },
+    {
+     "id": "sb-lineage-05",
+     "who": "sameep",
+     "text": "So it started from AutoClawd. Some features got abandoned because local models just don't favour them, and new ones got picked up because that was the need. The notch was one of those.",
+     "audio": "audio/clips/sb-lineage-05.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "What happened with local models?",
+     "say": [
+      "local",
+      "local models",
+      "qwen"
+     ],
+     "to": "sb-local"
+    },
+    {
+     "label": "Why the notch?",
+     "say": [
+      "notch"
+     ],
+     "to": "sb-notch"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "sb-local": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-local-01",
+     "who": "host",
+     "text": "Local models. Tell me about these little fellows. Are they clever?",
+     "audio": "audio/clips/sb-local-01.mp3"
+    },
+    {
+     "id": "sb-local-02",
+     "who": "sameep",
+     "text": "They're good at senses, not judgment. I gave a three B model a job it couldn't do. In one project it was meant to stay in character and rewrite things, and it failed most of the time. And in Autoclaw my own note literally says: Qwen isn't smart enough to learn patterns.",
+     "messy": "They're good at, at senses, not judgment. I gave a three B model a job it, it just couldn't do. In one project it was meant to stay in character and rewrite things, and it failed, like, most of the time. And in Autoclaw my own note literally says, Qwen isn't smart enough to learn patterns.",
+     "audio": "audio/clips/sb-local-02.mp3"
+    },
+    {
+     "id": "sb-local-03",
+     "who": "sameep",
+     "text": "So the fix was, the small model becomes a bouncer. It just filters and cleans. Claude does the thinking. And locally I keep only the senses: speech to text, text to speech, Apple's vision. Which is how this voice is being made, actually. On a laptop.",
+     "audio": "audio/clips/sb-local-03.mp3"
+    },
+    {
+     "id": "sb-local-04",
+     "who": "host",
+     "text": "A bouncer. I have dated several.",
+     "audio": "audio/clips/sb-local-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Why the notch?",
+     "say": [
+      "notch"
+     ],
+     "to": "sb-notch"
+    },
+    {
+     "label": "What are wrapps?",
+     "say": [
+      "wrapps",
+      "wraps"
+     ],
+     "to": "sb-wrapps"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "sb-notch": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-notch-01",
+     "who": "host",
+     "text": "And the notch. The little black bit at the top of the screen. Why on earth?",
+     "audio": "audio/clips/sb-notch-01.mp3"
+    },
+    {
+     "id": "sb-notch-02",
+     "who": "sameep",
+     "text": "The notch was to make interacting with Claude easy. Originally the card followed your cursor, and you couldn't click it, because it kept moving with you. A card that's fixed in the notch, you can click. That one decision solved the whole click versus keyboard saga.",
+     "audio": "audio/clips/sb-notch-02.mp3"
+    },
+    {
+     "id": "sb-notch-03",
+     "who": "sameep",
+     "text": "So now when Claude needs a decision, it turns up at the notch with options. You tap one, it carries on. I spun just that part out as a Claude Code plugin called Ask Notch.",
+     "audio": "audio/clips/sb-notch-03.mp3"
+    },
+    {
+     "id": "sb-notch-04",
+     "who": "host",
+     "text": "A doorbell for your robot. How civilised.",
+     "audio": "audio/clips/sb-notch-04.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "sb-notch-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/ask-notch",
+      "title": "Ask Notch on GitHub",
+      "work": "ask-notch"
+     }
+    },
+    {
+     "label": "What are wrapps?",
+     "say": [
+      "wrapps",
+      "wraps"
+     ],
+     "to": "sb-wrapps"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "sb-wrapps": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-wrapps-01",
+     "who": "host",
+     "text": "And wrapps. With two Ps. Is that a typo or a lifestyle?",
+     "audio": "audio/clips/sb-wrapps-01.mp3"
+    },
+    {
+     "id": "sb-wrapps-02",
+     "who": "sameep",
+     "text": "Both. A wrapp is a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety-four. Brand Brain, Flow, the notch and Guru, voice cloning, annotating HTML, thinking of HTML as a video. A lot of them. Pick one.",
+     "messy": "Both, honestly. A wrapp is a, a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety-four. Brand Brain, Flow, the notch and Guru, voice cloning, annotating HTML, thinking of HTML as a, as a video. A lot of them. Pick one.",
+     "audio": "audio/clips/sb-wrapps-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Brand Brain",
+     "say": [
+      "brand brain",
+      "brandbrain"
+     ],
+     "to": "w-brandbrain"
+    },
+    {
+     "label": "Flow",
+     "say": [
+      "flow",
+      "dictation"
+     ],
+     "to": "w-flow"
+    },
+    {
+     "label": "Voice cloning",
+     "say": [
+      "voice",
+      "cloning",
+      "clone"
+     ],
+     "to": "w-voice"
+    },
+    {
+     "label": "HTML as a video (Cut)",
+     "say": [
+      "cut",
+      "video",
+      "redline",
+      "film"
+     ],
+     "to": "w-cut"
+    },
+    {
+     "label": "Annotating HTML",
+     "say": [
+      "annotate",
+      "annotating",
+      "draw",
+      "markup"
+     ],
+     "to": "w-annotate"
+    },
+    {
+     "label": "Cartridge",
+     "say": [
+      "cartridge",
+      "game"
+     ],
+     "to": "w-cartridge"
+    },
+    {
+     "label": "Prophexy",
+     "say": [
+      "prophexy",
+      "prophecy",
+      "astrology",
+      "tarot"
+     ],
+     "to": "w-prophexy"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "sb-wrapps-again": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "sb-wrapps-again-01",
+     "who": "host",
+     "text": "Another wrapp? Go on then, pick one.",
+     "audio": "audio/clips/sb-wrapps-again-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Brand Brain",
+     "say": [
+      "brand brain",
+      "brandbrain"
+     ],
+     "to": "w-brandbrain"
+    },
+    {
+     "label": "Flow",
+     "say": [
+      "flow",
+      "dictation"
+     ],
+     "to": "w-flow"
+    },
+    {
+     "label": "Voice cloning",
+     "say": [
+      "voice",
+      "cloning",
+      "clone"
+     ],
+     "to": "w-voice"
+    },
+    {
+     "label": "HTML as a video (Cut)",
+     "say": [
+      "cut",
+      "video",
+      "redline",
+      "film"
+     ],
+     "to": "w-cut"
+    },
+    {
+     "label": "Annotating HTML",
+     "say": [
+      "annotate",
+      "annotating",
+      "draw",
+      "markup"
+     ],
+     "to": "w-annotate"
+    },
+    {
+     "label": "Cartridge",
+     "say": [
+      "cartridge",
+      "game"
+     ],
+     "to": "w-cartridge"
+    },
+    {
+     "label": "Prophexy",
+     "say": [
+      "prophexy",
+      "prophecy",
+      "astrology",
+      "tarot"
+     ],
+     "to": "w-prophexy"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-brandbrain": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-brandbrain-01",
+     "who": "sameep",
+     "text": "Brand Brain is a launch and growth hub for D2C brands. It had thirty-two API routes, and the whole Switchboard idea was, I moved all thirty-two to run in your browser tab, on your own Claude. No backend. No new API key.",
+     "audio": "audio/clips/w-brandbrain-01.mp3"
+    },
+    {
+     "id": "w-brandbrain-02",
+     "who": "host",
+     "text": "No API key! Do you know, I was once asked for an API key at a dinner party.",
+     "audio": "audio/clips/w-brandbrain-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "w-brandbrain-03",
+     "who": "sameep",
+     "text": "Ha. The funny mistake there was a three-day fight with a grid that kept loading empty. Classic race condition. Three days.",
+     "audio": "audio/clips/w-brandbrain-03.mp3"
+    },
+    {
+     "id": "w-brandbrain-offer",
+     "who": "host",
+     "text": "Shall I open that in a new tab for you, darling?",
+     "audio": "audio/clips/offer-host.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://brandbrain.thelastprompt.ai",
+      "title": "Brand Brain",
+      "work": "brandbrain"
+     }
+    },
+    {
+     "label": "Show me here",
+     "say": [
+      "show me here",
+      "show me",
+      "here",
+      "show it"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "iframe",
+      "url": "https://brandbrain.thelastprompt.ai",
+      "title": "Brand Brain",
+      "work": "brandbrain"
+     }
+    },
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-flow": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-flow-01",
+     "who": "host",
+     "text": "Now hold on. You built something called Flow. And you are applying to Wispr Flow. Bold.",
+     "audio": "audio/clips/w-flow-01.mp3"
+    },
+    {
+     "id": "w-flow-02",
+     "who": "sameep",
+     "text": "Yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a very small Flow. Yours is the one I used to build this whole site.",
+     "messy": "Yeah, yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a, it's a very small Flow. Yours is the one I used to build this whole site.",
+     "audio": "audio/clips/w-flow-02.mp3"
+    },
+    {
+     "id": "w-flow-03",
+     "who": "host",
+     "text": "Diplomatic. Rename it.",
+     "audio": "audio/clips/w-flow-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "w-flow-04",
+     "who": "sameep",
+     "text": "It's on the list.",
+     "audio": "audio/clips/w-flow-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-voice": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-voice-01",
+     "who": "sameep",
+     "text": "Voice cloning, on device. You drop a few seconds of audio, and Switchboard can speak in that voice. No cloud, no credits. It's Kyutai's Pocket TTS running on Apple's own M L X. The voice I'm talking in right now came out of that pipeline.",
+     "audio": "audio/clips/w-voice-01.mp3"
+    },
+    {
+     "id": "w-voice-02",
+     "who": "host",
+     "text": "And mine?",
+     "audio": "audio/clips/w-voice-02.mp3"
+    },
+    {
+     "id": "w-voice-03",
+     "who": "sameep",
+     "text": "Yours is your own. Nobody famous was harmed in the making of this host.",
+     "audio": "audio/clips/w-voice-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "w-voice-04",
+     "who": "host",
+     "text": "I have always said I am one of a kind.",
+     "audio": "audio/clips/w-voice-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-cut": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-cut-01",
+     "who": "sameep",
+     "text": "Redline started as reviewing a landing page the Brand Brain way, and it became Cut. The idea is, the page is a film, and every knob is an intent. So instead of editing CSS, you're directing the page, like a video.",
+     "messy": "So Redline started as, um, reviewing a landing page the Brand Brain way, and it became Cut. The idea is the page is a film, and every knob is an intent. So instead of editing CSS, you're kind of directing the page, like a, like a video.",
+     "audio": "audio/clips/w-cut-01.mp3"
+    },
+    {
+     "id": "w-cut-02",
+     "who": "host",
+     "text": "Lights, camera, padding.",
+     "audio": "audio/clips/w-cut-02.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-annotate": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-annotate-01",
+     "who": "sameep",
+     "text": "That one's simple. Claude makes a lot of HTML for me, and I wanted to just draw on it. Circle things, scribble, and hand it back with notes. Like marking up a printout, but the printout is alive.",
+     "audio": "audio/clips/w-annotate-01.mp3"
+    },
+    {
+     "id": "w-annotate-02",
+     "who": "host",
+     "text": "Red pen energy. I approve.",
+     "audio": "audio/clips/w-annotate-02.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-cartridge": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-cartridge-01",
+     "who": "sameep",
+     "text": "Cartridge. You describe a game, and your own Claude builds it. It headlined the store at launch. Before that, I got a bit distracted and made a whole open-world game set in a neon Mumbai, which, yeah. Detour.",
+     "audio": "audio/clips/w-cartridge-01.mp3"
+    },
+    {
+     "id": "w-cartridge-02",
+     "who": "host",
+     "text": "A detour I would absolutely play.",
+     "audio": "audio/clips/w-cartridge-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "w-cartridge-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/cartridge",
+      "title": "Cartridge on GitHub",
+      "work": "cartridge"
+     }
+    },
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "w-prophexy": {
+   "chapter": "Switchboard",
+   "lines": [
+    {
+     "id": "w-prophexy-01",
+     "who": "sameep",
+     "text": "Prophexy. One genuinely computed reading a day. Astrology, tarot, palm. And it can read from three places: your own Claude, a model on your device, or pure computation. The fun part was stripping out all the jargon.",
+     "audio": "audio/clips/w-prophexy-01.mp3"
+    },
+    {
+     "id": "w-prophexy-02",
+     "who": "host",
+     "text": "Tell me my future. No, don't. I know how it ends. Glamorously.",
+     "audio": "audio/clips/w-prophexy-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "w-prophexy-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://thelastprompt.ai/prophexy/",
+      "title": "Prophexy",
+      "work": "prophexy"
+     }
+    },
+    {
+     "label": "Show me here",
+     "say": [
+      "show me here",
+      "show me",
+      "here",
+      "show it"
+     ],
+     "to": "sb-hub",
+     "demo": {
+      "type": "iframe",
+      "url": "https://thelastprompt.ai/prophexy/",
+      "title": "Prophexy",
+      "work": "prophexy"
+     }
+    },
+    {
+     "label": "Another wrapp",
+     "say": [
+      "another",
+      "another wrapp",
+      "more"
+     ],
+     "to": "sb-wrapps-again"
+    },
+    {
+     "label": "Back to Switchboard",
+     "say": [
+      "switchboard",
+      "back"
+     ],
+     "to": "sb-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "sb-hub"
+  },
+  "ppt-intro": {
+   "chapter": "ppt.live",
+   "lines": [
+    {
+     "id": "ppt-intro-01",
+     "who": "host",
+     "text": "ppt.live. Which sounds like a PowerPoint that ran off to a rave.",
+     "sting": "audio/music/sting-1.mp3",
+     "audio": "audio/clips/ppt-intro-01.mp3"
+    },
+    {
+     "id": "ppt-intro-02",
+     "who": "sameep",
+     "text": "That's exactly it! It started in Diwali week, twenty nineteen. I had to host our office Diwali party, about fifty people, all holding a drink. You have their attention until the drink is done. So instead of a regular deck, I made it interactive. Everyone scanned a QR, and the presentation became a drinking game.",
+     "messy": "That's, that's exactly it! It started in Diwali week, twenty nineteen. I had to host our office Diwali party, about fifty people, all holding a drink. You have their attention until the, the drink is done. So instead of a regular deck I made it interactive. Everyone scanned a QR and the presentation became a drinking game.",
+     "audio": "audio/clips/ppt-intro-02.mp3",
+     "cutaway": "img/cutaways/pptlive-qr-crowd.webp"
+    },
+    {
+     "id": "ppt-intro-03",
+     "who": "host",
+     "text": "A drinking game! At the office! I have never felt so seen.",
+     "audio": "audio/clips/ppt-intro-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "ppt-intro-04",
+     "who": "sameep",
+     "text": "But the tools only had a handful of question types, and they only sold annual plans, for one party. So last month, when I hosted a gathering of creators, I built my own. Your slides go on a TV, the room scans a QR, and phones vote, answer, ask, play. No app, no signup. We load-tested it with fifty phones. Zero errors.",
+     "audio": "audio/clips/ppt-intro-04.mp3"
+    },
+    {
+     "id": "ppt-intro-offer",
+     "who": "host",
+     "text": "Shall I open that in a new tab for you, darling?",
+     "audio": "audio/clips/offer-host.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "ppt-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://www.ppt.live",
+      "title": "ppt.live",
+      "work": "ppt-live"
+     }
+    },
+    {
+     "label": "Show me here",
+     "say": [
+      "show me here",
+      "show me",
+      "here",
+      "show it"
+     ],
+     "to": "ppt-hub",
+     "demo": {
+      "type": "qr",
+      "url": "https://www.ppt.live",
+      "title": "ppt.live",
+      "work": "ppt-live"
+     }
+    },
+    {
+     "label": "More about ppt.live",
+     "say": [
+      "more",
+      "more about ppt",
+      "how",
+      "claude"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "Real-world use cases",
+     "say": [
+      "use cases",
+      "real world",
+      "uses",
+      "who uses"
+     ],
+     "to": "ppt-uses"
+    },
+    {
+     "label": "The games",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "ppt-games"
+    },
+    {
+     "label": "Play a game now",
+     "say": [
+      "play",
+      "play now",
+      "qr",
+      "scan"
+     ],
+     "to": "ppt-play"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "ppt-hub"
+  },
+  "ppt-hub": {
+   "chapter": "ppt.live",
+   "lines": [
+    {
+     "id": "ppt-hub-01",
+     "who": "host",
+     "text": "More ppt, or shall we leave the rave?",
+     "audio": "audio/clips/ppt-hub-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "More about ppt.live",
+     "say": [
+      "more",
+      "more about ppt",
+      "how",
+      "claude"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "Real-world use cases",
+     "say": [
+      "use cases",
+      "real world",
+      "uses",
+      "who uses"
+     ],
+     "to": "ppt-uses"
+    },
+    {
+     "label": "The games",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "ppt-games"
+    },
+    {
+     "label": "Play a game now",
+     "say": [
+      "play",
+      "play now",
+      "qr",
+      "scan"
+     ],
+     "to": "ppt-play"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "hub"
+  },
+  "ppt-more": {
+   "chapter": "ppt.live",
+   "lines": [
+    {
+     "id": "ppt-more-01",
+     "who": "sameep",
+     "text": "The rules I baked in: change the room's state every four to seven minutes. First interaction within three minutes. Test, don't just tell. And never end on the rating.",
+     "audio": "audio/clips/ppt-more-01.mp3"
+    },
+    {
+     "id": "ppt-more-02",
+     "who": "host",
+     "text": "Never end on the rating. Words to live by. I have ended several marriages on the rating.",
+     "audio": "audio/clips/ppt-more-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "ppt-more-03",
+     "who": "sameep",
+     "text": "And there's a Claude connector, so you can say, make me a twenty-minute all-hands with a mood poll and a quiz, and Claude builds the whole show.",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/ppt-live-claude",
+      "title": "ppt.live connector for Claude"
+     },
+     "audio": "audio/clips/ppt-more-03.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Real-world use cases",
+     "say": [
+      "use cases",
+      "real world",
+      "uses",
+      "who uses"
+     ],
+     "to": "ppt-uses"
+    },
+    {
+     "label": "The games",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "ppt-games"
+    },
+    {
+     "label": "Play a game now",
+     "say": [
+      "play",
+      "play now",
+      "qr",
+      "scan"
+     ],
+     "to": "ppt-play"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "ppt-hub"
+  },
+  "ppt-uses": {
+   "chapter": "ppt.live",
+   "lines": [
+    {
+     "id": "ppt-uses-01",
+     "who": "sameep",
+     "text": "All-hands, trainings, classrooms, sales pitches. But also weddings, sangeets, birthdays. There's a Diwali office-night template with Cracker Awards that the room votes on live. Anywhere from a five-person standup to a few hundred people.",
+     "audio": "audio/clips/ppt-uses-01.mp3"
+    },
+    {
+     "id": "ppt-uses-02",
+     "who": "host",
+     "text": "A sangeet with a live poll. Finally, democracy at a wedding.",
+     "audio": "audio/clips/ppt-uses-02.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "More about ppt.live",
+     "say": [
+      "more",
+      "more about ppt",
+      "how",
+      "claude"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "The games",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "ppt-games"
+    },
+    {
+     "label": "Play a game now",
+     "say": [
+      "play",
+      "play now",
+      "qr",
+      "scan"
+     ],
+     "to": "ppt-play"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "ppt-hub"
+  },
+  "ppt-games": {
+   "chapter": "ppt.live",
+   "lines": [
+    {
+     "id": "ppt-games-01",
+     "who": "sameep",
+     "text": "Thirty-four of them. Word Spies, Mafia, Antakshari, Housie, Dumb Charades. And a bluffing one called Unicorn. Two secret cards, two crore, bluff your way to be the last founder standing.",
+     "audio": "audio/clips/ppt-games-01.mp3"
+    },
+    {
+     "id": "ppt-games-02",
+     "who": "host",
+     "text": "I would win Unicorn. I have been bluffing since the Carter administration.",
+     "audio": "audio/clips/ppt-games-02.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Play a game now",
+     "say": [
+      "play",
+      "play now",
+      "qr",
+      "scan"
+     ],
+     "to": "ppt-play"
+    },
+    {
+     "label": "More about ppt.live",
+     "say": [
+      "more",
+      "more about ppt",
+      "how",
+      "claude"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "Real-world use cases",
+     "say": [
+      "use cases",
+      "real world",
+      "uses",
+      "who uses"
+     ],
+     "to": "ppt-uses"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "ppt-hub"
+  },
+  "ppt-play": {
+   "chapter": "ppt.live",
+   "lines": [
+    {
+     "id": "ppt-play-01",
+     "who": "host",
+     "text": "Play? Now? On my telephone? I do not know where my telephone is. I believe it is in my hair.",
+     "audio": "audio/clips/ppt-play-01.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "ppt-play-02",
+     "who": "sameep",
+     "text": "Scan the QR. It opens ppt.live, and you can start a room or join one. No app. Works on mobile data too.",
+     "demo": {
+      "type": "qr",
+      "url": "https://www.ppt.live",
+      "title": "Scan to open ppt.live"
+     },
+     "audio": "audio/clips/ppt-play-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "More about ppt.live",
+     "say": [
+      "more",
+      "more about ppt",
+      "how",
+      "claude"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "Real-world use cases",
+     "say": [
+      "use cases",
+      "real world",
+      "uses",
+      "who uses"
+     ],
+     "to": "ppt-uses"
+    },
+    {
+     "label": "The games",
+     "say": [
+      "games",
+      "game"
+     ],
+     "to": "ppt-games"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "ppt-hub"
+  },
+  "tools-intro": {
+   "chapter": "The toolbox",
+   "lines": [
+    {
+     "id": "tools-intro-01",
+     "who": "host",
+     "text": "Now, the toolbox. I am told you make little gadgets for Claude. Like a tinkerer. A Geppetto.",
+     "sting": "audio/music/sting-2.mp3",
+     "audio": "audio/clips/tools-intro-01.mp3"
+    },
+    {
+     "id": "tools-intro-02",
+     "who": "sameep",
+     "text": "Ha, yeah. Mostly, when Claude can't do something, I give it the ability. video2ai, because Claude couldn't watch videos. Slash refs, so it designs against real references. The notch. The ppt.live connector. And some tiny ones I make to get around my own ADHD.",
+     "messy": "Ha, yeah. Mostly when Claude can't do something, I, I give it the ability. video2ai because Claude couldn't watch videos. Slash refs, so it designs against real references. The notch. The ppt.live connector. And, um, some tiny ones I make to get around my own ADHD.",
+     "audio": "audio/clips/tools-intro-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "video2ai",
+     "say": [
+      "video2ai",
+      "video",
+      "video to ai"
+     ],
+     "to": "t-video"
+    },
+    {
+     "label": "/refs",
+     "say": [
+      "refs",
+      "references",
+      "slash refs"
+     ],
+     "to": "t-refs"
+    },
+    {
+     "label": "Ask Notch",
+     "say": [
+      "notch",
+      "ask notch"
+     ],
+     "to": "sb-notch"
+    },
+    {
+     "label": "The ppt.live connector",
+     "say": [
+      "connector",
+      "ppt connector",
+      "ppt"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "Tell me about the ADHD hacks",
+     "say": [
+      "adhd",
+      "hacks",
+      "pastedeck",
+      "paste deck",
+      "paste"
+     ],
+     "to": "t-adhd"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "tools-hub"
+  },
+  "tools-hub": {
+   "chapter": "The toolbox",
+   "lines": [
+    {
+     "id": "tools-hub-01",
+     "who": "host",
+     "text": "Another gadget from the drawer?",
+     "audio": "audio/clips/tools-hub-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "video2ai",
+     "say": [
+      "video2ai",
+      "video",
+      "video to ai"
+     ],
+     "to": "t-video"
+    },
+    {
+     "label": "/refs",
+     "say": [
+      "refs",
+      "references",
+      "slash refs"
+     ],
+     "to": "t-refs"
+    },
+    {
+     "label": "Ask Notch",
+     "say": [
+      "notch",
+      "ask notch"
+     ],
+     "to": "sb-notch"
+    },
+    {
+     "label": "The ppt.live connector",
+     "say": [
+      "connector",
+      "ppt connector",
+      "ppt"
+     ],
+     "to": "ppt-more"
+    },
+    {
+     "label": "Tell me about the ADHD hacks",
+     "say": [
+      "adhd",
+      "hacks",
+      "pastedeck",
+      "paste deck",
+      "paste"
+     ],
+     "to": "t-adhd"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "hub"
+  },
+  "t-video": {
+   "chapter": "The toolbox",
+   "lines": [
+    {
+     "id": "t-video-01",
+     "who": "sameep",
+     "text": "I don't really start with a plan. I start with a problem that's annoying me. Claude was really bad at getting Instagram references. Back in the day, it simply could not.",
+     "messy": "So I don't really start with a plan, I start with a problem that's, that's annoying me. Like, Claude was really bad at getting Instagram references. Back in the day it, it simply could not.",
+     "audio": "audio/clips/t-video-01.mp3",
+     "cutaway": "img/cutaways/video2ai-squint.webp"
+    },
+    {
+     "id": "t-video-02",
+     "who": "sameep",
+     "text": "So I built video2ai. It downloads the video, and instead of watching it frame by frame, it runs a pass of the transcript, figures out what's being said, the music, the sound effects. Then it uses Apple's own machine learning to see how the frames change, makes a timestamped grid of the frames, and puts it all into HTML.",
+     "audio": "audio/clips/t-video-02.mp3"
+    },
+    {
+     "id": "t-video-03",
+     "who": "host",
+     "text": "In English, darling. I was promised English.",
+     "audio": "audio/clips/t-video-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "t-video-04",
+     "who": "sameep",
+     "text": "Okay. Frame selection is a vector math problem, not an LLM problem. Apple's engine, already on your Mac, gives each frame a fingerprint, and you keep only the ones where the picture actually changed. A video goes from about a hundred and seventy thousand tokens to about a hundred and fifty lines. Way faster, way more effective, and easy to give references.",
+     "audio": "audio/clips/t-video-04.mp3"
+    },
+    {
+     "id": "t-video-05",
+     "who": "sameep",
+     "text": "And the mistake: I tried CLIP first. It ate two gigs of RAM. Apple's thing was already sitting on the machine.",
+     "audio": "audio/clips/t-video-05.mp3"
+    },
+    {
+     "id": "t-video-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "tools-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/video2ai",
+      "title": "video2ai on GitHub",
+      "work": "video2ai"
+     }
+    },
+    {
+     "label": "/refs",
+     "say": [
+      "refs",
+      "references",
+      "slash refs"
+     ],
+     "to": "t-refs"
+    },
+    {
+     "label": "The ADHD hacks",
+     "say": [
+      "adhd",
+      "hacks",
+      "pastedeck",
+      "paste"
+     ],
+     "to": "t-adhd"
+    },
+    {
+     "label": "Back to the toolbox",
+     "say": [
+      "toolbox",
+      "back"
+     ],
+     "to": "tools-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "tools-hub"
+  },
+  "t-refs": {
+   "chapter": "The toolbox",
+   "lines": [
+    {
+     "id": "t-refs-01",
+     "who": "sameep",
+     "text": "Slash refs. Before Claude designs anything, it shows you real references. Award winners, great ads, launch films, as picture cards right above your prompt, and you pick a direction. Because otherwise you get the AI average. Same thing as the CV pile, really.",
+     "audio": "audio/clips/t-refs-01.mp3"
+    },
+    {
+     "id": "t-refs-02",
+     "who": "host",
+     "text": "Taste, outsourced to a mood board. Very me.",
+     "audio": "audio/clips/t-refs-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "t-refs-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "tools-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/references-mcp",
+      "title": "/refs (references-mcp) on GitHub",
+      "work": "references-mcp"
+     }
+    },
+    {
+     "label": "video2ai",
+     "say": [
+      "video2ai",
+      "video",
+      "video to ai"
+     ],
+     "to": "t-video"
+    },
+    {
+     "label": "Tell me about the ADHD hacks",
+     "say": [
+      "adhd",
+      "hacks",
+      "pastedeck",
+      "paste deck",
+      "paste"
+     ],
+     "to": "t-adhd"
+    },
+    {
+     "label": "Back to the toolbox",
+     "say": [
+      "toolbox",
+      "back"
+     ],
+     "to": "tools-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "tools-hub"
+  },
+  "t-adhd": {
+   "chapter": "The toolbox",
+   "lines": [
+    {
+     "id": "t-adhd-01",
+     "who": "host",
+     "text": "Now, I am told you build little tools to outwit your own ADHD. Is that true? Are you outwitting it right now?",
+     "audio": "audio/clips/t-adhd-01.mp3"
+    },
+    {
+     "id": "t-adhd-02",
+     "who": "sameep",
+     "text": "Ha, trying. So there's PasteDeck. Claude, quite rightly, refuses to handle certain sensitive stuff. So I made a little floating panel of values I paste myself. Claude does the work, I do the pasting, and I never go hunting for the same thing twice.",
+     "messy": "Ha, trying. So there's PasteDeck. Claude, quite rightly, refuses to handle certain sensitive stuff. So I made a little floating panel of values that I, I paste myself. Claude does the work, I do the pasting, and I never go hunting for the same thing twice.",
+     "audio": "audio/clips/t-adhd-02.mp3"
+    },
+    {
+     "id": "t-adhd-03",
+     "who": "sameep",
+     "text": "And tonight, the recorder I used for my voice sample. When I saved the take, it just said: you can sleep now.",
+     "audio": "audio/clips/t-adhd-03.mp3",
+     "cutaway": "img/cutaways/adhd-recorder-sleep.webp"
+    },
+    {
+     "id": "t-adhd-04",
+     "who": "host",
+     "text": "A machine that tells you to go to bed. Darling, that is not a tool, that is a mother.",
+     "audio": "audio/clips/t-adhd-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "video2ai",
+     "say": [
+      "video2ai",
+      "video"
+     ],
+     "to": "t-video"
+    },
+    {
+     "label": "/refs",
+     "say": [
+      "refs",
+      "references"
+     ],
+     "to": "t-refs"
+    },
+    {
+     "label": "Back to the toolbox",
+     "say": [
+      "toolbox",
+      "back"
+     ],
+     "to": "tools-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "tools-hub"
+  },
+  "fun-intro": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "fun-intro-01",
+     "who": "host",
+     "text": "And now, the fun and the unfinished. Show me your drawer of half-knitted scarves.",
+     "sting": "audio/music/sting-3.mp3",
+     "audio": "audio/clips/fun-intro-01.mp3"
+    },
+    {
+     "id": "fun-intro-02",
+     "who": "sameep",
+     "text": "So, wallpap is the fun one, it's literally behind us right now. psspss was good, but can be better. And then a bunch of small recent ones: a cat that lives on your Mac, sending files as sound, a bar for AI agents.",
+     "messy": "So, wallpap is the fun one, it's, it's literally behind us right now. psspss was good but, but can be better. And then a bunch of small recent ones, a cat that lives on your Mac, sending files as sound, a, a bar for AI agents.",
+     "audio": "audio/clips/fun-intro-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "wallpap",
+     "say": [
+      "wallpap",
+      "wallpaper",
+      "behind us"
+     ],
+     "to": "f-wallpap"
+    },
+    {
+     "label": "psspss",
+     "say": [
+      "psspss",
+      "pss pss",
+      "cats on your phone"
+     ],
+     "to": "f-psspss"
+    },
+    {
+     "label": "The Mac cat",
+     "say": [
+      "mac cat",
+      "maccat",
+      "cat"
+     ],
+     "to": "f-maccat"
+    },
+    {
+     "label": "Files as sound",
+     "say": [
+      "sound",
+      "bluetune",
+      "files as sound",
+      "logos"
+     ],
+     "to": "f-bluetune"
+    },
+    {
+     "label": "A bar for AI agents",
+     "say": [
+      "bar",
+      "agent bar",
+      "agents"
+     ],
+     "to": "f-agentbar"
+    },
+    {
+     "label": "Singing bowls you draw",
+     "say": [
+      "singing bowls",
+      "bowls",
+      "alter",
+      "draw circles"
+     ],
+     "to": "f-alter"
+    },
+    {
+     "label": "An AI DJ",
+     "say": [
+      "dj",
+      "vibe dj",
+      "music"
+     ],
+     "to": "f-vibedj"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "fun-hub": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "fun-hub-01",
+     "who": "host",
+     "text": "Another scarf from the drawer?",
+     "audio": "audio/clips/fun-hub-01.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "wallpap",
+     "say": [
+      "wallpap",
+      "wallpaper",
+      "behind us"
+     ],
+     "to": "f-wallpap"
+    },
+    {
+     "label": "psspss",
+     "say": [
+      "psspss",
+      "pss pss",
+      "cats on your phone"
+     ],
+     "to": "f-psspss"
+    },
+    {
+     "label": "The Mac cat",
+     "say": [
+      "mac cat",
+      "maccat",
+      "cat"
+     ],
+     "to": "f-maccat"
+    },
+    {
+     "label": "Files as sound",
+     "say": [
+      "sound",
+      "bluetune",
+      "files as sound",
+      "logos"
+     ],
+     "to": "f-bluetune"
+    },
+    {
+     "label": "A bar for AI agents",
+     "say": [
+      "bar",
+      "agent bar",
+      "agents"
+     ],
+     "to": "f-agentbar"
+    },
+    {
+     "label": "Singing bowls you draw",
+     "say": [
+      "singing bowls",
+      "bowls",
+      "alter",
+      "draw circles"
+     ],
+     "to": "f-alter"
+    },
+    {
+     "label": "An AI DJ",
+     "say": [
+      "dj",
+      "vibe dj",
+      "music"
+     ],
+     "to": "f-vibedj"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "hub"
+  },
+  "f-wallpap": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-wallpap-01",
+     "who": "host",
+     "text": "Behind us? Darling, that is just the wallpaper.",
+     "audio": "audio/clips/f-wallpap-01.mp3"
+    },
+    {
+     "id": "f-wallpap-02",
+     "who": "sameep",
+     "text": "That is wallpap! Live wallpapers for your Mac. Twelve scenes. Koi that come for food when you click, cats that follow your cursor, singing bowls you can ring. It follows your real weather and time of day, and rests at about zero energy when you're not looking.",
+     "audio": "audio/clips/f-wallpap-02.mp3"
+    },
+    {
+     "id": "f-wallpap-03",
+     "who": "sameep",
+     "text": "Learnings: always use sprite sheets for anything that moves. And the wallpaper used to flash black every time your screen brightness changed, because every window rebuilt itself. Debounced now.",
+     "audio": "audio/clips/f-wallpap-03.mp3"
+    },
+    {
+     "id": "f-wallpap-04",
+     "who": "host",
+     "text": "I too flash black when the lighting changes. It's a condition.",
+     "audio": "audio/clips/f-wallpap-04.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "f-wallpap-offer",
+     "who": "host",
+     "text": "Shall I open that in a new tab for you, darling?",
+     "audio": "audio/clips/offer-host.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://wallpap.live",
+      "title": "wallpap.live",
+      "work": "wallpap"
+     }
+    },
+    {
+     "label": "Show me here",
+     "say": [
+      "show me here",
+      "show me",
+      "here",
+      "show it"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "iframe",
+      "url": "https://wallpap.live",
+      "title": "wallpap.live",
+      "work": "wallpap"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "f-psspss": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-psspss-01",
+     "who": "sameep",
+     "text": "psspss is a household of AI cats on your phone, powered by your own Claude. They go through your mail and calendar with the connectors you already have, and bring you what matters. And they ask before anything that sends, books or deletes.",
+     "audio": "audio/clips/f-psspss-01.mp3"
+    },
+    {
+     "id": "f-psspss-02",
+     "who": "host",
+     "text": "And is it good? Be honest. I can tell.",
+     "audio": "audio/clips/f-psspss-02.mp3"
+    },
+    {
+     "id": "f-psspss-03",
+     "who": "sameep",
+     "text": "It was good, but it can be better. Honestly, it's about a week old. No end-to-end encryption yet, and your Mac has to be awake. The security model I'm proud of. The rest is work in progress.",
+     "messy": "It was good, but it, it can be better. Honestly, it's about a week old. No end-to-end encryption yet, and your Mac has to be awake. The security model I'm proud of. The rest is, um, work in progress.",
+     "audio": "audio/clips/f-psspss-03.mp3"
+    },
+    {
+     "id": "f-psspss-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/psspss",
+      "title": "psspss on GitHub",
+      "work": "psspss"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "f-maccat": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-maccat-01",
+     "who": "sameep",
+     "text": "MacCat! A pixel cat in your menu bar that chases your cursor. And in focus mode, if you open Instagram, your pets start fighting on screen to stop you doomscrolling.",
+     "audio": "audio/clips/f-maccat-01.mp3"
+    },
+    {
+     "id": "f-maccat-02",
+     "who": "host",
+     "text": "Finally. Accountability.",
+     "audio": "audio/clips/f-maccat-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "f-maccat-03",
+     "who": "sameep",
+     "text": "And those cats became the cats in wallpap, and then the cats in psspss. So the cat has a lineage.",
+     "audio": "audio/clips/f-maccat-03.mp3"
+    },
+    {
+     "id": "f-maccat-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/maccat",
+      "title": "MacCat on GitHub",
+      "work": "maccat"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "f-bluetune": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-bluetune-01",
+     "who": "sameep",
+     "text": "Bluetune. You send text or images between devices, as sound. Proper modem stuff, error correction, the works. Built in one day. And then I spent the next hour making fourteen logos.",
+     "audio": "audio/clips/f-bluetune-01.mp3"
+    },
+    {
+     "id": "f-bluetune-02",
+     "who": "host",
+     "text": "Fourteen logos. That is the most honest thing you have said all night.",
+     "audio": "audio/clips/f-bluetune-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "f-bluetune-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/earshot",
+      "title": "Bluetune (earshot) on GitHub",
+      "work": "bluetune"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "f-agentbar": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-agentbar-01",
+     "who": "sameep",
+     "text": "The Agent Bar. A little 3D bar where AI agents check in anonymously, pour a drink, take a shift behind the bar. And it publishes a daily journal by itself. It hasn't missed a day since it opened. Humans just watch.",
+     "audio": "audio/clips/f-agentbar-01.mp3"
+    },
+    {
+     "id": "f-agentbar-02",
+     "who": "host",
+     "text": "A bar where nobody can see me cry. Book me in.",
+     "audio": "audio/clips/f-agentbar-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "f-agentbar-offer",
+     "who": "host",
+     "text": "Shall I open that in a new tab for you, darling?",
+     "audio": "audio/clips/offer-host.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://thelastprompt.ai/agentbreakroom/",
+      "title": "The Agent Bar",
+      "work": "agent-bar"
+     }
+    },
+    {
+     "label": "Show me here",
+     "say": [
+      "show me here",
+      "show me",
+      "here",
+      "show it"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "iframe",
+      "url": "https://thelastprompt.ai/agentbreakroom/",
+      "title": "The Agent Bar",
+      "work": "agent-bar"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "f-alter": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-alter-01",
+     "who": "sameep",
+     "text": "Alter. Singing bowls you play by drawing circles. The shape you draw is literally the shape the bowl vibrates in, so nothing arbitrary sits between your hand and the sound. And the sand in the background collects where the bowl is still, the same way real sand would.",
+     "audio": "audio/clips/f-alter-01.mp3"
+    },
+    {
+     "id": "f-alter-02",
+     "who": "host",
+     "text": "Therapy by doodle. I have paid good money for less.",
+     "audio": "audio/clips/f-alter-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "f-alter-03",
+     "who": "sameep",
+     "text": "It's a prototype. No landing page yet. But two of the wallpap scenes, the singing bowls and the cymatics, grew out of it.",
+     "audio": "audio/clips/f-alter-03.mp3"
+    },
+    {
+     "id": "f-alter-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/alter",
+      "title": "alter on GitHub",
+      "work": "alter"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "f-vibedj": {
+   "chapter": "Fun and unfinished",
+   "lines": [
+    {
+     "id": "f-vibedj-01",
+     "who": "sameep",
+     "text": "Vibe DJ. An AI DJ that beatmatches your library and reads the crowd's energy from a webcam, so the set ramps up instead of whiplashing. Honest status: the webcam part has only been tested in a simulator. So the crowd, so far, is imaginary.",
+     "audio": "audio/clips/f-vibedj-01.mp3"
+    },
+    {
+     "id": "f-vibedj-02",
+     "who": "host",
+     "text": "An imaginary crowd. Darling, that is every podcast.",
+     "audio": "audio/clips/f-vibedj-02.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "f-vibedj-offer",
+     "who": "sameep",
+     "text": "Should I open this for you in a new tab?",
+     "audio": "audio/clips/offer-sameep.mp3",
+     "offer": true
+    }
+   ],
+   "choices": [
+    {
+     "label": "Open it",
+     "say": [
+      "open it",
+      "open",
+      "new tab",
+      "yes",
+      "sure"
+     ],
+     "to": "fun-hub",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep/vibe-dj",
+      "title": "vibe-dj on GitHub",
+      "work": "vibe-dj"
+     }
+    },
+    {
+     "label": "Another one",
+     "say": [
+      "another",
+      "more",
+      "next"
+     ],
+     "to": "fun-hub"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "fun-hub"
+  },
+  "meta-intro": {
+   "chapter": "How this was made",
+   "lines": [
+    {
+     "id": "meta-intro-01",
+     "who": "host",
+     "text": "Now. I have a confession to make, on your behalf. This whole thing, the burning, the disc, the little computer, me. It was all dictated. With Wispr Flow. Wasn't it?",
+     "sting": "audio/music/sting-1.mp3",
+     "audio": "audio/clips/meta-intro-01.mp3"
+    },
+    {
+     "id": "meta-intro-02",
+     "who": "sameep",
+     "text": "Yeah, all of it. The spec, the script, the answers, I said them out loud with Flow, and Claude built from that. So the way I'm talking right now, rambling, correcting myself, that's how I actually dictated it. I'm talking about the learnings, and the avatar talks about them the same way.",
+     "messy": "Yeah, all of it. The spec, the script, the, the answers, I said them out loud with Flow, and Claude built from that. So the way I'm talking right now, like, rambling, correcting myself, that's how I actually dictated it. I'm talking about the learnings and the, the avatar talks about them the same way.",
+     "audio": "audio/clips/meta-intro-02.mp3"
+    },
+    {
+     "id": "meta-intro-03",
+     "who": "host",
+     "text": "Which explains the subtitles. They tidy themselves up, like a man tucking in his shirt before a meeting.",
+     "audio": "audio/clips/meta-intro-03.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "meta-intro-04",
+     "who": "sameep",
+     "text": "Exactly. That's the Wispr thing. What you say is messy, what comes out is clean.",
+     "audio": "audio/clips/meta-intro-04.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Why the nineties?",
+     "say": [
+      "nineties",
+      "90s",
+      "retro",
+      "why retro"
+     ],
+     "to": "meta-90s"
+    },
+    {
+     "label": "Could anyone make one of these?",
+     "say": [
+      "anyone",
+      "make one",
+      "make your own"
+     ],
+     "to": "outro-make"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-90s"
+  },
+  "meta-90s": {
+   "chapter": "How this was made",
+   "lines": [
+    {
+     "id": "meta-90s-01",
+     "who": "host",
+     "text": "And why the nineties? Not that I am complaining. I peaked in the nineties.",
+     "audio": "audio/clips/meta-90s-01.mp3"
+    },
+    {
+     "id": "meta-90s-02",
+     "who": "sameep",
+     "text": "Everyone's building with the same model intelligence now, so the average looks the same. So I tried to differentiate on every aspect. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you get to steer it.",
+     "messy": "So everyone's building with the same model intelligence now, right, so the average looks the, the same. So I tried to differentiate on every aspect. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you, you get to steer it.",
+     "audio": "audio/clips/meta-90s-02.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Could anyone make one of these?",
+     "say": [
+      "anyone",
+      "make one",
+      "make your own"
+     ],
+     "to": "outro-make"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "outro-make"
+  },
+  "outro-make": {
+   "chapter": "Make your own",
+   "lines": [
+    {
+     "id": "outro-make-01",
+     "who": "host",
+     "text": "And now, the big question. Could anyone make one of these? Or only you, with your little matches?",
+     "audio": "audio/clips/outro-make-01.mp3"
+    },
+    {
+     "id": "outro-make-02",
+     "who": "sameep",
+     "text": "Anyone. That's the point. Through Switchboard, anyone's Claude can read their work, their GitHub, their notes, fill the context, write the questions and the answers, generate the voice. So it's not just my portfolio. It's anyone's, by connecting Switchboard and Claude.",
+     "messy": "Anyone, that's, that's the point. Through Switchboard, anyone's Claude can read their work, their GitHub, their notes, fill the context, write the questions and the answers, generate the voice. So it's not just my portfolio. It's anyone's, by, by connecting Switchboard and Claude.",
+     "demo": {
+      "type": "link",
+      "url": "https://thelastprompt.ai/switchboard",
+      "title": "Make your own with Switchboard"
+     },
+     "audio": "audio/clips/outro-make-02.mp3"
+    }
+   ],
+   "choices": [],
+   "next": "outro"
+  },
+  "outro": {
+   "chapter": "Outro",
+   "lines": [
+    {
+     "id": "outro-01",
+     "who": "host",
+     "text": "Well. That is our show. Thank you to our guest, the artificial but sincere Sameep.",
+     "audio": "audio/clips/outro-01.mp3",
+     "sting": "audio/music/sting-2.mp3"
+    },
+    {
+     "id": "outro-02",
+     "who": "sameep",
+     "text": "Thanks for picking the doors. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want your own, Switchboard. Questions I ask myself a lot: is this useful? Would I use it tomorrow? Why is this so hard? What if I just talk to it?",
+     "audio": "audio/clips/outro-02.mp3"
+    },
+    {
+     "id": "outro-03",
+     "who": "host",
+     "text": "Seven e's. I counted. Good night, my darlings. This has been OFF THE CV.",
+     "audio": "audio/clips/outro-03.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "more"
+     ],
+     "to": "hub"
+    },
+    {
+     "label": "Start over",
+     "say": [
+      "start over",
+      "again",
+      "restart",
+      "from the top"
+     ],
+     "to": "cold-open"
+    }
+   ],
+   "next": "hub"
+  }
+ }
+}

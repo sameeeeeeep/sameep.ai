@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "name": "Sameep Rehlan",
+  "shortName": "Sameep",
+  "tagline": "Growth, games and a lot of things built by voice.",
+  "appName": "OFF THE CV.app",
+  "appTagline": "90s software that walks you through someone’s work with AI. In the form of a podcast.",
+  "discLabel": "SAMEEP — WORK — DO NOT LOSE",
+  "showName": "Off the CV",
+  "episodeTitle": "Ep. 01 — No CVs, please",
+  "episodeUrl": "data/episode.json",
+  "studio": [
+    "img/studio/studio-wide.webp",
+    "img/studio/studio-photo.webp"
+  ],
+  "host": {
+    "id": "host",
+    "name": "The Host",
+    "sprite": "img/sprites/host",
+    "side": "left"
+  },
+  "guest": {
+    "id": "sameep",
+    "name": "Sameep (AI)",
+    "sprite": "img/sprites/sameep",
+    "side": "right"
+  },
+  "characters": [
+    {
+      "id": "growth",
+      "label": "The Growth Lead",
+      "blurb": "Asks for the number behind the number."
+    },
+    {
+      "id": "founder",
+      "label": "The Founder",
+      "blurb": "Wants to know what you’d build on day one."
+    },
+    {
+      "id": "skeptic",
+      "label": "The Skeptic",
+      "blurb": "Arms folded. Has read 1,999 of these."
+    },
+    {
+      "id": "engineer",
+      "label": "The Engineer",
+      "blurb": "Will ask how the lip-sync works."
+    },
+    {
+      "id": "designer",
+      "label": "The Designer",
+      "blurb": "Already noticed the kerning."
+    },
+    {
+      "id": "intern",
+      "label": "The Intern",
+      "blurb": "Taking notes. Will ask what everyone’s thinking."
+    }
+  ],
+  "wallpaper": {
+    "url": "https://wallpap.live/scenes/koi.html?hour={hour}&weather=clear&muted=1",
+    "title": "wallpap.live — koi pond"
+  },
+  "links": [
+    {
+      "label": "Make your own with Switchboard",
+      "url": "https://thelastprompt.ai/switchboard",
+      "kind": "make"
+    },
+    {
+      "label": "github.com/sameeeeeeep",
+      "url": "https://github.com/sameeeeeeep",
+      "kind": "github"
+    }
+  ],
+  "work": [
+    {
+      "title": "Diwali Party invite",
+      "type": "iframe",
+      "url": "https://diwaliparty.live/?name={name}",
+      "icon": "offthecv"
+    },
+    {
+      "title": "Brand Brain",
+      "type": "iframe",
+      "url": "https://brandbrain.thelastprompt.ai",
+      "icon": "claude"
+    },
+    {
+      "title": "wallpap.live",
+      "type": "iframe",
+      "url": "https://wallpap.live/scenes/koi.html?hour={hour}&weather=clear&muted=1",
+      "icon": "wallpap"
+    },
+    {
+      "title": "Prophexy",
+      "type": "iframe",
+      "url": "https://thelastprompt.ai/prophexy/",
+      "icon": "perplexity"
+    },
+    {
+      "title": "ppt.live",
+      "type": "qr",
+      "url": "https://www.ppt.live",
+      "icon": "note"
+    },
+    {
+      "title": "Switchboard",
+      "type": "link",
+      "url": "https://thelastprompt.ai/switchboard",
+      "icon": "switchboard"
+    },
+    {
+      "title": "GitHub",
+      "type": "link",
+      "url": "https://github.com/sameeeeeeep",
+      "icon": "hd"
+    }
+  ],
+  "sprites": "img/sprites/sameep",
+  "stage": {
+    "host": {
+      "cx": 18,
+      "bottom": 15,
+      "height": 64,
+      "fade": "left"
+    },
+    "guest": {
+      "cx": 82,
+      "bottom": 15,
+      "height": 58,
+      "fade": "right"
+    },
+    "you": {
+      "cx": 50,
+      "bottom": 0,
+      "height": 36
+    }
+  },
+  "music": {
+    "bed": "audio/music/bed-loop.mp3",
+    "stings": [
+      "audio/music/sting-1.mp3",
+      "audio/music/sting-2.mp3",
+      "audio/music/sting-3.mp3"
+    ]
+  }
+}

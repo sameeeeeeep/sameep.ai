@@ -1,0 +1,11 @@
+{
+ "dialtone": 0.2,
+ "dialing": 1.25,
+ "ringing": 2.5200000000000005,
+ "answer": 4.5200000000000005,
+ "handshake": 6.220000000000001,
+ "probing": 8.22,
+ "training": 9.17,
+ "connected": 11.92,
+ "end": 12.6
+}

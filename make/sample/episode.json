@@ -1,0 +1,49 @@
+{
+  "speakers": {
+    "host": { "name": "The Host", "sprite": "../../img/sprites/host" },
+    "guest": { "name": "Rowan Vale (sample)", "sprite": "sprites/guest" }
+  },
+  "start": "intro",
+  "nodes": {
+    "intro": {
+      "chapter": "Cold open",
+      "lines": [
+        { "id": "s-intro-01", "who": "host", "text": "This is a sample episode. Rowan isn't real, but the format is. Rowan, what do you make?", "audio": "audio/s-intro-01.mp3" },
+        { "id": "s-intro-02", "who": "guest", "text": "Pocket synthesizers that teach kids to code. You patch a sound, and the patch is a program.", "messy": "uh so pocket synths, basically, that teach kids to like code? you patch a sound and the patch is the program", "audio": "audio/s-intro-02.mp3" }
+      ],
+      "choices": [
+        { "label": "How does a patch become code?", "say": ["patch", "code", "program", "how"], "to": "patch" },
+        { "label": "Who actually uses it?", "say": ["who", "users", "kids", "schools"], "to": "users" }
+      ]
+    },
+    "patch": {
+      "chapter": "Patch as program",
+      "lines": [
+        { "id": "s-patch-01", "who": "guest", "text": "Every cable is a variable. Plug the knob into the oscillator and you've written an assignment without typing anything.", "audio": "audio/s-patch-01.mp3" },
+        { "id": "s-patch-02", "who": "host", "text": "And the demo?", "audio": "audio/s-patch-02.mp3" },
+        { "id": "s-patch-03", "who": "guest", "text": "Here's how the bundle format works, so you can make one of these yourself.", "audio": "audio/s-patch-03.mp3", "demo": { "type": "link", "url": "https://sameep.ai/make/", "title": "Make your own OFF THE CV" } }
+      ],
+      "choices": [],
+      "next": "outro"
+    },
+    "users": {
+      "chapter": "Who uses it",
+      "lines": [
+        { "id": "s-users-01", "who": "guest", "text": "Two after-school clubs and one very patient music teacher. Small, but they come back every week.", "audio": "audio/s-users-01.mp3" }
+      ],
+      "choices": [
+        { "label": "How does a patch become code?", "say": ["patch", "code", "how"], "to": "patch" },
+        { "label": "Wrap it up", "say": ["wrap", "end", "done", "bye"], "to": "outro" }
+      ]
+    },
+    "outro": {
+      "chapter": "Make your own",
+      "lines": [
+        { "id": "s-outro-01", "who": "host", "text": "That's the sample. Yours would be your work, your face, your voice.", "audio": "audio/s-outro-01.mp3" }
+      ],
+      "choices": [
+        { "label": "Start over", "say": ["again", "start", "over", "replay"], "to": "intro" }
+      ]
+    }
+  }
+}
