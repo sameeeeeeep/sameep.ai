@@ -81,10 +81,22 @@ export async function loadIMac({ height = 2.1, aniso = 4 } = {}) {
   }));
   glow.renderOrder = 11;
   glow.frustumCulled = false;
+  // slot light: a soft pulse along the slot mouth as the disc is taken in
+  const slotU = { uGlow: { value: 0 } };
+  const slotGlow = new THREE.Mesh(new THREE.PlaneGeometry(slot.w * W * 1.0, 0.06), new THREE.ShaderMaterial({
+    vertexShader: GLOW_VERT,
+    fragmentShader: /* glsl */`uniform float uGlow; varying vec2 vUv;
+      void main(){ vec2 c = (vUv - 0.5) * vec2(2.0, 2.0); float d = c.x * c.x * c.x * c.x * 1.6 + c.y * c.y * 3.0;
+        gl_FragColor = vec4(vec3(0.55, 1.0, 0.9) * exp(-d * 2.2) * uGlow, 1.0); }`,
+    uniforms: slotU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+  }));
+  slotGlow.position.copy(L(slot.x, slot.y, 0.004));
+  slotGlow.rotation.z = (slot.tilt || 0);
+  slotGlow.renderOrder = 12;
   const g = new THREE.Group();
-  g.add(plane, glow);
+  g.add(plane, glow, slotGlow);
   return {
-    group: g, plane, mat, glowU, W, H, hasImage: !!img,
+    group: g, plane, mat, glowU, slotU, W, H, hasImage: !!img,
     slotLocal: L(slot.x, slot.y), slotW: slot.w * W, slotTilt: slot.tilt || 0,
     glassCorners: [L(bbox.x, bbox.y), L(bbox.x + bbox.w, bbox.y + bbox.h)],
     imageCorners: [L(0, 0), L(1, 1)],
