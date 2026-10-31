@@ -4,6 +4,7 @@ import { openWork } from './work.js';
 import { sound } from './audio.js';
 import { renderSubtitle } from './subtitle.js';
 import { openDemo, fillUrl } from './demos.js';
+import { isWispr } from '../version.js';
 
 const FILLERS = /\b(um+|uh+|erm|like|you know|i mean|basically|kind of|sort of|actually|literally|so yeah|right\?)\b[,]?\s*/gi;
 
@@ -120,7 +121,7 @@ export function buildApps(ctx) {
     } },
     { id: 'elevenlabs', label: 'ElevenLabs Voice', icon: 'elevenlabs', open() {
       const w = wm.win('elevenlabs', { title: 'ElevenLabs Voice', width: 380 });
-      const ta = h('textarea.field.field--area', { rows: 3, 'aria-label': 'Text to speak' }, 'Hello Wispr. I am a computer. I have been practising my vowels.');
+      const ta = h('textarea.field.field--area', { rows: 3, 'aria-label': 'Text to speak' }, (isWispr ? 'Hello Wispr. ' : 'Hello there. ') + 'I am a computer. I have been practising my vowels.');
       const pitch = h('input', { type: 'range', min: '0.2', max: '2', step: '0.1', value: '0.6', 'aria-label': 'Pitch' });
       const ok = 'speechSynthesis' in window;
       const btn = h('button.btn.btn--primary', { type: 'button', disabled: !ok, onclick: () => {
@@ -157,12 +158,12 @@ export function buildApps(ctx) {
       const extra = ['Action item: someone should probably hire him.', 'He said “voice is the new keyboard” four times. Counted.', 'Note to self: the CD was a pun. It took me a minute.'];
       let i = 0;
       const list = h('ul.notes', h('li', 'Candidate burned his CV. On purpose.'), h('li', 'Turned it into a CD, then a podcast, then a modem noise.'), h('li', 'Built the whole thing by talking to it.'));
-      w.body.append(h('p.small', 'Meeting: Wispr India growth ✕ Sameep'), list,
+      w.body.append(h('p.small', isWispr ? 'Meeting: Wispr India growth ✕ Sameep' : 'Meeting: you ✕ Sameep'), list,
         h('button.btn', { type: 'button', onclick: (e) => { if (i < extra.length) list.append(h('li.is-new', extra[i++])); if (i >= extra.length) e.currentTarget.disabled = true; } }, 'Enhance notes'));
     } },
     { id: 'notion', label: 'Notion Organizer', icon: 'notion', open() {
       const w = wm.win('notion', { title: 'Notion Organizer — To Do', width: 360 });
-      const items = [['Burn CV', true], ['Press it onto a CD', true], ['Dial up', true], ['Record a podcast with myself', true], ['Get a reply from Wispr', false, true]];
+      const items = [['Burn CV', true], ['Press it onto a CD', true], ['Dial up', true], ['Record a podcast with myself', true], [isWispr ? 'Get a reply from Wispr' : 'Get a reply from you', false, true]];
       w.body.append(h('ul.todo', items.map(([t, done, locked], i) => h('li', h('label', h('input', { type: 'checkbox', checked: done, onclick: locked ? (e) => { e.preventDefault(); alert({ icon: 'img/ui/note.svg', title: 'Notion Organizer', message: 'Only Wispr can tick this one.', buttons: [{ label: 'Fair enough', primary: true }] }); } : null }), h('span', t))))));
     } },
     { id: 'figma', label: 'Figma Draw', icon: 'figma', open() {
@@ -222,7 +223,7 @@ export function buildApps(ctx) {
     } },
     { id: 'trash', label: 'Trash', icon: 'trash', open() {
       const w = wm.win('trash', { title: 'Trash', width: 400 });
-      const items = ['CV_final_FINAL_v7.pdf', 'keyboard (Wispr already broke it)', '2,000 applications', 'Inter.ttf', 'dark-mode-neon-glow.css', 'cover-letter-template.doc'];
+      const items = ['CV_final_FINAL_v7.pdf', isWispr ? 'keyboard (Wispr already broke it)' : 'keyboard (someone already broke it)', '2,000 applications', 'Inter.ttf', 'dark-mode-neon-glow.css', 'cover-letter-template.doc'];
       w.body.append(h('p.finder__meta', `${items.length} items`), h('ul.finder.finder--list', items.map((t) => h('li', h('span.finder__item.is-static', h('img', { src: 'img/ui/readme.svg', alt: '', width: 24, height: 24 }), h('span', t))))),
         h('div.row', h('button.btn', { type: 'button', onclick: async () => {
           const r = await alert({ icon: 'img/ui/note.svg', title: 'Empty Trash', message: 'The Trash can’t be emptied. Some things are worth keeping as lessons.', buttons: [{ label: 'OK' }, { label: 'Hear the lesson', primary: true }] });

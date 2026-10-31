@@ -3,6 +3,7 @@
 // the CV contact block is drawn as solid redaction bars; bullets are greeked gibberish.
 
 import { mulberry32 } from './util.js';
+import { isWispr } from '../version.js';
 
 const INK = '#171512';
 const ACCENT = '#b4472b';
@@ -376,10 +377,10 @@ export function drawKraft(W, H, side) {
     ctx.font = `400 ${6.6 * u}px "Patrick Hand", cursive`;
     ctx.save();
     ctx.translate(26 * u, 52 * u); ctx.rotate(-0.035);
-    ctx.fillText('Wispr Flow', 0, 0);
+    ctx.fillText(isWispr ? 'Wispr Flow' : 'Whoever’s hiring', 0, 0);
     ctx.font = `400 ${4.6 * u}px "Patrick Hand", cursive`;
-    ctx.fillText('Growth team — India', 0, 7 * u);
-    ctx.fillText('Bengaluru', 0, 13.5 * u);
+    ctx.fillText(isWispr ? 'Growth team — India' : 'Growth · product · AI', 0, 7 * u);
+    ctx.fillText(isWispr ? 'Bengaluru' : 'wherever you are', 0, 13.5 * u);
     ctx.restore();
     // rubber stamp
     ctx.save();

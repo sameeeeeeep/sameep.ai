@@ -13,11 +13,12 @@ import { loadIMac } from './imac.js';
 import { Particles } from './particles.js';
 import { HeroAudio } from './audio.js';
 import { makeFireWall } from './firewall.js';
+import { isWispr } from '../version.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
 
 const BEATS = [
-  { id: 'pile', len: 1.0, cap: 'Wispr got 2,000 applications.' },
-  { id: 'envelope', len: 1.4, cap: 'One of them was mine.' },
+  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you got 2,000 CVs.' : 'You get thousands of CVs.' },
+  { id: 'envelope', len: 1.4, cap: isWispr ? 'I didn’t want to be another one of them.' : 'They all look the same. Here’s mine.' },
   { id: 'origami', len: 1.3, cap: 'I folded it,' },
   { id: 'flight', len: 0.8, cap: 'threw it,' },
   { id: 'crumple', len: 0.7, cap: 'crushed it,' },

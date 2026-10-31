@@ -3,6 +3,7 @@
 import { sound } from './audio.js';
 import { renderDialup } from './synth.js';
 import { h, wait } from './util.js';
+import { isWispr } from '../version.js';
 
 const C = {
   bg: '#04232b', bg2: '#063542', glow: '#b8ffe9', dim: '#5fb3a3', flame: '#ffa946', ember: '#ff6c4c',
@@ -145,7 +146,7 @@ export async function runBoot({ crt, root, persona, reduced }) {
     'Memory test ............ 32768K OK',
     'CD-ROM ................. 24x  OK',
     `Disc ................... "${persona.discLabel || 'WORK — DO NOT LOSE'}"`,
-    'Applications pile ...... 2,000 → 1',
+    isWispr ? 'Applications pile ...... 2,000 → 1' : 'CV pile ................ 1,000s → 1',
     'Mounting OFF THE CV.app',
   ];
   const romStart = performance.now();
@@ -205,7 +206,7 @@ export async function runBoot({ crt, root, persona, reduced }) {
     font(12, '"Spline Sans Mono"', '500'); text(p >= 1 ? 'Installation complete.' : steps[stepI], c.x, by - 8, C.ink);
     segBar(c.x, by, c.w - 64, 18, p);
     font(18, 'Doto', '800'); text(String(Math.round(p * 100)).padStart(3, ' ') + '%', c.x + c.w, by + 15, C.ink, 'right');
-    font(11, '"Spline Sans Mono"', '400'); text(persona.installFooter || 'Made by voice with Wispr Flow.', c.x, by + 40, '#555');
+    font(11, '"Spline Sans Mono"', '400'); text(persona.installFooter || (isWispr ? 'Made by voice with Wispr Flow.' : 'Made by voice: dictated end to end.'), c.x, by + 40, '#555');
   };
   await sleep(instDur * 1000 + 600);
   if (skipped) { cleanup(); return { skipped: true }; }

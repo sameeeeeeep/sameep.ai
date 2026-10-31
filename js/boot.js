@@ -1,5 +1,6 @@
 // boot.js — wires the hero (scroll story) to the app (inside the iMac).
 // hero → onDone → zoom into the iMac's glass → reveal #app and mount it.
+import { isWispr } from './version.js';
 
 const heroEl = document.getElementById('hero');
 const appEl = document.getElementById('app');
@@ -176,8 +177,8 @@ function placeholderHero(reason) {
   heroEl.classList.add('hero-placeholder');
   heroEl.innerHTML = `
     <div class="hp">
-      <p class="hp__count"><span>2,000</span> applications</p>
-      <h1 class="hp__title">Wispr said no CVs.<br>So I burned mine into a CD.</h1>
+      <p class="hp__count">${isWispr ? '<span>2,000</span> applications' : '<span>1,000s</span> of CVs'}</p>
+      <h1 class="hp__title">${isWispr ? 'Heard you got 2,000 CVs.<br>So I burned mine into a CD.' : 'No point in a CV. They’re all the same.<br>So I burned mine into a CD.'}</h1>
       <button class="hp__skip" type="button">Skip to the work</button>
     </div>`;
   heroEl.querySelector('.hp__skip').addEventListener('click', () => handoff());

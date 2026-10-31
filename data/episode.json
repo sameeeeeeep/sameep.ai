@@ -66,9 +66,8 @@
     {
      "id": "cold-open-02",
      "who": "sameep",
-     "text": "Yeah, so, the brief literally said don't apply with a CV. They got two thousand applications, all CVs, all kind of the same, really difficult to differentiate. And Wispr destroyed a keyboard in their own campaign, so I thought, okay, I'll destroy the CV.",
-     "messy": "Yeah so the, um, the brief literally said don't apply with a CV, right? They got like two thousand applications, all CVs, all kind of, all kind of the same, really difficult to differentiate. And Wispr, they destroyed a keyboard in their campaign, so I thought okay, I'll, I'll destroy the CV.",
-     "audio": "audio/clips/cold-open-02.mp3",
+     "text": "Yeah, so, everyone hiring gets thousands of CVs. All of them kind of the same, really difficult to differentiate. No point sending another one. So I thought, okay, I'll destroy mine.",
+     "audio": "audio/clips/cold-open-02-d.mp3",
      "visual": {
       "type": "stats",
       "title": "The brief",
@@ -78,6 +77,12 @@
         "label": "applications, all CVs"
        }
       ]
+     },
+     "v": {
+      "wispr": {
+       "text": "Yeah, so, the brief literally said don't apply with a CV. They got two thousand applications, all CVs, all kind of the same, really difficult to differentiate. And Wispr destroyed a keyboard in their own campaign, so I thought, okay, I'll destroy the CV.",
+       "audio": "audio/clips/cold-open-02.mp3"
+      }
      }
     },
     {
@@ -117,9 +122,15 @@
     {
      "id": "intro-01",
      "who": "host",
-     "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
+     "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to whoever is listening.",
      "sting": "audio/music/sting-intro.mp3",
-     "audio": "audio/clips/intro-01.mp3"
+     "audio": "audio/clips/intro-01-d.mp3",
+     "v": {
+      "wispr": {
+       "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
+       "audio": "audio/clips/intro-01.mp3"
+      }
+     }
     },
     {
      "id": "intro-02",
@@ -131,8 +142,14 @@
     {
      "id": "intro-03",
      "who": "host",
-     "text": "Yes, our third guest tonight is you. Click a little chip, or simply say it out loud with your Flow. I shall pretend I heard you perfectly.",
-     "audio": "audio/clips/intro-03.mp3"
+     "text": "Yes, and you, in the audience, steer. Click a little card, or simply say it out loud. I shall pretend I heard you perfectly.",
+     "audio": "audio/clips/intro-03-d.mp3",
+     "v": {
+      "wispr": {
+       "text": "Yes, and you, in the audience, steer. Click a little card, or simply say it out loud with your Flow. I shall pretend I heard you perfectly.",
+       "audio": "audio/clips/intro-03-w.mp3"
+      }
+     }
     }
    ],
    "choices": [],
@@ -1278,9 +1295,15 @@
     {
      "id": "often-lesson-04",
      "who": "sameep",
-     "text": "We ran out of runway. At the company, and personally. In an infrequent category, it becomes very difficult to build something sticky, because referrals also don't work if it's not sticky. The exact opposite of something like Wispr, which is used a lot more regularly.",
-     "audio": "audio/clips/often-lesson-04.mp3",
-     "cutaway": "img/cutaways/often-empty-calendar.webp"
+     "text": "We ran out of runway. At the company, and personally. In an infrequent category, it becomes very difficult to build something sticky, because referrals also don't work if it's not sticky. The exact opposite of something you use every single day.",
+     "audio": "audio/clips/often-lesson-04-d.mp3",
+     "cutaway": "img/cutaways/often-empty-calendar.webp",
+     "v": {
+      "wispr": {
+       "text": "We ran out of runway. At the company, and personally. In an infrequent category, it becomes very difficult to build something sticky, because referrals also don't work if it's not sticky. The exact opposite of something like Wispr, which is used a lot more regularly.",
+       "audio": "audio/clips/often-lesson-04.mp3"
+      }
+     }
     },
     {
      "id": "often-lesson-05",
@@ -2146,15 +2169,26 @@
     {
      "id": "w-flow-01",
      "who": "host",
-     "text": "Now hold on. You built something called Flow. And you are applying to Wispr Flow. Bold.",
-     "audio": "audio/clips/w-flow-01.mp3"
+     "text": "Now hold on. You built something called Flow. There is already a rather famous Flow.",
+     "audio": "audio/clips/w-flow-01-d.mp3",
+     "v": {
+      "wispr": {
+       "text": "Now hold on. You built something called Flow. And you are applying to Wispr Flow. Bold.",
+       "audio": "audio/clips/w-flow-01.mp3"
+      }
+     }
     },
     {
      "id": "w-flow-02",
      "who": "sameep",
-     "text": "Yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a very small Flow. Yours is the one I used to build this whole site.",
-     "messy": "Yeah, yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a, it's a very small Flow. Yours is the one I used to build this whole site.",
-     "audio": "audio/clips/w-flow-02.mp3"
+     "text": "Yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a very small Flow. The big one is what I used to dictate this whole site.",
+     "audio": "audio/clips/w-flow-02-d.mp3",
+     "v": {
+      "wispr": {
+       "text": "Yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a very small Flow. Yours is the one I used to build this whole site.",
+       "audio": "audio/clips/w-flow-02.mp3"
+      }
+     }
     },
     {
      "id": "w-flow-03",
@@ -4287,15 +4321,15 @@
     {
      "id": "meta-intro-03",
      "who": "host",
-     "text": "Which explains the subtitles. They tidy themselves up, like a man tucking in his shirt before a meeting.",
-     "audio": "audio/clips/meta-intro-03.mp3",
+     "text": "Which explains the rambling. You correct yourself mid-sentence, like a man tucking in his shirt on the way into a meeting.",
+     "audio": "audio/clips/meta-intro-03-b.mp3",
      "shot": "cu"
     },
     {
      "id": "meta-intro-04",
      "who": "sameep",
-     "text": "Exactly. That's the Wispr thing. What you say is messy, what comes out is clean.",
-     "audio": "audio/clips/meta-intro-04.mp3"
+     "text": "Exactly. What I say is messy, what comes out the other end is clean. I left the messy version in on purpose.",
+     "audio": "audio/clips/meta-intro-04-b.mp3"
     }
    ],
    "choices": [

@@ -9,6 +9,7 @@ import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { fillUrl } from './demos.js';
+import { isWispr } from '../version.js';
 
 export async function mountApp(root, { episodeUrl } = {}) {
   const reduced = reducedMotion();
@@ -123,7 +124,7 @@ function buildDesktop(screen, persona) {
           ['About OFF THE CV…', () => ctx.open('hd')],
           ['-'],
           ['Sound on / off', () => sound.toggle()],
-          ['Restart…', () => { location.href = location.pathname + '?skip'; }],
+          ['Restart…', () => { location.href = location.pathname + (isWispr ? '?skip&version=wispr' : '?skip'); }],
         ] },
         { label: 'File', items: [['Open Podcast', () => ctx.openPodcast()], ['Open Wispr Flow', () => ctx.open('wispr')], ['-'], ['Close Window', () => document.querySelector('.win.is-front .win__close')?.click()]] },
         { label: 'Edit', items: [['Undo CV burning', null], ['Cut', null], ['Copy', null], ['Paste', null]] },
