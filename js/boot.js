@@ -185,14 +185,71 @@ function placeholderHero(reason) {
   if (reason) console.info('[boot] hero placeholder:', reason);
 }
 
-function addSkipIntro() {
-  if (store.get(SEEN_KEY) !== '1') return;
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'skip-intro';
-  b.textContent = 'Skip intro';
-  b.addEventListener('click', () => { b.remove(); handoff({ instant: true }); });
-  document.body.append(b);
+// ---------------------------------------------------------------- entry gate
+// A loader while the studio builds, then one click in. That click is the gesture browsers
+// need for audio, so the story starts with sound on (or muted, if they pick that).
+function entryGate() {
+  const seen = store.get(SEEN_KEY) === '1';
+  const g = document.createElement('div');
+  g.className = 'gate';
+  g.setAttribute('role', 'dialog');
+  g.setAttribute('aria-label', 'Enter');
+  g.innerHTML = `
+    <div class="gate__in">
+      <p class="gate__mark"><span>Sameep Rehlan</span><span class="gate__sep">/</span><span>Off the CV</span></p>
+      <h1 class="gate__title">${isWispr ? 'Heard you got 2,000 CVs.' : 'No point in another CV.'}</h1>
+      <div class="gate__bar" aria-hidden="true"><i></i></div>
+      <p class="gate__status" aria-live="polite">Setting up the studio… <span>0</span>%</p>
+      <div class="gate__actions">
+        <button type="button" class="gate__enter" disabled>Enter <span>· sound on</span></button>
+        <button type="button" class="gate__quiet" disabled>Enter muted</button>
+        ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work</button>' : ''}
+      </div>
+      <p class="gate__hint">Best with headphones. Scroll, swipe or use the arrow keys.</p>
+    </div>`;
+  document.body.append(g);
+  document.documentElement.classList.add('is-gated');
+  const bar = g.querySelector('.gate__bar i'), pct = g.querySelector('.gate__status span'), status = g.querySelector('.gate__status');
+  let p = 0, done = false, raf = 0;
+  const t0 = performance.now();
+  const paint = () => {
+    // creep toward 90% while loading; finish when the hero says it's ready
+    const t = (performance.now() - t0) / 1000;
+    const goal = done ? 100 : 90 * (1 - Math.exp(-t / 2.2));
+    p += (goal - p) * (done ? 0.25 : 0.12);
+    bar.style.transform = `scaleX(${p / 100})`;
+    pct.textContent = String(Math.round(p));
+    if (done && p > 99.5) { bar.style.transform = 'scaleX(1)'; pct.textContent = '100'; return; }
+    raf = requestAnimationFrame(paint);
+  };
+  raf = requestAnimationFrame(paint);
+  const close = () => {
+    cancelAnimationFrame(raf);
+    document.documentElement.classList.remove('is-gated');
+    g.classList.add('is-out');
+    setTimeout(() => g.remove(), reduced ? 0 : 650);
+  };
+  const enter = (withSound) => {
+    store.set('offthecv.muted', withSound ? '0' : '1');
+    store.set('offthecv.sound', withSound ? 'on' : 'off');
+    close();
+    // the hero's own sound pill reflects its state; nudge it to match the choice
+    setTimeout(() => {
+      const pill = heroEl.querySelector('.hero-sound');
+      if (pill && (pill.getAttribute('aria-pressed') === 'true') !== withSound) pill.click();
+    }, 60);
+  };
+  g.querySelector('.gate__enter').addEventListener('click', () => enter(true));
+  g.querySelector('.gate__quiet').addEventListener('click', () => enter(false));
+  g.querySelector('.gate__skip')?.addEventListener('click', () => { store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
+  return {
+    ready() {
+      done = true;
+      status.firstChild.textContent = 'Ready. ';
+      g.querySelectorAll('.gate__enter, .gate__quiet').forEach((b) => { b.disabled = false; });
+      g.querySelector('.gate__enter').focus({ preventScroll: true });
+    },
+  };
 }
 
 async function start() {
@@ -202,6 +259,7 @@ async function start() {
     return handoff({ instant: true });
   }
 
+  const gate = entryGate();
   let mountHero = null;
   try {
     ({ mountHero } = await import('./hero/main.js'));
@@ -223,7 +281,7 @@ async function start() {
       placeholderHero('hero threw');
     }
   }
-  addSkipIntro();
+  gate.ready();
   prefetchApp();
 }
 

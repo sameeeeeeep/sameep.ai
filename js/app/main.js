@@ -9,7 +9,7 @@ import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { fillUrl } from './demos.js';
-import { isWispr } from '../version.js';
+import { isWispr, withVersion } from '../version.js';
 
 export async function mountApp(root, { episodeUrl } = {}) {
   const reduced = reducedMotion();
@@ -149,7 +149,9 @@ function buildDesktop(screen, persona) {
       }));
       document.addEventListener('pointerdown', (e) => { if (!e.target.closest('.menubar')) closeAll(); });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
-      menubar.append(left, h('div.menubar__right', h('span.menubar__app', persona.showName), soundBtn, clock));
+      // the way into Switchboard: always one click from anywhere in the app
+      const make = h('a.menubar__make', { href: withVersion('make/'), target: '_blank', rel: 'noopener', title: 'Make your own with Switchboard' }, h('span', 'Make your own'), h('span', { 'aria-hidden': 'true' }, '↗'));
+      menubar.append(left, h('div.menubar__right', make, h('span.menubar__app', persona.showName), soundBtn, clock));
     },
   };
 }

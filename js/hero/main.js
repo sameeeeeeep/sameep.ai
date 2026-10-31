@@ -155,7 +155,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     else if (dir > 0 && y >= gTop[gTop.length - 1] - 4) return false;   // past the last pose: let the page scroll on
     return true;
   };
-  const inHero = () => gLive && scrollY <= gTop[gTop.length - 1] + 4;
+  const inHero = () => gLive && !document.documentElement.classList.contains('is-gated') && scrollY <= gTop[gTop.length - 1] + 4;
   const onWheel = (e) => {
     if (!inHero() || e.ctrlKey) return;
     if (e.deltaY > 0 && scrollY >= gTop[gTop.length - 1] - 4) return;

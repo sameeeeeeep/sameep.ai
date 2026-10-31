@@ -26,8 +26,31 @@ img { max-width: 100%; }
 .boot-fail { position: fixed; inset: 0; display: grid; place-items: center; font-family: var(--f-term); font-size: 28px; color: var(--crt-glow); background: #04232b; }
 .boot-fail a { color: var(--flame); }
 
-.skip-intro { position: fixed; z-index: 8000; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); min-height: var(--tap); padding: 0 18px; border: 1px solid rgba(243,238,226,.35); border-radius: 999px; background: rgba(15,13,11,.72); color: var(--paper); font: 500 13px var(--f-ui); letter-spacing: .02em; cursor: pointer; backdrop-filter: blur(6px); }
-.skip-intro:hover { background: var(--paper); color: var(--ink); }
+.gate { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: radial-gradient(ellipse at 50% 35%, #2a201a, var(--night) 72%); color: var(--paper); transition: opacity .6s var(--ease-out, ease), visibility .6s; }
+.gate.is-out { opacity: 0; visibility: hidden; pointer-events: none; }
+html.is-gated, html.is-gated body { overflow: hidden; }
+.gate__in { width: min(560px, 100%); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; }
+.gate__mark { margin: 0; font: 500 13px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: rgba(243,238,226,.7); display: flex; gap: 10px; }
+.gate__sep { color: var(--ember); }
+.gate__title { margin: 0; font: 800 clamp(30px, 6vw, 56px)/1.04 var(--f-head); letter-spacing: -.02em; text-wrap: balance; }
+.gate__bar { width: min(320px, 80%); height: 4px; border-radius: 2px; background: rgba(243,238,226,.14); overflow: hidden; margin-top: 6px; }
+.gate__bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--ember), var(--flame)); transform-origin: left; transform: scaleX(0); }
+.gate__status { margin: 0; font: 800 14px var(--f-dot); letter-spacing: .04em; color: var(--flame); }
+.gate__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.gate__actions button { min-height: 48px; padding: 0 22px; border-radius: 999px; font: 600 14px var(--f-ui); cursor: pointer; transition: background .2s, color .2s, opacity .3s; }
+.gate__actions button:disabled { opacity: .35; cursor: default; }
+.gate__enter { border: 0; background: var(--paper); color: var(--ink); }
+.gate__enter span { opacity: .6; }
+.gate__enter:not(:disabled):hover { background: var(--flame); }
+.gate__quiet, .gate__skip { border: 1px solid rgba(243,238,226,.35); background: transparent; color: var(--paper); }
+.gate__quiet:not(:disabled):hover, .gate__skip:hover { background: rgba(243,238,226,.12); }
+.gate__skip { flex-basis: 100%; max-width: max-content; margin: 0 auto; border-style: dashed; }
+.gate__hint { margin: 4px 0 0; font: 400 12px var(--f-ui); color: rgba(243,238,226,.55); }
+.gate button:focus-visible { outline: 2px solid var(--flame); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .gate { transition: none; } }
+.menubar__make { display: inline-flex; align-items: center; gap: 6px; height: 20px; padding: 0 10px; border: 1px solid #111; border-radius: 999px; background: var(--tangerine, #ff8a1f); color: #111; font: 700 12px var(--f-ui); text-decoration: none; white-space: nowrap; box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+.menubar__make:hover { background: #111; color: #fff; }
+.menubar__make:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
 
 /* placeholder hero (only when js/hero is missing) */
 .hero-placeholder { min-height: 100svh; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, #2a201a, var(--night) 70%); }
