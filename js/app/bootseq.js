@@ -29,7 +29,7 @@ export async function runBoot({ crt, root, persona, reduced }) {
   crt.setMode('screen');
 
   await Promise.race([
-    Promise.all(['24px VT323', '800 30px "Bricolage Grotesque"', '500 14px "Spline Sans Mono"', '800 20px Doto'].map((f) => document.fonts.load(f))),
+    Promise.all(['24px VT323', '30px "Jersey 10"', '500 14px "Spline Sans Mono"', '800 20px Doto'].map((f) => document.fonts.load(f))),
     wait(1500),
   ]).catch(() => {});
   const cd = await loadImg('img/ui/offthecv.svg');
@@ -195,7 +195,7 @@ export async function runBoot({ crt, root, persona, reduced }) {
     const iconS = W < 500 ? 56 : 72;
     pix(cd, c.x, c.y, iconS);
     const tx = c.x + iconS + 16;
-    font(W < 500 ? 24 : 32, '"Bricolage Grotesque"', '800'); text(persona.appName || 'OFF THE CV.app', tx, c.y + (W < 500 ? 22 : 28), C.ink);
+    font(W < 500 ? 24 : 32, '"Jersey 10"', '600'); text(persona.appName || 'OFF THE CV.app', tx, c.y + (W < 500 ? 22 : 28), C.ink);
     font(12, '"Spline Sans Mono"', '500'); text('Version 1.0 (1999)', tx, c.y + (W < 500 ? 42 : 50), '#333');
     font(11, '"Spline Sans Mono"', '400');
     const tag = wrap(persona.appTagline || '90s software that walks you through someone’s work with AI.', c.x + c.w - tx);

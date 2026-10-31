@@ -75,7 +75,7 @@
 .hero-cap__idx { font: 500 12px/1 var(--f-ui); letter-spacing: .18em; color: rgba(243, 238, 226, .5); margin-bottom: 10px !important; }
 .hero-cap__n { color: var(--flame, #ffa946); }
 .hero-cap__txt {
-  font-family: var(--f-head); font-weight: 600; font-size: clamp(24px, 3.3vw, 48px); line-height: 1.02; letter-spacing: -.02em;
+  font-family: var(--f-head); font-weight: 600; font-size: clamp(24px, 3.3vw, 48px); line-height: 1.02; letter-spacing: 0;
   color: var(--paper, #f3eee2); text-wrap: balance;
 }
 /* font play inside captions */

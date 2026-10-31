@@ -218,7 +218,7 @@ export function buildApps(ctx) {
           h('p.about__title', 'OFF THE CV OS 8.6'),
           h('p.small', 'Built-in memory: 32 MB'),
           h('p.small', 'Largest unused block: your attention span'),
-          h('p.small', 'Built by voice with Wispr Flow and Claude. Fonts: Doto, Bricolage Grotesque, Spline Sans Mono, VT323, Patrick Hand.'),
+          h('p.small', 'Built by voice with Wispr Flow and Claude. Fonts: Jersey 10, Doto, Spline Sans Mono, VT323, Patrick Hand.'),
           P.links.find((l) => l.kind === 'github') && h('a.btn', { href: P.links.find((l) => l.kind === 'github').url, target: '_blank', rel: 'noopener' }, 'Source on GitHub ↗'))));
     } },
     { id: 'trash', label: 'Trash', icon: 'trash', open() {

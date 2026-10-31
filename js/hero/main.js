@@ -52,7 +52,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 async function fontsReady() {
   if (!document.fonts?.load) return;
   const f = [
-    '800 40px "Bricolage Grotesque"', '600 40px "Bricolage Grotesque"', '400 20px "Spline Sans Mono"',
+    '800 40px "Bricolage Grotesque"', '600 40px "Jersey 10"', '500 40px "Jersey 10"', '400 20px "Spline Sans Mono"',
     '500 20px "Spline Sans Mono"', '400 40px "Patrick Hand"', '800 40px "Doto"',
   ];
   await Promise.race([Promise.all(f.map((x) => document.fonts.load(x).catch(() => {}))), wait(2500)]);
