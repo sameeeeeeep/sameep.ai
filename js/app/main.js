@@ -72,7 +72,11 @@ export async function mountApp(root, { episodeUrl } = {}) {
     pod.open();
     const q = new URLSearchParams(location.search);
     if (q.has('debug') && q.get('seat')) pod.studioReady.then(() => pod.seatForQA(q.get('seat')));
-    if (q.has('debug') && q.get('node')) pod.go(q.get('node'), { push: false }); else pod.start();
+    if (q.has('debug') && q.get('node')) {
+      pod.go(q.get('node'), { push: false });
+      for (let i = 0; i < +(q.get('line') || 0); i++) pod.skip();
+      if (q.get('shot')) pod.studioReady.then(() => setTimeout(() => pod.studio.cut(q.get('shot'), q.get('who') || 'host'), 300));
+    } else pod.start();
   } else {
     desk.notice('Episode not found. The desktop still works; the podcast is on its way.');
   }

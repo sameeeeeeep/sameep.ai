@@ -258,6 +258,9 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
 
 /* transport */
 .transport { display: flex; align-items: center; gap: 8px; flex: none; }
+.chap-drawer { flex: none; }
+.chap-drawer summary::-webkit-details-marker { display: none; }
+.chap-drawer summary { list-style: none; }
 .tbtn { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border: 1px solid #111; border-radius: 6px; background: linear-gradient(#fafafa, #d0d0d0); box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #999; cursor: pointer; color: #111; }
 .tbtn:active { background: #333; color: #fff; }
 .tbtn--play { width: 48px; height: 44px; background: linear-gradient(#ffb85e, var(--flame)); }
@@ -478,7 +481,7 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
 
 /* ---------------------------------------------------------------- mid widths + short screens */
 @media (min-width: 761px) and (max-width: 1060px) {
-  .pod { grid-template-columns: 1fr; }
+  .pod { grid-template-columns: minmax(0, 1fr); }
   .pod__side { display: none; }
   .chap-drawer { display: block; flex: none; border: 1px solid var(--plat-4); background: var(--plat-1); }
   .chap-drawer summary { min-height: 34px; display: flex; align-items: center; padding: 0 12px; font: 700 11px var(--f-ui); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
@@ -497,6 +500,9 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
   .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
   .chip { flex: none; min-height: 34px; white-space: nowrap; }
   .say { min-height: 42px; } .say__input, .say__mic, .say__go { height: 40px; }
+  .transport .chap-drawer { position: relative; display: block; border: 1px solid #111; border-radius: 6px; background: linear-gradient(#fafafa, #d0d0d0); }
+  .transport .chap-drawer summary { min-height: 32px; padding: 0 10px; font-size: 10.5px; }
+  .transport .chap-drawer[open] .chap-drawer__body { position: absolute; z-index: 30; bottom: calc(100% + 6px); right: 0; width: 280px; max-height: 60vh; overflow: auto; background: var(--plat-1); border: 1px solid #111; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
 }
 
 /* ---------------------------------------------------------------- narrow / portrait phones */
@@ -522,8 +528,9 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
   .win--podcast.win--sheet { height: calc(100% - 4px) !important; max-height: none; }
   .win--modal { left: 12px !important; right: 12px; width: auto !important; }
 
-  .pod { grid-template-columns: 1fr; }
+  .pod { grid-template-columns: minmax(0, 1fr); }
   .pod__side { display: none; }
+  .win--sheet { max-width: 100%; }
   .pod__main { padding: 10px 10px calc(14px + env(safe-area-inset-bottom)); gap: 10px; }
   .stage-box { flex: none; min-height: 0; container-type: normal; display: block; }
   .stage-col { width: 100%; }

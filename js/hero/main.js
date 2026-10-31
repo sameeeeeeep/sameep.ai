@@ -12,6 +12,7 @@ import { makeCD, makeMotes, seedMotes, CD_R } from './cd.js';
 import { loadIMac } from './imac.js';
 import { Particles } from './particles.js';
 import { HeroAudio } from './audio.js';
+import { makeFireWall } from './firewall.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
 
 const BEATS = [
@@ -169,10 +170,14 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   let cvFront, cvBack, frontCanvas = null, FOLD_FULL, angles, flameMat;
   let full = false;
   const stripFlames = [];
+  const fireWall = makeFireWall();
+  let wallI = 0;
 
   // ------------------------------------------------------------------ temps (no per-frame allocation)
   const V = () => new THREE.Vector3();
   const tA = V(), tB = V(), tC = V(), tD = V(), tE = V(), camT = V(), camD = V();
+  const camP = V(), camL = V(), camPV = V(), camLV = V();
+  let camSnap = true;
   const qA = new THREE.Quaternion(), qB = new THREE.Quaternion(), qC = new THREE.Quaternion();
   const eA = new THREE.Euler();
   const mA = new THREE.Matrix4();
@@ -285,12 +290,22 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
 
   // ------------------------------------------------------------------ sizing
   let dpr = 1;
+  // adaptive quality: 2 = full, 1 = lighter, 0 = low-end (pixel budget, MSAA, particle rate)
+  const QB = [0.5, 0.72, 1], QP = [0.35, 0.6, 1], QS = [0, 2, mobile ? 2 : 4];
+  let quality = 2, qAcc = 0, qN = 0, qWorst = 0;
+  function setQuality(q) {
+    quality = q;
+    post.main.samples = QS[q]; post.main.dispose();
+    if (q === 0) { key.shadow.mapSize.set(1024, 1024); key.shadow.map?.dispose(); key.shadow.map = null; }
+    resize();
+    if (DEBUG) console.log('[hero] quality ->', q);
+  }
   function resize() {
     vw = Math.max(1, dom.stage.clientWidth); vh = Math.max(1, dom.stage.clientHeight);
     aspect = vw / vh;
     const cap = mobile ? 1.5 : 2;
     dpr = Math.min(window.devicePixelRatio || 1, cap);
-    const budget = mobile ? 2.4e6 : 4.6e6;
+    const budget = (mobile ? 1.6e6 : 2.8e6) * QB[quality];
     if (vw * vh * dpr * dpr > budget) dpr = Math.max(1, Math.sqrt(budget / (vw * vh)));
     renderer.setPixelRatio(dpr);
     renderer.setSize(vw, vh, false);
@@ -562,10 +577,13 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
 
     if (DEBUG) PROF[3] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     // ---- fire particles from burn fronts
-    // edge flames
+    // edge flames (+ feed the shared fire wall)
+    const wu = fireWall.userData.u;
+    let nBurn = 0, zSum = 0;
     for (let k = 0; k < stripFlames.length; k++) {
       const fl = stripFlames[k];
       const f = strips.front[k];
+      wu.uOn.value[k] *= 0.9;
       if (!stripsOn || f <= 0 || !strips.isBurning(k)) { fl.visible = false; continue; }
       const iy = strips.ign[k][1];
       let ly = iy + f;
@@ -580,6 +598,23 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       u.uI.value = life * (upward ? 1 : 0.6) * (0.85 + 0.15 * Math.sin(time * 23 + k));
       u.uScale.value = (upward ? 0.34 : 0.2) * (0.9 + 0.1 * Math.sin(time * 3 + k));
       u.uTime.value = time + k;
+      if (upward) {
+        wu.uX.value[k] = pt[0]; wu.uY.value[k] = pt[1] - 0.06;
+        wu.uOn.value[k] = Math.max(wu.uOn.value[k], life);
+        nBurn++; zSum += pt[2];
+      }
+    }
+    // the wall reads once three or more strips are alight
+    const wallT = stripsOn ? clamp((nBurn - 2) / 2) : 0;
+    wallI += (wallT - wallI) * (1 - Math.exp(-(dt || 0.016) * 3));
+    fireWall.visible = wallI > 0.01;
+    if (fireWall.visible) {
+      fireWall.scale.set(strips.spreadW + 0.8, strips.spreadH + 0.9, 1);
+      fireWall.position.set(0, 0.1, nBurn ? zSum / nBurn - 0.12 : fireWall.position.z);
+      wu.uI.value = wallI * 0.6;
+      wu.uTime.value = time;
+      wu.uSpread.value = strips.portrait ? 0.1 : 0.17;
+      wu.uOrigin.value.set(S.x, S.y);
     }
     // fire jumping to a new strip: a burst where it catches
     if (stripsOn && !reduced) {
@@ -596,7 +631,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       }
     }
     if (stripsOn && burnActive && !reduced) {
-      const rate = mobile ? 0.55 : 1;
+      const rate = (mobile ? 0.55 : 1) * QP[quality];
       for (let k = 0; k < NSTRIPS; k++) {
         if (!strips.isBurning(k)) continue;
         const base = k * 4;
@@ -715,10 +750,18 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     // ---- camera
     const dist = camAt(p);
     const parallax = 1 - dim;
-    camera.position.copy(camT).addScaledVector(camD, dist);
+    tE.copy(camT).addScaledVector(camD, dist);
+    // critically damped spring toward the scripted camera (absorbs late-asset re-layouts)
+    if (camSnap || !dt) { camP.copy(tE); camL.copy(camT); camPV.set(0, 0, 0); camLV.set(0, 0, 0); camSnap = false; }
+    else {
+      const K = 90, C = 2 * Math.sqrt(K), h = Math.min(dt, 1 / 30);
+      camPV.addScaledVector(tA.copy(tE).sub(camP), K * h).multiplyScalar(1 - C * h); camP.addScaledVector(camPV, h);
+      camLV.addScaledVector(tA.copy(camT).sub(camL), K * h).multiplyScalar(1 - C * h); camL.addScaledVector(camLV, h);
+    }
+    camera.position.copy(camP);
     camera.position.x += (Math.sin(time * 0.31) * 0.012 + pointer.sx * 0.05) * parallax;
     camera.position.y += (Math.sin(time * 0.23) * 0.009 + pointer.sy * 0.035) * parallax;
-    camera.lookAt(camT);
+    camera.lookAt(camL);
 
     if (DEBUG) PROF[8] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     // ---- UI
@@ -794,7 +837,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     strips = new Strips({ front: cvFront, back: cvBack, mobile });
     stripsG = new THREE.Group();
     stripsG.position.copy(S);
-    stripsG.add(strips.mesh, strips.flameMesh);
+    stripsG.add(strips.mesh, strips.flameMesh, fireWall);
     // a licking flame sprite riding each strip's leading edge
     for (let k = 0; k < NSTRIPS; k++) { const f = makeFlame(k * 1.37); f.visible = false; scene.add(f); stripFlames.push(f); }
     scene.add(stripsG);
@@ -840,6 +883,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   }
 
   // ------------------------------------------------------------------ loop
+  const stats = { avg: 0, worst: 0 };
   let running = true, visible = true, last = performance.now(), time = 0, raf = 0;
   let rmKey = -1, rmBusy = false;
   const RM_KEYS = [G('pile', 0.5), G('envelope', 0.57), G('envelope', 0.75), G('origami', 1) - 1e-4, G('flight', 0.5), G('crumple', 0.9),
@@ -851,7 +895,18 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   function frame(now) {
     raf = nextFrame(frame);
     if (!running || !visible) { last = now; return; }
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const rawDt = (now - last) / 1000;
+    const dt = Math.min(0.05, rawDt);
+    // measure real frame pacing after the intro; step quality down if we're consistently slow
+    if (full && !TIMER && rawDt < 0.5) {
+      qAcc += rawDt; qN++; qWorst = Math.max(qWorst, rawDt);
+      if (qN >= 90) {
+        const avg = qAcc / qN;
+        stats.avg = avg; stats.worst = qWorst;
+        if (avg > 0.024 && quality > 0) setQuality(quality - 1);
+        qAcc = 0; qN = 0; qWorst = 0;
+      }
+    }
     last = now;
     readScroll();
     if (reduced) {
@@ -876,10 +931,11 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     introT += dt;
     time += dt;
     // smooth scroll (critically damped-ish), snap on big jumps (skip)
-    const diff = target - prog;
-    if (Math.abs(diff) > 0.3) prog = target;
+    const tgt = full ? target : Math.min(target, G('pile', 0.97));
+    const diff = tgt - prog;
+    if (Math.abs(diff) > 0.3) { prog = tgt; camSnap = true; }
     else prog += diff * (1 - Math.exp(-dt * 5.5));
-    if (Math.abs(target - prog) < 0.00005) prog = target;
+    if (Math.abs(tgt - prog) < 0.00005) prog = tgt;
     pointer.sx += (pointer.x - pointer.sx) * (1 - Math.exp(-dt * 4));
     pointer.sy += (pointer.y - pointer.sy) * (1 - Math.exp(-dt * 4));
     apply(prog, time, dt);
@@ -912,10 +968,11 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
 
   // dev hooks (harmless in prod)
   const api = {
+    stats: () => ({ ...stats, quality }),
     beats: BEATS.map(({ id, a, b }) => ({ id, a, b })),
     jump(p) {
       const top = dom.track.getBoundingClientRect().top + scrollY + p * (dom.track.offsetHeight - dom.stage.clientHeight);
-      scrollTo({ top, behavior: 'instant' }); readScroll(); prog = target;
+      scrollTo({ top, behavior: 'instant' }); readScroll(); prog = target; camSnap = true;
     },
     // dev: advance n frames at fixed dt at progress p, render, return a JPEG data URL of the canvas
     async shot(p, { frames = 20, dt = 1 / 60 } = {}) {
@@ -923,6 +980,19 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       for (let i = 0; i < frames; i++) { introT += dt; time += dt; prog = target; apply(prog, time, dt); }
       post.render(scene, camera);
       return dom.canvas.toDataURL('image/jpeg', 0.82);
+    },
+    // dev: synchronous frame-cost benchmark (apply + render + 1px readback to wait for the GPU)
+    bench(p0 = 0, p1 = 1, n = 600) {
+      const gl = renderer.getContext(), px = new Uint8Array(4), out = [];
+      for (let i = 0; i < n; i++) {
+        const t0 = performance.now();
+        prog = p0 + (p1 - p0) * (i / (n - 1)); time += 1 / 60; introT += 1 / 60;
+        apply(prog, time, 1 / 60); post.render(scene, camera);
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        out.push(performance.now() - t0);
+      }
+      const s = out.slice().sort((a, b) => a - b);
+      return { avg: +(out.reduce((a, b) => a + b, 0) / n).toFixed(2), p95: +s[Math.floor(n * 0.95)].toFixed(2), worst: +s[n - 1].toFixed(2), dpr: renderer.getPixelRatio() };
     },
     exportCV: () => {
       const f = drawCVFront(1400);
@@ -943,6 +1013,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
       post.dispose(); renderer.dispose(); renderer.forceContextLoss?.();
     },
   };
+  if (DEBUG || TIMER) api.dbg = { renderer, post, key, pile, scene, resize, setQuality, setDpr: (d) => { renderer.setPixelRatio(d); renderer.setSize(vw, vh, false); post.setSize(vw, vh, d); } };
   window.__hero = api;
   return api;
 }

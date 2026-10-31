@@ -106,6 +106,20 @@ export class Pile {
       col.setScalar(0.9 + r() * 0.1); mesh.setColorAt(i, col);
       idx[i] = i; cellA[i] = (r() * 4) | 0;
     }
+    // draw top sheets first so early-z rejects the hidden layers beneath (huge overdraw saving);
+    // aIdx keeps the original fill order for the intro count-up
+    {
+      const M = mesh.instanceMatrix.array, C = mesh.instanceColor.array;
+      const order = Array.from({ length: count }, (_, k) => k).sort((a, b) => M[b * 16 + 13] - M[a * 16 + 13]);
+      const M2 = new Float32Array(M.length), C2 = new Float32Array(C.length), I2 = new Float32Array(count), A2 = new Float32Array(count);
+      order.forEach((src, dst) => {
+        M2.set(M.subarray(src * 16, src * 16 + 16), dst * 16);
+        C2.set(C.subarray(src * 3, src * 3 + 3), dst * 3);
+        I2[dst] = idx[src]; A2[dst] = cellA[src];
+      });
+      M.set(M2); C.set(C2); idx.set(I2); cellA.set(A2);
+      mesh.instanceColor.needsUpdate = true;
+    }
     geo.setAttribute('aIdx', new THREE.InstancedBufferAttribute(idx, 1));
     geo.setAttribute('aCell', new THREE.InstancedBufferAttribute(cellA, 1));
     mesh.instanceMatrix.needsUpdate = true;

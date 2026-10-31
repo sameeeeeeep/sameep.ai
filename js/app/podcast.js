@@ -194,6 +194,7 @@ export class Podcast {
     this.#layout();
     this.mq = matchMedia('(max-width: 760px)');
     this.mq.addEventListener?.('change', () => this.#layout());
+    new ResizeObserver(() => this.#layout()).observe(this.layer);
 
     // keyboard
     this.win.el.addEventListener('keydown', (e) => {
@@ -235,6 +236,19 @@ export class Podcast {
     if (narrow && this.chapEl.parentElement !== drawer) drawer.append(this.chapEl);
     if (!narrow && this.chapEl.parentElement !== side) side.insertBefore(this.chapEl, side.querySelector('.side__hint'));
     this.stage.classList.toggle('stage--narrow', narrow);
+    // short desktop screens: chapters live in the transport row as a popover
+    const short = !narrow && matchMedia('(max-height: 780px)').matches;
+    const transport = this.root.querySelector('.transport');
+    if (short && this.chapDrawer.parentElement !== transport) transport.append(this.chapDrawer);
+    if (!short && this.chapDrawer.parentElement === transport) this.root.querySelector('.pod__main').append(this.chapDrawer);
+    // keep the window fitted to the screen
+    if (!narrow && this.win && !this.win.el.classList.contains('win--sheet')) {
+      const L = this.layer.getBoundingClientRect();
+      const hh = Math.min(780, L.height - 28);
+      this.win.el.style.height = hh + 'px';
+      const top = parseFloat(this.win.el.style.top) || 12;
+      if (top + hh > L.height - 8) this.win.el.style.top = Math.max(8, L.height - hh - 12) + 'px';
+    }
     // the lower third hangs under the picture so it never hides the visitor's stool
   }
 
