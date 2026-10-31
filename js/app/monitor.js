@@ -1,16 +1,21 @@
 // monitor.js — the studio's picture-in-picture monitor. Shows the product
 // while it's being talked about (screenshots, a screen recording) or a small
-// stats dashboard when a line has numbers. Lives in the top-right corner of the
-// stage, which is clear of both faces in every shot; it never touches the
-// subtitles (they sit under the picture). Tap ⤢ to go full-stage, × to skip.
+// stats dashboard when a line has numbers.
+//
+// A new visual opens BIG (filling the stage) for a beat, then glides (FLIP) down
+// to a small picture-in-picture in whichever corner keeps the faces clear: the
+// owner passes pickCorner(), which knows the shot and who's talking, and calls
+// place() when that changes. Click the small one to re-open it big. On phones
+// it opens full-width under the picture and collapses to a slim strip.
 //
 // line.visual: {type:'shots', work, shots?} | {type:'video', src, poster?, work?}
-//              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]]}, funnel:{title,rows}}
+//              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]]}, funnel:{title,rows}, hold?}
 //              | {type:'work', work}   (shots or recording, whichever the project has)
 //              | 'none'
 import { h, safeUrl } from './util.js';
 
 const fmtNum = (v) => Math.round(v).toLocaleString('en-US');
+const CORNERS = ['tr', 'tl', 'br', 'bl'];
 
 export class Monitor {
   constructor(stage, { base, reduced, onOpenWork }) {
@@ -21,33 +26,77 @@ export class Monitor {
     this.btnBig = h('button.mon__btn', { type: 'button', 'aria-label': 'Expand', title: 'Expand', onclick: (e) => { e.stopPropagation(); this.toggleSize(); } }, h('span.mon__ico.mon__ico--big', { 'aria-hidden': 'true' }));
     this.btnX = h('button.mon__btn', { type: 'button', 'aria-label': 'Hide this', title: 'Hide (skip the visuals for this part)', onclick: (e) => { e.stopPropagation(); this.onSkip?.(); this.hide(); } }, h('span.mon__ico.mon__ico--x', { 'aria-hidden': 'true' }));
     this.screen = h('div.mon__screen');
-    this.el = h('div.mon', { hidden: true, role: 'region', 'aria-label': 'Studio monitor' },
+    this.acts = h('div.mon__acts');
+    this.el = h('div.mon', { hidden: true, role: 'region', 'aria-label': 'Studio monitor', dataset: { corner: 'tr' } },
       h('div.mon__bar', h('i.mon__led', { 'aria-hidden': 'true' }), this.title, this.btnBig, this.btnX),
-      this.screen);
-    this.el.addEventListener('click', (e) => { if (this.size === 'pip' && !e.target.closest('button')) this.toggleSize(); });
+      this.screen, this.acts);
+    this.el.addEventListener('click', (e) => { if (this.small && !e.target.closest('button')) this.toggleSize(); });
+    this.el.addEventListener('pointerenter', () => { this.hover = true; });
+    this.el.addEventListener('pointerleave', () => { this.hover = false; });
     stage.append(this.el);
     this.stage = stage;
-    this.panelHost = null; // phones: numbers get a panel under the subtitles instead
+    this.panelHost = null; // phones: the monitor sits under the picture, full width
     this.narrow = false;
     this.key = null;
     this.size = 'pip';
+    this.corner = 'tr';
+    this.pickCorner = null;
   }
 
   get on() { return !this.el.hidden; }
+  get small() { return this.size === 'pip' || this.size === 'strip'; }
 
+  // big ⇄ small. A visitor who re-opens it keeps it big until they shrink it.
   toggleSize(force) {
-    if (this.size === 'panel' && !force) return;
-    this.size = force || (this.size === 'pip' ? 'full' : 'pip');
-    this.el.dataset.size = this.size;
-    this.btnBig.setAttribute('aria-label', this.size === 'pip' ? 'Expand' : 'Shrink');
-    this.btnBig.title = this.size === 'pip' ? 'Expand' : 'Shrink back to the corner';
-    this.btnBig.querySelector('.mon__ico').classList.toggle('mon__ico--small', this.size === 'full');
+    const next = force || (this.small ? (this.narrow ? 'panel' : 'full') : (this.narrow ? 'strip' : 'pip'));
+    if (!force) { this.pinned = next === 'full' || next === 'panel'; clearTimeout(this.shrinkT); }
+    if (next === 'pip') this.corner = this.pickCorner?.() || this.corner;
+    this.#flip(() => this.#setSize(next));
+  }
+
+  #setSize(size) {
+    this.size = size;
+    this.el.dataset.size = size;
+    this.el.dataset.corner = this.corner;
+    const big = !this.small;
+    this.btnBig.setAttribute('aria-label', big ? 'Shrink' : 'Expand');
+    this.btnBig.title = big ? 'Shrink to the corner' : 'Expand';
+    this.btnBig.querySelector('.mon__ico').classList.toggle('mon__ico--small', big);
+  }
+
+  // the small monitor moves to keep the speaker's face clear
+  place(corner) {
+    if (!CORNERS.includes(corner) || corner === this.corner) return;
+    this.corner = corner;
+    if (this.on && this.size === 'pip') this.#flip(() => { this.el.dataset.corner = corner; });
+    else this.el.dataset.corner = corner;
+  }
+
+  // smooth size/position change: measure, apply, invert, play
+  #flip(apply) {
+    if (this.reduced || this.el.hidden || !this.el.animate) return apply();
+    const a = this.el.getBoundingClientRect();
+    apply();
+    const b = this.el.getBoundingClientRect();
+    if (!a.width || !b.width || (Math.abs(a.left - b.left) < 1 && Math.abs(a.top - b.top) < 1 && Math.abs(a.width - b.width) < 1)) return;
+    this.flipAnim?.cancel();
+    this.flipAnim = this.el.animate([
+      { transformOrigin: '0 0', transform: `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width}, ${a.height / b.height})` },
+      { transformOrigin: '0 0', transform: 'none' },
+    ], { duration: 560, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+  }
+
+  // small inline actions ("Open it ↗", "Show me here") on the visual
+  setActions(list = []) {
+    this.acts.replaceChildren(...list.map((a) => h('button.mon__act' + (a.link ? '.mon__act--link' : ''), { type: 'button', onclick: (e) => { e.stopPropagation(); a.run(); } }, a.label)));
   }
 
   hide() {
+    clearTimeout(this.shrinkT);
     if (this.el.hidden) return;
     this.el.hidden = true;
     this.key = null;
+    this.pinned = false;
     clearInterval(this.slideT);
     this.screen.querySelector('video')?.pause();
     this.screen.replaceChildren();
@@ -58,30 +107,55 @@ export class Monitor {
     if (!v) return this.hide();
     if (key && key === this.key && this.on) return;
     clearInterval(this.slideT);
+    clearTimeout(this.shrinkT);
     this.key = key;
+    this.pinned = false;
     this.el.dataset.type = v.type;
     this.title.textContent = v.title || '';
-    let size = v.size || 'pip';
+    // how long it stays big before it tucks into the corner
+    let hold = 3400;
     if (v.type === 'stats') {
       this.screen.replaceChildren(this.#stats(v));
       const big = (v.kpis?.length || 0) > 2 || v.funnel || (v.bars?.rows?.length || 0) > 2;
-      size = v.size || (big ? 'full' : 'pip');
+      hold = v.hold || (big ? 7000 : 4200);
     } else if (v.type === 'video') {
       const vid = h('video.mon__video', { muted: true, playsInline: true, loop: true, autoplay: true, preload: 'auto', poster: v.poster || null, src: v.src, 'aria-label': (v.title || 'Screen recording') + ', muted' });
       vid.muted = true;
       vid.addEventListener('error', () => { if (v.shots?.length) this.screen.replaceChildren(this.#slides(v)); }, { once: true });
       this.screen.replaceChildren(vid);
       vid.play?.().catch(() => {});
+      hold = v.hold || 3800;
     } else if (v.type === 'shots') {
       this.screen.replaceChildren(this.#slides(v));
+      hold = v.hold || 3400;
     } else return this.hide();
-    const host = v.type === 'stats' && this.narrow && this.panelHost ? this.panelHost : this.stage;
+    const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
     if (this.el.parentElement !== host) host.append(this.el);
-    if (host !== this.stage) size = 'panel';
     if (v.work && this.onOpenWork) this.screen.append(h('button.mon__open', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onOpenWork(v.work); } }, 'Open in Work ↗'));
-    this.toggleSize(size);
+    this.corner = this.pickCorner?.() || this.corner;
+    this.#setSize(this.narrow ? 'panel' : (v.size === 'pip' ? 'pip' : 'full'));
     this.el.hidden = false;
     this.el.classList.remove('is-in'); void this.el.offsetWidth; this.el.classList.add('is-in');
+    if (!this.small) this.#scheduleShrink(hold);
+  }
+
+  #scheduleShrink(ms) {
+    clearTimeout(this.shrinkT);
+    this.shrinkT = setTimeout(() => {
+      if (this.el.hidden || this.pinned || this.small) return;
+      if (this.hover) return this.#scheduleShrink(1500); // they're looking at it
+      this.corner = this.pickCorner?.() || this.corner;
+      this.#flip(() => this.#setSize(this.narrow ? 'strip' : 'pip'));
+    }, ms);
+  }
+
+  // layout changed (phone ⇄ desktop): re-home without losing the visual
+  rehome() {
+    if (this.el.hidden) return;
+    const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
+    if (this.el.parentElement !== host) host.append(this.el);
+    const map = this.narrow ? { full: 'panel', pip: 'strip' } : { panel: 'full', strip: 'pip' };
+    if (map[this.size]) this.#setSize(map[this.size]);
   }
 
   #slides(v) {

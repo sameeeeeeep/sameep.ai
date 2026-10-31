@@ -95,23 +95,33 @@ export class EpisodeMap {
     return Infinity;
   }
 
-  nextStop(visited) { return (this.route.stops || []).find((s) => !visited.has(s)) || null; }
+  // the next stop on the route: after the furthest one heard (never send them
+  // back to an earlier stop they skipped), else the first one not heard yet
+  nextStop(visited) {
+    const stops = this.route.stops || [];
+    let last = -1;
+    stops.forEach((s, i) => { if (visited.has(s)) last = i; });
+    return stops.slice(last + 1).find((s) => !visited.has(s)) || stops.find((s) => !visited.has(s)) || null;
+  }
 
   // the one recommended choice index for a menu, given what's been heard
   recommended(nodeId, visited) {
     const n = this.N[nodeId];
-    const ch = (n?.choices || []).map((c, i) => ({ c, i })).filter(({ c }) => c.demo?.type !== 'link');
+    // demo choices ("Open it", "Show me here") are inline actions, never the pick
+    const ch = (n?.choices || []).map((c, i) => ({ c, i })).filter(({ c }) => !c.demo);
     if (!ch.length) return -1;
     const stop = this.nextStop(visited);
+    const forced = ch.find(({ c }) => c.primary);
+    if (forced) return forced.i;
     if (stop) {
       let best = null;
       for (const { c, i } of ch) {
         const d = c.to === stop ? 0 : this.dist(c.to, stop);
-        if (d < Infinity && (!best || d < best.d || (d === best.d && c.recommended))) best = { d, i };
+        if (d < Infinity && (!best || d < best.d || (d === best.d && (c.primary || c.recommended)))) best = { d, i };
       }
       if (best && best.d <= 3) return best.i;
     }
-    const st = ch.find(({ c }) => c.recommended);
+    const st = ch.find(({ c }) => c.primary) || ch.find(({ c }) => c.recommended);
     return st ? st.i : -1;
   }
 
@@ -148,7 +158,10 @@ export function routeEl(map, visited, { onJump } = {}) {
     h('span.route__t', p.done >= p.total ? 'done' : (p.left ? '≈ ' + mins(p.left) + ' left' : `${p.done}/${p.total}`)));
 }
 
-export function cardEl(map, choice, i, { rec, visited, current, onPick }) {
+// keep hyphenated words whole ("pre-buzz" never breaks at its hyphen)
+const keepWhole = (label) => String(label).split(/(\s+)/).map((w) => (/\S-\S/.test(w) ? h('span.nobr', w) : w));
+
+export function cardEl(map, choice, i, { rec, visited, current, onPick, size = '' }) {
   const to = choice.to;
   const entry = map.isChapterEntry(to) && map.N[to]?.chapter !== map.N[current]?.chapter;
   const sec = entry ? map.chapterSec(to) : map.sec(to);
@@ -156,31 +169,70 @@ export function cardEl(map, choice, i, { rec, visited, current, onPick }) {
   const tags = map.tags(to, entry);
   const seen = visited.has(to);
   const blurb = map.N[to]?.blurb;
-  return h('button.card' + (rec ? '.is-rec' : '') + (seen ? '.is-seen' : ''), { type: 'button', dataset: { i: String(i), to }, onclick: () => onPick(choice, choice.label, true) },
-    rec && h('span.card__rec', 'Recommended'),
-    h('span.card__head', h('span.card__t', map.title(to) || choice.label), h('span.card__min', mins(sec))),
+  const title = isHub(to) ? choice.label : map.title(to) || choice.label;
+  const small = size === 'door' || size === 'alt';
+  return h('button.card' + (size ? '.card--' + size : '') + (rec ? '.is-rec' : '') + (seen ? '.is-seen' : ''), { type: 'button', dataset: { i: String(i), to }, onclick: () => onPick(choice, choice.label, true) },
+    h('span.card__head', h('span.card__t', keepWhole(title)), h('span.card__min', mins(sec))),
     blurb && h('span.card__b', blurb),
-    subs.length ? h('span.card__in', h('span.card__ink', 'Inside: '), subs.map((s) => map.title(s)).join(' · ')) : null,
-    (tags.length || seen) && h('span.card__tags', seen && h('span.tag.tag--seen', 'heard'), tags.slice(0, seen ? 1 : 2).map((t) => h('span.tag', t))));
+    !small && subs.length ? h('span.card__in', h('span.card__ink', 'Inside: '), subs.map((s) => map.title(s)).join(' · ')) : null,
+    (tags.length || seen) && h('span.card__tags', seen && h('span.tag.tag--seen', 'heard'), tags.slice(0, seen || small ? 1 : 2).map((t) => h('span.tag', t))));
 }
 
 // utility choices: open links, show-here demos, back-to-menu hops
 export const isUtility = (map, c) => !!c.demo || isHub(c.to);
+export const isMainHub = (id) => id === 'hub' || id === 'hub-first';
 
-export function chapterMap(map, { visited, currentChapter, onGo }) {
+// Cut the decision load at a fork: ONE primary (the recommended next), at most
+// two alternatives, the rest behind "More…". Demo choices become inline actions.
+// The main menu shows every door, led by the recommended one.
+export function planChoices(map, nodeId, visited) {
+  const n = map.N[nodeId];
+  const all = (n?.choices || []).map((c, i) => ({ c, i }));
+  const actions = all.filter(({ c }) => c.demo);
+  const pool = all.filter(({ c }) => !c.demo);
+  if (!pool.length) return { primary: null, alts: [], more: [], doors: [], actions, menu: false };
+  const r = map.recommended(nodeId, visited);
+  const primary = pool.find((x) => x.i === r)
+    || pool.find(({ c }) => !isHub(c.to) && !visited.has(c.to))
+    || pool.find(({ c }) => !isMainHub(c.to))
+    || pool[0];
+  const rest = pool.filter((x) => x !== primary);
+  if (isMainHub(nodeId)) return { primary, alts: [], more: [], doors: rest, actions, menu: true };
+  const tier = ({ c }) => (isMainHub(c.to) ? 3 : isHub(c.to) ? 2 : visited.has(c.to) ? 1 : 0);
+  const alts = rest.filter((x) => tier(x) < 3).sort((a, b) => tier(a) - tier(b) || a.i - b.i).slice(0, 2);
+  const more = rest.filter((x) => !alts.includes(x));
+  return { primary, alts, more, doors: [], actions, menu: false };
+}
+
+// The episode map: calm chapter rows (number · title · minutes), the current
+// chapter open with its parts as a quiet indented list; others fold (click to
+// open). The recommended route is a small ember mark, the current part is lit.
+export function chapterMap(map, { visited, currentChapter, currentNode, open, onGo, onToggle }) {
   const chapters = (map.ep.chapters || []).filter((c) => map.N[c.to]);
   const stops = new Set(map.route.stops || []);
   return chapters.map((c, idx) => {
     const ch = map.N[c.to].chapter;
     const subs = map.subs(c.to);
-    const heard = [c.to, ...subs].some((s) => visited.has(s));
+    const ids = [c.to, ...subs];
+    const heard = ids.some((s) => visited.has(s));
     const cur = ch === currentChapter;
-    return h('li.cmap__ch' + (cur ? '.is-current' : '') + (heard ? '.is-visited' : ''),
-      h('button.chap', { type: 'button', dataset: { to: c.to }, 'aria-current': cur ? 'true' : 'false', onclick: () => onGo(c.to) },
+    const onRoute = ids.some((s) => stops.has(s));
+    const fold = subs.length > 0;
+    const expanded = fold && open === c.to;
+    const item = (s, label, sec) => h('li', h('button.sub' + (visited.has(s) ? '.is-visited' : '') + (stops.has(s) ? '.is-rec' : '') + (s === currentNode ? '.is-now' : ''), {
+      type: 'button', dataset: { to: s }, 'aria-current': s === currentNode ? 'true' : null, onclick: () => onGo(s),
+      title: stops.has(s) ? 'On the recommended route' : null,
+    }, h('i.sub__dot', { 'aria-hidden': 'true' }), h('span.sub__t', keepWhole(label)), h('span.sub__m', mins(sec))));
+    return h('li.cmap__ch' + (cur ? '.is-current' : '') + (heard ? '.is-visited' : '') + (expanded ? '.is-open' : '') + (onRoute ? '.is-route' : ''),
+      h('button.chap', {
+        type: 'button', dataset: { to: c.to },
+        'aria-expanded': fold ? String(expanded) : null,
+        'aria-current': cur && !fold ? 'true' : null,
+        onclick: () => (fold ? onToggle(c.to) : onGo(c.to)),
+      },
         h('span.chap__n', String(idx + 1).padStart(2, '0')),
-        h('span.chap__t', c.label, stops.has(c.to) && h('span.chap__star', { title: 'On the recommended route', 'aria-label': ', recommended' }, ' ★')),
+        h('span.chap__t', { title: c.label }, keepWhole(isHub(c.to) ? c.label : map.title(c.to) || c.label), onRoute && h('span.chap__route', { title: 'On the recommended route', 'aria-label': ', on the recommended route' })),
         h('span.chap__m', isHub(c.to) ? '' : mins(map.chapterSec(c.to)))),
-      subs.length ? h('ul.cmap__subs', subs.map((s) => h('li', h('button.sub' + (visited.has(s) ? '.is-visited' : '') + (stops.has(s) ? '.is-rec' : ''), { type: 'button', dataset: { to: s }, onclick: () => onGo(s) },
-        h('span.sub__t', map.title(s)), h('span.sub__m', mins(map.sec(s))))))) : null);
+      expanded ? h('ul.cmap__subs', item(c.to, 'From the top', map.sec(c.to)), subs.map((s) => item(s, map.title(s), map.sec(s)))) : null);
   });
 }

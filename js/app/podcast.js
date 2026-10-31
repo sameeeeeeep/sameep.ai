@@ -14,7 +14,7 @@ import { Studio } from './stage.js';
 import { loadWork, openWork } from './work.js';
 import { Monitor, resolveVisual } from './monitor.js';
 import { FlowBar } from './flowbar.js';
-import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, isUtility, chapterMap, mins } from './chooser.js';
+import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoices, isMainHub, mins } from './chooser.js';
 import { isWispr, pick as pickVersion, shows } from '../version.js';
 
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
@@ -24,6 +24,8 @@ const COPY = isWispr
   : { placeholder: 'Say or type where to go…', hint: 'Type or dictate where to go. It lands in the field wherever you are. Or tap a card.', mic: 'Mic blocked. Type instead.' };
 // auto-pick: how sure the match must be, and how long the "Heard" note waits
 const SURE = 0.8, MARGIN = 0.12, SETTLE = 650, CONFIRM = 1500;
+// lean-back: after an answer, a quiet beat, then the primary counts down and plays
+const AUTO_QUIET = 2000, AUTO_COUNT = 8;
 
 export class Podcast {
   constructor({ wm, layer, persona, episode, onEnd }) {
@@ -161,6 +163,7 @@ export class Podcast {
     this.stage = stage;
     this.monitor = new Monitor(stage, { base: this.base, reduced: this.reduced, onOpenWork: (id) => openWork(this.wm, this.persona, { focusId: id }) });
     this.monitor.onSkip = () => { this.visSkip = this.nodeId; };
+    this.monitor.pickCorner = () => this.#corner();
 
     // puppets
     const ph = { host: { color: '#7b4fd6', skin: '#e0b48c', hair: '#c7c7c7' }, guest: { color: '#0a8fa8', skin: '#b07a52', hair: '#1c120c' } };
@@ -213,7 +216,9 @@ export class Podcast {
     // chapters (a map of the episode)
     this.chapEl = h('ol.chapters.cmap');
     this.routeSide = h('div.side__route');
-    const side = h('aside.pod__side', h('h3.side__title', 'Episode map'), this.routeSide, this.chapEl,
+    const legend = h('p.side__legend', { 'aria-hidden': 'true' },
+      h('span', h('i.sub__dot.is-heard'), 'heard'), h('span', h('i.sub__dot.is-route'), 'recommended route'));
+    const side = h('aside.pod__side', h('h3.side__title', 'Episode map'), this.routeSide, this.chapEl, legend,
       h('p.side__hint', COPY.hint));
     const chapDrawer = h('details.chap-drawer', h('summary', h('span', 'Episode map'), h('span.chap-drawer__meta')), h('div.chap-drawer__body'));
 
@@ -285,6 +290,7 @@ export class Podcast {
     this.stage.classList.toggle('stage--narrow', narrow);
     this.monitor.narrow = narrow;
     this.monitor.panelHost = this.stageCol;
+    this.monitor.rehome();
     // the chooser: over the picture on desktop, under the say field on phones
     if (narrow && this.chooser.parentElement !== this.main) this.steer.after(this.chooser);
     if (!narrow && this.chooser.parentElement !== this.stageCol) this.stageCol.append(this.chooser);
@@ -307,8 +313,9 @@ export class Podcast {
     if (!this.chapEl) return;
     const cur = this.node?.chapter;
     this.chapEl.replaceChildren(...chapterMap(this.map, {
-      visited: this.visited, currentChapter: cur,
+      visited: this.visited, currentChapter: cur, currentNode: this.nodeId, open: this.mapOpen,
       onGo: (to) => { this.chapDrawer.open = false; this.go(to, { from: 'chapter' }); },
+      onToggle: (to) => { this.mapOpen = this.mapOpen === to ? null : to; this.#renderChapters(); this.chapEl.querySelector(`.chap[data-to="${to}"]`)?.focus({ preventScroll: true }); },
     }));
     const r = routeEl(this.map, this.visited, { onJump: (s) => this.go(s, { from: 'chapter' }) });
     this.routeSide.replaceChildren(...(r ? [r] : []));
@@ -319,6 +326,11 @@ export class Podcast {
 
   #markChapter() {
     const label = this.node?.chapter;
+    // the map opens the chapter you're in (until you fold it yourself)
+    if (label !== this.mapChapter) {
+      this.mapChapter = label;
+      this.mapOpen = (this.ep.chapters || []).find((c) => this.ep.nodes[c.to]?.chapter === label)?.to || null;
+    }
     this.#renderChapters();
     this.nodeLabel.textContent = label ? '· ' + (this.node.title && this.node.title !== label ? `${label} · ${this.node.title}` : label) : '';
   }
@@ -344,6 +356,7 @@ export class Podcast {
     this.#preloadDurations();
     this.visSkip = null;
     this.monitor.hide();
+    this.#stopAuto();
     this.#cancelConfirm();
     this.#renderChips();
     this.#markChapter();
@@ -394,6 +407,7 @@ export class Podcast {
       this.cutIn = false;
       this.studio.cut(shot, seat);
     }
+    this.monitor.place(this.#corner());
     this.name.textContent = this.speakers[who]?.name || who;
     const text = fillName(line.text, this.visitor?.name);
     this.subCtl = renderSubtitle(this.sub, { text });
@@ -423,14 +437,79 @@ export class Podcast {
     const work = this.workList || [];
     if (line.visual) {
       const v = resolveVisual(line.visual, work, this.workBase || this.base);
-      if (v) return this.monitor.show(v, 'line:' + line.id);
+      if (v) return this.#showVisual(v, 'line:' + line.id);
     }
     if (seat === 'host') return; // keep what's showing
     if (this.node.work && work.length) {
       const v = resolveVisual({ type: 'work', work: this.node.work }, work, this.workBase || this.base);
-      if (v) return this.monitor.show(v, 'work:' + this.node.work);
+      if (v) return this.#showVisual(v, 'work:' + this.node.work);
     }
     this.monitor.hide();
+  }
+
+  #showVisual(v, key) {
+    this.monitor.setActions(this.#demoActions());
+    this.monitor.show(v, key);
+  }
+
+  // "Open it" / "Show me here": small inline actions, never cards. They run the
+  // demo without leaving the answer (or the fork).
+  #demoActions() {
+    return (this.node?.choices || []).filter((c) => c.demo).map((c) => {
+      const d = c.demo;
+      const link = d.type === 'link';
+      return { label: link ? 'Open it ↗' : 'Show me here', link, run: () => {
+        this.#stopAuto(true);
+        if (link) { const url = safeUrl(String(d.url || '').replace(/\{[a-z]+\}/g, ''), this.base); if (url) window.open(url, '_blank', 'noopener'); }
+        else this.#demo(d);
+      } };
+    });
+  }
+
+  // Where the small monitor sits: the corner that covers the least face (the
+  // speaker's face counts most), for the current shot. Host left, guest right.
+  #corner() {
+    const S = this.studio;
+    if (!S?.rects?.host || !S.rects.guest) return 'tr';
+    const shot = S.shot === 'insert' ? S.last?.shot || 'wide' : S.shot;
+    const who = S.who === 'guest' ? 'guest' : 'host';
+    // the visible part of the 16:9 canvas, in canvas fractions
+    let fr = { x: 0, y: 0, w: 1 };
+    if (shot === 'ms' && S.medium?.[who]) {
+      const r = S.medium[who];
+      fr = { x: Math.min(1 - r.w, Math.max(0, r.left)), y: Math.min(1 - r.w, Math.max(0, r.top)), w: r.w };
+    }
+    const rects = [];
+    const toFrame = (x0, y0, x1, y1, wgt) => rects.push({ x0: (x0 - fr.x) / fr.w, y0: (y0 - fr.y) / fr.w, x1: (x1 - fr.x) / fr.w, y1: (y1 - fr.y) / fr.w, wgt });
+    if (shot === 'cu') {
+      const key = who === 'host' ? this.hostKey : this.guestKey;
+      const m = S.manifest?.studio?.closeup?.[key]?.mouth || S.manifest?.studio?.closeup?.[who === 'host' ? 'host' : 'sameep']?.mouth || [0.42, 0.5, 0.1, 0.1];
+      const cx = m[0] + m[2] / 2;
+      rects.push({ x0: cx - 0.24, y0: 0.02, x1: cx + 0.24, y1: m[1] + m[3] + 0.12, wgt: 10 });
+    } else {
+      for (const k of ['host', 'guest']) {
+        const r = S.rects[k];
+        const f = S.faces?.[k] || { fx: 0.5, fy: 0.32 };
+        const cx = r.left + f.fx * r.w, cy = r.top + f.fy * r.h;
+        const act = k === who;
+        toFrame(cx - 0.2 * r.w, cy - 0.3 * r.h, cx + 0.2 * r.w, cy + 0.14 * r.h, act ? 10 : 6);
+        toFrame(r.left, r.top, r.left + r.w, r.top + r.h, act ? 1 : 0.6);
+      }
+    }
+    const W = 0.27, H = 0.36, MX = 0.02, MY = 0.032;
+    const boxes = { tr: [1 - MX - W, MY], tl: [MX, MY], br: [1 - MX - W, 1 - MY - H], bl: [MX, 1 - MY - H] };
+    // the speaker looks toward the other seat: the visual sits where they look
+    const looks = who === 'host' ? 'r' : 'l';
+    let best = null;
+    for (const [c, [x, y]] of Object.entries(boxes)) {
+      let sc = 0;
+      for (const r of rects) sc += Math.max(0, Math.min(x + W, r.x1) - Math.max(x, r.x0)) * Math.max(0, Math.min(y + H, r.y1) - Math.max(y, r.y0)) * r.wgt;
+      if (c[0] === 'b') sc += 0.004;
+      if (c[1] !== looks) sc += 0.002;
+      if (c === this.monitor.corner) sc -= 0.006; // don't hop around for nothing
+      if (!best || sc < best.sc) best = { c, sc };
+    }
+    return best.c;
   }
 
   #startLine(line, offset, tok) {
@@ -502,6 +581,7 @@ export class Podcast {
       this.#renderChooser();
       this.chooser.hidden = false;
       setTimeout(() => this.flow.ensureFocus(), 50);
+      this.#startAuto();
       // something was said while the answer played: use it now
       if (this.queued) { const q = this.queued; this.queued = null; this.#heard(q, { atFork: true }); }
     } else if (n.next) {
@@ -535,43 +615,140 @@ export class Podcast {
   }
 
   // ------------------------------------------------------------------ steering
+  // during an answer: one quiet "Up next" (tap to jump ahead). The rest waits
+  // for the fork; the say field still reaches every option.
   #renderChips() {
     const n = this.node;
-    const rec = this.map.recommended(this.nodeId, this.visited);
-    const chips = (n.choices || []).map((c, i) => {
-      const util = isUtility(this.map, c);
-      const to = c.to;
-      const entry = this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== n.chapter;
-      const m = util ? '' : mins(entry ? this.map.chapterSec(to) : this.map.sec(to));
-      return h('button.chip' + (i === rec ? '.is-rec' : '') + (util ? '.chip--util' : ''), { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) },
-        c.label, m && h('span.chip__m', m));
-    });
-    if (!chips.length && n.next && this.ep.nodes[n.next]) {
+    const chips = [];
+    const p = planChoices(this.map, this.nodeId, this.visited).primary;
+    if (p) {
+      chips.push(h('button.chip.chip--up', { type: 'button', dataset: { i: String(p.i) }, title: 'Skip ahead to this', onclick: () => this.#pick(p.c, p.c.label, true) },
+        h('span.chip__k', 'Up next'), this.#choiceTitle(p.c), h('span.chip__m', this.#choiceMins(p.c))));
+    } else if (n.next && this.ep.nodes[n.next]) {
       const nx = this.ep.nodes[n.next];
-      chips.push(h('button.chip.chip--next', { type: 'button', onclick: () => this.go(n.next) }, 'Next: ' + (nx.chapter && nx.chapter !== n.chapter ? nx.chapter : 'keep going')));
+      chips.push(h('button.chip.chip--next', { type: 'button', onclick: () => this.go(n.next) }, h('span.chip__k', 'Up next'), nx.chapter && nx.chapter !== n.chapter ? nx.chapter : 'keep going'));
     }
     this.chips.replaceChildren(...chips);
   }
 
+  #choiceTitle(c) { return isMainHub(c.to) || /-hub$|-again$/.test(c.to) ? c.label : this.map.title(c.to) || c.label; }
+  #choiceMins(c) {
+    const to = c.to;
+    if (isMainHub(to)) return '';
+    const entry = this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== this.node?.chapter;
+    return mins(entry ? this.map.chapterSec(to) : this.map.sec(to));
+  }
+
   #renderChooser() {
     const n = this.node;
+    const wasAuto = !!this.auto;
+    this.#stopAuto();
     if (!n?.choices?.length) { this.chooser.replaceChildren(); return; }
-    const rec = this.map.recommended(this.nodeId, this.visited);
+    const plan = planChoices(this.map, this.nodeId, this.visited);
+    this.plan = plan;
     const ctx = { visited: this.visited, current: this.nodeId, onPick: (c, said, g) => this.#pick(c, said, g) };
-    const cards = [], utils = [];
-    n.choices.forEach((c, i) => {
-      if (isUtility(this.map, c)) utils.push(h('button.ubtn' + (c.demo?.type === 'link' ? '.ubtn--link' : '') + (i === rec ? '.is-rec' : ''), { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) }, c.label + (c.demo?.type === 'link' ? ' ↗' : '')));
-      else cards.push(cardEl(this.map, c, i, { ...ctx, rec: i === rec }));
-    });
     const host = this.speakers[this.hostKey]?.name?.split(' ')[0] || 'The host';
     this.chooserAud = audienceEl(this.visitor, `${host} is waiting on you`);
-    const total = this.map.D.totalSec;
-    this.chooser.replaceChildren(...[
-      h('div.chooser__head', this.chooserAud, h('button.chooser__min', { type: 'button', 'aria-label': 'Hide the options and see the studio', title: 'See the studio', onclick: () => this.chooser.classList.toggle('is-min') }, h('span', { 'aria-hidden': 'true' }, '▾'))),
-      h('div.chooser__cards', cards),
-      utils.length ? h('div.chooser__utils', utils) : null,
-      h('div.chooser__foot', routeEl(this.map, this.visited, { onJump: (s) => this.go(s, { from: 'chapter' }) }), total ? h('span.chooser__all', `Whole episode ≈ ${Math.round(total / 60)} min`) : null)].filter(Boolean));
+    const acts = this.#demoActions();
+    const head = h('div.chooser__head', this.chooserAud,
+      acts.length ? h('div.chooser__acts', acts.map((a) => h('button.act' + (a.link ? '.act--link' : ''), { type: 'button', onclick: a.run }, a.label))) : null,
+      h('button.chooser__min', { type: 'button', 'aria-label': 'Hide the options and see the studio', title: 'See the studio', onclick: () => { this.#stopAuto(true); this.chooser.classList.toggle('is-min'); } }, h('span', { 'aria-hidden': 'true' }, '▾')));
+    const parts = [head];
+    // the one big obvious next
+    if (plan.primary) {
+      const { c, i } = plan.primary;
+      const to = c.to;
+      const blurb = !isMainHub(to) && this.map.N[to]?.blurb;
+      const tags = isMainHub(to) ? [] : this.map.tags(to, this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== n.chapter).slice(0, 2);
+      this.autoLine = h('span.prim__auto', { 'aria-live': 'polite' });
+      this.autoFill = h('i.prim__fill', { 'aria-hidden': 'true' });
+      const label = plan.menu ? 'Start with' : 'Next';
+      parts.push(h('div.prim-wrap',
+        h('button.prim', { type: 'button', dataset: { i: String(i), to }, onclick: () => this.#pick(c, c.label, true) },
+          this.autoFill,
+          h('span.prim__k', label, h('span.prim__rec', 'Recommended')),
+          h('span.prim__head', h('span.prim__t', this.#choiceTitle(c)), h('span.prim__min', this.#choiceMins(c))),
+          blurb ? h('span.prim__b', blurb) : null,
+          tags.length ? h('span.card__tags', tags.map((t) => h('span.tag', t))) : null,
+          h('span.prim__go', { 'aria-hidden': 'true' }, h('span.ico.ico--play'))),
+        this.autoLine));
+    }
+    if (plan.menu && plan.doors.length) {
+      parts.push(h('p.chooser__or', 'Or open another door'),
+        h('div.chooser__doors', plan.doors.map(({ c, i }) => cardEl(this.map, c, i, { ...ctx, rec: false, size: 'door' }))));
+    }
+    if (plan.alts.length) {
+      parts.push(h('p.chooser__or', 'Or'), h('div.chooser__alts', plan.alts.map(({ c, i }) => cardEl(this.map, c, i, { ...ctx, rec: false, size: 'alt' }))));
+    }
+    const foot = [];
+    if (plan.more.length) {
+      const list = h('ul.more__list', { id: 'more-' + this.nodeId, hidden: true }, plan.more.map(({ c, i }) => h('li', h('button.more__item', { type: 'button', dataset: { i: String(i) }, onclick: () => this.#pick(c, c.label, true) },
+        h('span.more__t', this.#choiceTitle(c)), h('span.more__m', this.#choiceMins(c))))));
+      const btn = h('button.more__btn', { type: 'button', 'aria-expanded': 'false', 'aria-controls': list.id, onclick: () => this.#toggleMore() },
+        h('span', `More… `), h('span.more__n', String(plan.more.length)));
+      this.moreList = list; this.moreBtn = btn;
+      foot.push(h('div.more', btn, list));
+    } else { this.moreList = null; this.moreBtn = null; }
+    const route = routeEl(this.map, this.visited, { onJump: (s) => this.go(s, { from: 'chapter' }) });
+    parts.push(h('div.chooser__foot', ...foot, route));
+    this.chooser.replaceChildren(...parts);
+    this.chooser.classList.toggle('chooser--menu', plan.menu);
     this.chooser.classList.remove('is-min');
+    if (wasAuto) this.#startAuto();
+  }
+
+  #toggleMore(force) {
+    if (!this.moreList) return;
+    const open = force ?? this.moreList.hidden;
+    this.moreList.hidden = !open;
+    this.moreBtn.setAttribute('aria-expanded', String(open));
+    this.moreBtn.classList.toggle('is-open', open);
+    if (force == null) this.#stopAuto(true);
+  }
+
+  // ------------------------------------------------------------------ lean-back auto-continue
+  #startAuto() {
+    this.#stopAuto();
+    const p = this.plan?.primary;
+    if (!p || this.node?.end || this.nodeId === 'outro' || !this.autoLine) return;
+    const tok = this.token;
+    const node = this.nodeId;
+    const live = () => tok === this.token && node === this.nodeId && this.root.classList.contains('is-waiting') && !this.win.el.hidden && !document.hidden;
+    const a = { left: AUTO_COUNT, timers: [] };
+    this.auto = a;
+    // any real interaction cancels it, politely
+    a.off = (e) => {
+      if (e?.type === 'keydown' && ['Shift', 'Meta', 'Control', 'Alt', 'CapsLock'].includes(e.key)) return;
+      if (e?.target?.closest?.('.prim')) return; // clicking the primary just plays it
+      this.#stopAuto(true);
+    };
+    for (const t of ['pointerdown', 'keydown', 'wheel', 'touchstart']) document.addEventListener(t, a.off, { capture: true, passive: true });
+    const tick = () => {
+      if (this.auto !== a) return;
+      if (!live()) return this.#stopAuto(true);
+      if (a.left <= 0) { this.#stopAuto(); this.#pick(p.c, p.c.label); return; }
+      this.autoLine.replaceChildren(h('span.prim__n', `Up next in ${a.left}`), ' · ',
+        h('button.prim__stay', { type: 'button', onclick: () => this.#stopAuto(true) }, 'Stay here'));
+      a.left--;
+      a.timers.push(setTimeout(tick, 1000));
+    };
+    a.timers.push(setTimeout(() => {
+      if (this.auto !== a || !live()) return;
+      this.root.classList.add('is-auto');
+      if (!this.reduced) { this.autoFill.style.animationDuration = AUTO_COUNT + 's'; this.autoFill.classList.add('is-on'); }
+      tick();
+    }, AUTO_QUIET));
+  }
+
+  #stopAuto(byUser) {
+    const a = this.auto;
+    if (!a) return;
+    this.auto = null;
+    a.timers.forEach(clearTimeout);
+    for (const t of ['pointerdown', 'keydown', 'wheel', 'touchstart']) document.removeEventListener(t, a.off, { capture: true });
+    this.root?.classList.remove('is-auto');
+    this.autoFill?.classList.remove('is-on');
+    if (this.autoLine?.isConnected) this.autoLine.replaceChildren(byUser ? h('span.prim__n.is-off', 'Staying here. Pick when you’re ready.') : '');
   }
 
   #items() {
@@ -591,7 +768,13 @@ export class Podcast {
   #preview(q) {
     const m = q.trim().length > 1 ? bestMatch(q, this.#items().filter((i) => i.choice), 0.45) : null;
     const k = m ? m.item.key.slice(1) : null;
-    this.root.querySelectorAll('.chip[data-i], .card[data-i], .ubtn[data-i]').forEach((c) => c.classList.toggle('is-match', k != null && c.dataset.i === k));
+    let hidden = false;
+    this.root.querySelectorAll('.chip[data-i], .card[data-i], .prim[data-i], .more__item[data-i]').forEach((c) => {
+      const on = k != null && c.dataset.i === k;
+      c.classList.toggle('is-match', on);
+      if (on && c.closest('.more__list')?.hidden) hidden = true;
+    });
+    if (hidden) this.#toggleMore(true);
   }
 
   #msg(content, kind = '') {
@@ -607,6 +790,7 @@ export class Podcast {
 
   // any change to the field, however it arrived: debounce, then decide
   #heardChange(v) {
+    if (v.trim()) this.#stopAuto(true);
     this.#preview(v);
     clearTimeout(this.settleT);
     if (this.confirm && v.trim() !== this.confirm.q) this.#cancelConfirm(true);
@@ -704,7 +888,8 @@ export class Podcast {
     this.audio.pause();
     this.subCtl?.cancel();
     const i = (this.node.choices || []).indexOf(choice);
-    this.root.querySelectorAll(`.card[data-i="${i}"], .chip[data-i="${i}"]`).forEach((c) => c.classList.add('is-picked'));
+    this.#stopAuto();
+    this.root.querySelectorAll(`.card[data-i="${i}"], .chip[data-i="${i}"], .prim[data-i="${i}"], .more__item[data-i="${i}"]`).forEach((c) => c.classList.add('is-picked'));
     this.audBadge.classList.add('is-picked');
     setTimeout(() => this.audBadge.classList.remove('is-picked'), 900);
     setTimeout(() => {
@@ -742,6 +927,7 @@ export class Podcast {
     if (this.playing) return;
     if (this.root.classList.contains('is-waiting') && this.mode == null) {
       // replay the last line of a finished node
+      this.#stopAuto();
       this.root.classList.remove('is-waiting');
       this.chooser.hidden = true;
       this.playing = true; this.#setPlayIcon();
@@ -765,8 +951,7 @@ export class Podcast {
     if (!this.node) return;
     if (this.root.classList.contains('is-waiting')) {
       // at a fork: skip takes the recommended card, else the default path
-      const rec = this.map.recommended(this.nodeId, this.visited);
-      const c = this.node.choices?.[rec];
+      const c = planChoices(this.map, this.nodeId, this.visited).primary?.c;
       if (c) this.#pick(c, c.label);
       else if (this.node.next) this.go(this.node.next);
       return;
@@ -777,6 +962,7 @@ export class Podcast {
   }
   back() {
     if (!this.node) return;
+    this.#stopAuto();
     this.root.classList.remove('is-waiting');
     this.chooser.hidden = true;
     this.playing = true; this.#setPlayIcon();
@@ -895,6 +1081,7 @@ export class Podcast {
     let target = clamp(f, 0, 0.999) * this.total;
     let i = 0;
     while (i < this.durs.length - 1 && target > this.durs[i]) { target -= this.durs[i]; i++; }
+    this.#stopAuto();
     this.root.classList.remove('is-waiting');
     this.chooser.hidden = true;
     if (!this.playing) { this.playing = true; this.#setPlayIcon(); }
