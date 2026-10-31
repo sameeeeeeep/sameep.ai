@@ -70,11 +70,11 @@
      "audio": "audio/clips/cold-open-02-d.mp3",
      "visual": {
       "type": "stats",
-      "title": "The brief",
+      "title": "The pile",
       "kpis": [
        {
-        "n": 2000,
-        "label": "applications, all CVs"
+        "t": "1,000s",
+        "label": "CVs, all kind of the same"
        }
       ]
      },
@@ -876,8 +876,7 @@
     {
      "id": "g-diwali-07",
      "who": "sameep",
-     "text": "For the party invite: nine hundred and forty-two personal invites, and ninety-two percent of them got opened. Two thousand two hundred and forty-three opens in total. Sixteen hundred and twenty-nine games played, and the parrot alone got seven hundred and seventy. Five hundred and twenty-seven people said yes. And two hundred and seven results got pinned to the public party wall.",
-     "messy": "For the party invite, um, nine hundred and forty-two personal invites, and ninety-two percent of them got opened. Two thousand two hundred and forty-three opens in total. Sixteen hundred and twenty-nine games played, the parrot alone got seven hundred and seventy. Five hundred and twenty-seven people said yes. And two hundred and seven results got, got pinned to the public party wall.",
+     "text": "For the party invite: nine hundred plus personal invites, and more than ninety percent got opened. Twenty-two hundred plus opens in total. Sixteen hundred plus games played, and the parrot alone got seven hundred plus. Five hundred plus people said yes. And two hundred plus results got pinned to the public party wall.",
      "audio": "audio/clips/g-diwali-07.mp3",
      "visual": {
       "type": "stats",
@@ -953,7 +952,7 @@
     {
      "id": "g-diwali-08",
      "who": "host",
-     "text": "Seven hundred and seventy fortunes from one parrot. That bird should have an agent.",
+     "text": "Seven hundred fortunes from one parrot. That bird should have an agent.",
      "audio": "audio/clips/g-diwali-08.mp3",
      "shot": "cu"
     },
@@ -980,7 +979,7 @@
     {
      "id": "g-diwali-10",
      "who": "sameep",
-     "text": "Learnings were small and kind of humbling. The ring toss was way too hard on phones, so I made it much easier. The match strike got more forgiving after a few misses. And there are five hundred and forty fortunes, and I rewrote the cheeky ones to be warm. Nothing negative goes in a Diwali card.",
+     "text": "Learnings were small and kind of humbling. The ring toss was way too hard on phones, so I made it much easier. The match strike got more forgiving after a few misses. And there are five hundred plus fortunes, and I rewrote the cheeky ones to be warm. Nothing negative goes in a Diwali card.",
      "audio": "audio/clips/g-diwali-10.mp3",
      "visual": {
       "type": "stats",
@@ -1580,7 +1579,7 @@
     {
      "id": "sb-lineage-02",
      "who": "sameep",
-     "text": "No, no. Long road. In January I made ARIA, a chat that keeps thinking in the background on a local Llama. Two days later it became AutoClawd. Always-on mic, your screen, a small local model. Two hundred and seventy-one commits. And it got big. A pixel world, camera, face, gestures, a call mode.",
+     "text": "No, no. Long road. In January I made ARIA, a chat that keeps thinking in the background on a local Llama. Two days later it became AutoClawd. Always-on mic, your screen, a small local model. Two hundred seventy plus commits. And it got big. A pixel world, camera, face, gestures, a call mode.",
      "audio": "audio/clips/sb-lineage-02.mp3",
      "visual": {
       "type": "stats",
@@ -1603,7 +1602,7 @@
     {
      "id": "sb-lineage-04",
      "who": "sameep",
-     "text": "It was a garage! So on the twelfth of March I cut it all. Pixel world, call mode, camera, face, text to speech, gestures. Gone, for focus. Then came Autoclaw: hold the F N key, speak, and it writes the prompt for Claude Code. And then, on the seventh of July, Switchboard, born out of Brand Brain. It's at six hundred and forty-eight commits now.",
+     "text": "It was a garage! So on the twelfth of March I cut it all. Pixel world, call mode, camera, face, text to speech, gestures. Gone, for focus. Then came Autoclaw: hold the F N key, speak, and it writes the prompt for Claude Code. And then, on the seventh of July, Switchboard, born out of Brand Brain. It's at six hundred plus commits now.",
      "audio": "audio/clips/sb-lineage-04.mp3",
      "visual": {
       "type": "stats",
@@ -1845,8 +1844,7 @@
     {
      "id": "sb-wrapps-02",
      "who": "sameep",
-     "text": "Both. A wrapp is a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety-four. Brand Brain, Flow, the notch and Guru, voice cloning, annotating HTML, thinking of HTML as a video. A lot of them. Pick one.",
-     "messy": "Both, honestly. A wrapp is a, a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety-four. Brand Brain, Flow, the notch and Guru, voice cloning, annotating HTML, thinking of HTML as a, as a video. A lot of them. Pick one.",
+     "text": "Both. A wrapp is a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety plus. Brand Brain. Flow. The notch and Guru. Voice cloning. Annotating HTML. Thinking of HTML as a video. A lot of them. Pick one.",
      "audio": "audio/clips/sb-wrapps-02.mp3",
      "visual": {
       "type": "stats",
