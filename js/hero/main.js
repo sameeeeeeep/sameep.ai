@@ -256,10 +256,10 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     mkKey(G('envelope', 0.82), v(S.x, S.y + 0.55, S.z), d(-0.06, 0.12, 1), 1.6, 3.05);
     mkKey(G('envelope', 1), v(S.x, S.y, S.z), d(-0.04, 0.1, 1), 1.35, 1.75);
     mkKey(G('origami', 0.55), v(S.x, S.y + 0.03, S.z), d(0.1, 0.14, 1), 1.25, 1.7);
-    mkKey(G('origami', 1), v(S.x, S.y + 0.05, S.z), d(0.45, 0.3, 1), 1.15, 1.25);
-    mkKey(G('flight', 0.16), v(S.x + 0.1, S.y + 0.42, S.z - 0.2), d(0.06, 0.14, 1), portrait ? 2.3 : 2.5, 1.75);
-    mkKey(G('flight', 0.88), v(S.x + 0.05, S.y + 0.3, S.z), d(0.0, 0.14, 1), portrait ? 2.2 : 2.4, 1.7);
-    mkKey(G('crumple', 0.35), v(S.x, S.y, S.z), d(0.05, 0.18, 1), 1.0, 1.0);
+    mkKey(G('origami', 1), v(S.x + (portrait ? -0.12 : 0), S.y + 0.05, S.z), d(0.45, 0.3, 1), portrait ? 1.7 : 1.15, 1.25);
+    mkKey(G('flight', 0.16), v(S.x + (portrait ? 0.14 : 0.1), S.y + 0.42, S.z - 0.2), d(0.06, 0.14, 1), portrait ? 3.3 : 2.5, 1.75);
+    mkKey(G('flight', 0.88), v(S.x + (portrait ? 0.1 : 0.05), S.y + 0.3, S.z), d(0.0, 0.14, 1), portrait ? 3.1 : 2.4, 1.7);
+    mkKey(G('crumple', 0.35), v(S.x, S.y, S.z), d(0.05, 0.18, 1), portrait ? 1.7 : 1.0, portrait ? 1.7 : 1.0);
     mkKey(G('crumple', 1), v(S.x, S.y, S.z), d(-0.12, 0.22, 1), 0.75, 0.75);
     mkKey(G('shred', 0.28), v(S.x, S.y, S.z), d(0, 0.1, 1), 1.3, 1.75);
     mkKey(G('shred', 1), L.stripsC, d(0, 0.1, 1), strips.spreadW + 0.3, strips.spreadH + 0.2);
@@ -752,7 +752,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     const parallax = 1 - dim;
     tE.copy(camT).addScaledVector(camD, dist);
     // critically damped spring toward the scripted camera (absorbs late-asset re-layouts)
-    if (camSnap || !dt) { camP.copy(tE); camL.copy(camT); camPV.set(0, 0, 0); camLV.set(0, 0, 0); camSnap = false; }
+    if (camSnap || !dt || ins >= 0.95) { camP.copy(tE); camL.copy(camT); camPV.set(0, 0, 0); camLV.set(0, 0, 0); camSnap = false; }
     else {
       const K = 90, C = 2 * Math.sqrt(K), h = Math.min(dt, 1 / 30);
       camPV.addScaledVector(tA.copy(tE).sub(camP), K * h).multiplyScalar(1 - C * h); camP.addScaledVector(camPV, h);
@@ -780,7 +780,7 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
     lastP = p;
 
     // ---- done
-    if (full && !doneCalled && ins >= 0.985) {
+    if (full && !doneCalled && ins >= 0.985 && camPV.lengthSq() < 1e-8) {
       doneCalled = true;
       camera.updateMatrixWorld();
       const a = tA.copy(imac.glassCorners[0]).applyMatrix4(imac.group.matrixWorld).project(camera);
