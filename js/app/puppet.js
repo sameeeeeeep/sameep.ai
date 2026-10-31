@@ -242,28 +242,22 @@ export class Puppet {
     b.drawn = i;
   }
 
-  // pick the next bank frame for a target openness (video-texture walk)
+  // play the bank like the video it came from: straight through (ping-pong at the ends) while
+  // talking, so jaw, cheeks and lips move together. In a pause keep going until a naturally
+  // closed frame comes round, then hold it. No jumps: a jump is what reads as a pasted mouth.
   #stepBank(b, now, target, round, quiet) {
     const fr = b.meta.frames;
-    const dt = 1000 / (b.meta.fps || 12);
-    if (quiet) {
-      if (!b.quietSince) b.quietSince = now;
-      // a pause: hold the rest frame (a short m/b/p closure jumps to the most closed frame)
-      if (now - b.quietSince > 120) { b.cur = b.meta.rest ?? 0; b.next = now + dt; return; }
-    } else b.quietSince = 0;
-    if (now < b.next && !(quiet && fr[b.cur][1] > 0.25)) return;
-    b.next = now + dt;
-    const n = b.cur + 1;
-    const cont = n < fr.length && fr[n][0] - fr[b.cur][0] === b.step;
-    if (cont && Math.abs(fr[n][1] - target) < 0.2 && (round < 0.5 || fr[n][2] > 0.3)) { b.cur = n; return; }
-    // jump: best few matches, one at random (never the same frame twice in a row)
-    let best = [];
-    for (let i = 0; i < fr.length; i++) {
-      if (i === b.cur) continue;
-      const cost = Math.abs(fr[i][1] - target) + 0.25 * Math.abs(fr[i][2] - round) + Math.random() * 0.04;
-      if (best.length < 3 || cost < best[2][0]) { best.push([cost, i]); best.sort((x, y) => x[0] - y[0]); best.length = Math.min(3, best.length); }
-    }
-    b.cur = best[Math.floor(Math.random() * best.length)]?.[1] ?? b.cur;
+    const dt = 1000 / (b.meta.fps || 24);
+    if (b.dir === undefined) b.dir = 1;
+    if (quiet) { if (!b.quietSince) b.quietSince = now; } else b.quietSince = 0;
+    const resting = b.quietSince && now - b.quietSince > 90;
+    if (resting && fr[b.cur][1] < 0.18) return;                    // closed: hold until speech resumes
+    if (now < b.next) return;
+    // catch up if a frame was missed, but never skip more than one source frame
+    b.next = Math.max(now, b.next + dt) + (resting ? -dt * 0.4 : 0); // a pause winds down a little faster
+    let n = b.cur + b.dir;
+    if (n < 0 || n >= fr.length) { b.dir = -b.dir; n = b.cur + b.dir; }
+    b.cur = Math.max(0, Math.min(fr.length - 1, n));
   }
 
   get hasFront() { return !!this.src?.front; }
