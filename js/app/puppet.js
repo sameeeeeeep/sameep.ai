@@ -3,15 +3,66 @@
 // all cut from one master so nothing shifts between them. Every frame is an
 // <img> stacked in the seat and preloaded; a swap only flips visibility.
 //
-// Lip-sync: the analyser loudness is normalised against a slowly decaying
-// peak (so a quiet voice still opens the mouth), smoothed with a fast attack /
-// slower release envelope, mapped to loudness bands with hysteresis, and every
-// shape is held for 60–90 ms. Each new syllable rolls a small vowel variation
-// (rounded "oo", or one band smaller) so it never reads as a metronome.
+// Mouth, best source first:
+//  1. frame bank (img/sprites/<who>/bank.json): mouth/jaw patches cut from a
+//     generated talking video, drawn on a canvas over the closed frame. Played
+//     like a video texture: follow runs of consecutive source frames, jump to
+//     the frame whose openness matches the target when it drifts, hold the
+//     rest frame in pauses.
+//  2. cue timeline (data/visemes.json, built by build/script-tools/visemes.py
+//     from whisper word timings + the script + the clip's loudness): the shape
+//     at the playing clip's currentTime, held at least 50 ms.
+//  3. loudness (third-party ?persona= bundles, timer mode): the analyser level
+//     normalised against a decaying peak, attack/release envelope, bands with
+//     hysteresis, 60–90 ms holds and a little vowel variation.
 // Blinks are random every 2–6 s and only land while the mouth is closed.
 import { h, clamp } from './util.js';
 import { manifestReady } from './stage.js';
 
+// ---- the speech clip that is playing (for the cue timeline)
+// podcast.js may call setSpeechAudio(this.audio); until then any media element
+// that plays a clip we have cues for is picked up here.
+const media = new Set();
+let speech = null;
+export function setSpeechAudio(el) { speech = el; }
+if (typeof HTMLMediaElement !== 'undefined' && !HTMLMediaElement.prototype.__puppetHook) {
+  const play = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function (...a) { if (media.size < 8) media.add(this); return play.apply(this, a); };
+  HTMLMediaElement.prototype.__puppetHook = true;
+}
+let cueP = null;
+let CUES = null;
+const cueBySrc = new Map();
+function loadCues(url) {
+  cueP ||= fetch(url, { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})).then((j) => (CUES = j));
+  return cueP;
+}
+function cuesFor(src) {
+  if (!CUES || !src) return null;
+  if (cueBySrc.has(src)) return cueBySrc.get(src);
+  let path = '';
+  try { path = decodeURIComponent(new URL(src, location.href).pathname); } catch { /* noop */ }
+  const key = Object.keys(CUES).find((k) => path.endsWith('/' + k));
+  const c = key ? CUES[key] : null;
+  cueBySrc.set(src, c);
+  return c;
+}
+const LEAD = 0.03; // mouth leads the sound a touch
+const MIN_HOLD = 50;
+function playingCues() {
+  const list = speech ? [speech, ...media] : media;
+  for (const el of list) {
+    if (el.paused || el.ended) continue;
+    const c = cuesFor(el.currentSrc || el.src);
+    if (c) return { c, t: el.currentTime + LEAD };
+  }
+  return null;
+}
+// for QA: which source drives the mouth right now
+export const lipsyncState = () => { const p = playingCues(); return { cues: !!CUES, playing: p ? +p.t.toFixed(2) : null }; };
+// cue shape → target openness / roundness for the frame bank
+const OPEN = { closed: 0, mid: 0.3, oo: 0.38, open: 0.66, wide: 0.95 };
+const ROUND = { oo: 1 };
 const load = (src) => new Promise((r) => {
   if (!src) return r(null);
   const i = new Image();
@@ -77,12 +128,23 @@ export class Puppet {
     this.blinkAgain = 0;
     this.nextBlink = performance.now() + 1500 + Math.random() * 3000;
     this.t = 0;
+    this.ci = 0; // cue index cache
+    this.banks = {}; // look → { cv, ctx, img, meta, cur, next }
   }
 
   // Work out every frame this seat has: explicit set, else the manifest entry
   // whose dir matches frames.closed, else just the four frames we were given.
   async #frameSet() {
-    if (this.frames.set) return this.frames.set;
+    if (this.frames.set) {
+      // close-ups: a known sprite dir if the manifest lists it
+      const c = this.frames.set.front?.closed || this.frames.set.side?.closed || '';
+      const M = await manifestReady();
+      for (const sp of Object.values(M.sprites || {})) {
+        const dir = String(sp.dir || '').replace(/^\.?\//, '').replace(/\/$/, '');
+        if (dir && c.includes(`/${dir}/`)) this.dir = c.slice(0, c.indexOf(`/${dir}/`) + dir.length + 2);
+      }
+      return this.frames.set;
+    }
     const side = {};
     for (const k of SHAPES) if (this.frames[k]) side[k] = this.frames[k];
     const set = { side };
@@ -95,6 +157,7 @@ export class Puppet {
       const dir = String(sp.dir || '').replace(/^\.?\//, '').replace(/\/$/, '');
       if (!dir || !path.endsWith(`/${dir}/closed.webp`)) continue;
       const base = closed.replace(/closed\.webp(\?.*)?$/, '');
+      this.dir = base;
       for (const n of sp.frames || []) {
         const f = parseFrameName(n);
         if (f) (set[f.look] ||= {})[f.shape] = `${base}${n}.webp`;
@@ -138,7 +201,69 @@ export class Puppet {
       }
     }
     this.#show('side', 'closed');
+    if (this.dir) {
+      const root = this.dir.replace(/img\/sprites\/.*$/, '');
+      loadCues(root + 'data/visemes.json');
+      this.#loadBanks(); // no await: the seat works without it
+    }
     return this;
+  }
+
+  // frame banks for whichever looks this seat has (bank.json lists poses)
+  async #loadBanks() {
+    let idx = null;
+    try { const r = await fetch(this.dir + 'bank.json', { cache: 'no-cache' }); idx = r.ok ? await r.json() : null; } catch { idx = null; }
+    if (!idx) return;
+    for (const look of Object.keys(this.src)) {
+      const twin = Object.keys(this.banks).find((k) => this.src[k] === this.src[look]);
+      if (twin) { this.banks[look] = this.banks[twin]; continue; } // a front-only seat reuses one bank
+      const closed = this.src[look].closed || '';
+      const pose = /\/cu-front-closed\.webp/.test(closed) ? 'cu-front' : /\/cu-closed\.webp/.test(closed) ? null : look;
+      const meta = pose && idx[pose];
+      if (!meta?.frames?.length) continue;
+      const img = await load(this.dir + meta.sheet);
+      if (!img) continue;
+      const cv = h('canvas.puppet__img.puppet__bank.is-off', { width: meta.size[0], height: meta.size[1], 'aria-hidden': 'true' });
+      this.seat.append(cv);
+      const fr = meta.frames;
+      // a frame "continues" its predecessor when they are neighbours in the source video
+      const step = fr.length > 1 ? Math.min(...fr.slice(1).map((f, i) => f[0] - fr[i][0]).filter((d) => d > 0)) : 1;
+      this.banks[look] = { cv, ctx: cv.getContext('2d'), img, meta, step, cur: meta.rest ?? 0, drawn: -1, next: 0, quietSince: 0 };
+    }
+  }
+
+  #drawBank(b, i) {
+    if (b.drawn === i) return;
+    const [px, py, pw, ph] = b.meta.patch;
+    const [tw, th] = b.meta.tile || [pw, ph]; // close-up sheets are stored at half size
+    const c = b.meta.cols;
+    b.ctx.clearRect(px, py, pw, ph);
+    b.ctx.drawImage(b.img, (i % c) * tw, Math.floor(i / c) * th, tw, th, px, py, pw, ph);
+    b.drawn = i;
+  }
+
+  // pick the next bank frame for a target openness (video-texture walk)
+  #stepBank(b, now, target, round, quiet) {
+    const fr = b.meta.frames;
+    const dt = 1000 / (b.meta.fps || 12);
+    if (quiet) {
+      if (!b.quietSince) b.quietSince = now;
+      // a pause: hold the rest frame (a short m/b/p closure jumps to the most closed frame)
+      if (now - b.quietSince > 120) { b.cur = b.meta.rest ?? 0; b.next = now + dt; return; }
+    } else b.quietSince = 0;
+    if (now < b.next && !(quiet && fr[b.cur][1] > 0.25)) return;
+    b.next = now + dt;
+    const n = b.cur + 1;
+    const cont = n < fr.length && fr[n][0] - fr[b.cur][0] === b.step;
+    if (cont && Math.abs(fr[n][1] - target) < 0.2 && (round < 0.5 || fr[n][2] > 0.3)) { b.cur = n; return; }
+    // jump: best few matches, one at random (never the same frame twice in a row)
+    let best = [];
+    for (let i = 0; i < fr.length; i++) {
+      if (i === b.cur) continue;
+      const cost = Math.abs(fr[i][1] - target) + 0.25 * Math.abs(fr[i][2] - round) + Math.random() * 0.04;
+      if (best.length < 3 || cost < best[2][0]) { best.push([cost, i]); best.sort((x, y) => x[0] - y[0]); best.length = Math.min(3, best.length); }
+    }
+    b.cur = best[Math.floor(Math.random() * best.length)]?.[1] ?? b.cur;
   }
 
   get hasFront() { return !!this.src?.front; }
@@ -164,40 +289,38 @@ export class Puppet {
     const dt = clamp(gap, 0, 64);
     this.t = now;
     // not drawn for a while (a hidden close-up): start again from rest
-    if (gap > 250) { this.env = 0; this.avg = 0; this.band = 0; this.holdUntil = 0; }
+    if (gap > 250) { this.env = 0; this.avg = 0; this.band = 0; this.holdUntil = 0; this.ci = 0; }
+    const speaking = this.seat.classList.contains('is-active') || (this.seat.classList.contains('cu') && !this.seat.hidden);
+    const look = this.seat.dataset.look === 'front' && this.src.front ? 'front' : 'side';
 
-    // 1. normalise against a slowly decaying peak, then attack/release envelope
-    level = level > 0.006 ? level : 0;
-    //    (minus part of the running average, so the mouth shuts between syllables
-    //    instead of hanging open through a whole phrase)
-    this.peak = Math.max(level, this.peak * Math.exp(-dt / 2200), 0.14);
-    this.avg += (level - this.avg) * (1 - Math.exp(-dt / 400));
-    const floor = 0.6 * this.avg;
-    const x = clamp((level - floor) / Math.max(0.05, this.peak - floor), 0, 1);
-    const tau = x > this.env ? 24 : 70;
-    const prevEnv = this.env;
-    this.env += (x - this.env) * (1 - Math.exp(-dt / tau));
-    const e = this.env;
-
-    // 2. bands with hysteresis; a new syllable (rise out of a dip) rolls a vowel
-    let band = this.band;
-    while (band < 3 && e > UP[band]) band++;
-    while (band > 0 && e < DOWN[band - 1]) band--;
-    if (e < this.dip) this.dip = e;
-    if (band === 0) this.dip = e;
-    const rising = e > prevEnv;
-    if (rising && (this.band === 0 ? band > 0 : e - (this.dip ?? 0) > 0.22 && this.wasFalling)) {
-      const r = Math.random();
-      this.vowel = r < 0.12 ? 'round' : r < 0.32 ? 'small' : r < 0.6 ? 'nowide' : 'normal';
-      this.dip = e;
+    // 1. the shape the sound wants: cue timeline if this clip has one, else loudness
+    const pc = speaking ? playingCues() : null;
+    let want;
+    let target;
+    if (pc) {
+      const c = pc.c;
+      let i = this.ci < c.length && c[this.ci][0] <= pc.t ? this.ci : 0;
+      while (i + 1 < c.length && c[i + 1][0] <= pc.t) i++;
+      this.ci = i;
+      want = c[i]?.[1] || 'closed';
+      if (!(want in OPEN)) want = 'mid';
+      target = OPEN[want];
+      this.env = 0;
+    } else {
+      want = this.#loudness(dt, level);
+      target = clamp(this.env, 0, 1) * 0.95;
     }
-    this.wasFalling = !rising;
-    this.band = band;
 
-    let want = BAND_SHAPE[band];
-    if (band > 0 && this.vowel === 'round') want = 'oo';
-    else if (band > 1 && this.vowel === 'small') want = BAND_SHAPE[band - 1];
-    else if (band === 3 && this.vowel === 'nowide') want = 'open';
+    // 2. frame bank over a closed base, when this look has one and someone is talking
+    const bank = this.banks[look];
+    const useBank = bank && speaking && (pc || level > 0 || this.env > 0.02);
+    for (const b of Object.values(this.banks)) if (b !== bank || !useBank) b.cv.classList.add('is-off');
+    if (useBank) {
+      this.#stepBank(bank, now, target, ROUND[want] || 0, want === 'closed');
+      this.#drawBank(bank, bank.cur);
+      bank.cv.classList.remove('is-off');
+      want = 'closed'; // the base under the patch (eyes can still blink)
+    }
 
     // 3. blinks: random, 2–6 s apart, only with the mouth shut (sometimes a double)
     if (now < this.blinkUntil) want = want === 'closed' ? 'blink' : want;
@@ -211,12 +334,46 @@ export class Puppet {
     }
 
     // 4. look comes from the Studio (per line); a look change swaps at once
-    const look = this.seat.dataset.look === 'front' && this.src.front ? 'front' : 'side';
     const lookChanged = !this.key.startsWith(look + ':');
     if (lookChanged || (want !== this.shape && (now >= this.holdUntil || want === 'blink' || this.shape === 'blink'))) {
-      if (want !== this.shape) this.holdUntil = now + 60 + Math.random() * 30;
+      if (want !== this.shape) this.holdUntil = now + (pc ? MIN_HOLD : 60 + Math.random() * 30);
       this.#show(look, want);
     }
+  }
+
+  // loudness → shape (the fallback when a clip has no cue timeline)
+  #loudness(dt, level) {
+    // normalise against a slowly decaying peak, then attack/release envelope
+    level = level > 0.006 ? level : 0;
+    // (minus part of the running average, so the mouth shuts between syllables
+    // instead of hanging open through a whole phrase)
+    this.peak = Math.max(level, this.peak * Math.exp(-dt / 2200), 0.14);
+    this.avg += (level - this.avg) * (1 - Math.exp(-dt / 400));
+    const floor = 0.6 * this.avg;
+    const x = clamp((level - floor) / Math.max(0.05, this.peak - floor), 0, 1);
+    const tau = x > this.env ? 24 : 70;
+    const prevEnv = this.env;
+    this.env += (x - this.env) * (1 - Math.exp(-dt / tau));
+    const e = this.env;
+    // bands with hysteresis; a new syllable (rise out of a dip) rolls a vowel
+    let band = this.band;
+    while (band < 3 && e > UP[band]) band++;
+    while (band > 0 && e < DOWN[band - 1]) band--;
+    if (e < this.dip) this.dip = e;
+    if (band === 0) this.dip = e;
+    const rising = e > prevEnv;
+    if (rising && (this.band === 0 ? band > 0 : e - (this.dip ?? 0) > 0.22 && this.wasFalling)) {
+      const r = Math.random();
+      this.vowel = r < 0.12 ? 'round' : r < 0.32 ? 'small' : r < 0.6 ? 'nowide' : 'normal';
+      this.dip = e;
+    }
+    this.wasFalling = !rising;
+    this.band = band;
+    let want = BAND_SHAPE[band];
+    if (band > 0 && this.vowel === 'round') want = 'oo';
+    else if (band > 1 && this.vowel === 'small') want = BAND_SHAPE[band - 1];
+    else if (band === 3 && this.vowel === 'nowide') want = 'open';
+    return want;
   }
 
   setActive(on) { this.seat.classList.toggle('is-active', on); }

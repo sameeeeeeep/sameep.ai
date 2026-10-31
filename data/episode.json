@@ -61,7 +61,8 @@
      "id": "cold-open-01",
      "who": "host",
      "text": "Hello, hello, my precious little listeners. You have just watched a man's résumé get folded into an aeroplane, thrown about, crumpled, shredded, and set on fire. And now it is a compact disc. I have never been prouder of someone I have only just met.",
-     "audio": "audio/clips/cold-open-01.mp3"
+     "audio": "audio/clips/cold-open-01.mp3",
+     "look": "front"
     },
     {
      "id": "cold-open-02",
@@ -130,14 +131,16 @@
        "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
        "audio": "audio/clips/intro-01.mp3"
       }
-     }
+     },
+     "look": "front"
     },
     {
      "id": "intro-02",
      "who": "sameep",
      "text": "Hi! Quick disclaimer: I'm the AI version. I talk about the learnings the same way he dictated them, a bit rambling. And I won't cover everything. Pick a door, let's go. You also have a say here, FYI.",
      "messy": "Hi! Quick, um, quick disclaimer, I'm the AI version. I talk about the learnings the same way he dictated them, a bit rambling, sorry. And I won't cover everything. Pick a door, let's go. You, um, you also have a say here, FYI.",
-     "audio": "audio/clips/intro-02.mp3"
+     "audio": "audio/clips/intro-02.mp3",
+     "look": "front"
     },
     {
      "id": "intro-03",
@@ -149,7 +152,8 @@
        "text": "Yes, and you, in the audience, steer. Click a little card, or simply say it out loud with your Flow. I shall pretend I heard you perfectly.",
        "audio": "audio/clips/intro-03-w.mp3"
       }
-     }
+     },
+     "look": "front"
     }
    ],
    "choices": [],
@@ -164,7 +168,8 @@
      "id": "hub-first-01",
      "who": "host",
      "text": "So. Tonight's menu. We have growth: sales, launches, games, and a Diwali invite I am told absolutely slaps. We have a startup that did not work, which is my favourite genre. We have Switchboard, ppt.live, a box of little Claude contraptions, and some fun, unfinished things. Where shall we begin?",
-     "audio": "audio/clips/hub-first-01.mp3"
+     "audio": "audio/clips/hub-first-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -266,7 +271,8 @@
      "id": "hub-01",
      "who": "host",
      "text": "Right. Back to the menu, darling. Where to next?",
-     "audio": "audio/clips/hub-01.mp3"
+     "audio": "audio/clips/hub-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -468,7 +474,8 @@
      "id": "g-hub-01",
      "who": "host",
      "text": "More growth, or shall we move along?",
-     "audio": "audio/clips/g-hub-01.mp3"
+     "audio": "audio/clips/g-hub-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -850,14 +857,16 @@
       "url": "https://diwaliparty.live/?name=",
       "title": "Diwali invite: type your name, strike the match"
      },
-     "audio": "audio/clips/g-diwali-03.mp3"
+     "audio": "audio/clips/g-diwali-03.mp3",
+     "look": "front"
     },
     {
      "id": "g-diwali-04",
      "who": "host",
      "text": "Ha! Oh, there's a song! Darling, there is a song. I am dancing. You cannot see me, but I am dancing.",
      "audio": "audio/clips/g-diwali-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "look": "front"
     },
     {
      "id": "g-diwali-05",
@@ -997,7 +1006,8 @@
      "who": "host",
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -1389,7 +1399,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -1493,7 +1504,8 @@
      "id": "sb-hub-01",
      "who": "host",
      "text": "More Switchboard? Or have I had enough plumbing for one evening?",
-     "audio": "audio/clips/sb-hub-01.mp3"
+     "audio": "audio/clips/sb-hub-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -1777,7 +1789,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -1955,7 +1968,8 @@
      "id": "sb-wrapps-again-01",
      "who": "host",
      "text": "Another wrapp? Go on then, pick one.",
-     "audio": "audio/clips/sb-wrapps-again-01.mp3"
+     "audio": "audio/clips/sb-wrapps-again-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -2089,7 +2103,8 @@
      "who": "host",
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -2429,7 +2444,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -2505,7 +2521,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -2627,7 +2644,8 @@
      "who": "host",
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -2727,7 +2745,8 @@
      "id": "ppt-hub-01",
      "who": "host",
      "text": "More ppt, or shall we leave the rave?",
-     "audio": "audio/clips/ppt-hub-01.mp3"
+     "audio": "audio/clips/ppt-hub-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -3037,7 +3056,8 @@
       "url": "https://www.ppt.live",
       "title": "Scan to open ppt.live"
      },
-     "audio": "audio/clips/ppt-play-02.mp3"
+     "audio": "audio/clips/ppt-play-02.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -3176,7 +3196,8 @@
      "id": "tools-hub-01",
      "who": "host",
      "text": "Another gadget from the drawer?",
-     "audio": "audio/clips/tools-hub-01.mp3"
+     "audio": "audio/clips/tools-hub-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -3311,7 +3332,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -3398,7 +3420,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -3647,7 +3670,8 @@
      "id": "fun-hub-01",
      "who": "host",
      "text": "Another scarf from the drawer?",
-     "audio": "audio/clips/fun-hub-01.mp3"
+     "audio": "audio/clips/fun-hub-01.mp3",
+     "look": "front"
     }
    ],
    "choices": [
@@ -3776,7 +3800,8 @@
      "who": "host",
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -3867,7 +3892,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -3942,7 +3968,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -4025,7 +4052,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -4093,7 +4121,8 @@
      "who": "host",
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -4184,7 +4213,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -4252,7 +4282,8 @@
      "who": "sameep",
      "text": "Should I open this for you in a new tab?",
      "audio": "audio/clips/offer-sameep.mp3",
-     "offer": true
+     "offer": true,
+     "look": "front"
     }
    ],
    "choices": [
@@ -4447,20 +4478,23 @@
      "who": "host",
      "text": "Well. That is our show. Thank you to our guest, the artificial but sincere Sameep.",
      "audio": "audio/clips/outro-01.mp3",
-     "sting": "audio/music/sting-2.mp3"
+     "sting": "audio/music/sting-2.mp3",
+     "look": "front"
     },
     {
      "id": "outro-02",
      "who": "sameep",
      "text": "Thanks for picking the doors. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want your own, Switchboard. Questions I ask myself a lot: is this useful? Would I use it tomorrow? Why is this so hard? What if I just talk to it?",
-     "audio": "audio/clips/outro-02.mp3"
+     "audio": "audio/clips/outro-02.mp3",
+     "look": "front"
     },
     {
      "id": "outro-03",
      "who": "host",
      "text": "Seven e's. I counted. Good night, my darlings. This has been OFF THE CV.",
      "audio": "audio/clips/outro-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "look": "front"
     }
    ],
    "choices": [

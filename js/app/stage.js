@@ -4,7 +4,7 @@
 // camera crops that canvas for medium shots (manifest.studio.medium boxes);
 // close-ups swap to full-frame cu-* frames; inserts use the hands-and-CD plate
 // with a live HTML item card. Hard cuts only.
-import { h, safeUrl, wait, words } from './util.js';
+import { h, safeUrl, wait } from './util.js';
 
 const loadOK = (src) => new Promise((r) => { if (!src) return r(null); const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
 
@@ -16,23 +16,12 @@ export function loadManifest(base) {
 // the manifest the Studio already asked for (puppets read their frame lists from it)
 export const manifestReady = () => manifestP || Promise.resolve({});
 
-// Who looks where on a line. The speaker turns to camera when talking to the
-// viewer; the listener always looks across at the speaker. line.look
-// ('front' | 'side') in episode.json wins when present.
-const TO_VIEWER = /\b(listeners?|menu|where to next|or shall we|pick one|click|chips?|out loud|third guest|new tab|your host|off the cv|you cannot see me|my favourite segment|tonight|our show|good night|my darlings|thank you to)\b|^(more|another) [^?]{1,24}\?/i;
-const TO_GUEST = /\?|\b(you|your|you're|yourself|tell me|spill|explain|go on)\b/i;
-const QUICK_REPLY = /^(yeah|yes|exactly|ha|haha|no|yours|fair|okay|ok|right|true)\b/i;
+// Who looks where on a line. Speakers look at each other by default; a line
+// that addresses the visitor carries "look": "front" in episode.json (the
+// intro, menus, "shall I open that for you", sign-offs). The listener always
+// looks across at the speaker. Close-ups are always front.
 export function decideLook(seat, line) {
-  if (line && (line.look === 'front' || line.look === 'side')) return line.look;
-  const t = String((typeof line === 'string' ? line : line?.text) || '').trim();
-  if (seat === 'guest') return t && words(t) <= 14 && QUICK_REPLY.test(t) && !/new tab/i.test(t) ? 'side' : 'front';
-  if (seat === 'host') {
-    if (!t) return 'side';
-    if (TO_VIEWER.test(t)) return 'front';
-    if (TO_GUEST.test(t)) return 'side';
-    return words(t) <= 16 ? 'front' : 'side'; // a short aside to camera
-  }
-  return 'side';
+  return line && typeof line === 'object' && line.look === 'front' ? 'front' : 'side';
 }
 
 const box = (b) => (Array.isArray(b) && b.length === 4 ? { left: b[0], top: b[1], w: b[2], h: b[3] } : null);
