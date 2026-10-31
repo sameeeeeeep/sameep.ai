@@ -924,6 +924,8 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
 
   // ?timer drives frames with setTimeout (for headless/hidden test panes where rAF is paused)
   const TIMER = /[?&]timer\b/.test(location.search);
+  // Idle windows look fast, so on Retina screens never climb to the heaviest level (it stalls the GPU mid-scroll).
+  const Q_MAX = (window.devicePixelRatio || 1) >= 2 ? 1 : 2;
   const nextFrame = TIMER ? (f) => setTimeout(() => f(performance.now()), 16) : (f) => requestAnimationFrame(f);
   function frame(now) {
     raf = nextFrame(frame);
@@ -940,9 +942,9 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
         if (qN >= 120) {
           const avg = qAcc / qN;
           stats.avg = avg; stats.worst = qWorst;
-          if (avg > 0.026) { qSlow++; qFast = 0; } else if (avg < 0.014) { qFast++; qSlow = 0; } else { qSlow = 0; qFast = 0; }
+          if (avg > 0.026) { qSlow++; qFast = 0; } else if (avg < 0.014 && qWorst < 0.025) { qFast++; qSlow = 0; } else { qSlow = 0; qFast = 0; }
           if (qSlow >= 2 && quality > 0) { setQuality(quality - 1); qSlow = 0; qSkip = 90; }
-          else if (qFast >= 3 && quality < 2) { setQuality(quality + 1); qFast = 0; qSkip = 90; }
+          else if (qFast >= 3 && quality < Q_MAX) { setQuality(quality + 1); qFast = 0; qSkip = 90; }
           qAcc = 0; qN = 0; qWorst = 0;
         }
       }
