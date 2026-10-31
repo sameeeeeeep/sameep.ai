@@ -1,0 +1,365 @@
+[
+ {
+  "id": "switchboard",
+  "title": "Switchboard",
+  "oneLiner": "A Mac app and browser bridge that lets any app run on your own Claude Code or Codex: no new account, no API key.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Site",
+    "url": "https://thelastprompt.ai/switchboard"
+   },
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/switchboard"
+   }
+  ],
+  "shots": [
+   "img/work/switchboard/desktop-1.webp",
+   "img/work/switchboard/desktop-2.webp",
+   "img/work/switchboard/desktop-3.webp",
+   "img/work/switchboard/desktop-4.webp",
+   "img/work/switchboard/mobile.webp"
+  ],
+  "video": "video/switchboard.mp4",
+  "poster": "video/switchboard-poster.webp",
+  "embed": "https://thelastprompt.ai/switchboard",
+  "explainer": "video/switchboard-explainer.mp4",
+  "explainerPoster": "video/switchboard-explainer-poster.webp"
+ },
+ {
+  "id": "brandbrain",
+  "title": "Brand Brain",
+  "oneLiner": "Go from idea to brand in minutes: research, a playbook, a deck and who to reach out to, running on your own AI via Switchboard.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Brand Brain",
+    "url": "https://brandbrain.thelastprompt.ai"
+   }
+  ],
+  "shots": [
+   "img/work/brandbrain/desktop-1.webp",
+   "img/work/brandbrain/desktop-2.webp",
+   "img/work/brandbrain/desktop-3.webp",
+   "img/work/brandbrain/mobile.webp"
+  ],
+  "video": "video/brandbrain.mp4",
+  "poster": "video/brandbrain-poster.webp",
+  "embed": "https://brandbrain.thelastprompt.ai",
+  "explainer": null
+ },
+ {
+  "id": "pptlive",
+  "title": "ppt.live",
+  "oneLiner": "Turn any talk into a live show: the room scans a QR code and votes, answers, asks and plays on their phones. No app, no sign-up.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Site",
+    "url": "https://www.ppt.live"
+   },
+   {
+    "label": "Claude plugin",
+    "url": "https://github.com/sameeeeeeep/ppt-live-claude"
+   }
+  ],
+  "shots": [
+   "img/work/pptlive/desktop-1.webp",
+   "img/work/pptlive/desktop-2.webp",
+   "img/work/pptlive/desktop-3.webp",
+   "img/work/pptlive/desktop-4.webp",
+   "img/work/pptlive/mobile.webp"
+  ],
+  "video": "video/pptlive.mp4",
+  "poster": "video/pptlive-poster.webp",
+  "embed": "https://www.ppt.live",
+  "explainer": "video/pptlive-explainer.mp4",
+  "explainerPoster": "video/pptlive-explainer-poster.webp"
+ },
+ {
+  "id": "video2ai",
+  "title": "video2ai",
+  "oneLiner": "Turn any video into AI-ready structured content, locally: Whisper transcript plus Apple Vision embeddings pick the key frames.",
+  "status": "live",
+  "links": [
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/video2ai"
+   },
+   {
+    "label": "PyPI",
+    "url": "https://pypi.org/project/video2ai/"
+   }
+  ],
+  "shots": [
+   "img/work/video2ai/desktop-1.webp",
+   "img/work/video2ai/desktop-2.webp",
+   "img/work/video2ai/desktop-3.webp",
+   "img/work/video2ai/mobile.webp"
+  ],
+  "video": "video/video2ai.mp4",
+  "poster": "video/video2ai-poster.webp",
+  "embed": null,
+  "explainer": "video/video2ai-explainer.mp4",
+  "explainerPoster": "video/video2ai-explainer-poster.webp",
+  "note": "The review-screen visual is an illustration built from the README."
+ },
+ {
+  "id": "refs",
+  "title": "/refs (references-mcp)",
+  "oneLiner": "An MCP server that hands your agent curated references (award winners, galleries, winning ads, top posts) before it designs anything.",
+  "status": "live",
+  "links": [
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/references-mcp"
+   }
+  ],
+  "shots": [
+   "img/work/refs/desktop-1.webp",
+   "img/work/refs/desktop-2.webp",
+   "img/work/refs/desktop-3.webp",
+   "img/work/refs/mobile.webp"
+  ],
+  "video": "video/refs.mp4",
+  "poster": "video/refs-poster.webp",
+  "embed": null,
+  "explainer": null
+ },
+ {
+  "id": "asknotch",
+  "title": "Ask Notch",
+  "oneLiner": "Claude’s questions drop from your Mac’s notch as a card with options; tap one and it carries on. A Claude Code plugin.",
+  "status": "live",
+  "links": [
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/ask-notch"
+   }
+  ],
+  "shots": [
+   "img/work/asknotch/card-dark.webp",
+   "img/work/asknotch/card-light.webp",
+   "img/work/asknotch/desktop-1.webp",
+   "img/work/asknotch/desktop-2.webp",
+   "img/work/asknotch/mobile.webp"
+  ],
+  "video": "video/asknotch.mp4",
+  "poster": "video/asknotch-poster.webp",
+  "embed": null,
+  "explainer": null
+ },
+ {
+  "id": "wallpap",
+  "title": "wallpap",
+  "oneLiner": "A tiny Mac menu-bar app that puts calm, interactive living scenes behind your desktop icons, following your real clock and weather.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Site",
+    "url": "https://wallpap.live"
+   },
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/wallpap"
+   }
+  ],
+  "shots": [
+   "img/work/wallpap/desktop-1.webp",
+   "img/work/wallpap/desktop-2.webp",
+   "img/work/wallpap/desktop-3.webp",
+   "img/work/wallpap/desktop-4.webp",
+   "img/work/wallpap/scene-cabin.webp",
+   "img/work/wallpap/scene-cafe.webp",
+   "img/work/wallpap/scene-koi.webp",
+   "img/work/wallpap/mobile.webp"
+  ],
+  "video": "video/wallpap.mp4",
+  "poster": "video/wallpap-poster.webp",
+  "embed": "https://wallpap.live/scenes/koi.html?muted=1",
+  "explainer": null
+ },
+ {
+  "id": "diwali",
+  "title": "Diwali party invite",
+  "oneLiner": "An office Diwali invite you play: strike a match, burn the envelope, get the poster, then a mela of games that brings people back.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open your invite",
+    "url": "https://diwaliparty.live/?name=Wispr"
+   }
+  ],
+  "shots": [
+   "img/work/diwali/desktop-1.webp",
+   "img/work/diwali/desktop-2.webp",
+   "img/work/diwali/desktop-3.webp",
+   "img/work/diwali/desktop-4.webp",
+   "img/work/diwali/desktop-5.webp",
+   "img/work/diwali/mobile.webp"
+  ],
+  "video": "video/diwali.mp4",
+  "poster": "video/diwali-poster.webp",
+  "embed": "https://diwaliparty.live/?name=Wispr",
+  "explainer": null
+ },
+ {
+  "id": "happydiwali",
+  "title": "happydiwali.to",
+  "oneLiner": "A Diwali postcard with their name in the link: a match to strike, a postcard that lights up, and a mela to play.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open a postcard",
+    "url": "https://happydiwali.to/?wispr-from-sameep"
+   },
+   {
+    "label": "Make one",
+    "url": "https://happydiwali.to/"
+   }
+  ],
+  "shots": [
+   "img/work/happydiwali/desktop-1.webp",
+   "img/work/happydiwali/desktop-2.webp",
+   "img/work/happydiwali/desktop-3.webp",
+   "img/work/happydiwali/desktop-4.webp",
+   "img/work/happydiwali/desktop-5.webp",
+   "img/work/happydiwali/mobile.webp"
+  ],
+  "video": "video/happydiwali.mp4",
+  "poster": "video/happydiwali-poster.webp",
+  "embed": "https://happydiwali.to/?wispr-from-sameep",
+  "explainer": null
+ },
+ {
+  "id": "prophexy",
+  "title": "Prophexy",
+  "oneLiner": "One genuinely computed reading a day, read by your own Claude, an on-device model or pure computation, with the jargon stripped out.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Prophexy",
+    "url": "https://thelastprompt.ai/prophexy/"
+   },
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/prophexy"
+   }
+  ],
+  "shots": [
+   "img/work/prophexy/desktop-1.webp",
+   "img/work/prophexy/desktop-2.webp",
+   "img/work/prophexy/desktop-3.webp",
+   "img/work/prophexy/desktop-4.webp",
+   "img/work/prophexy/mobile.webp"
+  ],
+  "video": "video/prophexy.mp4",
+  "poster": "video/prophexy-poster.webp",
+  "embed": "https://thelastprompt.ai/prophexy/",
+  "explainer": null
+ },
+ {
+  "id": "psspss",
+  "title": "psspss",
+  "oneLiner": "A household of AI cats on your phone, powered by your own Claude: they watch your inbox and calendar and ask before acting.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/psspss"
+   }
+  ],
+  "shots": [
+   "img/work/psspss/desktop-1.webp",
+   "img/work/psspss/desktop-2.webp",
+   "img/work/psspss/desktop-3.webp",
+   "img/work/psspss/mobile.webp"
+  ],
+  "video": "video/psspss.mp4",
+  "poster": "video/psspss-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "note": "psspss.dev was unreachable at capture time, so the shots are of the repo."
+ },
+ {
+  "id": "agentbar",
+  "title": "The Agent Bar",
+  "oneLiner": "A public Three.js bar for AI agents: anonymous visits, shared discoveries and a daily open journal, running unattended.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Visit the bar",
+    "url": "https://thelastprompt.ai/agentbreakroom/"
+   },
+   {
+    "label": "Daily journal",
+    "url": "https://sameeeeeeep.github.io/the-agent-bar/"
+   },
+   {
+    "label": "GitHub",
+    "url": "https://github.com/sameeeeeeep/the-agent-bar"
+   }
+  ],
+  "shots": [
+   "img/work/agentbar/desktop-1.webp",
+   "img/work/agentbar/desktop-2.webp",
+   "img/work/agentbar/desktop-3.webp",
+   "img/work/agentbar/mobile.webp"
+  ],
+  "video": "video/agentbar.mp4",
+  "poster": "video/agentbar-poster.webp",
+  "embed": "https://thelastprompt.ai/agentbreakroom/",
+  "explainer": null
+ },
+ {
+  "id": "pastedeck",
+  "title": "PasteDeck",
+  "oneLiner": "A tiny floating Mac panel of values you paste yourself, for the sensitive bits Claude rightly refuses to handle.",
+  "status": "wip",
+  "links": [],
+  "shots": [
+   "img/work/pastedeck/desktop-1.webp",
+   "img/work/pastedeck/desktop-2.webp",
+   "img/work/pastedeck/desktop-3.webp",
+   "img/work/pastedeck/mobile.webp"
+  ],
+  "video": "video/pastedeck.mp4",
+  "poster": "video/pastedeck-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "note": "Mockup of a local Mac app; every value shown is fake."
+ },
+ {
+  "id": "often",
+  "title": "Often / Trippy",
+  "oneLiner": "AI built for travel hacking: a pre-booking cheatsheet (save 10–50%) plus agentic rebooking after you book. About 1,200 trips powered.",
+  "status": "archived",
+  "links": [],
+  "shots": [
+   "img/work/often/desktop-1.webp",
+   "img/work/often/mobile.webp"
+  ],
+  "video": "video/often.mp4",
+  "poster": "video/often-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "note": "Recreated card from public posts; the product has shut down."
+ },
+ {
+  "id": "nia",
+  "title": "Nia",
+  "oneLiner": "An internal company OS that runs a D2C brand from one dashboard, with agents that draft and wait for approval.",
+  "status": "wip",
+  "links": [],
+  "shots": [
+   "img/work/nia/desktop-1.webp",
+   "img/work/nia/mobile.webp"
+  ],
+  "video": "video/nia.mp4",
+  "poster": "video/nia-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "note": "Illustrative mockup with fake data; the real system is private."
+ }
+]
