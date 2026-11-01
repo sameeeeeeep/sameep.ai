@@ -5170,112 +5170,89 @@
    "chapter": "How this was made",
    "lines": [
     {
-     "id": "meta-intro-01",
+     "id": "meta-why-01",
      "who": "host",
-     "text": "Now. I have a confession to make, on your behalf. This whole thing, the burning, the disc, the little computer, me. It was all dictated. With Wispr Flow. Wasn't it?",
+     "text": "Now. How did all this come about? A grown man, a perfectly good CV, and a box of matches.",
+     "audio": "audio/clips/meta-why-01.mp3",
      "sting": "audio/music/sting-1.mp3",
-     "audio": "audio/clips/meta-intro-01.mp3",
      "h": {
       "k56": {
-       "text": "Confession protocol. This whole thing, the burning, the disc, the little computer, me. It was all dictated. With Wispr Flow. Confirm?",
-       "audio": "audio/clips/meta-intro-01-k56.mp3"
+       "text": "Query. How did all this come about? A grown man, a perfectly good CV, and a box of matches. I find the matches concerning.",
+       "audio": "audio/clips/meta-why-01-k56.mp3"
       },
       "gus": {
-       "text": "Now, a confession, on your behalf! This whole thing, the burning, the disc, the little computer, me! It was all dictated! With Wispr Flow! Wasn't it?",
-       "audio": "audio/clips/meta-intro-01-gus.mp3"
+       "text": "Now! How did all this come about? A grown man, a perfectly good CV, and a box of matches! Talk me through the build-up!",
+       "audio": "audio/clips/meta-why-01-gus.mp3"
       }
      }
     },
     {
-     "id": "meta-intro-02",
+     "id": "meta-why-02",
      "who": "sameep",
-     "text": "Yeah, all of it. The spec, the script, the answers, I said them out loud with Flow, and Claude built from that. So the way I'm talking right now, rambling, correcting myself, that's how I actually dictated it. I'm talking about the learnings, and the avatar talks about them the same way.",
-     "messy": "Yeah, all of it. The spec, the script, the, the answers, I said them out loud with Flow, and Claude built from that. So the way I'm talking right now, like, rambling, correcting myself, that's how I actually dictated it. I'm talking about the learnings and the, the avatar talks about them the same way.",
-     "audio": "audio/clips/meta-intro-02.mp3"
+     "text": "Honestly? I'd never made a portfolio. And the CV had kind of become useless, everyone's is one of thousands. So it was high time I made one. Then the Wispr challenge came along, it sounded fun, and I just started.",
+     "audio": "audio/clips/meta-why-02.mp3"
     },
     {
-     "id": "meta-intro-03",
+     "id": "meta-why-03",
+     "who": "sameep",
+     "text": "And I realised Claude already knows all my projects. My repos, my notes, all of it. So making the portfolio with Claude was going to be the easy part. I loved the brief, so I got a little extra creative.",
+     "audio": "audio/clips/meta-why-03.mp3"
+    },
+    {
+     "id": "meta-why-04",
      "who": "host",
-     "text": "Which explains the rambling. You correct yourself mid-sentence, like a man tucking in his shirt on the way into a meeting.",
-     "audio": "audio/clips/meta-intro-03-b.mp3",
+     "text": "A little. Yes.",
+     "audio": "audio/clips/meta-why-04.mp3",
      "shot": "cu",
      "h": {
       "k56": {
-       "text": "Which explains the rambling. You correct yourself mid-sentence. Like autocorrect, but out loud.",
-       "audio": "audio/clips/meta-intro-03-k56.mp3"
+       "text": "A little. Yes. My sensors registered: extremely.",
+       "audio": "audio/clips/meta-why-04-k56.mp3"
       },
       "gus": {
-       "text": "Which explains the rambling! You correct yourself mid-sentence, like a striker changing direction mid-run!",
-       "audio": "audio/clips/meta-intro-03-gus.mp3"
+       "text": "A little! He says a little! The crowd disagrees!",
+       "audio": "audio/clips/meta-why-04-gus.mp3"
       }
      }
-    },
-    {
-     "id": "meta-intro-04",
-     "who": "sameep",
-     "text": "Exactly. What I say is messy, what comes out the other end is clean. I left the messy version in on purpose.",
-     "audio": "audio/clips/meta-intro-04-b.mp3"
     }
    ],
    "choices": [
     {
-     "label": "How do the voices work?",
+     "label": "Where did the burning come from?",
      "say": [
-      "voice",
-      "voices",
-      "speech",
-      "tts",
-      "audio"
+      "burning",
+      "idea",
+      "where",
+      "inspiration",
+      "destroy",
+      "plane"
      ],
-     "to": "meta-voice",
+     "to": "meta-story",
      "recommended": true
     },
     {
-     "label": "How do the faces move?",
+     "label": "How did you actually build it?",
      "say": [
-      "faces",
-      "face",
-      "sprites",
-      "animation",
-      "lips",
-      "mouth"
+      "build",
+      "workflow",
+      "how did you",
+      "process",
+      "wispr",
+      "spec"
      ],
-     "to": "meta-faces"
+     "to": "meta-workflow"
     },
     {
-     "label": "Who wrote the code?",
+     "label": "The nerdy bits: how it actually works",
      "say": [
+      "nerdy",
+      "tech",
+      "how it works",
+      "voices",
       "code",
-      "coding",
-      "claude",
-      "claude code",
-      "built",
-      "programming"
+      "technical"
      ],
-     "to": "meta-code"
-    },
-    {
-     "label": "What if I just sit here?",
-     "say": [
-      "logic",
-      "flow",
-      "sit here",
-      "do nothing",
-      "branch",
-      "choices",
-      "story"
-     ],
-     "to": "meta-flow"
-    },
-    {
-     "label": "Why the nineties?",
-     "say": [
-      "nineties",
-      "90s",
-      "retro",
-      "why retro"
-     ],
-     "to": "meta-90s"
+     "to": "meta-voice"
     },
     {
      "label": "Could anyone make one of these?",
@@ -5298,9 +5275,327 @@
      "to": "hub"
     }
    ],
-   "next": "meta-voice",
+   "next": "meta-story",
    "title": "How this was made",
-   "blurb": "Dictated with Flow, voiced on a Mac, built with Claude Code."
+   "blurb": "I'd never made a portfolio. The CV was useless anyway."
+  },
+  "meta-story": {
+   "chapter": "How this was made",
+   "title": "Where the idea came from",
+   "blurb": "Destroy the keyboard, light the match, fold a plane, burn a CD.",
+   "lines": [
+    {
+     "id": "meta-story-01",
+     "who": "host",
+     "text": "And all this destruction. Where on earth did that come from?",
+     "audio": "audio/clips/meta-story-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And all this destruction. Where on earth did that come from? Please speak slowly. Fire makes me nervous.",
+       "audio": "audio/clips/meta-story-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And all this destruction! Where on earth did that come from?",
+       "audio": "audio/clips/meta-story-01-gus.mp3"
+      }
+     }
+    },
+    {
+     "id": "meta-story-02",
+     "who": "sameep",
+     "text": "Wispr had this destroy-the-keyboard campaign that I found really funny. So I thought, okay. I'll destroy my CV.",
+     "audio": "audio/clips/meta-story-02.mp3"
+    },
+    {
+     "id": "meta-story-03",
+     "who": "sameep",
+     "text": "I'd also just made a Diwali invite where you flick open a matchbox, light the match, and burn the envelope to reveal the invite. People did it again and again, just for fun. I knew I wanted that here. But I'd done it once already, so it wasn't going to be enough.",
+     "audio": "audio/clips/meta-story-03.mp3"
+    },
+    {
+     "id": "meta-story-04",
+     "who": "sameep",
+     "text": "So I thought, what's the first thing you do with a paper you don't need anymore? At least in my head, you make a paper plane. So that's exactly what the CV does. Then it gets shredded, then burned.",
+     "audio": "audio/clips/meta-story-04.mp3"
+    },
+    {
+     "id": "meta-story-05",
+     "who": "sameep",
+     "text": "And then I didn't know what next. So I went a little retro and burned it onto a CD. That's a reference from growing up with computers. And the CD goes into the iMac G3, one of the most beautiful computers ever made. The blue, the CRT, the dial-up screech when you connect.",
+     "audio": "audio/clips/meta-story-05.mp3"
+    },
+    {
+     "id": "meta-story-06",
+     "who": "host",
+     "text": "Burning it onto a CD. You do love a pun, don't you, darling.",
+     "audio": "audio/clips/meta-story-06.mp3",
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Burned. Onto a CD. A pun. I have logged it. I did not enjoy it. Much.",
+       "audio": "audio/clips/meta-story-06-k56.mp3"
+      },
+      "gus": {
+       "text": "Burned! Onto a CD! What a finish! The pun of the season!",
+       "audio": "audio/clips/meta-story-06-gus.mp3"
+      }
+     }
+    }
+   ],
+   "choices": [
+    {
+     "label": "How did you actually build it?",
+     "say": [
+      "build",
+      "workflow",
+      "how did you",
+      "process",
+      "wispr",
+      "spec"
+     ],
+     "to": "meta-workflow",
+     "recommended": true
+    },
+    {
+     "label": "Why a podcast?",
+     "say": [
+      "podcast",
+      "why a podcast",
+      "host",
+      "sitcom"
+     ],
+     "to": "meta-podcast"
+    },
+    {
+     "label": "The nerdy bits: how it actually works",
+     "say": [
+      "nerdy",
+      "tech",
+      "how it works",
+      "voices",
+      "code",
+      "technical"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-workflow"
+  },
+  "meta-workflow": {
+   "chapter": "How this was made",
+   "title": "The workflow",
+   "blurb": "Think out loud with Wispr, turn it into a spec, let Claude build, review, repeat.",
+   "lines": [
+    {
+     "id": "meta-workflow-01",
+     "who": "host",
+     "text": "And how does one build all this? I imagine whiteboards. Shouting.",
+     "audio": "audio/clips/meta-workflow-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And how does one build all this? I imagine whiteboards. Shouting. Possibly a soldering iron.",
+       "audio": "audio/clips/meta-workflow-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And how do you build all this? I'm picturing a whiteboard. Tactics. Shouting from the touchline.",
+       "audio": "audio/clips/meta-workflow-01-gus.mp3"
+      }
+     }
+    },
+    {
+     "id": "meta-workflow-02",
+     "who": "sameep",
+     "text": "Mostly talking, actually. With Wispr I could think as fast as I talk, so I'd ramble the whole idea out, messy, and that became the spec. Most of the base got built straight from that one spec.",
+     "audio": "audio/clips/meta-workflow-02.mp3"
+    },
+    {
+     "id": "meta-workflow-03",
+     "who": "sameep",
+     "text": "After that it's a loop. Claude builds, I look at it, I say what's off, out loud again, and it fixes. A few sessions running side by side, one on the voices, one on the faces, one on the hosts. My job was to keep reviewing and keep talking.",
+     "audio": "audio/clips/meta-workflow-03.mp3"
+    },
+    {
+     "id": "meta-workflow-04",
+     "who": "host",
+     "text": "So you managed a team of robots by voice note.",
+     "audio": "audio/clips/meta-workflow-04.mp3",
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "So you managed a team of robots by voice note. As a robot, I find that very reasonable.",
+       "audio": "audio/clips/meta-workflow-04-k56.mp3"
+      },
+      "gus": {
+       "text": "So you managed a team of robots by voice note! That's management from the touchline!",
+       "audio": "audio/clips/meta-workflow-04-gus.mp3"
+      }
+     }
+    },
+    {
+     "id": "meta-workflow-05",
+     "who": "sameep",
+     "text": "Pretty much. That's the job now, honestly.",
+     "audio": "audio/clips/meta-workflow-05.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Why a podcast?",
+     "say": [
+      "podcast",
+      "why a podcast",
+      "host",
+      "sitcom"
+     ],
+     "to": "meta-podcast",
+     "recommended": true
+    },
+    {
+     "label": "Where did the burning come from?",
+     "say": [
+      "burning",
+      "idea",
+      "where",
+      "inspiration",
+      "destroy",
+      "plane"
+     ],
+     "to": "meta-story"
+    },
+    {
+     "label": "The nerdy bits: how it actually works",
+     "say": [
+      "nerdy",
+      "tech",
+      "how it works",
+      "voices",
+      "code",
+      "technical"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-podcast"
+  },
+  "meta-podcast": {
+   "chapter": "How this was made",
+   "title": "Why a podcast",
+   "blurb": "Everyone will talk about their work. Make it a nineties show you can steer.",
+   "lines": [
+    {
+     "id": "meta-podcast-01",
+     "who": "host",
+     "text": "And then, of all things, a podcast.",
+     "audio": "audio/clips/meta-podcast-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And then, of all things, a podcast. Featuring me. Eventually.",
+       "audio": "audio/clips/meta-podcast-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And then, of all things, a podcast! Nobody saw that coming!",
+       "audio": "audio/clips/meta-podcast-01-gus.mp3"
+      }
+     }
+    },
+    {
+     "id": "meta-podcast-02",
+     "who": "sameep",
+     "text": "I was going to talk about my experiences anyway, so why not make it a podcast. But a lot of people are going to do that. So, give it an edge. It comes off a CD, so it's a nineties podcast.",
+     "audio": "audio/clips/meta-podcast-02.mp3"
+    },
+    {
+     "id": "meta-podcast-03",
+     "who": "sameep",
+     "text": "It started with a sitcom host, just to keep it light, with visual aids on the screen. And then I went a little extra again. It's choose your own adventure now. You steer it, and you can even pick your host.",
+     "audio": "audio/clips/meta-podcast-03.mp3"
+    },
+    {
+     "id": "meta-podcast-04",
+     "who": "host",
+     "text": "I have been called many things. Never a visual aid.",
+     "audio": "audio/clips/meta-podcast-04.mp3",
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "So I am not the original host. I was added later. Like a firmware update. I am choosing not to be hurt.",
+       "audio": "audio/clips/meta-podcast-04-k56.mp3"
+      },
+      "gus": {
+       "text": "So I came off the bench! Not the original host, but a super-sub! I'll take it!",
+       "audio": "audio/clips/meta-podcast-04-gus.mp3"
+      }
+     }
+    }
+   ],
+   "choices": [
+    {
+     "label": "Could anyone make one of these?",
+     "say": [
+      "anyone",
+      "make one",
+      "make your own"
+     ],
+     "to": "outro-make",
+     "recommended": true
+    },
+    {
+     "label": "Why the nineties?",
+     "say": [
+      "nineties",
+      "90s",
+      "retro",
+      "why retro"
+     ],
+     "to": "meta-90s"
+    },
+    {
+     "label": "The nerdy bits: how it actually works",
+     "say": [
+      "nerdy",
+      "tech",
+      "how it works",
+      "voices",
+      "code",
+      "technical"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "outro-make"
   },
   "meta-voice": {
    "chapter": "How this was made",
@@ -5734,6 +6029,18 @@
       "audio"
      ],
      "to": "meta-voice"
+    },
+    {
+     "label": "Back to how I built it",
+     "say": [
+      "build",
+      "workflow",
+      "how did you",
+      "process",
+      "wispr",
+      "spec"
+     ],
+     "to": "meta-workflow"
     },
     {
      "label": "Back to the menu",
