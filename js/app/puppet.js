@@ -244,13 +244,14 @@ export class Puppet {
       const meta = idx[pose];
       const R = idx.rig?.[pose];
       const HM = idx['full-' + pose] || idx['head-' + pose]; // full: the whole seat from the video, no neck joint
-      const [img, mask, cut, himg] = await Promise.all([
+      const [img, mask, cut, himg, room] = await Promise.all([
         meta?.frames?.length && !HM ? load(this.dir + meta.sheet) : null,
         R ? load(this.dir + R.mask) : null,
         R?.cut ? load(this.dir + R.cut) : null,
-        HM?.frames?.length ? load(this.dir + HM.sheet) : null]);
+        HM?.frames?.length ? load(this.dir + HM.sheet) : null,
+        HM?.room ? load(this.dir + HM.room) : null]);              // close-ups: the room with nobody in it
       if (img) this.banks[look] = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
-      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: Array.isArray(HM.rest) ? HM.rest[0] : HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!idx['full-' + pose] };
+      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: Array.isArray(HM.rest) ? HM.rest[0] : HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!idx['full-' + pose], room };
       if (mask && (!R.cut || cut)) this.rigs[look] = this.#buildRig(look, R, mask, cut);
     }
     if (Object.keys(this.rigs).length) this.#useCanvas();
@@ -333,7 +334,7 @@ export class Puppet {
     b.cur = Math.max(lo, Math.min(hi, n));
   }
 
-  // whole-seat banks: walk (at double speed, forwards or backwards, whichever is nearer) to the
+  // whole-seat banks: walk (at triple speed, forwards or backwards, whichever is nearer) to the
   // nearest rest frame and stay there. No cut and no crossfade: every frame on the way is real.
   #toRest(b, now) {
     const rest = b.meta.rest?.length ? b.meta.rest : [b.cur];
@@ -342,7 +343,7 @@ export class Puppet {
       b.goalFrom = b.quietSince;
     }
     if (b.cur === b.goal || now < b.next) return;
-    b.next = Math.max(now, b.next + 500 / (b.meta.fps || 24));
+    b.next = Math.max(now, b.next + 1000 / (3 * (b.meta.fps || 24)));
     b.dir = Math.sign(b.goal - b.cur);
     b.cur += b.dir;
   }
@@ -549,7 +550,7 @@ export class Puppet {
     c.setTransform(1, 0, 0, 1, 0, 0);
     c.clearRect(0, 0, this.cv.width, this.cv.height);
     c.imageSmoothingEnabled = false;
-    if (rig.opaque) c.drawImage(rig.body, 0, 0); // close-up: the room
+    if (rig.opaque) c.drawImage(bank.room || rig.body, 0, 0); // close-up: the empty room (else the still's person ghosts round the video)
     else { // breathing: stretch about the desk line
       const anchor = rig.H * 0.86;
       const k = (breath * 1.0) / anchor;
