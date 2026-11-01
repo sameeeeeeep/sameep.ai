@@ -63,7 +63,7 @@
 "audio/clips/ppt-intro-04.mp3": "543a32151088c3ba999f69a62c63bd3ed8112475",
 "audio/clips/ppt-play-02.mp3": "799a6ac914fcd68e2315723deecd31dbf656b6a9",
 "audio/clips/outro-make-02.mp3": "86ab85228bc73fd8177e7ac5ffa8ac5f97bdde7d",
-"audio/clips/outro-02.mp3": "851930c107796b68845fa57848896927acffea6e",
+"audio/clips/outro-02.mp3": "65b83fb9eaa72e48446e68531e5efeb088f644d8",
 "audio/clips/g-nykaa-02.mp3": "d197aad479effffb8c4f051133408803cf4e726c",
 "audio/clips/g-nykaa-03.mp3": "2c33549471fd9a978e65fe3b84313c67f1de3abe",
 "audio/clips/g-nykaa-05.mp3": "7d209291c06c7af39ed8a3ddafbfd17221f35100",
@@ -162,5 +162,9 @@
 "audio/clips/f-alter-03.mp3": "0f2fbb20f8808936f9cb637a217b091b0fc0e226",
 "audio/clips/f-vibedj-01.mp3": "409f32d51a2687f27e1669b49a1a7c2d7e9b348a",
 "audio/clips/meta-90s-02.mp3": "093e2c14be675cb300c88250a47caa1fd125c87b",
-"audio/clips/intro-01-d.mp3": "4b79a683597ff07d2382a6e0c6934de5d6cc4294"
+"audio/clips/intro-01-d.mp3": "4b79a683597ff07d2382a6e0c6934de5d6cc4294",
+"audio/clips/about-01.mp3": "e04effb296b103f219e143728eeae9e5ce995f45",
+"audio/clips/about-04.mp3": "cee72b033f804d6e9948892a4b490aa168d6df2b",
+"audio/clips/about-02.mp3": "7bcc1b998a5ee62ba4831598637900aebf319dfc",
+"audio/clips/about-03.mp3": "3f6a5746e29cdc6d3a84a25cdd7865e4d21dd223"
 }

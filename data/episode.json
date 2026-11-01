@@ -157,7 +157,7 @@
     }
    ],
    "choices": [],
-   "next": "hub-first",
+   "next": "about",
    "title": "Intro",
    "blurb": "Meet the host, the AI guest, and how you steer the show."
   },
@@ -4484,7 +4484,7 @@
     {
      "id": "outro-02",
      "who": "sameep",
-     "text": "Thanks for picking the doors. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want your own, Switchboard. Questions I ask myself a lot: is this useful? Would I use it tomorrow? Why is this so hard? What if I just talk to it?",
+     "text": "Thanks for picking the doors. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want your own, Switchboard.",
      "audio": "audio/clips/outro-02.mp3",
      "look": "front"
     },
@@ -4522,6 +4522,43 @@
    "next": "hub",
    "title": "Outro",
    "blurb": "Credits, and where the code lives."
+  },
+  "about": {
+   "chapter": "Intro",
+   "title": "About Sameep",
+   "blurb": "Who he is, what he does, where he works.",
+   "choices": [],
+   "next": "hub-first",
+   "lines": [
+    {
+     "id": "about-01",
+     "who": "host",
+     "text": "Before we open a single door: Sameep, tell us a little about yourself. Who are you, when you're not a compact disc?",
+     "audio": "audio/clips/about-01.mp3",
+     "look": "side"
+    },
+    {
+     "id": "about-02",
+     "who": "sameep",
+     "text": "Ha. So, I'm Sameep, from Mumbai. I'm a product and growth person. I've spent most of my career in consumer internet: ShopClues, then Nykaa, where I ran the big sales, the pre-buzz, the games, the landing pages. Then Mosaic Wellness.",
+     "audio": "audio/clips/about-02.mp3",
+     "look": "side"
+    },
+    {
+     "id": "about-03",
+     "who": "sameep",
+     "text": "Then I took the jump and co-founded a travel startup, Often. It didn't work out, and I'll tell you why if you ask. Now I'm chief of staff at Nailinit, a nail care brand. And most nights, I build AI tools. Products by day, prototypes by night.",
+     "audio": "audio/clips/about-03.mp3",
+     "look": "side"
+    },
+    {
+     "id": "about-04",
+     "who": "host",
+     "text": "A man of many tabs. Splendid. Let us open some of them.",
+     "audio": "audio/clips/about-04.mp3",
+     "look": "front"
+    }
+   ]
   }
  },
  "route": {

@@ -983,3 +983,20 @@ p.chooser__or { margin: 2px 0 -4px; }
 .pcard__go { margin-top: 3px; font: 700 11px var(--f-ui); color: var(--bondi); }
 .pcard.is-now .pcard__go { color: var(--flame); }
 .pcard.is-visited:not(.is-now) .pcard__go::after { content: " · heard"; color: #999; font-weight: 500; }
+
+/* phones: the chooser comes up as a sheet pinned to the bottom of the screen (on desktop it
+   sits over the picture), so the options are on screen the moment Delphine asks. ▾ folds it
+   down to its header; the page under it gets room to scroll the say field clear of it. */
+@media (max-width: 760px) {
+  .chooser:not([hidden]) {
+    position: fixed; left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom)); top: auto;
+    z-index: 60; max-height: min(58dvh, 560px); overflow-y: auto; overscroll-behavior: contain;
+    border: 1px solid rgba(243,238,226,.18); border-radius: 14px; box-shadow: 0 -12px 40px rgba(0,0,0,.55);
+    background: repeating-linear-gradient(0deg, rgba(184,255,233,.035) 0 1px, transparent 1px 3px), #0e0c0a;
+    animation: chooser-up .28s cubic-bezier(.2,.8,.2,1);
+  }
+  .chooser.is-min:not([hidden]) { position: fixed; max-height: none; overflow: hidden; }
+  .pod.is-waiting .pod__main { padding-bottom: min(60dvh, 580px); }
+}
+@keyframes chooser-up { from { transform: translateY(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .chooser:not([hidden]) { animation: none; } }
