@@ -191,8 +191,7 @@ function entryGate() {
   g.className = 'gate';
   g.setAttribute('role', 'dialog');
   g.setAttribute('aria-label', 'Enter');
-  // a Mac OS 9-style startup window: welcome box, progress bar, "extensions" marching in below
-  const exts = ['hd', 'dialup', 'resume', 'note', 'folder', 'wallpap', 'switchboard', 'trash'];
+  // a Mac OS 9-style startup window: welcome box and progress bar
   g.innerHTML = `
     <div class="gate__in">
       <div class="gate__win">
@@ -209,11 +208,9 @@ function entryGate() {
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
       <p class="gate__hint">Best with headphones. Scroll, swipe or use the arrow keys.</p>
-    </div>
-    <ul class="gate__exts" aria-hidden="true">${exts.map((e) => `<li><img src="img/ui/${e}.svg" alt="" width="32" height="32"></li>`).join('')}</ul>`;
+    </div>`;
   document.body.append(g);
   document.documentElement.classList.add('is-gated');
-  const extEls = [...g.querySelectorAll('.gate__exts li')];
   const bar = g.querySelector('.gate__bar i'), pct = g.querySelector('.gate__status span'), status = g.querySelector('.gate__status');
   let p = 0, done = false, raf = 0, real = 0;
   const t0 = performance.now();
@@ -224,8 +221,7 @@ function entryGate() {
     p += (goal - p) * (done ? 0.25 : 0.12);
     bar.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
     pct.textContent = String(Math.round(p));
-    extEls.forEach((el, i) => el.classList.toggle('is-on', p >= (i + 1) * (100 / (extEls.length + 1))));
-    if (done && p > 99.5) { bar.style.clipPath = 'none'; pct.textContent = '100'; extEls.forEach((el) => el.classList.add('is-on')); return; }
+    if (done && p > 99.5) { bar.style.clipPath = 'none'; pct.textContent = '100'; return; }
     raf = requestAnimationFrame(paint);
   };
   raf = requestAnimationFrame(paint);

@@ -14,19 +14,18 @@ import { loadIMac } from './imac.js';
 import { Particles } from './particles.js';
 import { HeroAudio } from './audio.js';
 import { makeFireWall } from './firewall.js';
-import { isWispr } from '../version.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
-  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you got <b>2,000</b> CVs for <i>one</i> role.' : 'You get <b>thousands</b> of CVs.' },
-  { id: 'envelope', len: 1.4, cap: 'What’s <i>one more</i>? So I <b>destroyed</b> mine.' },
-  { id: 'origami', len: 1.3, cap: 'I <i>folded</i> it,' },
-  { id: 'flight', len: 0.8, cap: '<b>threw</b> it,' },
-  { id: 'crumple', len: 0.7, cap: '<s>crushed</s> it,' },
+  { id: 'pile', len: 1.0, cap: 'Every CV sent is one of <b>thousands</b>… lying in a pile.' },
+  { id: 'envelope', len: 1.4, cap: 'So I took <i>mine</i>,' },
+  { id: 'origami', len: 1.3, cap: 'Made a <i>plane</i> out of it,' },
+  { id: 'flight', len: 0.8, cap: '<b>Flew</b> it around,' },
+  { id: 'crumple', len: 0.7, cap: 'Got <s>bored</s>,' },
   { id: 'shred', len: 1.1, cap: '<u>shredded</u> it,' },
   { id: 'burn', len: 1.8, cap: 'and <em>burned</em> it…' },
-  { id: 'cd', len: 1.0, cap: '…onto a <b>CD</b>.' },
-  { id: 'insert', len: 0.9, cap: 'Put it in. Press <i>play</i>.' },
+  { id: 'cd', len: 1.0, cap: '…onto a <b>CD</b>…' },
+  { id: 'insert', len: 0.9, cap: 'for you to <i>experience</i>.' },
 ];
 const TOTAL = BEATS.reduce((a, b) => a + b.len, 0);
 {
