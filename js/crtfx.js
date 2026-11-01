@@ -3,6 +3,9 @@
 // weight: the glass shader at full strength (js/app/crt.js) plus a little RGB
 // convergence fringe and phosphor glow on the text (css/crt.css). The "CRT"
 // button in the menu bar (Special › CRT effect on phones) turns it off; remembered.
+// The tube's convex shape comes from the glass shader: the boot's barrel curve sets
+// where the glass ends. (Warping the live page itself through an SVG displacement
+// map was tried: it halved the frame rate, so the content stays flat.)
 const KEY = 'otcv-crt';
 const read = () => { try { return localStorage.getItem(KEY) !== 'off'; } catch { return true; } };
 const write = (on) => { try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch { /* private mode: this visit only */ } };

@@ -100,7 +100,18 @@ void main(){
     float haze = 0.022 * strength * (1. - edge);   // the phosphor's faint green-white glow over everything
     vec3 rgb = tint * (sheen + rim + haze);
     float cm = cornerMask(uv0, 0.035);
-    gl_FragColor = vec4(rgb, clamp(a + sheen + rim, 0., 1.)) * cm + vec4(0.,0.,0.,1.-cm);
+    // the convex tube: a barrel like the boot's decides where the glass ends, so the screen's
+    // edges bow out and the corners fall into black, like a real CRT's pillow shape
+    // edge midpoints stay put (r² = 1), the corners curve away: nothing on the page's edges is lost
+    vec2 bu = 0.5 + (uv0 - 0.5) * (1. + k * (dot(c,c) - 1.) * vec2(0.9, 1.15));
+    vec2 px2 = 1.5 / res;
+    float over = max(max(-bu.x, bu.x - 1.), max(-bu.y, bu.y - 1.));
+    float glass = 1. - smoothstep(-px2.x, px2.x, over);
+    float lip = smoothstep(-0.012, 0., over) * glass;           // a thin bright lip where the glass curves away
+    rgb += tint * lip * 0.10 * s;
+    a = mix(a, 1., (1. - glass) * s);
+    cm *= mix(1., glass, s);
+    gl_FragColor = vec4(rgb, clamp(a + sheen + rim + lip * 0.1 * s, 0., 1.)) * cm + vec4(0.,0.,0.,1.-cm);
   }
 }`;
 
