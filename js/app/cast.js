@@ -61,6 +61,7 @@ export function openCast(host, { persona, hostName }) {
     const nameIn = h('input.cast__name', { type: 'text', id: 'cast-name', maxlength: '24', autocomplete: 'given-name', placeholder: 'Your first name', value: prev.name || '', enterkeyhint: 'done' });
     const go = h('button.btn.btn--primary.cast__go', { type: 'submit' }, 'Join the audience');
     const grid = h('div.cast__grid', { role: 'radiogroup', 'aria-label': 'Choose your audience avatar' });
+    const area = h('div.cast__pick', grid);
     const fileIn = h('input', { type: 'file', accept: 'image/*', hidden: true });
     const photoCard = h('button.cast__card.cast__card--photo', { type: 'button', role: 'radio', 'aria-checked': 'false' },
       h('span.cast__portrait', h('span.cast__plus', { 'aria-hidden': 'true' }, '+')),
@@ -68,7 +69,7 @@ export function openCast(host, { persona, hostName }) {
       h('span.cast__blurb', 'Stays in this tab. Never uploaded.'));
 
     const select = (card, c) => {
-      grid.querySelectorAll('.cast__card').forEach((n) => { n.classList.remove('is-picked'); n.setAttribute('aria-checked', 'false'); });
+      area.querySelectorAll('.cast__card').forEach((n) => { n.classList.remove('is-picked'); n.setAttribute('aria-checked', 'false'); });
       card.classList.add('is-picked');
       card.setAttribute('aria-checked', 'true');
       pick = c;
@@ -85,7 +86,14 @@ export function openCast(host, { persona, hostName }) {
       if (pick && pick.id === c.id) { card.classList.add('is-picked'); card.setAttribute('aria-checked', 'true'); }
       return card;
     }));
-    cards.filter(Boolean).forEach((c) => grid.append(c));
+    const teamCards = cards.filter((c, i) => c && persona.characters[i].team);
+    if (teamCards.length) {
+      // Wispr version: the team gets its own row, the archetypes and the photo card follow
+      const team = h('div.cast__grid.cast__grid--team', { role: 'radiogroup', 'aria-label': 'Wispr India team' });
+      teamCards.forEach((c) => team.append(c));
+      grid.before(h('p.cast__group', 'Wispr India: find yourself'), team, h('p.cast__group', 'Or sit in as someone else'));
+    }
+    cards.filter((c, i) => c && !persona.characters[i].team).forEach((c) => grid.append(c));
     grid.append(photoCard, fileIn);
     photoCard.addEventListener('click', () => fileIn.click());
     fileIn.addEventListener('change', async () => {
@@ -109,12 +117,12 @@ export function openCast(host, { persona, hostName }) {
         h('p.cast__kicker', 'Live studio audience'),
         h('h2.cast__title#cast-title', 'Grab a seat in the audience.'),
         h('p.cast__lede', 'Pick who you are in the crowd. You steer the show from your seat: tap a card, or just say where to go next.'),
-        grid,
+        area,
         form,
         skip));
     host.append(el);
     requestAnimationFrame(() => el.classList.add('is-open'));
-    setTimeout(() => (grid.querySelector('.is-picked') || grid.querySelector('.cast__card'))?.focus({ preventScroll: true }), 300);
+    setTimeout(() => (area.querySelector('.is-picked') || area.querySelector('.cast__card'))?.focus({ preventScroll: true }), 300);
 
     function done(skipped = false) {
       const name = nameIn.value.trim().slice(0, 24);

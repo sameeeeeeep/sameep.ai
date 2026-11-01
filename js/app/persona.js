@@ -1,6 +1,7 @@
 // persona.js — everything person-specific comes from persona.json (+ episode.json),
 // so anyone's generated bundle can run on this app via ?persona=<url>.
 import { safeUrl } from './util.js';
+import { isWispr } from '../version.js';
 
 const DEFAULT = 'persona.json';
 
@@ -74,7 +75,8 @@ export async function loadPersona({ episodeUrl } = {}) {
     guestFrames: spriteFrames(p.sprites || p.guest?.sprite, base) || (isCustom ? null : spriteFrames(def.sprites || def.guest?.sprite, siteBase)),
     hostName: p.host?.name || def.host?.name || 'The Host',
     guestName: p.guest?.name || (p.name ? (p.shortName || p.name.split(' ')[0]) + ' (AI)' : def.guest?.name),
-    characters: (p.characters || def.characters || []).map((c) => ({ ...c, src: abs(c.src) || siteAbs(`img/characters/${c.id}.webp`), thumb: abs(c.thumb) || siteAbs(`img/characters/${c.id}-thumb.webp`) })),
+    // ?version=wispr: the Wispr India team sit in the audience first, then the archetypes
+    characters: [...(isWispr && !isCustom ? def.wisprTeam || [] : []), ...(p.characters || def.characters || [])].map((c) => ({ ...c, src: abs(c.src) || siteAbs(`img/characters/${c.id}.webp`), thumb: abs(c.thumb) || siteAbs(`img/characters/${c.id}-thumb.webp`) })),
     stage: { ...(def.stage || {}), ...(p.stage || {}) },
     wallpaper: cleanWall(p.wallpaper, abs) || def.wallpaper,
     work: (p.work || (isCustom ? [] : def.work) || []).map((w) => ({ ...w, url: templ(w.url, abs) })).filter((w) => w.url),

@@ -530,6 +530,7 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
 .cast { container-type: inline-size; }
 .cast__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
 @container (min-width: 860px) { .cast__grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+.cast__group { margin: 4px 0 8px; font: 700 12px/1.2 var(--mono, ui-monospace, monospace); letter-spacing: .08em; text-transform: uppercase; color: var(--flame); text-align: left; }
 .cast__card { display: grid; justify-items: center; align-content: start; gap: 3px; padding: 10px 8px 12px; border: 1px solid rgba(243,238,226,.18); border-radius: 12px; background: rgba(243,238,226,.04); color: var(--paper); cursor: pointer; transition: transform .25s var(--ease-out), border-color .2s, background .2s; }
 .cast.is-open .cast__card { animation: rise .6s var(--ease-out) both; }
 .cast.is-open .cast__card:nth-child(2) { animation-delay: .05s; } .cast.is-open .cast__card:nth-child(3) { animation-delay: .1s; } .cast.is-open .cast__card:nth-child(4) { animation-delay: .15s; } .cast.is-open .cast__card:nth-child(5) { animation-delay: .2s; } .cast.is-open .cast__card:nth-child(6) { animation-delay: .25s; } .cast.is-open .cast__card:nth-child(7) { animation-delay: .3s; }
