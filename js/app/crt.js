@@ -94,7 +94,7 @@ void main(){
     // glass reflection: soft diagonal sheen top-left + tube rim highlight
     float sheen = smoothstep(0.5, 0., length((uv0 - vec2(0.18, 0.12)) * vec2(1.0, 1.6))) * 0.07;
     float rim = smoothstep(0.985, 1.0, max(abs(c.x), abs(c.y))) * 0.08;
-    float fl = (sin(time*120.)*0.5+0.5) * mix(0.012, 0.03, strength) * flick;
+    float fl = (sin(time*120.)*0.5+0.5) * 0.012 * flick;
     vec3 tint = vec3(0.72, 1.0, 0.91);
     float a = dark + fl;
     float haze = 0.022 * strength * (1. - edge);   // the phosphor's faint green-white glow over everything
