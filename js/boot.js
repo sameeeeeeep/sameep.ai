@@ -198,8 +198,6 @@ function entryGate() {
   g.innerHTML = `
     <div class="gate__in">
       <p class="gate__mark"><span>Sameep Rehlan</span><span class="gate__sep">/</span><span>Off the CV</span></p>
-      ${isWispr ? '<p class="gate__aside">heard you got 2,000 of them…</p>' : ''}
-      <h1 class="gate__title"><span class="gate__t1">CVs are</span> <span class="gate__t2">so 2025<i aria-hidden="true"></i></span></h1>
       <div class="gate__bar" aria-hidden="true"><i></i></div>
       <p class="gate__status" aria-live="polite">Setting up the studio… <span>0</span>%</p>
       <div class="gate__actions">
