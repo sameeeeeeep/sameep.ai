@@ -250,7 +250,7 @@ export class Puppet {
         R?.cut ? load(this.dir + R.cut) : null,
         HM?.frames?.length ? load(this.dir + HM.sheet) : null]);
       if (img) this.banks[look] = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
-      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!idx['full-' + pose] };
+      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: Array.isArray(HM.rest) ? HM.rest[0] : HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!idx['full-' + pose] };
       if (mask && (!R.cut || cut)) this.rigs[look] = this.#buildRig(look, R, mask, cut);
     }
     if (Object.keys(this.rigs).length) this.#useCanvas();
@@ -319,32 +319,41 @@ export class Puppet {
     if (quiet) { if (!b.quietSince) b.quietSince = now; } else b.quietSince = 0;
     const resting = b.quietSince && now - b.quietSince > 90;
     if (b.whole) {
-      // a pause longer than a breath: settle on frame 0 (the calm, closed still) and hold;
-      // speech starts again from there, as the video did. Shorter gaps just play on.
-      if (b.quietSince && now - b.quietSince > 380) { this.#settle(b, now); return; }
+      // a pause longer than a breath: play on to the nearest frame where the video itself is
+      // at rest (mouth shut, looking the usual way: meta.rest, picked by eye) and hold it.
+      // Shorter gaps just play on. Speech picks up from wherever it stopped.
+      if (b.quietSince && now - b.quietSince > 220) { this.#toRest(b, now); return; }
     } else if (resting && fr[b.cur][1] < 0.18) return;              // closed: hold until speech resumes
     if (now < b.next) return;
     // catch up if a frame was missed, but never skip more than one source frame
     b.next = Math.max(now, b.next + dt) + (resting ? -dt * 0.4 : 0); // a pause winds down a little faster
+    const [lo, hi] = b.meta.range || [0, fr.length - 1];             // a video that turns away: only its good stretch
     let n = b.cur + b.dir;
-    if (n < 0 || n >= fr.length) { b.dir = -b.dir; n = b.cur + b.dir; }
-    b.cur = Math.max(0, Math.min(fr.length - 1, n));
+    if (n < lo || n > hi) { b.dir = -b.dir; n = b.cur + b.dir; }
+    b.cur = Math.max(lo, Math.min(hi, n));
   }
 
-  // to frame 0 with a short crossfade (whole-seat banks)
-  #settle(b, now) {
-    const calm = b.meta.calm ?? 0;
-    if (b.cur === calm) return;
-    b.fadeFrom = b.cur; b.fadeAt = now; b.cur = calm; b.dir = 1;
+  // whole-seat banks: walk (at double speed, forwards or backwards, whichever is nearer) to the
+  // nearest rest frame and stay there. No cut and no crossfade: every frame on the way is real.
+  #toRest(b, now) {
+    const rest = b.meta.rest?.length ? b.meta.rest : [b.cur];
+    if (b.goal == null || b.goalFrom !== b.quietSince) {
+      b.goal = rest.reduce((a, r) => (Math.abs(r - b.cur) < Math.abs(a - b.cur) ? r : a), rest[0]);
+      b.goalFrom = b.quietSince;
+    }
+    if (b.cur === b.goal || now < b.next) return;
+    b.next = Math.max(now, b.next + 500 / (b.meta.fps || 24));
+    b.dir = Math.sign(b.goal - b.cur);
+    b.cur += b.dir;
   }
 
   // listening: finish the movement to a closed mouth, then hold it. (Walking the
   // closed frames of a talking video still moves the lips.) Breathing keeps it alive.
   #idleBank(b, now) {
     if (b.whole) {
-      // crossfade to frame 0, the video's first frame (the calm, closed still), so a
-      // listener never hangs on a mid-sentence expression
-      this.#settle(b, now);
+      // listening: same as a pause, so a listener never hangs on a mid-sentence face
+      if (!b.quietSince) b.quietSince = now;
+      this.#toRest(b, now);
       return;
     }
     if (now < b.idleNext) return;
@@ -413,7 +422,7 @@ export class Puppet {
     const talking = speaking && (pc || level > 0 || this.env > 0.02);
     let patch = -1;
     if (bank && rig) {
-      if (talking) { this.#stepBank(bank, now, target, ROUND[want] || 0, want === 'closed'); bank.lastTalk = now; bank.fadeFrom = null; }
+      if (talking) this.#stepBank(bank, now, target, ROUND[want] || 0, want === 'closed');
       else this.#idleBank(bank, now);
       patch = bank.cur;
       want = 'closed'; // the base under the patch (eyes can still blink)
@@ -482,7 +491,7 @@ export class Puppet {
     const breath = live * Math.sin(t * Math.PI * 2 * 0.25 + this.phase); // -1..1
 
     // compose the head: frame through the mask, then the mouth patch on top
-    if (bank?.full && patch >= 0) { this.#renderFull(now, rig, bank, patch, breath); return; }
+    if (bank?.full && patch >= 0) { this.#renderFull(rig, bank, patch, breath); return; }
     const [bx, by, bw, bh] = R.box;
     const sc = rig.sctx;
     sc.globalCompositeOperation = 'copy';
@@ -529,13 +538,12 @@ export class Puppet {
   }
 
   // the whole seat, one video frame (tiles are stored small: drawn back up, hard pixels)
-  #renderFull(now, rig, bank, patch, breath) {
+  #renderFull(rig, bank, patch, breath) {
     const m = bank.meta;
     const [tw, th] = m.tile;
     const [x0, y0, bw, bh] = m.box;
     const i = m.frames[patch] ? patch : 0;
     const tile = (n) => c.drawImage(bank.img, (n % m.cols) * tw, Math.floor(n / m.cols) * th, tw, th, x0, y0, bw, bh);
-    const fade = bank.fadeFrom != null ? (now - bank.fadeAt) / 280 : 1;
     const c = this.ctx;
     const pad = this.pad;
     c.setTransform(1, 0, 0, 1, 0, 0);
@@ -547,8 +555,7 @@ export class Puppet {
       const k = (breath * 1.0) / anchor;
       c.setTransform(1, 0, 0, 1 + k, 0, pad - anchor * k);
     }
-    if (fade < 1) { tile(bank.fadeFrom); c.globalAlpha = fade; tile(i); c.globalAlpha = 1; }
-    else { bank.fadeFrom = null; tile(i); }
+    tile(i);
     c.setTransform(1, 0, 0, 1, 0, 0);
   }
 
