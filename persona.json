@@ -147,6 +147,18 @@
   },
   "wisprTeam": [
     {
+      "id": "w-tanay",
+      "label": "Tanay",
+      "blurb": "Co-founder, CEO",
+      "team": true
+    },
+    {
+      "id": "w-sahaj",
+      "label": "Sahaj",
+      "blurb": "Co-founder, CTO",
+      "team": true
+    },
+    {
       "id": "w-nimisha",
       "label": "Nimisha",
       "blurb": "Leads India",

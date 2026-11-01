@@ -75,7 +75,7 @@ export async function loadPersona({ episodeUrl } = {}) {
     guestFrames: spriteFrames(p.sprites || p.guest?.sprite, base) || (isCustom ? null : spriteFrames(def.sprites || def.guest?.sprite, siteBase)),
     hostName: p.host?.name || def.host?.name || 'The Host',
     guestName: p.guest?.name || (p.name ? (p.shortName || p.name.split(' ')[0]) + ' (AI)' : def.guest?.name),
-    // ?version=wispr: the Wispr India team sit in the audience first, then the archetypes
+    // ?version=wispr: the Wispr team (founders, then India) sit in the audience first, then the archetypes
     characters: [...(isWispr && !isCustom ? def.wisprTeam || [] : []), ...(p.characters || def.characters || [])].map((c) => ({ ...c, src: abs(c.src) || siteAbs(`img/characters/${c.id}.webp`), thumb: abs(c.thumb) || siteAbs(`img/characters/${c.id}-thumb.webp`) })),
     stage: { ...(def.stage || {}), ...(p.stage || {}) },
     wallpaper: cleanWall(p.wallpaper, abs) || def.wallpaper,

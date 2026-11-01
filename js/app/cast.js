@@ -89,9 +89,9 @@ export function openCast(host, { persona, hostName }) {
     const teamCards = cards.filter((c, i) => c && persona.characters[i].team);
     if (teamCards.length) {
       // Wispr version: the team gets its own row, the archetypes and the photo card follow
-      const team = h('div.cast__grid.cast__grid--team', { role: 'radiogroup', 'aria-label': 'Wispr India team' });
+      const team = h('div.cast__grid.cast__grid--team', { role: 'radiogroup', 'aria-label': 'Wispr Flow team' });
       teamCards.forEach((c) => team.append(c));
-      grid.before(h('p.cast__group', 'Wispr India: find yourself'), team, h('p.cast__group', 'Or sit in as someone else'));
+      grid.before(h('p.cast__group', 'Wispr Flow: find yourself'), team, h('p.cast__group', 'Or sit in as someone else'));
     }
     cards.filter((c, i) => c && !persona.characters[i].team).forEach((c) => grid.append(c));
     grid.append(photoCard, fileIn);
