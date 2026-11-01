@@ -3,7 +3,7 @@
    convergence fringe and a phosphor glow on text (inherited, so it's one rule).
    No CSS filters here: a filter would turn the phone's fixed chooser sheet into a
    child of the screen and break it. */
-.crt-full .crt__screen.is-on { text-shadow: .55px 0 rgba(255, 50, 90, .28), -.55px 0 rgba(50, 200, 255, .28), 0 0 6px rgba(184, 255, 233, .16); }
+.crt-full .crt__screen.is-on { text-shadow: .4px 0 rgba(255, 50, 90, .18), -.4px 0 rgba(50, 200, 255, .18); } /* a hint of convergence error, no glow: text stays sharp */
 .crt-full .crt__screen.is-on :is(img, video, canvas) { box-shadow: 0 0 14px rgba(184, 255, 233, .06); }
 .crt-gl.is-glass.is-off-glass { display: none; }
 

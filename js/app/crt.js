@@ -86,8 +86,8 @@ void main(){
     float edge = smoothstep(0.55, 1.35, length(c * vec2(0.92, 1.0)));
     float dark = 0.0;
     float s = strength;
-    dark += (1. - scan) * mix(0.075, 0.24, s);                  // scanlines
-    dark += (1. - (mask.r+mask.g+mask.b)/3.) * mix(0.12, 0.3, s); // phosphor triads
+    dark += (1. - scan) * mix(0.075, 0.15, s);                  // scanlines
+    dark += (1. - (mask.r+mask.g+mask.b)/3.) * mix(0.12, 0.18, s); // phosphor triads
     dark += edge * mix(0.42, 0.48, s);                          // curvature falloff
     dark += (1. - pow(vig, 0.35)) * mix(0.25, 0.3, s);
     dark = clamp(dark + grain*mix(0.03, 0.06, s), 0., 0.92);
@@ -100,18 +100,7 @@ void main(){
     float haze = 0.022 * strength * (1. - edge);   // the phosphor's faint green-white glow over everything
     vec3 rgb = tint * (sheen + rim + haze);
     float cm = cornerMask(uv0, 0.035);
-    // the convex tube: a barrel like the boot's decides where the glass ends, so the screen's
-    // edges bow out and the corners fall into black, like a real CRT's pillow shape
-    // edge midpoints stay put (r² = 1), the corners curve away: nothing on the page's edges is lost
-    vec2 bu = 0.5 + (uv0 - 0.5) * (1. + k * (dot(c,c) - 1.) * vec2(0.9, 1.15));
-    vec2 px2 = 1.5 / res;
-    float over = max(max(-bu.x, bu.x - 1.), max(-bu.y, bu.y - 1.));
-    float glass = 1. - smoothstep(-px2.x, px2.x, over);
-    float lip = smoothstep(-0.012, 0., over) * glass;           // a thin bright lip where the glass curves away
-    rgb += tint * lip * 0.10 * s;
-    a = mix(a, 1., (1. - glass) * s);
-    cm *= mix(1., glass, s);
-    gl_FragColor = vec4(rgb, clamp(a + sheen + rim + lip * 0.1 * s, 0., 1.)) * cm + vec4(0.,0.,0.,1.-cm);
+    gl_FragColor = vec4(rgb, clamp(a + sheen + rim, 0., 1.)) * cm + vec4(0.,0.,0.,1.-cm);
   }
 }`;
 
