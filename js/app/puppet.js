@@ -240,7 +240,7 @@ export class Puppet {
       if (twin) { this.banks[look] = this.banks[twin]; this.rigs[look] = this.rigs[twin]; this.hbanks[look] = this.hbanks[twin]; continue; } // a front-only seat
       const closed = this.src[look].closed || '';
       const pose = /\/cu-front-closed\.webp/.test(closed) ? 'cu-front' : /\/cu-closed\.webp/.test(closed) ? null : look;
-      if (!pose) continue;
+      if (!pose || idx.stills?.includes(pose)) continue; // stills: the hand-made frames for this pose (the video turns away)
       const meta = idx[pose];
       const R = idx.rig?.[pose];
       const HM = idx['full-' + pose] || idx['head-' + pose]; // full: the whole seat from the video, no neck joint
