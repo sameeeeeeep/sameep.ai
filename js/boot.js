@@ -195,20 +195,29 @@ function entryGate() {
   g.className = 'gate';
   g.setAttribute('role', 'dialog');
   g.setAttribute('aria-label', 'Enter');
+  // a Mac OS 9-style startup window: welcome box, progress bar, "extensions" marching in below
+  const exts = ['hd', 'dialup', 'resume', 'note', 'folder', 'wallpap', 'switchboard', 'trash'];
   g.innerHTML = `
     <div class="gate__in">
-      <p class="gate__mark"><span>Sameep Rehlan</span><span class="gate__sep">/</span><span>Off the CV</span></p>
-      <div class="gate__bar" aria-hidden="true"><i></i></div>
-      <p class="gate__status" aria-live="polite">Setting up the studio… <span>0</span>%</p>
-      <div class="gate__actions">
-        <button type="button" class="gate__enter" disabled><span aria-hidden="true">▶</span> Enter <span>· sound on</span></button>
-        <button type="button" class="gate__quiet" disabled>Enter muted</button>
-        ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work</button>' : ''}
+      <div class="gate__win">
+        <img class="gate__logo" src="img/ui/offthecv.svg" alt="" width="64" height="64">
+        <p class="gate__welcome">Welcome to</p>
+        <p class="gate__name">Off the CV</p>
+        <p class="gate__by">Sameep Rehlan</p>
+        <p class="gate__status" aria-live="polite">Setting up the studio… <span>0</span>%</p>
+        <div class="gate__bar" aria-hidden="true"><i></i></div>
+        <div class="gate__actions">
+          <button type="button" class="gate__quiet" disabled>Enter muted</button>
+          <button type="button" class="gate__enter" disabled><span aria-hidden="true">▶</span> Enter <span>· sound on</span></button>
+        </div>
+        ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
       <p class="gate__hint">Best with headphones. Scroll, swipe or use the arrow keys.</p>
-    </div>`;
+    </div>
+    <ul class="gate__exts" aria-hidden="true">${exts.map((e) => `<li><img src="img/ui/${e}.svg" alt="" width="32" height="32"></li>`).join('')}</ul>`;
   document.body.append(g);
   document.documentElement.classList.add('is-gated');
+  const extEls = [...g.querySelectorAll('.gate__exts li')];
   const bar = g.querySelector('.gate__bar i'), pct = g.querySelector('.gate__status span'), status = g.querySelector('.gate__status');
   let p = 0, done = false, raf = 0;
   const t0 = performance.now();
@@ -219,7 +228,8 @@ function entryGate() {
     p += (goal - p) * (done ? 0.25 : 0.12);
     bar.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
     pct.textContent = String(Math.round(p));
-    if (done && p > 99.5) { bar.style.clipPath = 'none'; pct.textContent = '100'; return; }
+    extEls.forEach((el, i) => el.classList.toggle('is-on', p >= (i + 1) * (100 / (extEls.length + 1))));
+    if (done && p > 99.5) { bar.style.clipPath = 'none'; pct.textContent = '100'; extEls.forEach((el) => el.classList.add('is-on')); return; }
     raf = requestAnimationFrame(paint);
   };
   raf = requestAnimationFrame(paint);

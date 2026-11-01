@@ -17,8 +17,8 @@ import { isWispr } from '../version.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
-  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you got <b>2,000</b> CVs.' : 'You get <b>thousands</b> of CVs.' },
-  { id: 'envelope', len: 1.4, cap: isWispr ? 'CVs are <i>so</i> <b>2025</b>. I didn’t want to be another one.' : 'CVs are <i>so</i> <b>2025</b>. Here’s mine.' },
+  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you got <b>2,000</b> CVs for <i>one</i> role.' : 'You get <b>thousands</b> of CVs.' },
+  { id: 'envelope', len: 1.4, cap: 'What’s <i>one more</i>? So I <b>destroyed</b> mine.' },
   { id: 'origami', len: 1.3, cap: 'I <i>folded</i> it,' },
   { id: 'flight', len: 0.8, cap: '<b>threw</b> it,' },
   { id: 'crumple', len: 0.7, cap: '<s>crushed</s> it,' },
