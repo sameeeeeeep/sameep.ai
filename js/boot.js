@@ -246,7 +246,6 @@ function entryGate() {
           : `<strong>Say it.</strong> ${matchMedia('(pointer: coarse)').matches ? 'Tap the mic' : 'Hold your Flow key (<kbd>fn</kbd>) or click the mic'} and say what to do: “fold it”, “next”.`}</span></li>
       </ol>
       <p class="gate__hint">Best with headphones.</p>
-      <p class="gate__note"><b>Quick disclaimer:</b> this is still a concept, not a finished product. There may be pauses, answers that aren’t comprehensive, and some rough edges. But isn’t imperfection what makes us human?</p>
     </div>`;
   document.body.append(g);
   document.documentElement.classList.add('is-gated');

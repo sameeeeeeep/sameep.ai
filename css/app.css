@@ -52,8 +52,6 @@ img { max-width: 100%; }
 .gate__quiet:not(:disabled):hover, .gate__skip:hover { background: linear-gradient(#fff, var(--plat-1)); }
 .gate__skip { margin-top: 14px; align-self: flex-end; background: none; border-style: dashed; box-shadow: none; }
 .gate__hint { margin: 0; font: 400 12px var(--f-ui); color: rgba(243,238,226,.55); text-align: center; }
-.gate__note { margin: 0; max-width: 380px; font: 400 12px/1.5 var(--f-ui); color: rgba(243,238,226,.6); text-align: center; text-wrap: pretty; }
-.gate__note b { color: rgba(243,238,226,.85); font-weight: 600; }
 /* extensions loading along the bottom, OS 9 style */
 .gate__exts { position: absolute; z-index: 1; left: max(16px, env(safe-area-inset-left)); bottom: max(16px, env(safe-area-inset-bottom)); margin: 0; padding: 0; list-style: none; display: flex; gap: 10px; }
 .gate__exts li { width: 32px; height: 32px; opacity: 0; transform: translateY(4px); transition: opacity .2s steps(2), transform .2s steps(2); }
