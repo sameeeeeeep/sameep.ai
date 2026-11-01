@@ -71,8 +71,13 @@ export async function castPanel({ persona, hostName }) {
     card.classList.add('is-picked');
     card.setAttribute('aria-checked', 'true');
     pick = c;
+    // picking someone from the Wispr team means you ARE them: their first name goes in the name field.
+    // Picking anything else puts back whatever you had typed.
+    if (c?.team) { if (nameIn.value.trim() !== autoName) typed = nameIn.value; autoName = c.label; nameIn.value = c.label; }
+    else if (autoName && nameIn.value.trim() === autoName) { nameIn.value = typed; autoName = ''; }
     sound.tick('pick');
   };
+  let autoName = pick?.team ? pick.label : '', typed = prev.name && prev.name !== autoName ? prev.name : '';
 
   const cards = await Promise.all(persona.characters.map(async (c) => {
     const im = (await loadImg(c.thumb)) || (await loadImg(c.src));

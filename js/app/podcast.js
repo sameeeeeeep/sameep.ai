@@ -25,7 +25,7 @@ import { coach } from '../coach.js';
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const estDur = (line) => Math.max(2.4, words(line.text) * 0.36 + 0.7);
 const COPY = isWispr
-  ? { placeholder: 'Say it with Flow…', hint: 'Hold your Wispr Flow key and talk. It lands in the field wherever you are. Or type. Or tap.', mic: 'Mic blocked. Type instead, or use your Wispr Flow key.' }
+  ? { placeholder: 'Hold fn and say where to go…', hint: 'Hold your Wispr Flow key and talk. It lands in the field wherever you are. Or type. Or tap.', mic: 'Mic blocked. Type instead, or use your Wispr Flow key.' }
   : { placeholder: 'Say or type where to go…', hint: 'Type or dictate where to go. It lands in the field wherever you are. Or tap a card.', mic: 'Mic blocked. Type instead.' };
 // auto-pick: how sure the match must be, and how long the "Heard" note waits
 const SURE = 0.8, MARGIN = 0.12, SETTLE = 650, CONFIRM = 1500;
@@ -117,6 +117,7 @@ export class Podcast {
     });
     if (res.route && res.route !== this.routeId) this.setRoute(res.route);
     if (res.visitor) { this.visitor = res.visitor; this.casted = true; this.#renderAudience(); }
+    if (first) this.#steerTip();
     const id = res.host;
     saveHost(id);
     this.hostChosen = true;
@@ -340,7 +341,7 @@ export class Podcast {
     this.sayForm = h('form.say', { onsubmit: (e) => { e.preventDefault(); this.#steer(this.sayIn.value); } },
       h('span.say__flow', { 'aria-hidden': 'true' }, isWispr ? h('img', { src: 'img/ui/wispr.svg', alt: '', width: 20, height: 20 }) : h('span.say__caret', '›')),
       this.sayIn, this.mic, h('button.say__go', { type: 'submit', 'aria-label': 'Go' }, 'Go'));
-    const steer = h('div.steer', h('div.steer__label', this.audBadge, h('span.steer__k', 'Pull a thread'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
+    const steer = h('div.steer', h('div.steer__label', this.audBadge, h('span.steer__k', 'You steer'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
 
     // the chooser (cards) — overlays the picture at a fork on desktop, sits in the flow on phones
     this.chooser = h('section.chooser', { hidden: true, 'aria-label': 'Choose what’s next' });
@@ -498,7 +499,7 @@ export class Podcast {
       this.mapOpen = (this.ep.chapters || []).find((c) => this.ep.nodes[c.to]?.chapter === label)?.to || null;
     }
     this.#renderChapters();
-    this.nodeLabel.textContent = label ? '· ' + (this.node.title && this.node.title !== label ? `${label} · ${this.node.title}` : label) : '';
+    this.nodeLabel.textContent = label ? '· Now: ' + (this.node.title && this.node.title !== label ? `${label} · ${this.node.title}` : label) : '';
   }
 
   #renderAudience(line) {
@@ -765,6 +766,16 @@ export class Podcast {
   }
 
   // first-time guides at a fork: how to choose (first fork), then the project shortcut (a few in)
+  // first time the show starts: say plainly that it can be steered, before the first fork comes
+  #steerTip() {
+    setTimeout(() => {
+      if (this.win.el.hidden) return;
+      coach.show('steer', this.sayForm, isWispr
+        ? '<b>You steer this show.</b> Tap <b>Up next</b> to skip ahead, pick a card when the host asks, or hold <b>fn</b> and say where to go: try “tell me about ppt.live”.'
+        : '<b>You steer this show.</b> Tap <b>Up next</b> to skip ahead, pick a card when the host asks, or type or say where to go: try “tell me about ppt.live”.', { place: 'top', ms: 12000 });
+    }, 5000);
+  }
+
   #tips() {
     setTimeout(() => {
       if (!this.root.classList.contains('is-waiting')) return;
