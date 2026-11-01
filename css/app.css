@@ -353,15 +353,25 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
 .pod.is-listening .steer__av, .pod.is-listening .aud__av { animation: avListen 1.6s ease-in-out infinite; }
 @keyframes avListen { 50% { box-shadow: 0 0 0 1.5px var(--flame), 0 0 0 5px rgba(184,255,233,.35); } }
 .steer__k { white-space: nowrap; }
-.steer__host { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; margin-right: 4px; padding: 2px 10px; border: 1px solid #141210; border-radius: 999px; background: transparent; color: #141210; font: 600 12px var(--f-ui); letter-spacing: .04em; text-transform: none; cursor: pointer; }
-.steer__host:hover, .steer__host:focus-visible { background: #141210; color: var(--paper); }
-.steer__host[hidden] { display: none; }
-.steer__host-k { opacity: .6; text-transform: uppercase; letter-spacing: .12em; font-size: 10px; }
+/* mid-episode host switcher: one face per host on the caption bar, the current one lit */
+.hostsw { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.hostsw[hidden] { display: none; }
+.hostsw::before { content: 'Switch host'; margin-right: 2px; font: 700 10px var(--f-ui); letter-spacing: .14em; text-transform: uppercase; color: #a59d8d; }
+.hostsw__chip { position: relative; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 8px; overflow: hidden; cursor: pointer; background: radial-gradient(90% 70% at 50% 35%, #3a2c22, #17120e); opacity: .5; filter: saturate(.6); transition: opacity .2s, filter .2s, transform .2s var(--ease-out), box-shadow .2s; }
+.hostsw__chip img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; display: block; }
+.hostsw__chip:hover, .hostsw__chip:focus-visible { opacity: 1; filter: none; transform: translateY(-2px); }
+.hostsw__chip.is-on { opacity: 1; filter: none; box-shadow: 0 0 0 2px var(--flame); cursor: default; }
+.hostsw.is-flash .hostsw__chip { animation: hostswFlash 1.2s var(--ease-out); }
+@keyframes hostswFlash { 0%, 100% { transform: none; } 25% { transform: translateY(-4px); opacity: 1; filter: none; } }
 /* host picker: reuses the audience picker's look */
 .cast .hostpick__grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); max-width: 720px; margin-left: auto; margin-right: auto; }
 /* host busts: clean cut-outs on a panel, cut straight at the shoulders (not circles) */
 .cast .hostpick__portrait { width: 100%; max-width: 160px; aspect-ratio: 1; border-radius: 10px; background: radial-gradient(90% 70% at 50% 35%, #3a2c22, #17120e); overflow: hidden; align-items: end; }
 .cast .hostpick__portrait img { object-fit: contain; object-position: 50% 100%; }
+.hostpick__card { position: relative; }
+.hostpick__rec { position: absolute; top: 8px; right: 8px; z-index: 1; padding: 3px 7px; border-radius: 999px; background: var(--flame); color: #111; font: 800 10px/1 var(--f-ui); letter-spacing: .08em; text-transform: uppercase; }
+.hostpick__style { margin-top: 4px; font: 400 12px/1.4 var(--f-ui); color: #e3d9c4; }
+.hostpick__style b { color: var(--flame); font-weight: 700; }
 .hostpick__kind { font: 700 11px/1.3 var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--flame); }
 .cast.hostpick { background: radial-gradient(80% 60% at 50% 0%, rgba(255,169,70,.18), transparent 70%), #0e0c0a; opacity: 1; transition: none; }
 /* opaque from its first frame: the podcast window fades in under it, so a second fade here let the player show through */
@@ -801,11 +811,14 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
   .cast__grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .cast__portrait { max-width: 96px; }
   .cast .hostpick__grid { grid-template-columns: 1fr; gap: 8px; }
+  .hostsw__chip { width: 40px; height: 40px; }
+  .hostsw::before { display: none; }
+  .lower3__name { white-space: nowrap; }
   .hostpick__lens { grid-template-columns: 1fr; gap: 8px; }
   .hostpick__len { grid-template-columns: 76px 1fr; text-align: left; align-items: center; column-gap: 10px; }
   .hostpick__len .hostpick__min { grid-row: 1 / span 2; font-size: 18px; }
   .hostpick__card { grid-template-columns: 64px 1fr; justify-items: start; text-align: left; column-gap: 12px; padding: 10px 12px; }
-  .hostpick__card .hostpick__portrait { grid-row: 1 / span 3; width: 64px; margin: 0; }
+  .hostpick__card .hostpick__portrait { grid-row: 1 / span 4; width: 72px; margin: 0; }
   .demo__qr { grid-template-columns: 1fr; justify-items: center; text-align: center; }
   .demo__qr-code { width: min(240px, 70vw); }
   .demo__frame-wrap { min-height: 60vh; }

@@ -105,7 +105,8 @@ export class Podcast {
   // saved or default picks); later, "Change host" opens just the host part
   async pickHost({ first = false } = {}) {
     if (first && new URLSearchParams(location.search).has('host')) return;
-    if (!first && this.hosts.length < 2) return;
+    if (!first) return this.#flashHosts(); // mid-episode: the face switcher on the caption bar
+
     const wasPlaying = this.playing;
     if (!first) this.pause();
     this.durP ||= fetch(safeUrl('data/durations.json', this.base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
@@ -181,12 +182,27 @@ export class Podcast {
     if (this.node) { this.#renderChips(); if (!this.chooser.hidden) this.#renderChooser(); }
   }
 
+  // the mid-episode host switcher: one face per host on the caption bar, the current one lit;
+  // a tap switches and replays the current line in the new voice
   #renderHostBtn() {
-    if (!this.hostBtn) return;
-    const first = this.speakers[this.hostKey]?.name?.split(' ')[0] || 'Host';
-    this.hostBtn.hidden = this.hosts.length < 2;
-    this.hostBtn.replaceChildren(h('span.steer__host-k', 'Host'), h('span.steer__host-v', first), h('span', { 'aria-hidden': 'true' }, ' ▾'));
-    this.hostBtn.setAttribute('aria-label', `Host: ${this.speakers[this.hostKey]?.name}. Change host`);
+    const sw = this.hostSw;
+    if (!sw) return;
+    sw.hidden = this.hosts.length < 2;
+    if (!sw.children.length) {
+      for (const x of this.hosts) {
+        sw.append(h('button.hostsw__chip', { type: 'button', role: 'radio', dataset: { host: x.id }, title: `${x.name}: ${x.style || x.kind || ''}`, 'aria-label': `Host: ${x.name}`,
+          onclick: () => { if (x.id === this.hostId) return; sound.tick('pick'); saveHost(x.id); this.setHost(x.id); } },
+        h('img', { src: safeUrl(x.thumb, this.base), alt: '', width: 40, height: 40, draggable: 'false' })));
+      }
+    }
+    for (const b of sw.children) { const on = b.dataset.host === this.hostId; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', String(on)); }
+  }
+
+  #flashHosts() {
+    const sw = this.hostSw;
+    if (!sw || sw.hidden) return;
+    sw.classList.remove('is-flash'); void sw.offsetWidth; sw.classList.add('is-flash');
+    sw.querySelector('.is-on')?.focus({ preventScroll: true });
   }
 
   // where the "pick your avatar" moment happens
@@ -268,7 +284,9 @@ export class Podcast {
     this.studioReady = this.studio.init();
     this.name = h('p.lower3__name');
     this.sub = h('p.lower3__sub', { 'aria-live': 'polite' });
-    const lower3 = h('div.lower3', h('div.lower3__head', this.name), this.sub);
+    this.hostSw = h('div.hostsw', { role: 'radiogroup', 'aria-label': 'Switch host' });
+    this.#renderHostBtn();
+    const lower3 = h('div.lower3', h('div.lower3__head', this.name, this.hostSw), this.sub);
     if (isNarrow()) stage.classList.add('stage--narrow');
     this.stage = stage;
     this.monitor = new Monitor(stage, { base: this.base, reduced: this.reduced, onOpenWork: (id) => openWork(this.wm, this.persona, { focusId: id }) });
@@ -314,8 +332,6 @@ export class Podcast {
 
     // steering: the audience badge, quick chips, the say field
     this.audBadge = h('span.steer__aud');
-    this.hostBtn = h('button.steer__host', { type: 'button', title: 'Change host', onclick: () => this.pickHost() });
-    this.#renderHostBtn();
     this.chips = h('div.chips', { role: 'group', 'aria-label': 'Pull a thread' });
     this.sayIn = h('input.say__input', { type: 'text', placeholder: COPY.placeholder, 'aria-label': 'Say or type where to go next', autocomplete: 'off', enterkeyhint: 'go', spellcheck: 'false', autocapitalize: 'off' });
     this.sayMsg = h('div.say__msg', { 'aria-live': 'polite' });
@@ -324,7 +340,7 @@ export class Podcast {
     this.sayForm = h('form.say', { onsubmit: (e) => { e.preventDefault(); this.#steer(this.sayIn.value); } },
       h('span.say__flow', { 'aria-hidden': 'true' }, isWispr ? h('img', { src: 'img/ui/wispr.svg', alt: '', width: 20, height: 20 }) : h('span.say__caret', '›')),
       this.sayIn, this.mic, h('button.say__go', { type: 'submit', 'aria-label': 'Go' }, 'Go'));
-    const steer = h('div.steer', h('div.steer__label', this.audBadge, this.hostBtn, h('span.steer__k', 'Pull a thread'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
+    const steer = h('div.steer', h('div.steer__label', this.audBadge, h('span.steer__k', 'Pull a thread'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
 
     // the chooser (cards) — overlays the picture at a fork on desktop, sits in the flow on phones
     this.chooser = h('section.chooser', { hidden: true, 'aria-label': 'Choose what’s next' });

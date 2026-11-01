@@ -18,7 +18,7 @@ const practiced = () => { try { return localStorage.getItem(PRACTICED) === '1'; 
 // Resolves with { host, route, visitor } (route and visitor only when those steps were shown).
 export function openWelcome(container, { hosts, current, base, persona, routes = null, route = null, durP = null, seat = false, countdown = 0 }) {
   return new Promise(async (resolve) => {
-    let host = hosts.find((x) => x.id === current) || hosts[0];
+    let host = hosts.find((x) => x.id === current) || hosts.find((x) => x.recommended) || hosts[0];
     let len = routes && (routes[route] ? route : Object.keys(routes)[1] || Object.keys(routes)[0]);
     const full = !!(routes || seat);
     const first = (x) => x.name.split(' ')[0];
@@ -33,10 +33,12 @@ export function openWelcome(container, { hosts, current, base, persona, routes =
     const hostGrid = h('div.cast__grid.hostpick__grid', { role: 'radiogroup', 'aria-label': 'Choose your host' });
     const hostCards = hosts.map((x) => h('button.cast__card.hostpick__card', { type: 'button', role: 'radio', dataset: { host: x.id },
       onclick: () => { host = x; sync(); sound.tick('pick'); stopCount(); panel?.setHost(first(x)); } },
+    x.recommended && h('span.hostpick__rec', 'Recommended'),
     h('span.cast__portrait.hostpick__portrait', x.thumb ? h('img', { src: safeUrl(x.thumb, base), alt: '', width: 128, height: 128, loading: 'lazy' }) : null),
     h('span.cast__label', x.name),
     x.kind && h('span.hostpick__kind', x.kind),
-    h('span.cast__blurb', x.blurb || '')));
+    h('span.cast__blurb', x.blurb || ''),
+    x.style && h('span.hostpick__style', h('b', 'Talks: '), x.style)));
     hostGrid.append(...hostCards);
 
     // length: real minutes from durations.json, honest about what each covers
@@ -107,7 +109,8 @@ export function openWelcome(container, { hosts, current, base, persona, routes =
       const back = i > 0 ? h('button.cast__skip.hostpick__back', { type: 'button', onclick: () => { stopCount(); show(i - 1 - (steps[i - 1] === 'practice' ? 1 : 0)); } }, '‹ Back') : null;
       quick = full && timer && !last ? h('button.cast__skip.hostpick__quick', { type: 'button', onclick: () => done() }, QUICK) : null;
       const page = {
-        host: () => [...head(i, full ? 'Welcome to a podcast that you control' : 'Who’s hosting?', 'Choose your host'), hostGrid],
+        host: () => [...head(i, full ? 'Welcome to a podcast that you control' : 'Who’s hosting?', 'Choose your host'), hostGrid,
+          h('p.hostpick__sub', 'Switch hosts anytime during the show: tap a face on the caption bar under the picture.')],
         length: () => [...head(i, 'How long have you got?', 'Select the speed'), lenRow, h('p.hostpick__sub', SUB)],
         seat: () => [...head(i, 'Grab a seat in the audience', 'Pick who you are in the crowd'),
           panel.area, h('div.cast__form.hostpick__name', panel.field)],
