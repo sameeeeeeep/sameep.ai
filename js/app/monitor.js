@@ -11,10 +11,13 @@
 // line.visual: {type:'shots', work, shots?} | {type:'video', src, poster?, work?}
 //              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]]}, funnel:{title,rows}, hold?}
 //              | {type:'work', work}   (shots or recording, whichever the project has)
+//              video extras: layout:'side' (a tall 9:16 panel beside the studio), sound:true (its own audio, ducked
+//              under the voice; follows the mute switch and the podcast's play/pause), key (keep it running across lines)
 //              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}, hold?}
 //                (the menu: each card lights up as the line's audio reaches its cue; click one to go there)
 //              | 'none'
 import { h, safeUrl } from './util.js';
+import { sound } from './audio.js';
 
 const fmtNum = (v) => Math.round(v).toLocaleString('en-US');
 const CORNERS = ['tr', 'tl', 'br', 'bl'];
@@ -101,6 +104,7 @@ export class Monitor {
     this.pinned = false;
     clearInterval(this.slideT);
     clearInterval(this.cueT);
+    this.#unsound();
     this.screen.querySelector('video')?.pause();
     this.screen.replaceChildren();
   }
@@ -111,10 +115,12 @@ export class Monitor {
     if (key && key === this.key && this.on) return;
     clearInterval(this.slideT);
     clearInterval(this.cueT);
+    this.#unsound();
     clearTimeout(this.shrinkT);
     this.key = key;
     this.pinned = false;
     this.el.dataset.type = v.type;
+    this.el.dataset.layout = v.layout || '';
     this.title.textContent = v.title || '';
     // how long it stays big before it tucks into the corner
     let hold = 3400;
@@ -128,6 +134,7 @@ export class Monitor {
       vid.addEventListener('error', () => { if (v.shots?.length) this.screen.replaceChildren(this.#slides(v)); }, { once: true });
       this.screen.replaceChildren(vid);
       vid.play?.().catch(() => {});
+      if (v.sound) this.#sounded(vid, v.volume ?? 0.22);
       hold = v.hold || 3800;
     } else if (v.type === 'shots') {
       this.screen.replaceChildren(this.#slides(v));
@@ -175,6 +182,28 @@ export class Monitor {
       this.slideT = setInterval(() => { imgs[i].classList.remove('is-on'); i = (i + 1) % imgs.length; imgs[i].classList.add('is-on'); }, 3200);
     }
     return wrap;
+  }
+
+  // a clip with its own sound (the Diwali song): quiet under the voice, silent when muted, paused with the podcast
+  #sounded(vid, vol) {
+    let was = null;
+    const sync = () => {
+      const on = sound.on && (this.isPlaying?.() ?? true);
+      vid.muted = !sound.on;
+      vid.volume = vol;
+      if ((this.isPlaying?.() ?? true) && vid.paused) vid.play?.().catch(() => { vid.muted = true; vid.play?.().catch(() => {}); });
+      else if (!(this.isPlaying?.() ?? true) && !vid.paused) vid.pause();
+      if (on !== was) { was = on; this.onSound?.(on); }
+    };
+    this.soundT = setInterval(sync, 250);
+    sync();
+  }
+
+  #unsound() {
+    if (!this.soundT) return;
+    clearInterval(this.soundT);
+    this.soundT = null;
+    this.onSound?.(false);
   }
 
   // the menu as cards; the one being talked about lights up (cue times are per clip, so every host's take works)
@@ -254,7 +283,7 @@ export function resolveVisual(raw, work, base) {
   const shots = (raw.shots || it?.shots || []).map(abs).filter(Boolean);
   if (raw.type === 'stats') return raw;
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
-  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, work: it?.id } : null; }
+  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
   if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, work: it?.id } : null;
   if (raw.type === 'work' && it) {
     if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, work: it.id };

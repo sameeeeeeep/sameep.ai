@@ -4,6 +4,7 @@
 import { h } from './util.js';
 
 const isHub = (id) => /-hub$|-again$/.test(id) || id === 'hub' || id === 'hub-first';
+const isOutro = (id) => id === 'outro-make' || id === 'outro';
 
 export function mins(sec) {
   if (!sec || sec < 1) return '';
@@ -106,15 +107,36 @@ export class EpisodeMap {
     return stops.slice(last + 1).find((s) => !visited.has(s)) || stops.find((s) => !visited.has(s)) || null;
   }
 
+  // Where the show goes if you do nothing. Inside a topic: its next part you haven't heard
+  // (a deep dive). Topic finished: back to the menu. At the menu: the next topic not yet
+  // covered, in route order. Everything covered: the ending. Taking another branch still
+  // works; this only decides the countdown pick.
+  target(nodeId, visited) {
+    const stops = (this.route.stops || []).filter((s) => this.N[s]);
+    const left = stops.filter((s) => !visited.has(s) && s !== nodeId);
+    const chap = this.N[nodeId]?.chapter;
+    if (!isMainHub(nodeId) && chap) {
+      const here = left.find((s) => this.N[s].chapter === chap && !isHub(s));
+      if (here) return { to: here };
+      if (left.some((s) => !isOutro(s))) return { menu: true };
+    }
+    return { to: left.find((s) => !isOutro(s)) || left[0] || 'outro-make' };
+  }
+
   // the one recommended choice index for a menu, given what's been heard
   recommended(nodeId, visited) {
     const n = this.N[nodeId];
     // demo choices ("Open it", "Show me here") are inline actions, never the pick
     const ch = (n?.choices || []).map((c, i) => ({ c, i })).filter(({ c }) => !c.demo);
     if (!ch.length) return -1;
-    const stop = this.nextStop(visited);
     const forced = ch.find(({ c }) => c.primary);
     if (forced) return forced.i;
+    const t = this.target(nodeId, visited);
+    if (t.menu) {
+      const m = ch.find(({ c }) => isMainHub(c.to));
+      if (m) return m.i;
+    }
+    const stop = t.to || this.nextStop(visited);
     if (stop) {
       let best = null;
       for (const { c, i } of ch) {
@@ -122,6 +144,8 @@ export class EpisodeMap {
         if (d < Infinity && (!best || d < best.d || (d === best.d && (c.primary || c.recommended)))) best = { d, i };
       }
       if (best && best.d <= 3) return best.i;
+      const m = ch.find(({ c }) => isMainHub(c.to)); // can't get there from here: the menu can
+      if (m && !isMainHub(nodeId)) return m.i;
     }
     const st = ch.find(({ c }) => c.primary) || ch.find(({ c }) => c.recommended);
     return st ? st.i : -1;

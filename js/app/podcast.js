@@ -275,6 +275,8 @@ export class Podcast {
     this.monitor.onSkip = () => { this.visSkip = this.nodeId; };
     this.monitor.pickCorner = () => this.#corner();
     this.monitor.audio = this.audio; // menu cards light up against the line's audio clock
+    this.monitor.isPlaying = () => this.playing;
+    this.monitor.onSound = (on) => { if (on) this.bed.pause(); else this.#bedSync(); }; // the clip's song replaces the music bed
     this.monitor.onGo = (to) => this.#pick((this.node?.choices || []).find((c) => c.to === to) || { to }, null, true);
 
     // puppets

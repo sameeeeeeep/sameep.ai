@@ -20,3 +20,16 @@
 .mon[data-size="strip"][data-type="cards"] { grid-template-columns: minmax(0, 1fr); }
 .mon[data-size="strip"][data-type="cards"] .mon__bar { grid-column: 1; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) { .mcard { transition: none; } .mcard.is-lit { transform: none; } }
+
+/* layout:'side' — a tall 9:16 phone recording beside the studio, not letterboxed into the 16:9 monitor */
+.mon[data-layout="side"] { width: auto; aspect-ratio: 9 / 17; }
+.mon[data-layout="side"][data-size="full"] { inset: 3% 2% 3% auto; height: 94%; }
+.mon[data-layout="side"][data-size="pip"] { top: 3.2%; right: 2%; height: 56%; }
+.mon[data-layout="side"][data-size="full"][data-corner="tl"], .mon[data-layout="side"][data-size="full"][data-corner="bl"] { right: auto; left: 2%; }
+.mon[data-layout="side"][data-size="pip"][data-corner="tl"] { right: auto; left: 2%; }
+.mon[data-layout="side"][data-size="pip"][data-corner="br"] { top: auto; bottom: 3.2%; }
+.mon[data-layout="side"][data-size="pip"][data-corner="bl"] { top: auto; right: auto; bottom: 3.2%; left: 2%; }
+.mon[data-layout="side"] .mon__screen { flex: 1; aspect-ratio: auto; }
+/* phones: full width under the picture, capped so the tall clip doesn't push everything off screen */
+.mon[data-layout="side"][data-size="panel"], .mon[data-layout="side"][data-size="strip"] { aspect-ratio: auto; height: auto; }
+.mon[data-layout="side"][data-size="panel"] .mon__screen { flex: none; aspect-ratio: auto; height: min(62vh, 560px); }

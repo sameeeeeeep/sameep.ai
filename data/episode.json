@@ -21,6 +21,10 @@
    "to": "hub"
   },
   {
+   "label": "How was this made?",
+   "to": "meta-intro"
+  },
+  {
    "label": "The growth stuff: pre-buzz",
    "to": "g-intro"
   },
@@ -43,10 +47,6 @@
   {
    "label": "Fun and unfinished things",
    "to": "fun-intro"
-  },
-  {
-   "label": "How was this made?",
-   "to": "meta-intro"
   },
   {
    "label": "Make your own",
@@ -258,6 +258,18 @@
    ],
    "choices": [
     {
+     "label": "How was this made?",
+     "say": [
+      "how was this made",
+      "made",
+      "wispr",
+      "flow",
+      "dictated",
+      "behind the scenes"
+     ],
+     "to": "meta-intro"
+    },
+    {
      "label": "The growth stuff: pre-buzz",
      "say": [
       "growth",
@@ -330,21 +342,9 @@
       "small"
      ],
      "to": "fun-intro"
-    },
-    {
-     "label": "How was this made?",
-     "say": [
-      "how was this made",
-      "made",
-      "wispr",
-      "flow",
-      "dictated",
-      "behind the scenes"
-     ],
-     "to": "meta-intro"
     }
    ],
-   "next": "g-intro",
+   "next": "meta-intro",
    "title": "Menu",
    "blurb": "Tonight's menu: pick where to start."
   },
@@ -370,6 +370,18 @@
     }
    ],
    "choices": [
+    {
+     "label": "How was this made?",
+     "say": [
+      "how was this made",
+      "made",
+      "wispr",
+      "flow",
+      "dictated",
+      "behind the scenes"
+     ],
+     "to": "meta-intro"
+    },
     {
      "label": "The growth stuff: pre-buzz",
      "say": [
@@ -443,18 +455,6 @@
       "small"
      ],
      "to": "fun-intro"
-    },
-    {
-     "label": "How was this made?",
-     "say": [
-      "how was this made",
-      "made",
-      "wispr",
-      "flow",
-      "dictated",
-      "behind the scenes"
-     ],
-     "to": "meta-intro"
     },
     {
      "label": "Let's wrap it up",
@@ -6353,8 +6353,9 @@
   },
   "standard": {
    "label": "Standard",
-   "blurb": "Growth, Switchboard and ppt.live.",
+   "blurb": "How this was made, then growth, Switchboard and ppt.live.",
    "stops": [
+    "meta-intro",
     "g-intro",
     "g-nykaa",
     "g-diwali",
@@ -6365,25 +6366,55 @@
   },
   "full": {
    "label": "Full",
-   "blurb": "Adds the Slumber Party, the startup that failed, the toolbox and how this was made.",
+   "blurb": "Everything, one topic at a time: how this was made, growth, the startup that didn't work, Switchboard, ppt.live, the toolbox and the fun stuff.",
    "stops": [
+    "meta-intro",
+    "meta-story",
+    "meta-workflow",
+    "meta-podcast",
+    "meta-voice",
+    "meta-90s",
+    "meta-faces",
+    "meta-code",
+    "meta-flow",
     "g-intro",
     "g-nykaa",
+    "g-nailinit",
+    "g-games",
     "g-diwali",
     "g-slumber",
     "often-intro",
     "often-why",
     "often-lesson",
     "sb-intro",
+    "sb-lineage",
+    "sb-notch",
+    "sb-wrapps",
+    "sb-local",
+    "w-brandbrain",
+    "w-flow",
+    "w-voice",
+    "w-cut",
+    "w-annotate",
+    "w-cartridge",
+    "w-prophexy",
     "ppt-intro",
+    "ppt-more",
+    "ppt-uses",
+    "ppt-games",
+    "ppt-play",
     "tools-intro",
     "t-video",
-    "meta-intro",
-    "meta-voice",
-    "meta-faces",
-    "meta-code",
-    "meta-flow",
-    "meta-90s",
+    "t-refs",
+    "t-adhd",
+    "fun-intro",
+    "f-wallpap",
+    "f-psspss",
+    "f-maccat",
+    "f-bluetune",
+    "f-agentbar",
+    "f-alter",
+    "f-vibedj",
     "outro-make"
    ]
   }
