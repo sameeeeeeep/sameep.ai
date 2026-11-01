@@ -15,6 +15,8 @@ import { Particles } from './particles.js';
 import { HeroAudio } from './audio.js';
 import { makeFireWall } from './firewall.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
+import { makeHands } from './hands.js';
+import { isLow } from '../power.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
   { id: 'pile', len: 1.0, cap: 'Every CV sent is one of <b>thousands</b>… lying in a pile.' },
@@ -161,8 +163,9 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     return true;
   };
   const inHero = () => gLive && !document.documentElement.classList.contains('is-gated') && scrollY <= gTop[gTop.length - 1] + 4;
+  let hands = null; // high power: grab the paper, the match, the CD (hands.js)
   const onWheel = (e) => {
-    if (!inHero() || e.ctrlKey) return;
+    if (!inHero() || e.ctrlKey || hands?.busy) return;
     if (e.deltaY > 0 && scrollY >= gTop[gTop.length - 1] - 4) return;
     e.preventDefault();
     const now = performance.now();
@@ -173,8 +176,9 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   };
   let ty = null;
   const onTouchStart = (e) => { ty = e.touches[0].clientY; };
-  const onTouchMove = (e) => { if (inHero() && ty !== null) e.preventDefault(); };
+  const onTouchMove = (e) => { if (inHero() && (ty !== null || hands?.busy)) e.preventDefault(); };
   const onTouchEnd = (e) => {
+    if (hands?.busy || hands?.justDragged?.()) { ty = null; return; }
     if (ty === null || !inHero()) return;
     const dy = ty - (e.changedTouches[0]?.clientY ?? ty); ty = null;
     if (Math.abs(dy) > 30 && !gBusy) go(Math.sign(dy));
@@ -186,7 +190,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   };
   const onSettle = () => {   // scrollbar drags and anything else: settle to the nearest pose
     clearTimeout(gIdle);
-    if (gBusy || !inHero()) return;
+    if (gBusy || !inHero() || hands?.busy) return;
     gIdle = setTimeout(() => {
       if (gBusy || !inHero()) return;
       const y = scrollY, near = gTop.reduce((a, t) => (Math.abs(t - y) < Math.abs(a - y) ? t : a), gTop[0]);
@@ -251,7 +255,20 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
 
   // everything else is built after the first frame (see buildRest)
   let envelope, sheet, paperMat, sheetMesh, sheetG, strips, stripsG, mb, strikeFlash, cd, motes, imac, particles;
-  let cvFront, cvBack, frontCanvas = null, FOLD_FULL, angles, flameMat;
+  let cvFront, cvBack, frontCanvas = null, FOLD_FULL, FOLD_BASE, angles, flameMat;
+  // the picked fold's wings ease in (the last two folds are the wings)
+  const wingStep = (dt) => {
+    if (!FOLD_BASE) return;
+    const goal = WING[foldStyle] || 1;
+    if (Math.abs(goal - wingK) < 1e-4) wingK = goal; else wingK += (goal - wingK) * (1 - Math.exp(-(dt || 0.016) * 6));
+    const n = FOLD_FULL.length;
+    FOLD_FULL[n - 2] = FOLD_BASE[n - 2] * wingK; FOLD_FULL[n - 1] = FOLD_BASE[n - 1] * wingK;
+  };
+  const setFoldStyle = (k) => {
+    if (!PATHS[k]) return false;
+    foldStyle = k; path = PATHS[k]; dirty = true;
+    return true;
+  };
   let full = false;
   const stripFlames = [];
   const fireWall = makeFireWall();
@@ -279,15 +296,29 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   // origami end pose (3/4 view of the finished plane)
   const qOriEnd = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.22, Math.PI + 0.75, 0.0));
   // flight path (relative to S); starts and ends at the stage
-  const path = new THREE.CatmullRomCurve3([
+  // three folds, three flights (picked at the finished plane, by tap or voice). All end the same
+  // way, so the crumple that follows lines up whichever flew.
+  const DART = [
     [0, 0, 0], [0.55, 0.12, -0.25], [1.0, 0.5, -0.8], [0.7, 1.05, -1.15], [-0.15, 1.0, -0.85], [-0.75, 0.55, -0.2],
     [-0.55, 0.32, 0.9], [0.0, 0.26, 1.85], [0.42, 0.22, 2.35], [0.95, 0.12, 1.5], [0.75, 0.04, 0.55], [0.25, 0, 0.12], [0, 0, 0],
-  ].map((p) => new THREE.Vector3(...p)), false, 'centripetal', 0.5);
+  ];
+  const curve = (pts) => new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(...p)), false, 'centripetal', 0.5);
+  const PATHS = {
+    dart: curve(DART),
+    // wide, flat and slow: long lazy arcs, barely climbing
+    glider: curve(DART.map(([x, y, z], i) => (i < 2 || i > DART.length - 4 ? [x, y, z] : [x * 1.18, 0.12 + y * 0.45, z * 1.12]))),
+    // a climbing corkscrew, then the dive home
+    stunt: curve([[0, 0, 0], [0.55, 0.12, -0.25], [1.0, 0.5, -0.8], [1.05, 0.72, -1.05], [0.6, 0.9, -1.45], [0.15, 1.1, -1.0], [0.6, 1.3, -0.55],
+      [1.05, 1.42, -1.0], [0.6, 1.35, -1.45], [-0.15, 1.0, -0.85], [-0.75, 0.5, -0.2], ...DART.slice(6)]),
+  };
+  const WING = { dart: 1, glider: 0.8, stunt: 1.12 };      // wing fold (FL/FR) vs the dart's
+  let foldStyle = 'dart', wingK = 1, path = PATHS.dart;
   const qPath = (f, out) => {
     const u = clamp(f, 0.0005, 0.9995);
     path.getTangentAt(u, tA).normalize();
     path.getTangentAt(clamp(u + 0.03, 0, 1), tB).normalize();
-    tC.crossVectors(tA, UP).normalize();                       // right
+    tC.crossVectors(tA, UP);                                   // right
+    if (tC.lengthSq() < 1e-6) tC.set(1, 0, 0); else tC.normalize(); // (a near-vertical climb)
     const turn = tB.sub(tA).dot(tC);
     const bank = clamp(-turn * 9, -1.1, 1.1) + Math.sin(f * 37) * 0.12 + Math.sin(f * 13) * 0.06;
     tD.crossVectors(tC, tA).normalize();                       // up
@@ -546,6 +577,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
       paperMat.userData.u.uFacet.value = 0.0;
       paperMat.userData.u.uAOAmt.value = 0;
     } else if (p < G('origami', 1)) {
+      wingStep(dt);
       for (let k = 0; k < angles.length; k++) angles[k] = easeInOut(seg(o, FOLD_T[k][0], FOLD_T[k][1])) * FOLD_FULL[k];
       sheet.setFold(angles);
       const turn = easeInOut(seg(o, 0.6, 1));
@@ -555,7 +587,8 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
       paperMat.userData.u.uFacet.value = 0.6;
       paperMat.userData.u.uAOAmt.value = 0;
     } else if (p < G('flight', 1)) {
-      if (sheet.mode !== 'fold' || angles[angles.length - 1] < FOLD_FULL[angles.length - 1]) {
+      wingStep(dt);
+      if (sheet.mode !== 'fold' || Math.abs(angles[angles.length - 1] - FOLD_FULL[angles.length - 1]) > 1e-4) {
         for (let k = 0; k < angles.length; k++) angles[k] = FOLD_FULL[k];
         sheet.setFold(angles);
       }
@@ -991,6 +1024,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     particles = new Particles(scene, { mobile });
     angles = new Array(sheet.foldCount).fill(0);
     FOLD_FULL = sheet.fold.map((_, k) => sheet.angles[k]);
+    FOLD_BASE = FOLD_FULL.slice();
     mark('rest');
     full = true;
     resize();
@@ -1096,6 +1130,17 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
 
   // dev hooks (harmless in prod)
   const emptyScene = new THREE.Scene();
+  if (!isLow && !reduced && groovesOn) {
+    hands = makeHands({
+      stage: dom.stage, camera, THREE, reduced,
+      grooves: () => gTop, isBusy: () => gBusy, glide,
+      style: () => foldStyle, onStyle: (k) => setFoldStyle(k),
+      world: {
+        paper: () => sheetG?.position, box: () => mb?.group.position, match: () => mb?.match.position,
+        strips: () => L.stripsC, cd: () => cd?.position, slot: () => L.slotW,
+      },
+    });
+  }
   const api = {
     built,
     stats: () => ({ avg: stats.avg, worst: stats.worst, spikes: stats.spikes.slice(), quality }),
@@ -1106,6 +1151,11 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
       const i = { pile: 0, envelope: 3, mine: 3, fold: 4, plane: 4, fly: 5, crumple: 6, shred: 7, strike: 8, match: 8, burn: 9, cd: 10, insert: 11 }[name];
       if (i === undefined || !gLive) return false;
       layoutGrooves(); glide(gTop[i]); return true;
+    },
+    foldStyle(k) {
+      if (!setFoldStyle(k)) return false;
+      if (api.groove < 4) api.goto('fold');
+      return true;
     },
     get groove() { const y = scrollY; return gTop.reduce((a, t, i) => (Math.abs(t - y) < Math.abs(gTop[a] - y) ? i : a), 0); },
     jump(p) {
@@ -1155,6 +1205,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
       Object.values(post).forEach(() => {});
       post.dispose(); renderer.dispose(); renderer.forceContextLoss?.();
       audio.dispose?.();
+      hands?.destroy();
       if (window.__hero === api) window.__hero = null;
     },
   };

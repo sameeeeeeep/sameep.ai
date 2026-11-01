@@ -12,3 +12,22 @@
 .gate__way kbd { padding: 0 5px; border-radius: 4px; background: rgba(243,238,226,.14); color: var(--paper, #f3eee2); font: 700 11px/1.5 var(--f-ui); }
 .gate__way--flow { background: #0d0d0d; box-shadow: 0 0 0 1.5px rgba(243,238,226,.35); color: rgba(243,238,226,.82); font-size: 14px; }
 @media (max-height: 640px) { .gate__way { padding: 7px 12px; font-size: 12px; } }
+
+/* hands-on hero (high power): what you can grab, and the fold picker */
+.hands-hint { position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity .35s; }
+.hands-hint.is-on { opacity: 1; }
+.hands-hint i { position: absolute; left: -28px; top: -28px; width: 56px; height: 56px; border-radius: 50%; border: 2px solid rgba(243,238,226,.85);
+  box-shadow: 0 0 0 6px rgba(243,238,226,.12); animation: hands-pulse 1.6s ease-out infinite; }
+.hands-hint span { position: absolute; left: 0; top: 40px; transform: translateX(-50%); white-space: nowrap; padding: 6px 12px; border-radius: 999px;
+  background: #0d0d0d; color: #fff; font: 700 12.5px/1 'Bricolage Grotesque', system-ui, sans-serif; box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+.hero-stage.is-grabbing, .hero-stage.is-grabbing * { cursor: grabbing !important; }
+@keyframes hands-pulse { 0% { transform: scale(.8); opacity: 1; } 100% { transform: scale(1.35); opacity: 0; } }
+.fold-pick { position: absolute; left: 50%; top: 22%; z-index: 4; transform: translate(-50%, 6px); display: flex; align-items: center; gap: 4px; padding: 5px;
+  border-radius: 999px; background: #0d0d0d; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 10px 28px rgba(0,0,0,.45);
+  font: 600 12.5px/1 'Bricolage Grotesque', system-ui, sans-serif; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; }
+.fold-pick.is-on { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+.fold-pick__k { padding: 0 8px 0 10px; color: #9a9a9a; }
+.fold-pick button { border: 0; border-radius: 999px; padding: 8px 12px; background: transparent; color: #fff; font: inherit; cursor: pointer; }
+.fold-pick button:hover { background: #222; }
+.fold-pick button[aria-checked="true"] { background: #fff; color: #0d0d0d; }
+@media (prefers-reduced-motion: reduce) { .hands-hint i { animation: none; } }
