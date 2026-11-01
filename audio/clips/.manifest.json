@@ -168,5 +168,22 @@
 "audio/clips/about-02.mp3": "7bcc1b998a5ee62ba4831598637900aebf319dfc",
 "audio/clips/about-03.mp3": "3f6a5746e29cdc6d3a84a25cdd7865e4d21dd223",
 "audio/clips/g-slumber-07.mp3": "baad6ee4b9455f10e3b83949eff7a6af3a5d28af",
-"audio/clips/g-slumber-08.mp3": "bbae04a78726211d3abb2e2f7484be5cc1938697"
+"audio/clips/g-slumber-08.mp3": "bbae04a78726211d3abb2e2f7484be5cc1938697",
+"audio/clips/meta-voice-01.mp3": "fef941d72fbc463965e4e78e6619b5cacd090743",
+"audio/clips/meta-voice-04.mp3": "6bb5c98f7c00f9969e63a9dc79f2722b4c1e4bae",
+"audio/clips/meta-faces-01.mp3": "d206caf724dfb73cdbfa168580c91d2cdcfd8222",
+"audio/clips/meta-faces-04.mp3": "3c7be6607592c12d26c328c8b75fd1de341ae7c8",
+"audio/clips/meta-code-01.mp3": "6f1e99f2be15c957e61b86bc02b2448cc9b53772",
+"audio/clips/meta-code-04.mp3": "f090d4d7a723cb7fd9f109544f51bc3055b10113",
+"audio/clips/meta-flow-01.mp3": "6dc1751a5e5500dca46d0116301e0e59cab90d1d",
+"audio/clips/meta-flow-04.mp3": "f5f09d6f45ae74053632a4082cd8004d2c328030",
+"audio/clips/meta-voice-02.mp3": "2e040eb48970d7f2e54c4ed0f842aaee21ef5459",
+"audio/clips/meta-voice-03.mp3": "9bb565612affdb07606f4c514c67a647bfb3f34d",
+"audio/clips/meta-faces-02.mp3": "d586e6b1b4fc987fcf3255d09ad79b70437af832",
+"audio/clips/meta-faces-03.mp3": "520edf8b28a204b9d17a52c3b7af2c2c8e94fecf",
+"audio/clips/meta-code-02.mp3": "2271ee8b16ee5eb0f6780644f7c4f4ce2b5483f5",
+"audio/clips/meta-code-03.mp3": "0b541f602867681ccfcade675b5c547674ec8c25",
+"audio/clips/meta-flow-02.mp3": "efea837a6c7fdf93e11effaf0352a5824f017216",
+"audio/clips/meta-flow-03.mp3": "81123128406b0edb7e0f1f3f4d8fbd39d1042608",
+"audio/clips/meta-flow-05.mp3": "6810c1ffd5f63da0436bc0c0bc4b3381ab4df4dc"
 }

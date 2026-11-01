@@ -219,8 +219,8 @@ export function resolveVisual(raw, work, base) {
   const title = raw.title || it?.title || '';
   const shots = (raw.shots || it?.shots || []).map(abs).filter(Boolean);
   if (raw.type === 'stats') return raw;
-  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, work: it?.id } : null; }
-  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, work: it?.id } : null;
+  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, work: it?.id } : null; }
+  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, work: it?.id } : null;
   if (raw.type === 'work' && it) {
     if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, work: it.id };
     if (shots.length) return { type: 'shots', shots, title, work: it.id };

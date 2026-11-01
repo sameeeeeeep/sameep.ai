@@ -4413,6 +4413,55 @@
    ],
    "choices": [
     {
+     "label": "How do the voices work?",
+     "say": [
+      "voice",
+      "voices",
+      "speech",
+      "tts",
+      "audio"
+     ],
+     "to": "meta-voice",
+     "recommended": true
+    },
+    {
+     "label": "How do the faces move?",
+     "say": [
+      "faces",
+      "face",
+      "sprites",
+      "animation",
+      "lips",
+      "mouth"
+     ],
+     "to": "meta-faces"
+    },
+    {
+     "label": "Who wrote the code?",
+     "say": [
+      "code",
+      "coding",
+      "claude",
+      "claude code",
+      "built",
+      "programming"
+     ],
+     "to": "meta-code"
+    },
+    {
+     "label": "What if I just sit here?",
+     "say": [
+      "logic",
+      "flow",
+      "sit here",
+      "do nothing",
+      "branch",
+      "choices",
+      "story"
+     ],
+     "to": "meta-flow"
+    },
+    {
      "label": "Why the nineties?",
      "say": [
       "nineties",
@@ -4429,8 +4478,7 @@
       "make one",
       "make your own"
      ],
-     "to": "outro-make",
-     "recommended": true
+     "to": "outro-make"
     },
     {
      "label": "Back to the menu",
@@ -4444,9 +4492,376 @@
      "to": "hub"
     }
    ],
-   "next": "meta-90s",
+   "next": "meta-voice",
    "title": "How this was made",
-   "blurb": "All of it dictated, then built with Claude."
+   "blurb": "Dictated with Flow, voiced on a Mac, built with Claude Code."
+  },
+  "meta-voice": {
+   "chapter": "How this was made",
+   "title": "The voices",
+   "blurb": "Made on a Mac, for free, and checked by whisper.",
+   "lines": [
+    {
+     "id": "meta-voice-01",
+     "who": "host",
+     "text": "Let us talk about voices. Mine, for instance. Whose is it?",
+     "audio": "audio/clips/meta-voice-01.mp3"
+    },
+    {
+     "id": "meta-voice-02",
+     "who": "sameep",
+     "text": "It's nobody's, actually. That was the one rule. Your voice started from a stock computer voice, not from any actor. Mine is cloned from my own recordings. Both run on Pocket TTS, a small open model, right on my Mac. So no bill per line.",
+     "audio": "audio/clips/meta-voice-02.mp3"
+    },
+    {
+     "id": "meta-voice-03",
+     "who": "sameep",
+     "text": "Each line gets generated, then whisper listens back and checks it actually said the words. If it mumbles, it retries, up to four times, and keeps the best take. Then I cut out the dead air between words, and ran whisper again to make sure no word got cut.",
+     "audio": "audio/clips/meta-voice-03.mp3"
+    },
+    {
+     "id": "meta-voice-04",
+     "who": "host",
+     "text": "So one robot proofreads another robot. How very modern.",
+     "audio": "audio/clips/meta-voice-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "How do the faces move?",
+     "say": [
+      "faces",
+      "face",
+      "sprites",
+      "animation",
+      "lips",
+      "mouth"
+     ],
+     "to": "meta-faces",
+     "recommended": true
+    },
+    {
+     "label": "Who wrote the code?",
+     "say": [
+      "code",
+      "coding",
+      "claude",
+      "claude code",
+      "built",
+      "programming"
+     ],
+     "to": "meta-code"
+    },
+    {
+     "label": "What if I just sit here?",
+     "say": [
+      "logic",
+      "flow",
+      "sit here",
+      "do nothing",
+      "branch",
+      "choices",
+      "story"
+     ],
+     "to": "meta-flow"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-faces"
+  },
+  "meta-faces": {
+   "chapter": "How this was made",
+   "title": "The faces",
+   "blurb": "A talking video per angle, and resting faces picked by hand.",
+   "lines": [
+    {
+     "id": "meta-faces-01",
+     "who": "host",
+     "text": "And our faces. I do look marvellous, I will say that.",
+     "audio": "audio/clips/meta-faces-01.mp3"
+    },
+    {
+     "id": "meta-faces-02",
+     "who": "sameep",
+     "text": "We're pixel art, in the same style as the Slumber Party illustrations. Each of us has a short talking video for every camera angle. I key out the backdrop, pack the frames into one sheet, and the browser plays them while the audio plays.",
+     "audio": "audio/clips/meta-faces-02.mp3"
+    },
+    {
+     "id": "meta-faces-03",
+     "who": "sameep",
+     "text": "The hard part was the pauses. Stop a video anywhere and you freeze mid-word. So I went through every frame by eye and kept the ones where the lips are together and the eyes are open. When someone stops talking, it plays on to the nearest of those, and holds.",
+     "audio": "audio/clips/meta-faces-03.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/making/rest-frames.webp"
+      ],
+      "title": "Resting faces: kept (green) and thrown out (red)",
+      "hold": 9000
+     }
+    },
+    {
+     "id": "meta-faces-04",
+     "who": "host",
+     "text": "You hand-picked my resting face. I am touched, and slightly alarmed.",
+     "audio": "audio/clips/meta-faces-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Who wrote the code?",
+     "say": [
+      "code",
+      "coding",
+      "claude",
+      "claude code",
+      "built",
+      "programming"
+     ],
+     "to": "meta-code",
+     "recommended": true
+    },
+    {
+     "label": "How do the voices work?",
+     "say": [
+      "voice",
+      "voices",
+      "speech",
+      "tts",
+      "audio"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "What if I just sit here?",
+     "say": [
+      "logic",
+      "flow",
+      "sit here",
+      "do nothing",
+      "branch",
+      "choices",
+      "story"
+     ],
+     "to": "meta-flow"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-code"
+  },
+  "meta-code": {
+   "chapter": "How this was made",
+   "title": "The code",
+   "blurb": "Claude Code, steered by voice, in parallel sessions.",
+   "lines": [
+    {
+     "id": "meta-code-01",
+     "who": "host",
+     "text": "And who wrote the code? Please say it was you, by hand, by candlelight.",
+     "audio": "audio/clips/meta-code-01.mp3"
+    },
+    {
+     "id": "meta-code-02",
+     "who": "sameep",
+     "text": "Claude Code, mostly, with me steering it by voice. I'd dictate a messy brain dump with Flow, Claude turns it into a plan and splits it across sessions: the burning CV, the app, the faces, the voices. They ran in parallel, overnight, and Switchboard pinged my notch whenever something needed a decision.",
+     "audio": "audio/clips/meta-code-02.mp3"
+    },
+    {
+     "id": "meta-code-03",
+     "who": "sameep",
+     "text": "It's plain HTML and JavaScript, no framework. The burning CV is three.js with shaders. The screen you're watching is a CRT shader. And before every push, a privacy scan runs, because the repo is public and I didn't want a phone number slipping out.",
+     "audio": "audio/clips/meta-code-03.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Off the CV, by the numbers",
+      "kpis": [
+       {
+        "n": 57,
+        "label": "story nodes"
+       },
+       {
+        "n": 200,
+        "label": "voiced lines"
+       },
+       {
+        "n": 34,
+        "label": "resting faces picked by eye"
+       }
+      ]
+     }
+    },
+    {
+     "id": "meta-code-04",
+     "who": "host",
+     "text": "A machine that checks you haven't overshared. Every family should have one.",
+     "audio": "audio/clips/meta-code-04.mp3",
+     "shot": "cu"
+    }
+   ],
+   "choices": [
+    {
+     "label": "What if I just sit here?",
+     "say": [
+      "logic",
+      "flow",
+      "sit here",
+      "do nothing",
+      "branch",
+      "choices",
+      "story"
+     ],
+     "to": "meta-flow",
+     "recommended": true
+    },
+    {
+     "label": "How do the voices work?",
+     "say": [
+      "voice",
+      "voices",
+      "speech",
+      "tts",
+      "audio"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "How do the faces move?",
+     "say": [
+      "faces",
+      "face",
+      "sprites",
+      "animation",
+      "lips",
+      "mouth"
+     ],
+     "to": "meta-faces"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-flow"
+  },
+  "meta-flow": {
+   "chapter": "How this was made",
+   "title": "The logic",
+   "blurb": "One file, a graph of nodes, and a countdown if you do nothing.",
+   "lines": [
+    {
+     "id": "meta-flow-01",
+     "who": "host",
+     "text": "And the logic. What happens if somebody simply sits there and does nothing?",
+     "audio": "audio/clips/meta-flow-01.mp3"
+    },
+    {
+     "id": "meta-flow-02",
+     "who": "sameep",
+     "text": "Then it plays itself. The whole episode is one file, a graph of nodes. Each node has a few lines, a few choices, and a recommended next. Do nothing at a fork and a countdown runs, and it takes the recommended path: about me, growth, Switchboard, ppt.live, then make your own.",
+     "audio": "audio/clips/meta-flow-02.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/making/flow.webp"
+      ],
+      "title": "The path if you never choose",
+      "hold": 11000
+     }
+    },
+    {
+     "id": "meta-flow-03",
+     "who": "sameep",
+     "text": "Or you steer. Tap a card, or just say it out loud, and it matches what you said against a few keywords on each choice. Touch anything and the countdown stops.",
+     "audio": "audio/clips/meta-flow-03.mp3"
+    },
+    {
+     "id": "meta-flow-04",
+     "who": "host",
+     "text": "So it is a choose-your-own-adventure book, read aloud by two cartoons.",
+     "audio": "audio/clips/meta-flow-04.mp3",
+     "shot": "cu"
+    },
+    {
+     "id": "meta-flow-05",
+     "who": "sameep",
+     "text": "Pretty much. A podcast you can interrupt.",
+     "audio": "audio/clips/meta-flow-05.mp3"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Why the nineties?",
+     "say": [
+      "nineties",
+      "90s",
+      "retro",
+      "why retro"
+     ],
+     "to": "meta-90s",
+     "recommended": true
+    },
+    {
+     "label": "Could anyone make one of these?",
+     "say": [
+      "anyone",
+      "make one",
+      "make your own"
+     ],
+     "to": "outro-make"
+    },
+    {
+     "label": "How do the voices work?",
+     "say": [
+      "voice",
+      "voices",
+      "speech",
+      "tts",
+      "audio"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "something else",
+      "move on",
+      "next topic"
+     ],
+     "to": "hub"
+    }
+   ],
+   "next": "meta-90s"
   },
   "meta-90s": {
    "chapter": "How this was made",
@@ -4475,6 +4890,29 @@
      ],
      "to": "outro-make",
      "recommended": true
+    },
+    {
+     "label": "How do the voices work?",
+     "say": [
+      "voice",
+      "voices",
+      "speech",
+      "tts",
+      "audio"
+     ],
+     "to": "meta-voice"
+    },
+    {
+     "label": "Who wrote the code?",
+     "say": [
+      "code",
+      "coding",
+      "claude",
+      "claude code",
+      "built",
+      "programming"
+     ],
+     "to": "meta-code"
     },
     {
      "label": "Back to the menu",
