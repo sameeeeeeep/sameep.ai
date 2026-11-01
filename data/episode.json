@@ -6710,7 +6710,8 @@
    "blurb": "From an alternate, very futuristic 90s.",
    "thumb": "img/sprites/hosts/foyra-thumb.webp",
    "recommended": true,
-   "style": "Theatrical, warm, a little dramatic."
+   "style": "Theatrical, warm, a little dramatic.",
+   "wpm": 138
   },
   {
    "id": "gus",
@@ -6719,7 +6720,8 @@
    "blurb": "Thirty years in the commentary box.",
    "sprite": "img/sprites/hosts/gus",
    "thumb": "img/sprites/hosts/gus-thumb.webp",
-   "style": "Loud, fast, everything’s a cup final."
+   "style": "Loud, fast, everything’s a cup final.",
+   "wpm": 161
   },
   {
    "id": "k56",
@@ -6728,7 +6730,8 @@
    "blurb": "Booted from the disc in 1999.",
    "sprite": "img/sprites/hosts/k56",
    "thumb": "img/sprites/hosts/k56-thumb.webp",
-   "style": "Polite, anxious, very literal. Can get a little irritating, in a lovable way."
+   "style": "Polite, anxious, very literal. Can get a little irritating, in a lovable way.",
+   "wpm": 141
   }
  ],
  "routes": {

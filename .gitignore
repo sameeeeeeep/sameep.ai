@@ -2,3 +2,4 @@
 *.psd
 *.raw.*
 _private/
+.cloudflare/

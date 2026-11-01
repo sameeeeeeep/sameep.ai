@@ -815,6 +815,8 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
   .cast__portrait { max-width: 96px; }
   .cast .hostpick__grid { grid-template-columns: 1fr; gap: 8px; }
   .hostsw__chip { width: 40px; height: 40px; }
+  .hostpick__wpm { left: 0; right: 0; bottom: 0; padding: 2px 0; border-radius: 0; text-align: center; font-size: 8px; }
+  .hostpick__wpm b { font-size: 10px; }
   .hostsw::before { display: none; }
   .lower3__name { white-space: nowrap; }
   .hostpick__lens { grid-template-columns: 1fr; gap: 8px; }
