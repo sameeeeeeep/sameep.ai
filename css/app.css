@@ -1062,3 +1062,5 @@ p.chooser__or { margin: 2px 0 -4px; }
 .autoplay.is-on .autoplay__ico { background: var(--paper); }
 .autoplay__or { font: 500 12px var(--f-ui); color: rgba(243,238,226,.55); }
 .autoplay.is-on .autoplay__or { display: none; }
+.sayhi { display: grid; gap: 8px; margin-top: 8px; }
+.sayhi .btn { justify-content: flex-start; }

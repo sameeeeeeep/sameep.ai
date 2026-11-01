@@ -71,6 +71,26 @@
       "label": "github.com/sameeeeeeep",
       "url": "https://github.com/sameeeeeeep",
       "kind": "github"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/sameepr",
+      "kind": "linkedin"
+    },
+    {
+      "label": "X · @sameeeeep",
+      "url": "https://x.com/sameeeeep",
+      "kind": "x"
+    },
+    {
+      "label": "Threads · @sameeeeeeep",
+      "url": "https://www.threads.net/@sameeeeeeep",
+      "kind": "threads"
+    },
+    {
+      "label": "Instagram · @sameep.ai",
+      "url": "https://www.instagram.com/sameep.ai",
+      "kind": "instagram"
     }
   ],
   "work": [

@@ -169,6 +169,12 @@ export function buildApps(ctx) {
       w.body.append(board, h('p.small', 'Multiplayer: 1 cursor (you). Drag to draw.'));
     } },
     { id: 'switchboard', label: 'Make your own', icon: 'switchboard', open: () => ctx.endCard(true) },
+    { id: 'sayhi', label: 'Say hi', icon: 'sayhi', open() {
+      const w = wm.win('sayhi', { title: 'Say hi', width: 340 });
+      const links = (P.links || []).filter((l) => l.kind !== 'make');
+      w.body.append(h('p.small', `Find ${P.shortName || 'me'} here.`),
+        h('div.sayhi', links.map((l) => h('a.btn', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗'))));
+    } },
     { id: 'wallpap', label: 'wallpap Controls', icon: 'wallpap', open() {
       const w = wm.win('wallpap', { title: 'wallpap Control Panel', width: 360 });
       const hour = new Date().getHours();
