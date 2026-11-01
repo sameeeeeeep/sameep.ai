@@ -11,3 +11,5 @@
 .menubar__crt:hover, .menubar__crt:focus-visible { background: #141210; color: var(--crt-glow, #b8ffe9); }
 .menubar__crt.is-off { opacity: .45; text-decoration: line-through; }
 @media (max-width: 760px) { .menubar__crt { display: none; } } /* phones: Special › CRT effect */
+/* Special › Curved glass (desktop, opt-in): the screen bent through the barrel map in js/crtfx.js */
+.crt-curve .crt__screen.is-on { filter: url(#crt-curve); }
