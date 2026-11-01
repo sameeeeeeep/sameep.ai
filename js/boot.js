@@ -3,6 +3,8 @@
 import { isWispr } from './version.js';
 import { unlockAudio } from './unlock.js';
 import { coach } from './coach.js';
+import { resumable, clearResume, markStage } from './resume.js';
+import './power.js';
 
 const heroEl = document.getElementById('hero');
 const appEl = document.getElementById('app');
@@ -45,6 +47,7 @@ async function handoff(info = {}) {
   if (handedOff) return;
   handedOff = true;
   store.set(SEEN_KEY, '1');
+  if (!info.resume) markStage('app');
   const modP = loadApp();
 
   if (!reduced && !info.instant) {
@@ -55,6 +58,7 @@ async function handoff(info = {}) {
   // free the hero's GPU work before the app's CRT starts (one WebGL scene at a time)
   try { heroApi?.destroy?.(); } catch (e) { console.warn('[boot] hero destroy', e); }
   heroApi = null;
+  heroEl.replaceChildren(); // drop the canvas and its backing store too (iOS counts it against the tab)
   document.documentElement.classList.add('in-app');
   window.scrollTo(0, 0);
   appEl.hidden = false;
@@ -70,7 +74,7 @@ async function handoff(info = {}) {
   };
   try {
     const { mountApp } = await modP;
-    const mounted = mountApp(appEl, { episodeUrl: EPISODE_URL });
+    const mounted = mountApp(appEl, { episodeUrl: EPISODE_URL, resume: info.resume });
     await nextFrame(); await wait(120); lift();
     await mounted;
   } catch (err) {
@@ -261,7 +265,47 @@ function entryGate() {
   };
 }
 
+// ---------------------------------------------------------------- resume
+// iOS reloaded the tab mid-show: one tap (the gesture audio needs) and we're back where they were
+function resumeGate(r) {
+  heroEl.hidden = true;
+  const g = document.createElement('div');
+  g.className = 'gate gate--resume';
+  g.setAttribute('role', 'dialog');
+  g.setAttribute('aria-label', 'Picking up where you left off');
+  g.innerHTML = `
+    <div class="gate__in">
+      <div class="gate__win">
+        <img class="gate__logo" src="img/ui/offthecv.svg" alt="" width="64" height="64">
+        <p class="gate__name">Picking up where you left off</p>
+        <p class="gate__by">${r.node ? 'The podcast carries on from the line you were on.' : 'Straight back to the iMac.'}</p>
+        <div class="gate__actions">
+          <button type="button" class="gate__enter"><span aria-hidden="true">▶</span> Carry on</button>
+        </div>
+        <button type="button" class="gate__skip gate__over">Start over from the pile of CVs</button>
+      </div>
+    </div>`;
+  document.body.append(g);
+  document.documentElement.classList.add('is-gated');
+  const go = g.querySelector('.gate__enter');
+  go.focus({ preventScroll: true });
+  go.addEventListener('click', () => {
+    unlockAudio();
+    document.documentElement.classList.remove('is-gated');
+    g.remove();
+    handoff({ instant: true, resume: r });
+  });
+  g.querySelector('.gate__over').addEventListener('click', () => {
+    clearResume();
+    location.replace(location.pathname + location.search.replace(/([?&])(skip|app)\b&?/g, '$1').replace(/[?&]$/, ''));
+  });
+}
+
 async function start() {
+  // the tab was reloaded mid-show (iOS does this to heavy pages): offer to carry on
+  const res = resumable();
+  if (res) return resumeGate(res);
+
   // Repeat visitors / ?skip go straight in.
   if (params.has('skip') || params.has('app')) {
     heroEl.hidden = true;

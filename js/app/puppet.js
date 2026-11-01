@@ -29,6 +29,7 @@
 // prefers-reduced-motion: no breathing, no head motion (mouth and blinks stay).
 import { h, clamp } from './util.js';
 import { manifestReady } from './stage.js';
+import { isLow } from '../power.js';
 
 // ---- the speech clip that is playing (for the cue timeline)
 // podcast.js may call setSpeechAudio(this.audio); until then any media element
@@ -230,31 +231,59 @@ export class Puppet {
     return this;
   }
 
-  // frame banks + head rigs for whichever looks this seat has (bank.json lists poses)
+  // frame banks + head rigs for whichever looks this seat has (bank.json lists poses).
+  // The rigs (small masks) load now; a look's sheet (tens of MB once decoded) only when
+  // that look is first drawn (#wantBank), so a seat never holds poses nobody has seen.
+  // Low power uses the half-resolution "lo" sheets.
   async #loadBanks() {
     let idx = null;
     try { const r = await fetch(this.dir + 'bank.json', { cache: 'no-cache' }); idx = r.ok ? await r.json() : null; } catch { idx = null; }
     if (!idx) return;
+    this.bankJobs = {};
+    const jobs = {};
     for (const look of Object.keys(this.src)) {
-      const twin = Object.keys(this.rigs).find((k) => this.src[k] === this.src[look]);
-      if (twin) { this.banks[look] = this.banks[twin]; this.rigs[look] = this.rigs[twin]; this.hbanks[look] = this.hbanks[twin]; continue; } // a front-only seat
+      const twin = Object.keys(this.bankJobs).find((k) => this.src[k] === this.src[look]);
+      if (twin) { this.bankJobs[look] = this.bankJobs[twin]; this.rigs[look] = this.rigs[twin]; continue; } // a front-only seat
       const closed = this.src[look].closed || '';
       const pose = /\/cu-front-closed\.webp/.test(closed) ? 'cu-front' : /\/cu-closed\.webp/.test(closed) ? null : look;
       if (!pose || idx.stills?.includes(pose)) continue; // stills: the hand-made frames for this pose (the video turns away)
       const meta = idx[pose];
       const R = idx.rig?.[pose];
-      const HM = idx['full-' + pose] || idx['head-' + pose]; // full: the whole seat from the video, no neck joint
-      const [img, mask, cut, himg, room] = await Promise.all([
-        meta?.frames?.length && !HM ? load(this.dir + meta.sheet) : null,
-        R ? load(this.dir + R.mask) : null,
-        R?.cut ? load(this.dir + R.cut) : null,
-        HM?.frames?.length ? load(this.dir + HM.sheet) : null,
-        HM?.room ? load(this.dir + HM.room) : null]);              // close-ups: the room with nobody in it
-      if (img) this.banks[look] = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
-      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: Array.isArray(HM.rest) ? HM.rest[0] : HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!idx['full-' + pose], room };
+      const full = idx['full-' + pose];
+      let HM = full || idx['head-' + pose]; // full: the whole seat from the video, no neck joint
+      if (HM?.lo && isLow) HM = { ...HM, ...HM.lo };
+      const [mask, cut] = await Promise.all([R ? load(this.dir + R.mask) : null, R?.cut ? load(this.dir + R.cut) : null]);
       if (mask && (!R.cut || cut)) this.rigs[look] = this.#buildRig(look, R, mask, cut);
+      let p = null;
+      this.bankJobs[look] = jobs[look] = () => (p ||= Promise.all([
+        meta?.frames?.length && !HM ? load(this.dir + meta.sheet) : null,
+        HM?.frames?.length ? load(this.dir + HM.sheet) : null,
+        HM?.room ? load(this.dir + HM.room) : null,              // close-ups: the room with nobody in it
+      ]).then(([img, himg, room]) => {
+        const out = {};
+        if (img) out.bank = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
+        if (himg) out.hbank = { img: himg, meta: HM, cur: Array.isArray(HM.rest) ? HM.rest[0] : HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!full, room };
+        return out;
+      }));
     }
+    for (const k of Object.keys(this.rigs)) if (!this.rigs[k]) delete this.rigs[k];
     if (Object.keys(this.rigs).length) this.#useCanvas();
+    // the look on screen now loads straight away
+    const now = this.seat.dataset.look === 'front' && this.src.front ? 'front' : 'side';
+    if (!this.seat.hidden) this.#wantBank(now);
+  }
+
+  // load a look's sheet the first time it's needed; the stills (rig heads) carry until then
+  #wantBank(look) {
+    const job = this.bankJobs?.[look];
+    if (!job || this.asked?.has(look)) return;
+    (this.asked ||= new Set()).add(look);
+    job().then(({ bank, hbank }) => {
+      for (const k of Object.keys(this.bankJobs)) if (this.bankJobs[k] === job) {
+        if (bank) this.banks[k] = bank;
+        if (hbank) this.hbanks[k] = hbank;
+      }
+    });
   }
 
   // pre-cut the layers once (load time): the body without its head, and one
@@ -418,6 +447,7 @@ export class Puppet {
     // 2. frame bank: the mouth as it comes in the video frames. Once the rig is
     // up the bank always draws (speaking: play; pause: wind down and hold;
     // listening: slow idle walk), so nothing pops between bank and stills.
+    if (this.bankJobs && !this.asked?.has(look)) this.#wantBank(look);
     const bank = this.hbanks[look] || this.banks[look];
     const rig = this.cv && this.rigs[look];
     const talking = speaking && (pc || level > 0 || this.env > 0.02);

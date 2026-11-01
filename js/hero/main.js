@@ -1146,6 +1146,8 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
       });
       Object.values(post).forEach(() => {});
       post.dispose(); renderer.dispose(); renderer.forceContextLoss?.();
+      audio.dispose?.();
+      if (window.__hero === api) window.__hero = null;
     },
   };
   if (DEBUG || TIMER) api.dbg = { renderer, post, key, pile, scene, resize, setQuality, setDpr: (d) => { renderer.setPixelRatio(d); renderer.setSize(vw, vh, false); post.setSize(vw, vh, d); } };

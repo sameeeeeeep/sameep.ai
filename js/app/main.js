@@ -10,8 +10,9 @@ import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
+import { clearResume } from '../resume.js';
 
-export async function mountApp(root, { episodeUrl } = {}) {
+export async function mountApp(root, { episodeUrl, resume } = {}) {
   const reduced = reducedMotion();
   root.replaceChildren();
   root.classList.add('app');
@@ -23,7 +24,7 @@ export async function mountApp(root, { episodeUrl } = {}) {
   const crt = new CRT(glass.querySelector('.crt__tube'), { reduced });
 
   const dataP = loadPersona({ episodeUrl });
-  const fast = new URLSearchParams(location.search).has('fast');
+  const fast = new URLSearchParams(location.search).has('fast') || !!resume; // a resume skips the boot it already saw
   let persona;
   if (!fast) {
     // the boot needs persona copy; wait briefly, never long
@@ -77,6 +78,10 @@ export async function mountApp(root, { episodeUrl } = {}) {
       pod.go(q.get('node'), { push: false });
       for (let i = 0; i < +(q.get('line') || 0); i++) pod.skip();
       if (q.get('shot')) pod.studioReady.then(() => setTimeout(() => pod.studio.cut(q.get('shot'), q.get('who') || 'host'), 300));
+    } else if (resume?.node && episode.nodes[resume.node]) {
+      // back from an iOS reload: same thread, same line (host, length, seat are already saved)
+      (resume.visited || []).forEach((id) => pod.visited.add(id));
+      pod.go(resume.node, { push: false, line: resume.line || 0 });
     } else {
       if (!q.has('skiphost')) await pod.pickHost({ first: true });
       pod.start();
@@ -127,7 +132,7 @@ function buildDesktop(screen, persona) {
           ['About OFF THE CV…', () => ctx.open('hd')],
           ['-'],
           ['Sound on / off', () => sound.toggle()],
-          ['Restart…', () => { location.href = location.pathname + (isWispr ? '?skip&version=wispr' : '?skip'); }],
+          ['Restart…', () => { clearResume(); location.href = location.pathname + (isWispr ? '?skip&version=wispr' : '?skip'); }],
         ] },
         { label: 'File', items: [['Open Podcast', () => ctx.openPodcast()], ['Change host…', () => { ctx.openPodcast(); pod()?.pickHost(); }], ['Open Wispr Flow', () => ctx.open('wispr')], ['-'], ['Close Window', () => document.querySelector('.win.is-front .win__close')?.click()]] },
         { label: 'Edit', items: [['Undo CV burning', null], ['Cut', null], ['Copy', null], ['Paste', null]] },

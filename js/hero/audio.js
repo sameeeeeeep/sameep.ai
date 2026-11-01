@@ -152,4 +152,13 @@ export class HeroAudio {
     if (!this.ctx || this.muted || level < 0.05) return;
     if (Math.random() < level * 0.25) this._noiseSrc(this.master, this.ctx.currentTime, 0.03 + Math.random() * 0.04, { type: 'highpass', f0: 2000 + Math.random() * 3000, peak: 0.05 + Math.random() * 0.12 * level, a: 0.002 });
   }
+
+  // the hero is over: stop the fire loop and let the decoded buffers go (the context is shared with the app)
+  dispose() {
+    try { this.fire?.src.stop(); } catch { /* already stopped */ }
+    try { this.master?.disconnect(); } catch { /* noop */ }
+    this.fire = null;
+    this.buffers.clear();
+    this._noise = null;
+  }
 }

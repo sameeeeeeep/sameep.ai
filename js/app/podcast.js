@@ -15,6 +15,7 @@ import { Studio } from './stage.js';
 import { loadWork, openWork } from './work.js';
 import { Monitor, resolveVisual } from './monitor.js';
 import { FlowBar } from './flowbar.js';
+import { markLine } from '../resume.js';
 import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoices, isMainHub, mins } from './chooser.js';
 import { isWispr, pick as pickVersion, shows, savedHost, saveHost, savedLength, saveLength } from '../version.js';
 import { takeAudio } from '../unlock.js';
@@ -488,7 +489,7 @@ export class Podcast {
   // ------------------------------------------------------------------ playback
   start() { this.go(this.ep.start || Object.keys(this.ep.nodes)[0], { push: false }); }
 
-  go(id, { push = true, from } = {}) {
+  go(id, { push = true, from, line = 0 } = {}) {
     const node = this.ep.nodes[id];
     if (!node) { console.warn('[podcast] missing node', id); return; }
     if (push && this.nodeId) this.history.push(this.nodeId);
@@ -515,7 +516,7 @@ export class Podcast {
     this.#setPlayIcon();
     this.flow.ensureFocus();
     if (!this.lines.length) return this.#nodeEnded();
-    this.#playLine(0, 0);
+    this.#playLine(Math.max(0, Math.min(line, this.lines.length - 1)), 0);
   }
 
   #preloadDurations() {
@@ -535,6 +536,7 @@ export class Podcast {
     if (!line) return this.#nodeEnded();
     const tok = ++this.token;
     this.li = i;
+    markLine(this.nodeId, i, this.visited);
     this.subCtl?.cancel();
     const who = this.speakers[line.who] ? line.who : (line.who === 'guest' ? this.guestKey : this.hostKey);
     this.activeKey = who;
