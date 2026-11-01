@@ -13,12 +13,14 @@ export function mins(sec) {
 
 // Episode-wide facts the chooser needs, computed once.
 export class EpisodeMap {
-  constructor(ep, durations, workList = []) {
+  // routeId: the length the visitor picked (ep.routes / durations.routes); ep.route otherwise
+  constructor(ep, durations, workList = [], routeId = null) {
     this.ep = ep;
     this.N = ep.nodes;
-    this.D = durations || {};
+    const R = durations?.routes?.[routeId];
+    this.D = R ? { ...durations, route: R } : durations || {};
     this.work = workList;
-    this.route = ep.route || { stops: [] };
+    this.route = ep.routes?.[routeId] || ep.route || { stops: [] };
   }
 
   title(id) { return this.N[id]?.title || this.N[id]?.chapter || id; }

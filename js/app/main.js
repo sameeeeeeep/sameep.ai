@@ -77,7 +77,10 @@ export async function mountApp(root, { episodeUrl } = {}) {
       pod.go(q.get('node'), { push: false });
       for (let i = 0; i < +(q.get('line') || 0); i++) pod.skip();
       if (q.get('shot')) pod.studioReady.then(() => setTimeout(() => pod.studio.cut(q.get('shot'), q.get('who') || 'host'), 300));
-    } else pod.start();
+    } else {
+      if (!q.has('skiphost')) await pod.pickHost({ first: true });
+      pod.start();
+    }
   } else {
     desk.notice('Episode not found. The desktop still works; the podcast is on its way.');
   }
@@ -126,7 +129,7 @@ function buildDesktop(screen, persona) {
           ['Sound on / off', () => sound.toggle()],
           ['Restart…', () => { location.href = location.pathname + (isWispr ? '?skip&version=wispr' : '?skip'); }],
         ] },
-        { label: 'File', items: [['Open Podcast', () => ctx.openPodcast()], ['Open Wispr Flow', () => ctx.open('wispr')], ['-'], ['Close Window', () => document.querySelector('.win.is-front .win__close')?.click()]] },
+        { label: 'File', items: [['Open Podcast', () => ctx.openPodcast()], ['Change host…', () => { ctx.openPodcast(); pod()?.pickHost(); }], ['Open Wispr Flow', () => ctx.open('wispr')], ['-'], ['Close Window', () => document.querySelector('.win.is-front .win__close')?.click()]] },
         { label: 'Edit', items: [['Undo CV burning', null], ['Cut', null], ['Copy', null], ['Paste', null]] },
         { label: 'Podcast', items: [['Play / Pause', () => pod()?.toggle()], ['Skip', () => pod()?.skip()], ['Back', () => pod()?.back()], ['-'], ['Change my character…', () => { ctx.openPodcast(); pod()?.recast(); }]] },
         { label: 'Special', items: [['Empty Trash', () => ctx.open('trash')], ['Make your own…', () => ctx.endCard(true)], ['Shut Down', () => ctx.endCard(true)]] },

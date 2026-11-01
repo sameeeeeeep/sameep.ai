@@ -74,8 +74,9 @@ export class Studio {
     if (!bgOk) this.el.classList.add('stage--nobg');
     this.layered = !!(fgOk && bgOk && this.bg.src === abs(st.bg));
 
+    this.fgSrc = fgSrc;
     if (this.layered) {
-      this.fg.src = fgSrc;
+      this.fg.src = this.hostSprite ? safeUrl('img/sprites/hosts/desk-fg.webp', P.base) : fgSrc;
       this.fg.hidden = false;
       Object.assign(this.fg.style, pct(box(fgSpec.box) || { left: 0, top: 0, w: 1, h: 1 }));
       this.el.classList.add('stage--layered');
@@ -121,7 +122,8 @@ export class Studio {
   // full-frame close-up frames for a speaker. Close-ups always look into the
   // camera, so only the cu-front-* set is loaded when it exists (cu-* otherwise).
   cuFrames(who) {
-    const key = who === 'host' ? this.hostKey : this.guestKey;
+    // hostSprite: another host picked by the visitor (manifest sprites["host-<id>"])
+    const key = who === 'host' ? this.hostSprite || this.hostKey : this.guestKey;
     const sp = this.manifest?.sprites?.[key];
     if (!sp?.dir || !sp.closeup) return null;
     const dir = sp.dir.replace(/\/$/, '');
@@ -131,6 +133,12 @@ export class Studio {
     const front = {};
     for (const n of pick) front[n.replace(/^cu-(front-)?/, '')] = f(n);
     return { ...front, set: { front } };
+  }
+
+  // another host in the host seat: the desk layer without the default host's hands on it
+  setHostSprite(key) {
+    this.hostSprite = key || null;
+    if (this.layered) this.fg.src = key ? safeUrl('img/sprites/hosts/desk-fg.webp', this.P.base) : this.fgSrc;
   }
 
   // Point the seats: the speaker per the line, the listener across at them.

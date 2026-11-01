@@ -12,10 +12,23 @@ try {
 export const VERSION = v === 'wispr' ? 'wispr' : 'default';
 export const isWispr = VERSION === 'wispr';
 
-// a line's text/audio for this version, honouring `v` overrides
-export function pick(line) {
-  const o = line.v?.[VERSION] || {};
-  return { text: o.text ?? line.text, audio: o.audio ?? line.audio };
+// a line's text/audio for this version and host, honouring `h[host]` then `v` overrides
+// (a host override carries its own `v` variants)
+export function pick(line, host) {
+  const src = (host && line.h?.[host]) || line;
+  const o = src.v?.[VERSION] || {};
+  return { text: o.text ?? src.text, audio: o.audio ?? src.audio };
+}
+
+// who hosts the podcast: ?host=<id>, else the visitor's last pick (episode.json "hosts")
+const HOST_KEY = 'otcv-host';
+export function savedHost() {
+  const q = new URLSearchParams(location.search).get('host');
+  if (q) return q.toLowerCase();
+  try { return localStorage.getItem(HOST_KEY); } catch { return null; }
+}
+export function saveHost(id) {
+  try { localStorage.setItem(HOST_KEY, id); } catch { /* storage blocked */ }
 }
 
 // lines marked only:'wispr' or only:'default' are skipped in the other version
@@ -28,4 +41,13 @@ export function withVersion(url) {
   if (u.origin !== location.origin) return url;
   u.searchParams.set('version', 'wispr');
   return u.pathname + u.search + u.hash;
+}
+
+// how long the visitor wants it (episode.json "routes": short | standard | full)
+const LEN_KEY = 'otcv-length';
+export function savedLength() {
+  try { return localStorage.getItem(LEN_KEY); } catch { return null; }
+}
+export function saveLength(id) {
+  try { localStorage.setItem(LEN_KEY, id); } catch { /* storage blocked */ }
 }

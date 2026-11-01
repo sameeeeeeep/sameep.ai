@@ -10,12 +10,13 @@ import { renderSubtitle } from './subtitle.js';
 import { bestMatch, rankMatches } from './fuzzy.js';
 import { openDemo, linkDialog } from './demos.js';
 import { openCast, savedVisitor } from './cast.js';
+import { openWelcome } from './hostpick.js';
 import { Studio } from './stage.js';
 import { loadWork, openWork } from './work.js';
 import { Monitor, resolveVisual } from './monitor.js';
 import { FlowBar } from './flowbar.js';
 import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoices, isMainHub, mins } from './chooser.js';
-import { isWispr, pick as pickVersion, shows } from '../version.js';
+import { isWispr, pick as pickVersion, shows, savedHost, saveHost, savedLength, saveLength } from '../version.js';
 import { takeAudio } from '../unlock.js';
 import { projectCards } from './projects.js';
 import { coach } from '../coach.js';
@@ -42,13 +43,20 @@ export class Podcast {
     const sv = savedVisitor();
     this.visitor = sv ? { name: sv.name || '', character: persona.characters.find((c) => c.id === sv.character) || null } : { name: '' };
     this.casted = false;
+    // who hosts: episode.json "hosts" (the first is the script's own host); saved per visitor
+    this.hosts = Array.isArray(episode.hosts) ? episode.hosts : [];
+    this.hostChosen = this.hosts.some((x) => x.id === savedHost());
+    this.hostId = this.hostChosen ? savedHost() : this.hosts[0]?.id || null;
     this.history = [];
     this.visited = new Set();
     this.playing = false;
     this.token = 0;
     this.durs = [];
     this.lines = [];
-    this.map = new EpisodeMap(episode, null, []);
+    // how long: a recommended route the visitor picked (episode.json "routes"), standard by default
+    this.routes = episode.routes || {};
+    this.routeId = this.routes[savedLength()] ? savedLength() : this.routes.standard ? 'standard' : null;
+    this.map = new EpisodeMap(episode, null, [], this.routeId);
     this.audio = takeAudio();
     this.audio.preload = 'auto';
     this.audio.crossOrigin = 'anonymous';
@@ -78,10 +86,106 @@ export class Podcast {
     this.hostKey = keys.includes('host') ? 'host' : keys[0] || 'host';
     this.guestKey = keys.find((k) => k !== this.hostKey) || 'guest';
     const P = this.persona;
+    const alt = this.#altHost();
     this.speakers = {
-      [this.hostKey]: { name: sp[this.hostKey]?.name || P.hostName, frames: spriteFrames(sp[this.hostKey]?.sprite, this.base) || P.hostFrames, seat: 'host' },
+      [this.hostKey]: { name: alt?.name || sp[this.hostKey]?.name || P.hostName, frames: spriteFrames(alt?.sprite || sp[this.hostKey]?.sprite, this.base) || P.hostFrames, seat: 'host' },
       [this.guestKey]: { name: sp[this.guestKey]?.name || P.guestName, frames: spriteFrames(sp[this.guestKey]?.sprite, this.base) || P.guestFrames, seat: 'guest' },
     };
+  }
+
+  // a host other than the script's own (null for the default), with its manifest sprite key
+  #altHost() {
+    const x = this.hosts.find((o) => o.id === this.hostId);
+    return x && x !== this.hosts[0] ? { ...x, spriteKey: 'host-' + x.id } : null;
+  }
+
+  // ---------------------------------------------------------------- host pick
+  // the welcome window before the cold open: host, length, audience seat (counts down, keeps the
+  // saved or default picks); later, "Change host" opens just the host part
+  async pickHost({ first = false } = {}) {
+    if (first && new URLSearchParams(location.search).has('host')) return;
+    if (!first && this.hosts.length < 2) return;
+    const wasPlaying = this.playing;
+    if (!first) this.pause();
+    this.durP ||= fetch(safeUrl('data/durations.json', this.base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    const res = await openWelcome(this.win.body, {
+      hosts: this.hosts, current: this.hostId, base: this.base, persona: this.persona,
+      routes: first ? this.routes : null, route: this.routeId, durP: this.durP,
+      seat: first && !this.persona.isCustom, countdown: first ? 20 : 0,
+    });
+    if (res.route && res.route !== this.routeId) this.setRoute(res.route);
+    if (res.visitor) { this.visitor = res.visitor; this.casted = true; this.#renderAudience(); }
+    const id = res.host;
+    saveHost(id);
+    this.hostChosen = true;
+    if (id !== this.hostId) this.setHost(id);
+    else if (!first && wasPlaying) this.toggle();
+  }
+
+  // swap the host seat (and close-up) to another host and replay the current line in their voice
+  setHost(id) {
+    if (!this.hosts.some((o) => o.id === id)) return;
+    this.hostId = id;
+    const sp = this.ep.speakers || {};
+    const alt = this.#altHost();
+    const s = this.speakers[this.hostKey];
+    s.name = alt?.name || sp[this.hostKey]?.name || this.persona.hostName;
+    s.frames = spriteFrames(alt?.sprite || sp[this.hostKey]?.sprite, this.base) || this.persona.hostFrames;
+    this.#renderHostBtn();
+    if (!this.studio) return;
+    this.studio.setHostSprite(alt?.spriteKey);
+    this.seats.host.replaceChildren();
+    this.seats.host.classList.remove('is-placeholder');
+    this.puppets[this.hostKey] = new Puppet(this.seats.host, { frames: s.frames, label: s.name, placeholder: { color: '#7b4fd6', skin: '#e0b48c', hair: '#c7c7c7' } });
+    this.puppets[this.hostKey].load();
+    this.#sweep(this.seats.host, () => this.puppets[this.hostKey]);
+    const cuEl = this.studio.cu.host;
+    cuEl.replaceChildren();
+    cuEl.classList.remove('is-placeholder');
+    this.studio.hasCU.host = false;
+    delete this.cuPuppets[this.hostKey];
+    const frames = this.studio.cuFrames('host');
+    if (frames) {
+      const pp = new Puppet(cuEl, { frames, label: s.name + ', close-up' });
+      this.cuPuppets[this.hostKey] = pp;
+      pp.load().then(() => { if (this.cuPuppets[this.hostKey] === pp && !cuEl.classList.contains('is-placeholder')) this.studio.hasCU.host = true; });
+    }
+    this.#sweep(cuEl, () => this.cuPuppets[this.hostKey]);
+    // replay where we are, now in the new host's voice
+    if (this.node) {
+      const li = this.li || 0;
+      this.lines = (this.node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l, this.hostId) }));
+      this.durs = this.lines.map(estDur);
+      this.#preloadDurations();
+      this.#ticks();
+      if (!this.root.classList.contains('is-waiting')) { this.playing = true; this.#setPlayIcon(); this.#playLine(Math.min(li, this.lines.length - 1), 0); }
+    }
+  }
+
+  // the replaced puppet may still add its frame-bank canvas a moment later: keep only the current one's
+  #sweep(el, cur) {
+    for (const ms of [1500, 4000, 9000]) setTimeout(() => {
+      const p = cur();
+      const keep = new Set([...Object.values(p?.imgs || {}), p?.cv].filter(Boolean));
+      for (const n of [...el.children]) if (!keep.has(n)) n.remove();
+    }, ms);
+  }
+
+  setRoute(id) {
+    if (!this.routes[id]) return;
+    this.routeId = id;
+    saveLength(id);
+    this.map = new EpisodeMap(this.ep, this.dur || null, this.workList || [], id);
+    this.#renderChapters();
+    if (this.node) { this.#renderChips(); if (!this.chooser.hidden) this.#renderChooser(); }
+  }
+
+  #renderHostBtn() {
+    if (!this.hostBtn) return;
+    const first = this.speakers[this.hostKey]?.name?.split(' ')[0] || 'Host';
+    this.hostBtn.hidden = this.hosts.length < 2;
+    this.hostBtn.replaceChildren(h('span.steer__host-k', 'Host'), h('span.steer__host-v', first), h('span', { 'aria-hidden': 'true' }, ' ▾'));
+    this.hostBtn.setAttribute('aria-label', `Host: ${this.speakers[this.hostKey]?.name}. Change host`);
   }
 
   // where the "pick your avatar" moment happens
@@ -137,13 +241,14 @@ export class Podcast {
 
   // durations (from ffprobe, data/durations.json) + work.json for visuals and tags
   async #loadMeta() {
-    const durP = this.persona.isCustom ? Promise.resolve(null)
+    const durP = this.durP ||= this.persona.isCustom ? Promise.resolve(null)
       : fetch(safeUrl('data/durations.json', this.base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
     const workP = (this.workP ||= loadWork(this.persona).catch(() => ({ list: [], base: this.base })));
     const [dur, work] = await Promise.all([durP, workP]);
     this.workList = work.list || [];
     this.workBase = work.base || this.base;
-    this.map = new EpisodeMap(this.ep, dur, this.workList);
+    this.dur = dur;
+    this.map = new EpisodeMap(this.ep, dur, this.workList, this.routeId);
     this.#renderChapters();
     if (this.node) {
       this.#renderChips(); this.#renderChooser();
@@ -155,6 +260,7 @@ export class Podcast {
   #build(body) {
     const P = this.persona;
     this.studio = new Studio({ persona: P, speakers: this.speakers, hostKey: this.hostKey, guestKey: this.guestKey, reduced: this.reduced });
+    this.studio.hostSprite = this.#altHost()?.spriteKey || null;
     const stage = this.studio.el;
     this.seats = this.studio.seats;
     this.onAir = this.studio.onAir;
@@ -203,6 +309,8 @@ export class Podcast {
 
     // steering: the audience badge, quick chips, the say field
     this.audBadge = h('span.steer__aud');
+    this.hostBtn = h('button.steer__host', { type: 'button', title: 'Change host', onclick: () => this.pickHost() });
+    this.#renderHostBtn();
     this.chips = h('div.chips', { role: 'group', 'aria-label': 'Pull a thread' });
     this.sayIn = h('input.say__input', { type: 'text', placeholder: COPY.placeholder, 'aria-label': 'Say or type where to go next', autocomplete: 'off', enterkeyhint: 'go', spellcheck: 'false', autocapitalize: 'off' });
     this.sayMsg = h('div.say__msg', { 'aria-live': 'polite' });
@@ -211,7 +319,7 @@ export class Podcast {
     this.sayForm = h('form.say', { onsubmit: (e) => { e.preventDefault(); this.#steer(this.sayIn.value); } },
       h('span.say__flow', { 'aria-hidden': 'true' }, isWispr ? h('img', { src: 'img/ui/wispr.svg', alt: '', width: 20, height: 20 }) : h('span.say__caret', '›')),
       this.sayIn, this.mic, h('button.say__go', { type: 'submit', 'aria-label': 'Go' }, 'Go'));
-    const steer = h('div.steer', h('div.steer__label', this.audBadge, h('span.steer__k', 'Pull a thread'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
+    const steer = h('div.steer', h('div.steer__label', this.audBadge, this.hostBtn, h('span.steer__k', 'Pull a thread'), this.nodeLabel), this.chips, this.sayForm, this.sayMsg);
 
     // the chooser (cards) — overlays the picture at a fork on desktop, sits in the flow on phones
     this.chooser = h('section.chooser', { hidden: true, 'aria-label': 'Choose what’s next' });
@@ -388,7 +496,7 @@ export class Podcast {
     this.node = node;
     this.visited.add(id);
     // this version's lines (text/audio overrides, version-only lines)
-    this.lines = (node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l) }));
+    this.lines = (node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l, this.hostId) }));
     this.durs = this.lines.map(estDur);
     this.#preloadDurations();
     this.visSkip = null;
@@ -623,7 +731,11 @@ export class Podcast {
       // something was said while the answer played: use it now
       if (this.queued) { const q = this.queued; this.queued = null; this.#heard(q, { atFork: true }); }
     } else if (n.next) {
-      setTimeout(() => { if (tok === this.token) this.go(n.next); }, 900);
+      // the picked length may skip a linear part (the short route skips "about")
+      let nx = n.next;
+      const skip = this.routes[this.routeId]?.skip || [];
+      while (skip.includes(nx) && this.ep.nodes[nx]?.next) nx = this.ep.nodes[nx].next;
+      setTimeout(() => { if (tok === this.token) this.go(nx); }, 900);
     } else {
       this.playing = false;
       this.#setPlayIcon();
@@ -636,8 +748,8 @@ export class Podcast {
       if (!this.root.classList.contains('is-waiting')) return;
       const prim = this.chooser.querySelector('.prim');
       if (coach.show('fork', prim, isWispr
-        ? '<b>Your turn.</b> Tap a card, or hold your <b>Flow</b> key and just say where to go. Do nothing and the recommended one plays.'
-        : '<b>Your turn.</b> Tap a card, or say or type where to go ("tell me about ppt.live"). Do nothing and the recommended one plays.', { place: 'top' })) return;
+        ? '<b>Your turn.</b> Press one of the options below, or hold your <b>Flow</b> key and say where to go. Do nothing and the recommended one plays.'
+        : '<b>Your turn.</b> Press one of the options below, or say or type where to go. Do nothing and the recommended one plays.', { place: 'top' })) return;
       if (this.visited.size < 6) return;
       const narrow = isNarrow();
       coach.show('projects', narrow ? this.chooser.querySelector('.chooser__head') : this.sideTabs, narrow

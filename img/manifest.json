@@ -176,7 +176,7 @@
   "insert": {
    "sample": "img/studio/insert-sample.webp",
    "plate": "img/studio/insert-plate.webp",
-   "_": "item-card insert: hands hold a CD; card drawn top-left in Doto (title Black ~58px@1672w, cream #f3eee2, ember \u25be #ffa946; fields Doto Bold ~34px, key cream 65% / value ember). insert-plate is the same shot without the card so the app can render live cards in HTML.",
+   "_": "item-card insert: hands hold a CD; card drawn top-left in Doto (title Black ~58px@1672w, cream #f3eee2, ember ▾ #ffa946; fields Doto Bold ~34px, key cream 65% / value ember). insert-plate is the same shot without the card so the app can render live cards in HTML.",
    "cardBox": [
     0.0574,
     0.0978,
@@ -284,6 +284,54 @@
    ],
    "_looks": "side = facing the other seat (closed..blink); front-* = same seat, looking into the camera. All 12 frames share box/canvas; only head (front) or mouth/eyes differ. Close-ups use cu-front-* (cu-* side set kept as fallback).",
    "mouthShapes": "closed < mid < open < wide by loudness; oo = rounded vowel variant; blink = eyes shut, mouth closed"
+  },
+  "host-k56": {
+   "dir": "img/sprites/hosts/k56",
+   "frames": [
+    "closed",
+    "mid",
+    "open",
+    "wide",
+    "oo",
+    "blink",
+    "front-closed",
+    "front-mid",
+    "front-open",
+    "front-wide",
+    "front-oo"
+   ],
+   "closeup": [
+    "cu-front-closed",
+    "cu-front-mid",
+    "cu-front-open",
+    "cu-front-wide",
+    "cu-front-oo"
+   ],
+   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet"
+  },
+  "host-gus": {
+   "dir": "img/sprites/hosts/gus",
+   "frames": [
+    "closed",
+    "mid",
+    "open",
+    "wide",
+    "oo",
+    "blink",
+    "front-closed",
+    "front-mid",
+    "front-open",
+    "front-wide",
+    "front-oo"
+   ],
+   "closeup": [
+    "cu-front-closed",
+    "cu-front-mid",
+    "cu-front-open",
+    "cu-front-wide",
+    "cu-front-oo"
+   ],
+   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet"
   }
  },
  "characters": {

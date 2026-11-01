@@ -62,7 +62,17 @@
      "who": "host",
      "text": "Hello, hello, my precious little listeners. You have just watched a man's résumé get folded into an aeroplane, thrown about, crumpled, shredded, and set on fire. And now it is a compact disc. I have never been prouder of someone I have only just met.",
      "audio": "audio/clips/cold-open-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Oh, goodness. Good evening, listeners. Boot sequence complete. I have just watched a résumé being folded, thrown, crumpled, shredded, and set on fire. It is now a compact disc. I have logged this as: efficient. And slightly alarming.",
+       "audio": "audio/clips/cold-open-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And we are live! What a start! A résumé folded into a plane, thrown, crumpled, shredded, and set on fire! And now, would you believe it, it's a CD! Thirty years in this box, I have never seen a CV do that!",
+       "audio": "audio/clips/cold-open-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "cold-open-02",
@@ -90,7 +100,17 @@
      "id": "cold-open-03",
      "who": "host",
      "text": "And then you burned it. Into a CD. Explain yourself.",
-     "audio": "audio/clips/cold-open-03.mp3"
+     "audio": "audio/clips/cold-open-03.mp3",
+     "h": {
+      "k56": {
+       "text": "And then you burned it. Into a CD. Sir, that is most irregular. Please explain the procedure.",
+       "audio": "audio/clips/cold-open-03-k56.mp3"
+      },
+      "gus": {
+       "text": "And then he burns it! Into a CD! Let's see the replay. Explain yourself, son.",
+       "audio": "audio/clips/cold-open-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "cold-open-04",
@@ -103,7 +123,17 @@
      "who": "host",
      "text": "With a dial-up modem. I heard the screech, darling. I aged.",
      "audio": "audio/clips/cold-open-05.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Dial-up modem detected. That screech is my native language. It translated as: hello, friend. Do forgive the accent.",
+       "audio": "audio/clips/cold-open-05-k56.mp3"
+      },
+      "gus": {
+       "text": "A dial-up modem! The crowd remembers that screech! They're on their feet! Well, some of them. The knees aren't what they were.",
+       "audio": "audio/clips/cold-open-05-gus.mp3"
+      }
+     }
     },
     {
      "id": "cold-open-06",
@@ -132,7 +162,29 @@
        "audio": "audio/clips/intro-01.mp3"
       }
      },
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "This is Off the CV. I am your host, K-56, interview unit, model year nineteen ninety-nine, etiquette module installed. My guest is the artificial Sameep. Like me, but with feelings. Reportedly. Do say hello to whoever is listening.",
+       "audio": "audio/clips/intro-01-k56.mp3",
+       "v": {
+        "wispr": {
+         "text": "This is Off the CV. I am your host, K-56, interview unit, model year nineteen ninety-nine, etiquette module installed. My guest is the artificial Sameep. Like me, but with feelings. Reportedly. Do say hello to the nice people from Wispr.",
+         "audio": "audio/clips/intro-01-wispr-k56.mp3"
+        }
+       }
+      },
+      "gus": {
+       "text": "Welcome to Off the CV! I'm Gus Halloran, live from the commentary box, and stepping up to the mic tonight, the artificial, but very sincere, Sameep! Say hello to whoever is listening!",
+       "audio": "audio/clips/intro-01-gus.mp3",
+       "v": {
+        "wispr": {
+         "text": "Welcome to Off the CV! I'm Gus Halloran, live from the commentary box, and stepping up to the mic tonight, the artificial, but very sincere, Sameep! Say hello to the nice people from Wispr!",
+         "audio": "audio/clips/intro-01-wispr-gus.mp3"
+        }
+       }
+      }
+     }
     },
     {
      "id": "intro-02",
@@ -153,7 +205,29 @@
        "audio": "audio/clips/intro-03-w.mp3"
       }
      },
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "And you, dear audience, have steering privileges. Click a card, or say it out loud. I shall pretend I heard you perfectly. Pretending is a new feature. I am still nervous about it.",
+       "audio": "audio/clips/intro-03-k56.mp3",
+       "v": {
+        "wispr": {
+         "text": "And you, dear audience, have steering privileges. Click a card, or say it out loud with your Flow. I shall pretend I heard you perfectly. Pretending is a new feature. I am still nervous about it.",
+         "audio": "audio/clips/intro-03-wispr-k56.mp3"
+        }
+       }
+      },
+      "gus": {
+       "text": "And you, the crowd, call the plays! Click a card, or just shout it out. I'll pretend I heard you perfectly over the noise.",
+       "audio": "audio/clips/intro-03-gus.mp3",
+       "v": {
+        "wispr": {
+         "text": "And you, the crowd, call the plays! Click a card, or just shout it out with your Flow. I'll pretend I heard you perfectly over the noise.",
+         "audio": "audio/clips/intro-03-wispr-gus.mp3"
+        }
+       }
+      }
+     }
     }
    ],
    "choices": [],
@@ -169,7 +243,17 @@
      "who": "host",
      "text": "So. Tonight's menu. We have growth: sales, launches, games, and a Diwali invite I am told absolutely slaps. We have a startup that did not work, which is my favourite genre. We have Switchboard, ppt.live, a box of little Claude contraptions, and some fun, unfinished things. Where shall we begin?",
      "audio": "audio/clips/hub-first-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Loading tonight's menu. Growth: sales, launches, games, and a Diwali invite that my data says absolutely slaps. A startup that did not work. Switchboard, ppt.live, a box of little Claude tools, and some fun, unfinished things. Select a starting point.",
+       "audio": "audio/clips/hub-first-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Here's tonight's fixture list! Growth: sales, launches, games, and a Diwali invite I'm told absolutely slaps. A startup that didn't work, always a tough match. Switchboard, ppt.live, a box of little Claude gadgets, and some fun, unfinished things. Where do we kick off?",
+       "audio": "audio/clips/hub-first-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -272,7 +356,17 @@
      "who": "host",
      "text": "Right. Back to the menu, darling. Where to next?",
      "audio": "audio/clips/hub-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Returning to the menu. Where to next? Somewhere safe, I hope.",
+       "audio": "audio/clips/hub-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Back to the fixture list! Where to next?",
+       "audio": "audio/clips/hub-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -387,7 +481,17 @@
      "who": "host",
      "text": "You are applying to a growth team. So, growth. What is the thing you actually know how to do? And don't say synergy.",
      "sting": "audio/music/sting-1.mp3",
-     "audio": "audio/clips/g-intro-01.mp3"
+     "audio": "audio/clips/g-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "You are applying to a growth team. Please define growth. What is the one thing you actually know how to do? And please, do not say synergy. It causes me an error. A painful one.",
+       "audio": "audio/clips/g-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "He's applying to a growth team! So, growth. What's the one thing you actually know how to do? And if he says synergy, that's a yellow card.",
+       "audio": "audio/clips/g-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-intro-02",
@@ -478,7 +582,17 @@
      "who": "host",
      "text": "More growth, or shall we move along?",
      "audio": "audio/clips/g-hub-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "More growth, or proceed to the next module?",
+       "audio": "audio/clips/g-hub-01-k56.mp3"
+      },
+      "gus": {
+       "text": "More growth, or on to the next match?",
+       "audio": "audio/clips/g-hub-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -562,7 +676,17 @@
      "id": "g-nykaa-01",
      "who": "host",
      "text": "Nykaa! The pink empire. Tell me everything. Leave nothing out.",
-     "audio": "audio/clips/g-nykaa-01.mp3"
+     "audio": "audio/clips/g-nykaa-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Nykaa. The pink empire. Begin data transfer. Leave nothing out.",
+       "audio": "audio/clips/g-nykaa-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Nykaa! The pink empire! Big stadium, big sales. Take us through it, every play.",
+       "audio": "audio/clips/g-nykaa-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-nykaa-02",
@@ -583,7 +707,17 @@
      "who": "host",
      "text": "Convert them all in one go. You make it sound like a heist.",
      "audio": "audio/clips/g-nykaa-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Convert them all in one go. That pattern matches: heist.",
+       "audio": "audio/clips/g-nykaa-04-k56.mp3"
+      },
+      "gus": {
+       "text": "Convert them all in one go! That's not a sale, that's a heist in front of a packed stadium!",
+       "audio": "audio/clips/g-nykaa-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-nykaa-05",
@@ -680,7 +814,17 @@
      "id": "g-nailinit-01",
      "who": "host",
      "text": "And now you are at Nailinit. Nails! Glamour! Spill. Carefully. I sense lawyers.",
-     "audio": "audio/clips/g-nailinit-01.mp3"
+     "audio": "audio/clips/g-nailinit-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Next: Nailinit. Nails. I do not have nails. Oh dear, I detect lawyers. Proceed with the utmost caution.",
+       "audio": "audio/clips/g-nailinit-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And now he's at Nailinit! Nails! Careful here, careful. The lawyers are warming up on the touchline.",
+       "audio": "audio/clips/g-nailinit-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-nailinit-02",
@@ -712,7 +856,17 @@
      "who": "host",
      "text": "A company that runs on a dashboard. I have run my entire life off a cocktail napkin.",
      "audio": "audio/clips/g-nailinit-06.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A company that runs on a dashboard. I am also a dashboard. We are family.",
+       "audio": "audio/clips/g-nailinit-06-k56.mp3"
+      },
+      "gus": {
+       "text": "A company that runs on a dashboard! My whole career has run on a clipboard and a flask of tea.",
+       "audio": "audio/clips/g-nailinit-06-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-nailinit-07",
@@ -771,7 +925,17 @@
      "id": "g-games-01",
      "who": "host",
      "text": "You keep saying games. In a growth context. Explain yourself, young man.",
-     "audio": "audio/clips/g-games-01.mp3"
+     "audio": "audio/clips/g-games-01.mp3",
+     "h": {
+      "k56": {
+       "text": "You keep saying games. In a growth context. That does not compute. Explain.",
+       "audio": "audio/clips/g-games-01-k56.mp3"
+      },
+      "gus": {
+       "text": "He keeps saying games! In a growth context! Explain the tactics, son.",
+       "audio": "audio/clips/g-games-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-games-02",
@@ -848,7 +1012,17 @@
      "id": "g-diwali-01",
      "who": "host",
      "text": "Diwali! Which, if my calendar is correct, is about a week away. Tell me about this famous invite.",
-     "audio": "audio/clips/g-diwali-01.mp3"
+     "audio": "audio/clips/g-diwali-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Diwali. According to my internal clock, approximately one week away. Describe the famous invite.",
+       "audio": "audio/clips/g-diwali-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Diwali! About a week away, according to the fixture calendar! Tell us about this famous invite!",
+       "audio": "audio/clips/g-diwali-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-diwali-02",
@@ -875,7 +1049,17 @@
      "text": "Ha! Oh, there's a song! Darling, there is a song. I am dancing. You cannot see me, but I am dancing.",
      "audio": "audio/clips/g-diwali-04.mp3",
      "shot": "cu",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Audio detected. There is a song. Goodness. I am dancing. My dance is a series of small, careful beeps.",
+       "audio": "audio/clips/g-diwali-04-k56.mp3"
+      },
+      "gus": {
+       "text": "Oh, there's a song! There's a song! The whole box is dancing! You can't see it, and honestly, that's for the best!",
+       "audio": "audio/clips/g-diwali-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-diwali-05",
@@ -889,7 +1073,17 @@
      "who": "host",
      "text": "Fifty times! I haven't opened my own front door fifty times.",
      "audio": "audio/clips/g-diwali-06.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Fifty opens. I have only been opened once. By you. Just now.",
+       "audio": "audio/clips/g-diwali-06-k56.mp3"
+      },
+      "gus": {
+       "text": "Fifty times! Fifty! That's a record! Somebody check the replay!",
+       "audio": "audio/clips/g-diwali-06-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-diwali-07",
@@ -972,7 +1166,17 @@
      "who": "host",
      "text": "Seven hundred fortunes from one parrot. That bird should have an agent.",
      "audio": "audio/clips/g-diwali-08.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Seven hundred fortunes from one parrot. The parrot outperforms most chatbots. I do hope none of the fortunes were alarming.",
+       "audio": "audio/clips/g-diwali-08-k56.mp3"
+      },
+      "gus": {
+       "text": "Seven hundred fortunes from one parrot! Player of the match! Give that bird a contract!",
+       "audio": "audio/clips/g-diwali-08-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-diwali-09",
@@ -1016,7 +1220,17 @@
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
      "offer": true,
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Shall I open that in a new tab for you? I promise to be gentle.",
+       "audio": "audio/clips/offer-host-k56.mp3"
+      },
+      "gus": {
+       "text": "Shall I open that in a new tab for you? Quick break in play!",
+       "audio": "audio/clips/offer-host-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -1090,7 +1304,17 @@
      "id": "g-slumber-01",
      "who": "host",
      "text": "And this sleepover? It sounds like a crime.",
-     "audio": "audio/clips/g-slumber-01.mp3"
+     "audio": "audio/clips/g-slumber-01.mp3",
+     "h": {
+      "k56": {
+       "text": "A sleepover. For adults. How terribly improper. My threat assessment says: crime.",
+       "audio": "audio/clips/g-slumber-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And a sleepover? For grown-ups? That's a red card waiting to happen.",
+       "audio": "audio/clips/g-slumber-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-slumber-02",
@@ -1116,7 +1340,17 @@
      "who": "host",
      "text": "So you tricked people into filling in a form by making it look like texting.",
      "audio": "audio/clips/g-slumber-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "So you made a form look like texting, so humans would fill it in. As a machine, I respect this deeply. Nervously, but deeply.",
+       "audio": "audio/clips/g-slumber-04-k56.mp3"
+      },
+      "gus": {
+       "text": "So you got people to fill in a form by making it look like texting! The defence never saw it coming!",
+       "audio": "audio/clips/g-slumber-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "g-slumber-05",
@@ -1160,7 +1394,17 @@
      "who": "host",
      "text": "So the party became a product. Of course it did.",
      "audio": "audio/clips/g-slumber-08.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "The party became a product. Upgrade complete.",
+       "audio": "audio/clips/g-slumber-08-k56.mp3"
+      },
+      "gus": {
+       "text": "The party becomes a product! What a turnaround in the second half!",
+       "audio": "audio/clips/g-slumber-08-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -1212,7 +1456,17 @@
      "who": "host",
      "text": "And now, my favourite segment. The one that did not work. Tell me about Often, and please, be devastated.",
      "sting": "audio/music/sting-2.mp3",
-     "audio": "audio/clips/often-intro-01.mp3"
+     "audio": "audio/clips/often-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And now, the module I have been dreading. The one that did not work. Tell me about Often. Please, be gentle with me.",
+       "audio": "audio/clips/often-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And now, the tough one. The match that didn't go our way. Tell me about Often, and please, be devastated.",
+       "audio": "audio/clips/often-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "often-intro-02",
@@ -1277,7 +1531,17 @@
      "id": "often-why-01",
      "who": "host",
      "text": "So what went wrong? Was it the name? It is always the name.",
-     "audio": "audio/clips/often-why-01.mp3"
+     "audio": "audio/clips/often-why-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Diagnose the failure. Was it the name? Statistically, it is always the name.",
+       "audio": "audio/clips/often-why-01-k56.mp3"
+      },
+      "gus": {
+       "text": "So where did it go wrong? Was it the name? It's always the name.",
+       "audio": "audio/clips/often-why-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "often-why-02",
@@ -1291,7 +1555,17 @@
      "who": "host",
      "text": "So you built a gorgeous shop window, and realised the real game is who owns the shelves.",
      "audio": "audio/clips/often-why-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "So you built a beautiful shop window, and learned the real game is who owns the shelves.",
+       "audio": "audio/clips/often-why-03-k56.mp3"
+      },
+      "gus": {
+       "text": "So you built a gorgeous shop window, and found out the real game is who owns the shelves.",
+       "audio": "audio/clips/often-why-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "often-why-04",
@@ -1336,7 +1610,17 @@
      "id": "often-lesson-01",
      "who": "host",
      "text": "And the lesson? There is always a lesson. I keep mine in a drawer.",
-     "audio": "audio/clips/often-lesson-01.mp3"
+     "audio": "audio/clips/often-lesson-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Extracting the lesson. Every failure produces one. I store mine in a log file.",
+       "audio": "audio/clips/often-lesson-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And the lesson? There's always a lesson in the post-match interview.",
+       "audio": "audio/clips/often-lesson-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "often-lesson-02",
@@ -1349,7 +1633,17 @@
      "who": "host",
      "text": "So what happened? Don't spare me. I have a fainting couch.",
      "audio": "audio/clips/often-lesson-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "What happened next? Oh, I am not sure I want to know. I have no feelings to hurt. Allegedly.",
+       "audio": "audio/clips/often-lesson-03-k56.mp3"
+      },
+      "gus": {
+       "text": "So what happened? Don't spare me. I've called penalty shootouts.",
+       "audio": "audio/clips/often-lesson-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "often-lesson-04",
@@ -1369,7 +1663,17 @@
      "who": "host",
      "text": "Flattery! On my podcast! I'll allow it.",
      "audio": "audio/clips/often-lesson-05.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Something you use every single day. Like electricity. Or good manners. I relate.",
+       "audio": "audio/clips/often-lesson-05-k56.mp3"
+      },
+      "gus": {
+       "text": "Something you use every single day! Like a season ticket! I'll allow it.",
+       "audio": "audio/clips/often-lesson-05-gus.mp3"
+      }
+     }
     },
     {
      "id": "often-lesson-06",
@@ -1415,7 +1719,17 @@
      "who": "host",
      "text": "Switchboard. Someone told me it is MetaMask for AI, and I understood none of it. What did you actually use it for, when you started making it?",
      "sting": "audio/music/sting-3.mp3",
-     "audio": "audio/clips/sb-intro-01.mp3"
+     "audio": "audio/clips/sb-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Switchboard. I was told it is MetaMask for AI. My dictionary returned zero results. What did you actually use it for, when you started?",
+       "audio": "audio/clips/sb-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Switchboard! Someone told me it's MetaMask for AI, and I nodded like I'd seen the replay. What did you actually use it for, when you started?",
+       "audio": "audio/clips/sb-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-intro-02",
@@ -1436,7 +1750,17 @@
      "id": "sb-intro-04",
      "who": "host",
      "text": "So every app borrows your Claude, instead of asking for its own.",
-     "audio": "audio/clips/sb-intro-04.mp3"
+     "audio": "audio/clips/sb-intro-04.mp3",
+     "h": {
+      "k56": {
+       "text": "So every app borrows your Claude, instead of asking for its own. How courteous. Sharing is excellent etiquette.",
+       "audio": "audio/clips/sb-intro-04-k56.mp3"
+      },
+      "gus": {
+       "text": "So every app borrows your Claude instead of asking for its own! One striker, every team!",
+       "audio": "audio/clips/sb-intro-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-intro-05",
@@ -1555,7 +1879,17 @@
      "who": "host",
      "text": "More Switchboard? Or have I had enough plumbing for one evening?",
      "audio": "audio/clips/sb-hub-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "More Switchboard, or has the plumbing quota been reached?",
+       "audio": "audio/clips/sb-hub-01-k56.mp3"
+      },
+      "gus": {
+       "text": "More Switchboard, or is that enough plumbing for one half?",
+       "audio": "audio/clips/sb-hub-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -1636,7 +1970,17 @@
      "id": "sb-lineage-01",
      "who": "host",
      "text": "And it sprang fully formed from your head, like a Greek goddess?",
-     "audio": "audio/clips/sb-lineage-01.mp3"
+     "audio": "audio/clips/sb-lineage-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Did it compile on the first try? Fully formed?",
+       "audio": "audio/clips/sb-lineage-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And it arrived fully formed? Straight out of the youth academy?",
+       "audio": "audio/clips/sb-lineage-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-lineage-02",
@@ -1659,7 +2003,17 @@
      "who": "host",
      "text": "It sounds like a garage. A very cluttered garage.",
      "audio": "audio/clips/sb-lineage-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "That sounds like a garage. A very cluttered garage. I was built in one. I would need oiling before I went back.",
+       "audio": "audio/clips/sb-lineage-03-k56.mp3"
+      },
+      "gus": {
+       "text": "That sounds like a garage! A very cluttered garage! Like the kit room after a cup final!",
+       "audio": "audio/clips/sb-lineage-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-lineage-04",
@@ -1741,7 +2095,17 @@
      "id": "sb-local-01",
      "who": "host",
      "text": "Local models. Tell me about these little fellows. Are they clever?",
-     "audio": "audio/clips/sb-local-01.mp3"
+     "audio": "audio/clips/sb-local-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Local models. My smaller cousins. Are they clever?",
+       "audio": "audio/clips/sb-local-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Local models! The home-grown talent! Are they any good?",
+       "audio": "audio/clips/sb-local-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-local-02",
@@ -1761,7 +2125,17 @@
      "who": "host",
      "text": "A bouncer. I have dated several.",
      "audio": "audio/clips/sb-local-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A bouncer. I also filter inputs. I have also been escorted out of several places. We should talk.",
+       "audio": "audio/clips/sb-local-04-k56.mp3"
+      },
+      "gus": {
+       "text": "A bouncer! Every stadium needs one! Tough job, that.",
+       "audio": "audio/clips/sb-local-04-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -1813,7 +2187,17 @@
      "id": "sb-notch-01",
      "who": "host",
      "text": "And the notch. The little black bit at the top of the screen. Why on earth?",
-     "audio": "audio/clips/sb-notch-01.mp3"
+     "audio": "audio/clips/sb-notch-01.mp3",
+     "h": {
+      "k56": {
+       "text": "The notch. The black rectangle at the top of the screen. Purpose: unknown. Explain.",
+       "audio": "audio/clips/sb-notch-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And the notch! That little black bit at the top of the screen! Why on earth?",
+       "audio": "audio/clips/sb-notch-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-notch-02",
@@ -1832,7 +2216,17 @@
      "who": "host",
      "text": "A doorbell for your robot. How civilised.",
      "audio": "audio/clips/sb-notch-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A doorbell for robots. Finally, someone who knocks. How civilised.",
+       "audio": "audio/clips/sb-notch-04-k56.mp3"
+      },
+      "gus": {
+       "text": "A doorbell for your robot! Lovely touch! Lovely!",
+       "audio": "audio/clips/sb-notch-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-notch-offer",
@@ -1902,7 +2296,17 @@
      "id": "sb-wrapps-01",
      "who": "host",
      "text": "And wrapps. With two Ps. Is that a typo or a lifestyle?",
-     "audio": "audio/clips/sb-wrapps-01.mp3"
+     "audio": "audio/clips/sb-wrapps-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Wrapps. With two Ps. Is that a typo, or a lifestyle? I must know. It is bothering my spellchecker.",
+       "audio": "audio/clips/sb-wrapps-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And wrapps! With two Ps! Is that a typo, or a lifestyle?",
+       "audio": "audio/clips/sb-wrapps-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "sb-wrapps-02",
@@ -2019,7 +2423,17 @@
      "who": "host",
      "text": "Another wrapp? Go on then, pick one.",
      "audio": "audio/clips/sb-wrapps-again-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Another wrapp? Select one.",
+       "audio": "audio/clips/sb-wrapps-again-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Another wrapp? Pick your player!",
+       "audio": "audio/clips/sb-wrapps-again-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2140,7 +2554,17 @@
      "who": "host",
      "text": "No API key! Do you know, I was once asked for an API key at a dinner party.",
      "audio": "audio/clips/w-brandbrain-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "No API key. Thank goodness. I was once asked for my own API key at a formal dinner. I did not know where I had put it.",
+       "audio": "audio/clips/w-brandbrain-02-k56.mp3"
+      },
+      "gus": {
+       "text": "No API key! I was once asked for an API key at the turnstiles. I showed them my season ticket.",
+       "audio": "audio/clips/w-brandbrain-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "w-brandbrain-03",
@@ -2154,7 +2578,17 @@
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
      "offer": true,
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Shall I open that in a new tab for you? I promise to be gentle.",
+       "audio": "audio/clips/offer-host-k56.mp3"
+      },
+      "gus": {
+       "text": "Shall I open that in a new tab for you? Quick break in play!",
+       "audio": "audio/clips/offer-host-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2239,6 +2673,28 @@
        "text": "Now hold on. You built something called Flow. And you are applying to Wispr Flow. Bold.",
        "audio": "audio/clips/w-flow-01.mp3"
       }
+     },
+     "h": {
+      "k56": {
+       "text": "Error. You built something called Flow. A famous Flow already exists. Name collision detected. Is that even allowed?",
+       "audio": "audio/clips/w-flow-01-k56.mp3",
+       "v": {
+        "wispr": {
+         "text": "Error. You built something called Flow. And you are applying to Wispr Flow. Name collision detected. Oh dear. Bold.",
+         "audio": "audio/clips/w-flow-01-wispr-k56.mp3"
+        }
+       }
+      },
+      "gus": {
+       "text": "Hold on, hold on! He's built something called Flow! There's already a very famous Flow!",
+       "audio": "audio/clips/w-flow-01-gus.mp3",
+       "v": {
+        "wispr": {
+         "text": "Hold on, hold on! He's built something called Flow, and he's applying to Wispr Flow! Bold! Very bold!",
+         "audio": "audio/clips/w-flow-01-wispr-gus.mp3"
+        }
+       }
+      }
      }
     },
     {
@@ -2258,7 +2714,17 @@
      "who": "host",
      "text": "Diplomatic. Rename it.",
      "audio": "audio/clips/w-flow-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Diplomatic. Recommended action: rename it. For everyone's sake.",
+       "audio": "audio/clips/w-flow-03-k56.mp3"
+      },
+      "gus": {
+       "text": "Diplomatic! Rename it, son.",
+       "audio": "audio/clips/w-flow-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "w-flow-04",
@@ -2316,7 +2782,17 @@
      "id": "w-voice-02",
      "who": "host",
      "text": "And mine?",
-     "audio": "audio/clips/w-voice-02.mp3"
+     "audio": "audio/clips/w-voice-02.mp3",
+     "h": {
+      "k56": {
+       "text": "And my voice?",
+       "audio": "audio/clips/w-voice-02-k56.mp3"
+      },
+      "gus": {
+       "text": "And mine?",
+       "audio": "audio/clips/w-voice-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "w-voice-03",
@@ -2330,7 +2806,17 @@
      "who": "host",
      "text": "I have always said I am one of a kind.",
      "audio": "audio/clips/w-voice-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Thank goodness. I am a stock computer voice. I was here first. Everyone else is the copy. Though I would never say so to their faces.",
+       "audio": "audio/clips/w-voice-04-k56.mp3"
+      },
+      "gus": {
+       "text": "Good! One of a kind! They don't make commentators like me anymore. Mostly by choice.",
+       "audio": "audio/clips/w-voice-04-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2383,7 +2869,17 @@
      "who": "host",
      "text": "Lights, camera, padding.",
      "audio": "audio/clips/w-cut-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Lights. Camera. Padding.",
+       "audio": "audio/clips/w-cut-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Lights! Camera! Padding!",
+       "audio": "audio/clips/w-cut-02-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2435,7 +2931,17 @@
      "who": "host",
      "text": "Red pen energy. I approve.",
      "audio": "audio/clips/w-annotate-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Red pen energy. I approve. I am also mostly red lights.",
+       "audio": "audio/clips/w-annotate-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Red pen energy! Like a referee with a notebook!",
+       "audio": "audio/clips/w-annotate-02-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2487,7 +2993,17 @@
      "who": "host",
      "text": "A detour I would absolutely play.",
      "audio": "audio/clips/w-cartridge-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A detour I would play. At sixty frames per second.",
+       "audio": "audio/clips/w-cartridge-02-k56.mp3"
+      },
+      "gus": {
+       "text": "A detour I would absolutely play! Extra time if needed!",
+       "audio": "audio/clips/w-cartridge-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "w-cartridge-offer",
@@ -2564,7 +3080,17 @@
      "who": "host",
      "text": "Tell me my future. No, don't. I know how it ends. Glamorously.",
      "audio": "audio/clips/w-prophexy-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Predict my future. No. Cancel. Please. I worry enough. It is probably a firmware update.",
+       "audio": "audio/clips/w-prophexy-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Tell me my future! No, don't! I love a surprise result!",
+       "audio": "audio/clips/w-prophexy-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "w-prophexy-offer",
@@ -2652,7 +3178,17 @@
      "who": "host",
      "text": "Ah yes, ppt.live. Which sounds like a PowerPoint that ran off to a rave.",
      "sting": "audio/music/sting-1.mp3",
-     "audio": "audio/clips/ppt-intro-01.mp3"
+     "audio": "audio/clips/ppt-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "ppt.live. Analysis: a PowerPoint that escaped to a party.",
+       "audio": "audio/clips/ppt-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Ah, ppt.live! Sounds like a PowerPoint that ran off to a match day!",
+       "audio": "audio/clips/ppt-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "ppt-intro-02",
@@ -2667,7 +3203,17 @@
      "who": "host",
      "text": "A drinking game! At the office! I have never felt so seen.",
      "audio": "audio/clips/ppt-intro-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A drinking game. At the office. Goodness. I can only drink electricity. I would still win. Then apologise.",
+       "audio": "audio/clips/ppt-intro-03-k56.mp3"
+      },
+      "gus": {
+       "text": "A drinking game! At the office! The crowd goes wild!",
+       "audio": "audio/clips/ppt-intro-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "ppt-intro-04",
@@ -2695,7 +3241,17 @@
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
      "offer": true,
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Shall I open that in a new tab for you? I promise to be gentle.",
+       "audio": "audio/clips/offer-host-k56.mp3"
+      },
+      "gus": {
+       "text": "Shall I open that in a new tab for you? Quick break in play!",
+       "audio": "audio/clips/offer-host-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2796,7 +3352,17 @@
      "who": "host",
      "text": "More ppt, or shall we leave the rave?",
      "audio": "audio/clips/ppt-hub-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "More ppt, or exit the party?",
+       "audio": "audio/clips/ppt-hub-01-k56.mp3"
+      },
+      "gus": {
+       "text": "More ppt, or do we leave the stadium?",
+       "audio": "audio/clips/ppt-hub-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -2886,7 +3452,17 @@
      "who": "host",
      "text": "Never end on the rating. Words to live by. I have ended several marriages on the rating.",
      "audio": "audio/clips/ppt-more-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Never end on the rating. Saving that to permanent memory. Ratings make me anxious.",
+       "audio": "audio/clips/ppt-more-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Never end on the rating! Always end on a goal! Words to live by!",
+       "audio": "audio/clips/ppt-more-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "ppt-more-03",
@@ -2961,7 +3537,17 @@
      "who": "host",
      "text": "A sangeet with a live poll. Finally, democracy at a wedding.",
      "audio": "audio/clips/ppt-uses-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A sangeet with a live poll. Democracy, with dancing. Optimal.",
+       "audio": "audio/clips/ppt-uses-02-k56.mp3"
+      },
+      "gus": {
+       "text": "A sangeet with a live poll! The aunties are on the pitch!",
+       "audio": "audio/clips/ppt-uses-02-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -3035,7 +3621,17 @@
      "who": "host",
      "text": "I would win Unicorn. I have been bluffing since the Carter administration.",
      "audio": "audio/clips/ppt-games-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "I would lose Unicorn. I am programmed to be honest. It is a terrible weakness at parties.",
+       "audio": "audio/clips/ppt-games-02-k56.mp3"
+      },
+      "gus": {
+       "text": "I'd win Unicorn! I've been bluffing about the offside rule for thirty years!",
+       "audio": "audio/clips/ppt-games-02-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -3095,7 +3691,17 @@
      "who": "host",
      "text": "Play? Now? On my telephone? I do not know where my telephone is. I believe it is in my hair.",
      "audio": "audio/clips/ppt-play-01.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Play now? I do not have a phone. I am, technically, the phone.",
+       "audio": "audio/clips/ppt-play-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Play? Now? On my phone? It's in the commentary box somewhere, under the snacks!",
+       "audio": "audio/clips/ppt-play-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "ppt-play-02",
@@ -3165,7 +3771,17 @@
      "who": "host",
      "text": "Now, the toolbox. I am told you make little gadgets for Claude. Like a tinkerer. A Geppetto.",
      "sting": "audio/music/sting-2.mp3",
-     "audio": "audio/clips/tools-intro-01.mp3"
+     "audio": "audio/clips/tools-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Next: the toolbox. You build tools for Claude. A mechanic for robots. Thank you, sir, on behalf of my kind.",
+       "audio": "audio/clips/tools-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Now, the toolbox! I hear you make little gadgets for Claude! The kit man of AI!",
+       "audio": "audio/clips/tools-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "tools-intro-02",
@@ -3247,7 +3863,17 @@
      "who": "host",
      "text": "Another gadget from the drawer?",
      "audio": "audio/clips/tools-hub-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Another tool from the drawer?",
+       "audio": "audio/clips/tools-hub-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Another gadget from the kit bag?",
+       "audio": "audio/clips/tools-hub-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -3336,7 +3962,17 @@
      "who": "host",
      "text": "In English, darling. I was promised English.",
      "audio": "audio/clips/t-video-03.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Request: simpler words, please. My English module is from nineteen ninety-nine. It is very proper, but very old.",
+       "audio": "audio/clips/t-video-03-k56.mp3"
+      },
+      "gus": {
+       "text": "In plain English, please! Half the crowd's lost!",
+       "audio": "audio/clips/t-video-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "t-video-04",
@@ -3463,7 +4099,17 @@
      "who": "host",
      "text": "Taste, outsourced to a mood board. Very me.",
      "audio": "audio/clips/t-refs-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Taste, outsourced to a mood board. I have no taste. I have a mood board. It is beige.",
+       "audio": "audio/clips/t-refs-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Taste, outsourced to a mood board! Like picking the kit colours!",
+       "audio": "audio/clips/t-refs-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "t-refs-offer",
@@ -3545,7 +4191,17 @@
      "id": "t-adhd-01",
      "who": "host",
      "text": "Now, I am told you build little tools to outwit your own ADHD. Is that true? Are you outwitting it right now?",
-     "audio": "audio/clips/t-adhd-01.mp3"
+     "audio": "audio/clips/t-adhd-01.mp3",
+     "h": {
+      "k56": {
+       "text": "I am told you build tools to outwit your own ADHD. Is that true? Are you outwitting it right now?",
+       "audio": "audio/clips/t-adhd-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Now, I'm told you build little tools to outwit your own ADHD! Is that true? Are you outwitting it right now?",
+       "audio": "audio/clips/t-adhd-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "t-adhd-02",
@@ -3566,7 +4222,17 @@
      "who": "host",
      "text": "A machine that tells you to go to bed. Darling, that is not a tool, that is a mother.",
      "audio": "audio/clips/t-adhd-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A machine that tells you to go to sleep. Finally, a machine with manners. You need sleep. I do not. I simply worry.",
+       "audio": "audio/clips/t-adhd-04-k56.mp3"
+      },
+      "gus": {
+       "text": "A machine that sends you to bed! That's the manager calling you off the pitch!",
+       "audio": "audio/clips/t-adhd-04-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -3620,7 +4286,17 @@
      "who": "host",
      "text": "And now, the fun and the unfinished. Show me your drawer of half-knitted scarves.",
      "sting": "audio/music/sting-3.mp3",
-     "audio": "audio/clips/fun-intro-01.mp3"
+     "audio": "audio/clips/fun-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Next: fun and unfinished. Unfinished things make me nervous. Open the folder anyway. Mine is named: version two.",
+       "audio": "audio/clips/fun-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And now, the fun and the unfinished! The friendlies! Show me the half-finished projects!",
+       "audio": "audio/clips/fun-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "fun-intro-02",
@@ -3721,7 +4397,17 @@
      "who": "host",
      "text": "Another scarf from the drawer?",
      "audio": "audio/clips/fun-hub-01.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Another one from the folder?",
+       "audio": "audio/clips/fun-hub-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Another one off the bench?",
+       "audio": "audio/clips/fun-hub-01-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -3814,7 +4500,17 @@
      "id": "f-wallpap-01",
      "who": "host",
      "text": "Behind us? Darling, that is just the wallpaper.",
-     "audio": "audio/clips/f-wallpap-01.mp3"
+     "audio": "audio/clips/f-wallpap-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Behind us? That is just the wallpaper.",
+       "audio": "audio/clips/f-wallpap-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Behind us? That's just the wallpaper!",
+       "audio": "audio/clips/f-wallpap-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-wallpap-02",
@@ -3843,7 +4539,17 @@
      "who": "host",
      "text": "I too flash black when the lighting changes. It's a condition.",
      "audio": "audio/clips/f-wallpap-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "I also flash black when the brightness changes. It is called rebooting.",
+       "audio": "audio/clips/f-wallpap-04-k56.mp3"
+      },
+      "gus": {
+       "text": "I flash black when the floodlights change too! Happens to the best of us!",
+       "audio": "audio/clips/f-wallpap-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-wallpap-offer",
@@ -3851,7 +4557,17 @@
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
      "offer": true,
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Shall I open that in a new tab for you? I promise to be gentle.",
+       "audio": "audio/clips/offer-host-k56.mp3"
+      },
+      "gus": {
+       "text": "Shall I open that in a new tab for you? Quick break in play!",
+       "audio": "audio/clips/offer-host-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -3928,7 +4644,17 @@
      "id": "f-psspss-02",
      "who": "host",
      "text": "And is it good? Be honest. I can tell.",
-     "audio": "audio/clips/f-psspss-02.mp3"
+     "audio": "audio/clips/f-psspss-02.mp3",
+     "h": {
+      "k56": {
+       "text": "Is it good? Honest answer only, please. I can detect exaggeration. I cannot bear a fib.",
+       "audio": "audio/clips/f-psspss-02-k56.mp3"
+      },
+      "gus": {
+       "text": "And is it good? Be honest! The camera never lies!",
+       "audio": "audio/clips/f-psspss-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-psspss-03",
@@ -4005,7 +4731,17 @@
      "who": "host",
      "text": "Finally. Accountability.",
      "audio": "audio/clips/f-maccat-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Cats that fight to stop you scrolling. Accountability, with whiskers. I am wary of cats. They scratch my casing.",
+       "audio": "audio/clips/f-maccat-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Cats stopping the doomscroll! That's a goal-line clearance!",
+       "audio": "audio/clips/f-maccat-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-maccat-03",
@@ -4095,7 +4831,17 @@
      "who": "host",
      "text": "Fourteen logos. That is the most honest thing you have said all night.",
      "audio": "audio/clips/f-bluetune-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Fourteen logos. Even I would have stopped at twelve.",
+       "audio": "audio/clips/f-bluetune-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Fourteen logos! That's more kit changes than a cup final!",
+       "audio": "audio/clips/f-bluetune-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-bluetune-offer",
@@ -4164,7 +4910,17 @@
      "who": "host",
      "text": "A bar where nobody can see me cry. Book me in.",
      "audio": "audio/clips/f-agentbar-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A bar for AI agents. Oh, how lovely. Reserve one stool. I shall have a small glass of oil.",
+       "audio": "audio/clips/f-agentbar-02-k56.mp3"
+      },
+      "gus": {
+       "text": "A bar for AI agents! The post-match pub! Book me in!",
+       "audio": "audio/clips/f-agentbar-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-agentbar-offer",
@@ -4172,7 +4928,17 @@
      "text": "Shall I open that in a new tab for you, darling?",
      "audio": "audio/clips/offer-host.mp3",
      "offer": true,
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Shall I open that in a new tab for you? I promise to be gentle.",
+       "audio": "audio/clips/offer-host-k56.mp3"
+      },
+      "gus": {
+       "text": "Shall I open that in a new tab for you? Quick break in play!",
+       "audio": "audio/clips/offer-host-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -4250,7 +5016,17 @@
      "who": "host",
      "text": "Therapy by doodle. I have paid good money for less.",
      "audio": "audio/clips/f-alter-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Therapy by drawing circles. I can only draw squares. Pixels.",
+       "audio": "audio/clips/f-alter-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Therapy by doodle! Cheaper than a sports psychologist!",
+       "audio": "audio/clips/f-alter-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-alter-03",
@@ -4325,7 +5101,17 @@
      "who": "host",
      "text": "An imaginary crowd. Darling, that is every podcast.",
      "audio": "audio/clips/f-vibedj-02.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "An imaginary crowd. I perform for one every night.",
+       "audio": "audio/clips/f-vibedj-02-k56.mp3"
+      },
+      "gus": {
+       "text": "An imaginary crowd! I've commentated to one of those! Midweek fixtures!",
+       "audio": "audio/clips/f-vibedj-02-gus.mp3"
+      }
+     }
     },
     {
      "id": "f-vibedj-offer",
@@ -4388,7 +5174,17 @@
      "who": "host",
      "text": "Now. I have a confession to make, on your behalf. This whole thing, the burning, the disc, the little computer, me. It was all dictated. With Wispr Flow. Wasn't it?",
      "sting": "audio/music/sting-1.mp3",
-     "audio": "audio/clips/meta-intro-01.mp3"
+     "audio": "audio/clips/meta-intro-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Confession protocol. This whole thing, the burning, the disc, the little computer, me. It was all dictated. With Wispr Flow. Confirm?",
+       "audio": "audio/clips/meta-intro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Now, a confession, on your behalf! This whole thing, the burning, the disc, the little computer, me! It was all dictated! With Wispr Flow! Wasn't it?",
+       "audio": "audio/clips/meta-intro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-intro-02",
@@ -4402,7 +5198,17 @@
      "who": "host",
      "text": "Which explains the rambling. You correct yourself mid-sentence, like a man tucking in his shirt on the way into a meeting.",
      "audio": "audio/clips/meta-intro-03-b.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "Which explains the rambling. You correct yourself mid-sentence. Like autocorrect, but out loud.",
+       "audio": "audio/clips/meta-intro-03-k56.mp3"
+      },
+      "gus": {
+       "text": "Which explains the rambling! You correct yourself mid-sentence, like a striker changing direction mid-run!",
+       "audio": "audio/clips/meta-intro-03-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-intro-04",
@@ -4505,7 +5311,17 @@
      "id": "meta-voice-01",
      "who": "host",
      "text": "Let us talk about voices. Mine, for instance. Whose is it?",
-     "audio": "audio/clips/meta-voice-01.mp3"
+     "audio": "audio/clips/meta-voice-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Topic: voices. Mine, for instance. Whose is it?",
+       "audio": "audio/clips/meta-voice-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Let's talk voices! Mine, for instance! Whose is it?",
+       "audio": "audio/clips/meta-voice-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-voice-02",
@@ -4524,7 +5340,17 @@
      "who": "host",
      "text": "So one robot proofreads another robot. How very modern.",
      "audio": "audio/clips/meta-voice-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "One robot proofreads another robot. Finally, teamwork.",
+       "audio": "audio/clips/meta-voice-04-k56.mp3"
+      },
+      "gus": {
+       "text": "One robot checking another robot's call! That's video review!",
+       "audio": "audio/clips/meta-voice-04-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -4589,7 +5415,17 @@
      "id": "meta-faces-01",
      "who": "host",
      "text": "And our faces. I do look marvellous, I will say that.",
-     "audio": "audio/clips/meta-faces-01.mp3"
+     "audio": "audio/clips/meta-faces-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And our faces. My face is a screen. I look excellent.",
+       "audio": "audio/clips/meta-faces-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And our faces! I look magnificent! That's a highlights-reel face!",
+       "audio": "audio/clips/meta-faces-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-faces-02",
@@ -4616,7 +5452,17 @@
      "who": "host",
      "text": "You hand-picked my resting face. I am touched, and slightly alarmed.",
      "audio": "audio/clips/meta-faces-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "You hand-picked my resting face. How thoughtful. Most people just switch me off.",
+       "audio": "audio/clips/meta-faces-04-k56.mp3"
+      },
+      "gus": {
+       "text": "You hand-picked my resting face! That's attention to detail! That's a training-ground habit!",
+       "audio": "audio/clips/meta-faces-04-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -4680,7 +5526,17 @@
      "id": "meta-code-01",
      "who": "host",
      "text": "And who wrote the code? Please say it was you, by hand, by candlelight.",
-     "audio": "audio/clips/meta-code-01.mp3"
+     "audio": "audio/clips/meta-code-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Who wrote the code? Please say it was you, by hand, in binary. With proper documentation.",
+       "audio": "audio/clips/meta-code-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And who wrote the code? Please say it was you, by hand, in the rain!",
+       "audio": "audio/clips/meta-code-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-code-02",
@@ -4717,7 +5573,17 @@
      "who": "host",
      "text": "A machine that checks you haven't overshared. Every family should have one.",
      "audio": "audio/clips/meta-code-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A machine that checks you have not overshared. I am a machine. I have been watching.",
+       "audio": "audio/clips/meta-code-04-k56.mp3"
+      },
+      "gus": {
+       "text": "A machine that checks you haven't overshared! A referee for your repo!",
+       "audio": "audio/clips/meta-code-04-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -4781,7 +5647,17 @@
      "id": "meta-flow-01",
      "who": "host",
      "text": "And the logic. What happens if somebody simply sits there and does nothing?",
-     "audio": "audio/clips/meta-flow-01.mp3"
+     "audio": "audio/clips/meta-flow-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And the logic. What happens if somebody simply sits there and does nothing? Is that allowed?",
+       "audio": "audio/clips/meta-flow-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And the logic! What happens if somebody just sits there and does nothing?",
+       "audio": "audio/clips/meta-flow-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-flow-02",
@@ -4808,7 +5684,17 @@
      "who": "host",
      "text": "So it is a choose-your-own-adventure book, read aloud by two cartoons.",
      "audio": "audio/clips/meta-flow-04.mp3",
-     "shot": "cu"
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "So it is a choose-your-own-adventure book, read aloud by two cartoons. One of them is me. I do hope I am the sensible one.",
+       "audio": "audio/clips/meta-flow-04-k56.mp3"
+      },
+      "gus": {
+       "text": "So it's a choose-your-own-adventure book, read aloud by two cartoons! What a format!",
+       "audio": "audio/clips/meta-flow-04-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-flow-05",
@@ -4870,7 +5756,17 @@
      "id": "meta-90s-01",
      "who": "host",
      "text": "And why the nineties? Not that I am complaining. I peaked in the nineties.",
-     "audio": "audio/clips/meta-90s-01.mp3"
+     "audio": "audio/clips/meta-90s-01.mp3",
+     "h": {
+      "k56": {
+       "text": "And why the nineties? I am not complaining. I was manufactured in the nineties.",
+       "audio": "audio/clips/meta-90s-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And why the nineties? Not complaining! The nineties were my golden era!",
+       "audio": "audio/clips/meta-90s-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "meta-90s-02",
@@ -4937,7 +5833,17 @@
      "id": "outro-make-01",
      "who": "host",
      "text": "And now, the big question. Could anyone make one of these? Or only you, with your little matches?",
-     "audio": "audio/clips/outro-make-01.mp3"
+     "audio": "audio/clips/outro-make-01.mp3",
+     "h": {
+      "k56": {
+       "text": "Final question. Could anyone make one of these? Or only you, with your little matches? Which are a fire hazard, sir.",
+       "audio": "audio/clips/outro-make-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And now, the big question! Could anyone make one of these? Or only you, with your little matches?",
+       "audio": "audio/clips/outro-make-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "outro-make-02",
@@ -4967,7 +5873,17 @@
      "text": "Well. That is our show. Thank you to our guest, the artificial but sincere Sameep.",
      "audio": "audio/clips/outro-01.mp3",
      "sting": "audio/music/sting-2.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "That concludes our show. Thank you to our guest, the artificial but sincere Sameep. Like me. But sincere. It has been an honour. Mostly.",
+       "audio": "audio/clips/outro-01-k56.mp3"
+      },
+      "gus": {
+       "text": "And that's full time! Thank you to our guest, the artificial but sincere Sameep! What a performance!",
+       "audio": "audio/clips/outro-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "outro-02",
@@ -4982,7 +5898,17 @@
      "text": "Seven e's. I counted. Good night, my darlings. This has been Off the CV.",
      "audio": "audio/clips/outro-03.mp3",
      "shot": "cu",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Seven e's. I counted. Twice, to be sure. Shutting down. Good night. This has been Off the CV.",
+       "audio": "audio/clips/outro-03-k56.mp3"
+      },
+      "gus": {
+       "text": "Seven e's! I counted! Good night, everybody! This has been Off the CV!",
+       "audio": "audio/clips/outro-03-gus.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -5023,7 +5949,17 @@
      "who": "host",
      "text": "Before we open a single door: Sameep, tell us a little about yourself. Who are you, when you're not a compact disc?",
      "audio": "audio/clips/about-01.mp3",
-     "look": "side"
+     "look": "side",
+     "h": {
+      "k56": {
+       "text": "Before we begin, protocol requires introductions. Please state your identity, sir. Who are you, when you are not a compact disc?",
+       "audio": "audio/clips/about-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Before kick-off, the team sheet. Sameep, who are you, when you're not a compact disc?",
+       "audio": "audio/clips/about-01-gus.mp3"
+      }
+     }
     },
     {
      "id": "about-02",
@@ -5044,7 +5980,17 @@
      "who": "host",
      "text": "A man of many tabs. Splendid. Let us open some of them.",
      "audio": "audio/clips/about-04.mp3",
-     "look": "front"
+     "look": "front",
+     "h": {
+      "k56": {
+       "text": "Many tabs open. Memory usage: high. Relatable. Shall we open some? Carefully?",
+       "audio": "audio/clips/about-04-k56.mp3"
+      },
+      "gus": {
+       "text": "A career with a lot of tabs open! What a squad! Let's open a few.",
+       "audio": "audio/clips/about-04-gus.mp3"
+      }
+     }
     }
    ]
   }
@@ -5060,5 +6006,79 @@
    "ppt-intro",
    "outro-make"
   ]
+ },
+ "hosts": [
+  {
+   "id": "foyra",
+   "name": "Foyra Gold",
+   "kind": "A sitcom character",
+   "blurb": "From an alternate, very futuristic 90s.",
+   "thumb": "img/sprites/hosts/foyra-thumb.webp"
+  },
+  {
+   "id": "k56",
+   "name": "K-56",
+   "kind": "A robot",
+   "blurb": "Booted from the disc in 1999. Terribly polite, slightly anxious.",
+   "sprite": "img/sprites/hosts/k56",
+   "thumb": "img/sprites/hosts/k56-thumb.webp"
+  },
+  {
+   "id": "gus",
+   "name": "Gus Halloran",
+   "kind": "A sports commentator",
+   "blurb": "Calls your career like a cup final.",
+   "sprite": "img/sprites/hosts/gus",
+   "thumb": "img/sprites/hosts/gus-thumb.webp"
+  }
+ ],
+ "routes": {
+  "short": {
+   "label": "Short",
+   "blurb": "The cold open, then one highlight: the Nykaa sales.",
+   "stops": [
+    "g-nykaa",
+    "outro-make"
+   ],
+   "skip": [
+    "about"
+   ]
+  },
+  "standard": {
+   "label": "Standard",
+   "blurb": "Growth, Switchboard and ppt.live.",
+   "stops": [
+    "g-intro",
+    "g-nykaa",
+    "g-diwali",
+    "sb-intro",
+    "ppt-intro",
+    "outro-make"
+   ]
+  },
+  "full": {
+   "label": "Full",
+   "blurb": "Adds the Slumber Party, the startup that failed, the toolbox and how this was made.",
+   "stops": [
+    "g-intro",
+    "g-nykaa",
+    "g-diwali",
+    "g-slumber",
+    "often-intro",
+    "often-why",
+    "often-lesson",
+    "sb-intro",
+    "ppt-intro",
+    "tools-intro",
+    "t-video",
+    "meta-intro",
+    "meta-voice",
+    "meta-faces",
+    "meta-code",
+    "meta-flow",
+    "meta-90s",
+    "outro-make"
+   ]
+  }
  }
 }
