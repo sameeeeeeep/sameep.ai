@@ -1,0 +1,32 @@
+/* onboard.css — the "Try steering" practice fork (js/app/onboard.js). Sits inside the
+   welcome window and borrows its type (cast__kicker / title / lede). */
+.onb { max-width: 640px; margin: 0 auto; text-align: center; opacity: 0; transform: translateY(8px); transition: opacity .35s, transform .35s; }
+.onb.is-open { opacity: 1; transform: none; }
+.onb.is-closing { opacity: 0; }
+.onb__step { margin: 14px 0 0; padding: 14px 16px; border: 1px solid rgba(243, 238, 226, .16); border-radius: 12px; text-align: left; transition: opacity .3s, border-color .3s; }
+.onb__step.is-now { border-color: var(--flame, #ffa946); box-shadow: 0 0 0 1px rgba(255, 169, 70, .35); }
+.onb__step.is-later { opacity: .45; pointer-events: none; }
+.onb__step.is-done { border-color: rgba(120, 214, 140, .6); }
+.onb__ask { margin: 0 0 10px; font: 600 15px/1.4 var(--f-ui, system-ui); }
+.onb__ask b { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 8px; border-radius: 50%; background: var(--flame, #ffa946); color: #1a120a; font-size: 12px; }
+.onb__ask kbd { padding: 1px 6px; border: 1px solid rgba(243, 238, 226, .4); border-bottom-width: 2px; border-radius: 4px; font: 700 12px var(--f-ui, system-ui); }
+.onb__cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.onb__card { min-height: 52px; padding: 10px 14px; border: 1px solid rgba(243, 238, 226, .3); border-radius: 10px; background: rgba(243, 238, 226, .05); color: var(--paper, #f3eee2); font: 700 15px/1.25 var(--f-ui, system-ui); text-align: left; cursor: pointer; transition: transform .2s, background .2s, border-color .2s; }
+.onb__card:hover { transform: translateY(-2px); border-color: rgba(243, 238, 226, .6); }
+.onb__card.is-lit { background: var(--flame, #ffa946); border-color: var(--flame, #ffa946); color: #1a120a; animation: onb-pop .35s ease-out; }
+.onb__card.is-lit::after { content: "  ✓"; }
+@keyframes onb-pop { 40% { transform: scale(1.04); } }
+.onb__say { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border: 1px solid rgba(243, 238, 226, .3); border-radius: 10px; background: rgba(0, 0, 0, .35); }
+.onb__say.is-listening { border-color: var(--crt-glow, #b8ffe9); }
+.onb__lead { flex: none; color: var(--flame, #ffa946); font-weight: 800; display: grid; place-items: center; }
+.onb__in { flex: 1; min-width: 0; border: 0; background: none; color: var(--paper, #f3eee2); font: 500 16px var(--f-ui, system-ui); outline: none; padding: 8px 0; }
+.onb__meter { flex: none; display: flex; align-items: center; gap: 3px; height: 22px; }
+.onb__meter i { width: 4px; height: 100%; border-radius: 2px; background: var(--crt-glow, #b8ffe9); transform: scaleY(.15); transition: transform .08s; }
+.onb__mic { flex: none; width: 40px; height: 40px; border: 1px solid rgba(243, 238, 226, .3); border-radius: 8px; background: none; color: var(--paper, #f3eee2); cursor: pointer; display: grid; place-items: center; }
+.onb__mic.is-on { background: var(--flame, #ffa946); color: #1a120a; border-color: var(--flame, #ffa946); }
+.onb__ok { margin: 10px 0 0; font: 500 14px/1.45 var(--f-ui, system-ui); color: #a6e8b4; }
+.onb__ok.is-miss { color: var(--flame, #ffa946); }
+.onb__foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; }
+.onb.is-win .onb__go { animation: onb-pop .4s ease-out; }
+@media (max-width: 760px) { .onb__cards { grid-template-columns: 1fr; } .onb__foot { flex-direction: column-reverse; } .onb__foot .btn { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .onb, .onb__card, .onb__card.is-lit { transition: none; animation: none; } }
