@@ -118,8 +118,8 @@
 "audio/clips/g-games-02.mp3": "f276d9160a1afd68212e3027db22f836f36b4857",
 "audio/clips/g-games-03.mp3": "03283e3d785de4ae0745e1b8bf19cd070b2487b1",
 "audio/clips/g-games-04.mp3": "84c58ab81739ce1fbd97d9d74694602764e0ebcc",
-"audio/clips/g-slumber-02.mp3": "ff95fc344f23396a9bb60f967ce6001b48b0150b",
-"audio/clips/g-slumber-03.mp3": "f22690f226bbd47c4be3435c1950f268b806fc52",
+"audio/clips/g-slumber-02.mp3": "6dd7c7cb11d487075d2d2f572da3b9855ea1046f",
+"audio/clips/g-slumber-03.mp3": "cf603d9cc32e51c4a7e892226fd461779943f077",
 "audio/clips/g-slumber-05.mp3": "54b9991c4146c2c3e6e826d1aeab3475a8537c0a",
 "audio/clips/g-slumber-06.mp3": "299786778825947c512c234b2a58136378ae45b8",
 "audio/clips/sb-local-02.mp3": "fe21196706d8a1a43aef6b2df13e7c4af586f8a7",
@@ -166,5 +166,7 @@
 "audio/clips/about-01.mp3": "e04effb296b103f219e143728eeae9e5ce995f45",
 "audio/clips/about-04.mp3": "cee72b033f804d6e9948892a4b490aa168d6df2b",
 "audio/clips/about-02.mp3": "7bcc1b998a5ee62ba4831598637900aebf319dfc",
-"audio/clips/about-03.mp3": "3f6a5746e29cdc6d3a84a25cdd7865e4d21dd223"
+"audio/clips/about-03.mp3": "3f6a5746e29cdc6d3a84a25cdd7865e4d21dd223",
+"audio/clips/g-slumber-07.mp3": "baad6ee4b9455f10e3b83949eff7a6af3a5d28af",
+"audio/clips/g-slumber-08.mp3": "bbae04a78726211d3abb2e2f7484be5cc1938697"
 }

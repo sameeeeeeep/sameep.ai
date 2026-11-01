@@ -440,14 +440,17 @@
      "to": "g-diwali"
     },
     {
-     "label": "The sleepover application",
+     "label": "The Secret Slumber Party",
      "say": [
       "sleepover",
       "slumber",
       "party",
       "application",
       "dm",
-      "chat"
+      "chat",
+      "secret slumber",
+      "slumber party",
+      "khushi"
      ],
      "to": "g-slumber"
     },
@@ -522,14 +525,17 @@
      "recommended": true
     },
     {
-     "label": "The sleepover application",
+     "label": "The Secret Slumber Party",
      "say": [
       "sleepover",
       "slumber",
       "party",
       "application",
       "dm",
-      "chat"
+      "chat",
+      "secret slumber",
+      "slumber party",
+      "khushi"
      ],
      "to": "g-slumber"
     },
@@ -799,11 +805,14 @@
      "recommended": true
     },
     {
-     "label": "The sleepover application",
+     "label": "The Secret Slumber Party",
      "say": [
       "sleepover",
       "slumber",
-      "party"
+      "party",
+      "secret slumber",
+      "slumber party",
+      "khushi"
      ],
      "to": "g-slumber"
     },
@@ -1029,12 +1038,15 @@
      }
     },
     {
-     "label": "The sleepover application",
+     "label": "The Secret Slumber Party",
      "say": [
       "sleepover",
       "slumber",
       "party",
-      "dm"
+      "dm",
+      "secret slumber",
+      "slumber party",
+      "khushi"
      ],
      "to": "g-slumber"
     },
@@ -1083,13 +1095,20 @@
     {
      "id": "g-slumber-02",
      "who": "sameep",
-     "text": "It was a sleepover event we ran.",
-     "audio": "audio/clips/g-slumber-02.mp3"
+     "text": "Ha. It was the Secret Slumber Party, Khushi Kapoor's sleepover, for Nailinit. An actual sleepover: pyjamas, a ball pit, a nail bar. Here, this is the film.",
+     "audio": "audio/clips/g-slumber-02.mp3",
+     "visual": {
+      "type": "video",
+      "src": "img/events/slumber-film.mp4",
+      "poster": "img/events/slumber-film.jpg",
+      "title": "The Secret Slumber Party · the nail appointment",
+      "hold": 12000
+     }
     },
     {
      "id": "g-slumber-03",
      "who": "sameep",
-     "text": "About thirty-five spots, and you had to apply. But the application wasn't a form. It was a DM, on a little pink CRT, from the host. You get a message, I have a secret to share, and you reply one line at a time.",
+     "text": "About thirty-five spots, and you had to apply. But the application wasn't a form. It was a DM, on a little pink CRT, from Khushi. You get a message, I have a secret to share, and you reply one line at a time.",
      "audio": "audio/clips/g-slumber-03.mp3"
     },
     {
@@ -1111,6 +1130,37 @@
      "who": "sameep",
      "text": "And I tracked every single question separately, because started-the-form doesn't tell you where people drop. Per question does. Then after you applied, there was an arcade with leaderboards, so people stuck around and came back to chase scores. Games again.",
      "audio": "audio/clips/g-slumber-06.mp3"
+    },
+    {
+     "id": "g-slumber-07",
+     "who": "sameep",
+     "text": "The numbers: thirty-five spots, all by application. On the night, forty-six people got their own intro card, thirty creators and sixteen of Khushi's friends. And that live show, the cards and the drumroll, later became ppt.live.",
+     "audio": "audio/clips/g-slumber-07.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The Secret Slumber Party · Nailinit",
+      "kpis": [
+       {
+        "n": 35,
+        "label": "spots, all by application"
+       },
+       {
+        "n": 46,
+        "label": "guests with their own intro card"
+       },
+       {
+        "n": 30,
+        "label": "creators"
+       }
+      ]
+     }
+    },
+    {
+     "id": "g-slumber-08",
+     "who": "host",
+     "text": "So the party became a product. Of course it did.",
+     "audio": "audio/clips/g-slumber-08.mp3",
+     "shot": "cu"
     }
    ],
    "choices": [
@@ -1151,8 +1201,8 @@
     }
    ],
    "next": "g-hub",
-   "title": "The sleepover application",
-   "blurb": "An application that felt like a DM, tracked question by question."
+   "title": "The Secret Slumber Party",
+   "blurb": "Khushi Kapoor's sleepover for Nailinit: you applied by DM, and there's a film."
   },
   "often-intro": {
    "chapter": "The one that didn't work",

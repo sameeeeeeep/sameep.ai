@@ -19,7 +19,7 @@ export const PROJECTS = [
   { group: 'Growth', items: [
     { node: 'g-nykaa', title: 'Nykaa sales', tag: 'Pre-buzz before the big sales', blurb: 'Getting people talking before the sale even opens.' },
     { work: 'diwali', node: 'g-diwali', tag: 'An invite you play, not open' },
-    { node: 'g-slumber', title: 'The sleepover application', tag: 'A sleepover you apply to', blurb: 'An invite that made people want in.' },
+    { node: 'g-slumber', title: 'The Secret Slumber Party', tag: 'A sleepover you apply to by DM', blurb: 'Khushi Kapoor’s sleepover for Nailinit, and the film.' },
     { work: 'nia', node: 'g-nailinit', tag: 'One screen to run a D2C brand' },
   ] },
   { group: 'The one that didn’t work', items: [
