@@ -11,8 +11,6 @@ import { Podcast } from './podcast.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
-import { voice } from '../voice.js';
-import { bestMatch } from './fuzzy.js';
 
 export async function mountApp(root, { episodeUrl, resume } = {}) {
   const reduced = reducedMotion();
@@ -74,18 +72,6 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     pod = new Podcast({ wm, layer: desk.area, persona, episode, onEnd: () => ctx.endCard() });
     await wait(reduced ? 0 : 500);
     pod.open();
-    // the voice pill steers the podcast through its own say field (same matcher as typing or Flow)
-    voice.setPhase('podcast', {
-      say(text) {
-        ctx.openPodcast();
-        // the welcome window (host, length, seat) is up: say a button's name to press it
-        const dlg = pod.win.body.querySelector('.cast');
-        if (dlg) return pressByVoice(dlg, text);
-        pod.sayIn.value = text; pod.sayForm.requestSubmit();
-      },
-      listen() { ctx.openPodcast(); if (pod.mic) pod.mic.click(); else pod.sayIn.focus(); },
-      sound: (on) => sound.set(on),
-    });
     const q = new URLSearchParams(location.search);
     if (q.has('debug') && q.get('seat')) pod.studioReady.then(() => pod.seatForQA(q.get('seat')));
     if (q.has('debug') && q.get('node')) {
@@ -105,31 +91,6 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   }
   if (new URLSearchParams(location.search).has('debug')) window.__otcv = { crt, wm, podcast: pod, persona };
   return { crt, wm, podcast: pod };
-}
-
-// a dialog's buttons by what they say ("Gus", "next", "skip the seat"); else its text field
-function pressByVoice(dlg, text) {
-  const btns = [...dlg.querySelectorAll('button:not(:disabled), [role="radio"]')].filter((b) => b.offsetParent !== null);
-  const items = btns.map((b, i) => {
-    // the whole label, each line of it, and a name's first word ("Gus")
-    const leaves = [...b.querySelectorAll('*')].filter((n) => !n.children.length).map((n) => n.textContent.trim()).filter(Boolean);
-    const first = leaves[0]?.split(/\s+/)[0] || '';
-    return { key: i, phrases: [b.getAttribute('aria-label') || '', b.textContent.replace(/\s+/g, ' ').trim(), ...leaves, first.length > 2 ? first : ''].filter(Boolean) };
-  });
-  items.push({ key: 'next', phrases: ['next', 'continue', 'go on', 'done', 'start', 'ok'] });
-  const m = bestMatch(text, items, 0.5);
-  if (m?.item.key === 'next') {
-    const go = dlg.querySelector('.hostpick__go button:not(.cast__skip):not(:disabled)');
-    if (go) { go.click(); return true; }
-  } else if (m) { btns[m.item.key].click(); return true; }
-  const field = dlg.querySelector('input[type="text"]:not([hidden])');
-  if (field) {
-    field.value = text;
-    field.dispatchEvent(new Event('input', { bubbles: true }));
-    field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-    return true;
-  }
-  return false;
 }
 
 // ---------------------------------------------------------------------------

@@ -14,7 +14,7 @@ export function makeHands({ stage, camera, THREE, grooves, isBusy, glide, world,
     { from: 6, to: 7, grab: 'paper', dir: V(0, 1), reach: 0.3, hint: 'Drag it down into the shredder' },
     { from: 7, to: 8, grab: 'box', dir: 'x', reach: 0.24, hint: 'Swipe the match along the box' },
     { from: 8, to: 9, grab: 'match', toward: 'strips', reach: 0.2, hint: 'Drag the flame to the paper' },
-    { from: 10, to: 11, grab: 'cd', toward: 'slot', reach: 0.22, hint: 'Drag the CD into the slot' },
+    { from: 11, to: 12, grab: 'cd', toward: 'slot', reach: 0.22, hint: 'Drag the CD into the slot' },
   ];
   const v3 = new THREE.Vector3();
   const screenOf = (name) => {

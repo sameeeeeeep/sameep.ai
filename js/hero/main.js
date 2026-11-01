@@ -27,7 +27,7 @@ const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwritin
   { id: 'shred', len: 1.1, cap: '<u>shredded</u> it,' },
   { id: 'burn', len: 1.8, cap: 'and <em>burned</em> it…' },
   { id: 'cd', len: 1.0, cap: '…onto a <b>CD</b>…' },
-  { id: 'insert', len: 0.9, cap: 'for you to <i>experience</i>.' },
+  { id: 'insert', len: 1.4, cap: 'for you to <i>experience</i>.' },  // holds at the slot (its own groove), then goes in
 ];
 const TOTAL = BEATS.reduce((a, b) => a + b.len, 0);
 {
@@ -39,7 +39,7 @@ const G = (id, local) => { const b = BEATS[BI[id]]; return b.a + (b.b - b.a) * l
 // Scroll grooves: resting poses the page snaps to, so a scroll never stops mid-fold.
 // One gesture moves one groove (scroll-snap-stop: always).
 const GROOVES = () => [0, G('envelope', 0.57), G('envelope', 0.75), G('envelope', 1), G('origami', 1) - 1e-4, G('flight', 0.5),
-  G('crumple', 0.9), G('shred', 1) - 1e-4, G('burn', 0.3), G('burn', 0.62), G('cd', 0.95), 1];
+  G('crumple', 0.9), G('shred', 1) - 1e-4, G('burn', 0.3), G('burn', 0.62), G('cd', 0.95), G('insert', 0.5), 1];
 
 const S = new THREE.Vector3(2.5, 1.15, 0.7);       // the stage, where the sheet performs
 const PILE_C = new THREE.Vector3(-0.35, 0, -2.0);
@@ -481,7 +481,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     [G('flight', 0.06), 'whoosh', 0.9], [G('flight', 0.5), 'whoosh', 0.7],
     [G('crumple', 0.05), 'crumple', 1], [G('shred', 0.03), 'crumple', 0.45], [G('shred', 0.33), 'shred', 1],
     [G('burn', 0.09), 'paper-slide', 0.5], [G('burn', 0.285), 'match-strike', 1],
-    [G('cd', 0.06), 'whoosh', 0.6], [G('insert', 0.76), 'cd-whirr', 1],
+    [G('cd', 0.06), 'whoosh', 0.6], [G('insert', 0.66), 'cd-whirr', 1],
   ];
   let lastP = 0;
 
@@ -816,12 +816,14 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
       cd.scale.setScalar(Math.max(0.0001, form * (0.94 + 0.06 * (1 - heat))));
       // insert: fly to the slot, lie flat (label up), slide in
       if (ins > 0) {
-        const go = easeInOut(seg(ins, 0.12, 0.58));
-        const push = easeInOut(seg(ins, 0.58, 0.765));
+        // fly to the slot mouth, wait there with the slot lit (the caption's own step), then in
+        const go = easeInOut(seg(ins, 0.08, 0.36));
+        const push = easeInOut(seg(ins, 0.64, 0.8));
+        const hold = seg(ins, 0.3, 0.38) * (1 - seg(ins, 0.62, 0.66));
         tB.copy(L.slotW).add(tC.set(0.3, 0.08, 0.6));            // in front of the slot mouth
         tC.copy(L.slotW).add(tD.set(-0.12, 0.0, -0.5));           // inside
         tD.copy(S).lerp(tB, go);
-        tD.y += Math.sin(Math.PI * go) * 0.25;
+        tD.y += Math.sin(Math.PI * go) * 0.25 + Math.sin(time * 1.7) * 0.01 * hold;
         tD.lerp(tC, push);
         cd.position.copy(tD);
         qC.setFromEuler(eA.set(Math.PI / 2 - 0.42, 0, 0));          // label up, tipped toward camera
@@ -829,7 +831,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
         qC.premultiply(qA);
         qA.setFromAxisAngle(UP, 0.55);
         qC.premultiply(qA);
-        cd.quaternion.slerp(qC, easeInOut(seg(ins, 0.1, 0.6)));
+        cd.quaternion.slerp(qC, easeInOut(seg(ins, 0.06, 0.38)));
         cd.scale.setScalar(lerp(1, L.cdScale, go));
       }
     }
@@ -853,8 +855,9 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     const imacVis = smooth(seg(p, G('cd', 0.4), G('insert', 0.3)));
     imac.group.visible = imacVis > 0.001;
     imac.mat.opacity = imacVis;
-    const glow = easeInOut(seg(ins, 0.82, 0.98));
-    imac.slotU.uGlow.value = Math.sin(Math.PI * seg(ins, 0.7, 0.92)) * 0.9 + glow * 0.15;
+    const glow = easeInOut(seg(ins, 0.84, 0.98));
+    const open = smooth(seg(ins, 0.26, 0.4)) * (1 - seg(ins, 0.78, 0.86)) * (0.5 + 0.12 * Math.sin(time * 3)); // slot ready while the disc waits
+    imac.slotU.uGlow.value = Math.max(open, Math.sin(Math.PI * seg(ins, 0.72, 0.92)) * 0.9) + glow * 0.15;
     imac.glowU.uGlow.value = glow * 0.42;
     imac.glowU.uTime.value = time;
     screenLight.position.set(imac.group.position.x + 0.2, imac.group.position.y + 0.2, imac.group.position.z + 0.9);
@@ -1039,7 +1042,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   let running = true, visible = true, last = performance.now(), time = 0, raf = 0;
   let rmKey = -1, rmBusy = false;
   const RM_KEYS = [G('pile', 0.5), G('envelope', 0.57), G('envelope', 0.75), G('origami', 1) - 1e-4, G('flight', 0.5), G('crumple', 0.9),
-    G('shred', 1) - 1e-4, G('burn', 0.62), G('cd', 0.95), 1];
+    G('shred', 1) - 1e-4, G('burn', 0.62), G('cd', 0.95), G('insert', 0.5), 1];
 
   // ?timer drives frames with setTimeout (for headless/hidden test panes where rAF is paused)
   const TIMER = /[?&]timer\b/.test(location.search);
@@ -1148,7 +1151,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     // voice and hands: one groove on (1) or back (-1), or glide to a named pose (same path scroll takes)
     step(dir) { if (gLive) go(dir); },
     goto(name) {
-      const i = { pile: 0, envelope: 3, mine: 3, fold: 4, plane: 4, fly: 5, crumple: 6, shred: 7, strike: 8, match: 8, burn: 9, cd: 10, insert: 11 }[name];
+      const i = { pile: 0, envelope: 3, mine: 3, fold: 4, plane: 4, fly: 5, crumple: 6, shred: 7, strike: 8, match: 8, burn: 9, cd: 10, slot: 11, insert: 12 }[name];
       if (i === undefined || !gLive) return false;
       layoutGrooves(); glide(gTop[i]); return true;
     },
