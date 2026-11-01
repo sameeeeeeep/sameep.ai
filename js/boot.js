@@ -239,13 +239,7 @@ function entryGate() {
         </div>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
-      <ol class="gate__ways" aria-label="How it works">
-        <li class="gate__way"><b aria-hidden="true">1</b><span><strong>Scroll or tap.</strong> ${matchMedia('(pointer: coarse)').matches ? 'Swipe up' : 'Scroll or press ↓'} to move the story, grab what you see.</span></li>
-        <li class="gate__way${isWispr ? ' gate__way--flow' : ''}"><b aria-hidden="true">2</b><span>${isWispr
-          ? `<strong><img src="img/ui/wispr.svg" alt="" width="16" height="16"> Then steer the podcast with Wispr Flow.</strong> Inside the iMac, ${matchMedia('(pointer: coarse)').matches ? 'tap the mic' : 'hold <kbd>fn</kbd>'} and say where to go, or tap a card.`
-          : `<strong>Then steer the podcast.</strong> Inside the iMac, tap a card or say where to go (${matchMedia('(pointer: coarse)').matches ? 'tap the mic' : 'hold <kbd>fn</kbd> with Wispr Flow, or click the mic'}).`}</span></li>
-      </ol>
-      <p class="gate__hint">Best with headphones.</p>
+      <p class="gate__hint">Best with headphones. Works on your phone, even better on a bigger screen.</p>
     </div>`;
   document.body.append(g);
   document.documentElement.classList.add('is-gated');
@@ -279,6 +273,7 @@ function entryGate() {
     setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
       touch ? '<b>Swipe up</b> to move the story along. One swipe, one step. Swipe down to go back.'
         : '<b>Scroll</b> (or press <b>↓</b>) to move the story along. One step at a time; scroll up to go back.'), 1400);
+    autoplayCard();
     // the hero's own sound pill reflects its state; nudge it to match the choice
     setTimeout(() => {
       const pill = heroEl.querySelector('.hero-sound');
@@ -334,6 +329,33 @@ function resumeGate(r) {
     clearResume();
     location.replace(location.pathname + location.search.replace(/([?&])(skip|app)\b&?/g, '$1').replace(/[?&]$/, ''));
   });
+}
+
+// "Play it for me": a card under the story that moves it one step every few seconds, so
+// nobody has to scroll. Any scroll, swipe or key of their own hands control back.
+function autoplayCard() {
+  if (document.querySelector('.autoplay')) return;
+  const el = document.createElement('div');
+  el.className = 'autoplay';
+  el.innerHTML = '<button type="button" class="autoplay__btn"><span class="autoplay__ico" aria-hidden="true">▶</span><span class="autoplay__t">Play it for me</span></button><span class="autoplay__or">or scroll</span>';
+  document.body.append(el);
+  const btn = el.querySelector('button'), label = el.querySelector('.autoplay__t'), ico = el.querySelector('.autoplay__ico');
+  let timer = 0, mine = false;
+  const stop = () => { clearInterval(timer); timer = 0; el.classList.remove('is-on'); ico.textContent = '▶'; label.textContent = 'Play it for me'; };
+  const tick = () => {
+    if (heroEl.hidden || !heroApi) { stop(); el.remove(); return; }
+    mine = true; heroApi.step?.(1); setTimeout(() => { mine = false; }, 50);
+  };
+  btn.onclick = () => {
+    coach.done('hero-scroll');
+    if (timer) return stop();
+    el.classList.add('is-on'); ico.textContent = '❚❚'; label.textContent = 'Playing, tap to pause';
+    tick(); timer = setInterval(tick, reduced ? 2400 : 3200);
+  };
+  const theirs = (e) => { if (timer && !mine && !el.contains(e.target)) stop(); };
+  for (const t of ['wheel', 'touchstart', 'keydown']) addEventListener(t, theirs, { passive: true, capture: true });
+  const gone = new MutationObserver(() => { if (heroEl.hidden) { stop(); el.remove(); gone.disconnect(); } });
+  gone.observe(heroEl, { attributes: true, attributeFilter: ['hidden'] });
 }
 
 async function start() {

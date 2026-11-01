@@ -1133,7 +1133,10 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
 
   // dev hooks (harmless in prod)
   const emptyScene = new THREE.Scene();
-  if (!isLow && !reduced && groovesOn) {
+  // hands-on mode (drag to fold/shred/strike, pick a fold) is switched off: Sameep wants scroll or
+  // "Play it for me" only. hands.js stays in the repo; flip HANDS to bring it back.
+  const HANDS = false;
+  if (HANDS && !isLow && !reduced && groovesOn) {
     hands = makeHands({
       stage: dom.stage, camera, THREE, reduced,
       grooves: () => gTop, isBusy: () => gBusy, glide,
