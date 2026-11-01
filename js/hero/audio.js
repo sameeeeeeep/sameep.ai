@@ -13,6 +13,8 @@ export class HeroAudio {
     this.unlocked = false;
     this.fire = null;
     this.onchange = null;
+    // the bytes come down now (behind the entry screen); decoding waits for the unlock
+    this.bytes = new Map(NAMES.map((n) => [n, fetch(`audio/sfx/${n}.mp3`).then((r) => (r.ok ? r.arrayBuffer() : null)).catch(() => null)]));
     const unlock = () => this.unlock();
     this._unlock = unlock;
     ['pointerdown', 'keydown', 'touchend'].forEach((e) => addEventListener(e, unlock, { passive: true }));
@@ -37,9 +39,8 @@ export class HeroAudio {
 
   async _load(name) {
     try {
-      const r = await fetch(`audio/sfx/${name}.mp3`);
-      if (!r.ok) return;
-      const ab = await r.arrayBuffer();
+      const ab = await this.bytes.get(name);
+      if (!ab) return;
       const buf = await new Promise((res, rej) => this.ctx.decodeAudioData(ab, res, rej));
       this.buffers.set(name, buf);
       if (name === 'fire-loop' && this.fire) this._startFire(true);

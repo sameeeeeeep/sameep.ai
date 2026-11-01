@@ -26,11 +26,6 @@ const loadApp = () => (appModule ||= import('./app/main.js'));
 let handedOff = false;
 let heroApi = null;
 
-function prefetchApp() {
-  const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1200));
-  idle(() => { loadApp().catch(() => {}); readManifest(); });
-}
-
 async function readManifest() {
   try {
     const r = await fetch('img/manifest.json', { cache: 'force-cache' });
@@ -219,12 +214,12 @@ function entryGate() {
   document.documentElement.classList.add('is-gated');
   const extEls = [...g.querySelectorAll('.gate__exts li')];
   const bar = g.querySelector('.gate__bar i'), pct = g.querySelector('.gate__status span'), status = g.querySelector('.gate__status');
-  let p = 0, done = false, raf = 0;
+  let p = 0, done = false, raf = 0, real = 0;
   const t0 = performance.now();
   const paint = () => {
-    // creep toward 90% while loading; finish when the hero says it's ready
+    // real progress (the hero's build stages, then the app) with a slow creep between stages
     const t = (performance.now() - t0) / 1000;
-    const goal = done ? 100 : 90 * (1 - Math.exp(-t / 2.2));
+    const goal = done ? 100 : Math.max(real * 95, Math.min(real * 95 + 12, 90 * (1 - Math.exp(-t / 3))));
     p += (goal - p) * (done ? 0.25 : 0.12);
     bar.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
     pct.textContent = String(Math.round(p));
@@ -254,6 +249,7 @@ function entryGate() {
   g.querySelector('.gate__quiet').addEventListener('click', () => enter(false));
   g.querySelector('.gate__skip')?.addEventListener('click', () => { store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
   return {
+    progress(x) { real = Math.max(real, Math.min(1, x)); },
     ready() {
       done = true;
       status.firstChild.textContent = 'Ready. ';
@@ -280,6 +276,7 @@ async function start() {
   if (typeof mountHero === 'function') {
     try {
       heroApi = await mountHero(heroEl, {
+        onLoad: (x) => gate.progress(x * 0.85),
         onDone: (info) => handoff(info || {}),
         onProgress: (p) => {
           document.documentElement.style.setProperty('--hero-progress', String(p ?? 0));
@@ -292,8 +289,14 @@ async function start() {
       placeholderHero('hero threw');
     }
   }
+  // Enter only once everything the intro needs is built and compiled, and the app
+  // module behind it is parsed: on a phone that work is seconds of main thread, and
+  // doing it after Enter is what made the intro stutter. (Capped, so a stuck load never traps anyone.)
+  await Promise.race([
+    Promise.all([heroApi?.built, loadApp().catch(() => {}).then(() => gate.progress(0.92)), readManifest()]),
+    wait(15000),
+  ]);
   gate.ready();
-  prefetchApp();
 }
 
 start();

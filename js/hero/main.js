@@ -1,6 +1,7 @@
 // HERO: "2,000 CVs" — a scroll-scrubbed, fully reversible still life.
 // pile → envelope → origami → flight → crumple → shred → burn → CD → iMac.
-// export async function mountHero(rootEl, { onDone, onProgress })
+// export async function mountHero(rootEl, { onDone, onProgress, onLoad })
+// onLoad(0..1): how far the deferred build is (1 = every texture uploaded, every shader compiled)
 import * as THREE from '../../vendor/three.module.min.js';
 import { clamp, lerp, seg, smooth, easeInOut, easeOut, easeIn, easeOutQuart, isMobileish } from './util.js';
 import { Post } from './post.js';
@@ -115,12 +116,17 @@ function buildDOM(root, reduced) {
   };
 }
 
-export async function mountHero(rootEl, { onDone, onProgress } = {}) {
+export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]rm\b/.test(location.search);
   const mobile = isMobileish();
   const T0 = performance.now();
   const DEBUG = /[?&]debug\b/.test(location.search);
-  const mark = (s) => { if (DEBUG) console.log('[hero]', s, Math.round(performance.now() - T0)); };
+  const STAGES = ['pile', 'first-frame', 'cv', 'sheet', 'strips', 'rest', 'compiled'];
+  const mark = (s) => {
+    if (DEBUG) console.log('[hero]', s, Math.round(performance.now() - T0));
+    const i = STAGES.indexOf(s);
+    if (i >= 0) try { onLoad?.((i + 1) / STAGES.length); } catch { /* the gate's problem */ }
+  };
   const dom = buildDOM(rootEl, reduced);
   const audio = new HeroAudio();
 
@@ -1086,11 +1092,13 @@ export async function mountHero(rootEl, { onDone, onProgress } = {}) {
   raf = nextFrame(frame);
   rootEl.classList.add('is-ready');
   mark('first-frame');
-  setTimeout(() => buildRest().catch((err) => console.error('[hero] build failed', err)), 60);
+  // the gate waits on this: nothing heavy may run after the visitor presses Enter
+  const built = new Promise((res) => setTimeout(() => buildRest().catch((err) => console.error('[hero] build failed', err)).finally(res), 60));
 
   // dev hooks (harmless in prod)
   const emptyScene = new THREE.Scene();
   const api = {
+    built,
     stats: () => ({ avg: stats.avg, worst: stats.worst, spikes: stats.spikes.slice(), quality }),
     beats: BEATS.map(({ id, a, b }) => ({ id, a, b })),
     jump(p) {
