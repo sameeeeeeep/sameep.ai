@@ -243,14 +243,14 @@ export class Puppet {
       if (!pose) continue;
       const meta = idx[pose];
       const R = idx.rig?.[pose];
-      const HM = idx['head-' + pose];
+      const HM = idx['full-' + pose] || idx['head-' + pose]; // full: the whole seat from the video, no neck joint
       const [img, mask, cut, himg] = await Promise.all([
         meta?.frames?.length && !HM ? load(this.dir + meta.sheet) : null,
         R ? load(this.dir + R.mask) : null,
         R?.cut ? load(this.dir + R.cut) : null,
         HM?.frames?.length ? load(this.dir + HM.sheet) : null]);
       if (img) this.banks[look] = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
-      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true };
+      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true, full: !!idx['full-' + pose] };
       if (mask && (!R.cut || cut)) this.rigs[look] = this.#buildRig(look, R, mask, cut);
     }
     if (Object.keys(this.rigs).length) this.#useCanvas();
@@ -327,9 +327,10 @@ export class Puppet {
     b.cur = Math.max(0, Math.min(fr.length - 1, n));
   }
 
-  // listening: no talking, but not frozen either. A slow walk through the
-  // closed-mouth frames (small smiles, the head drifting with them).
+  // listening: finish the movement to a closed mouth, then hold it. (Walking the
+  // closed frames of a talking video still moves the lips.) Breathing keeps it alive.
   #idleBank(b, now) {
+    if (b.whole) { this.#stepBank(b, now, 0, 0, true); return; }
     if (now < b.idleNext) return;
     b.idleNext = now + 110;
     const fr = b.meta.frames;
@@ -465,6 +466,7 @@ export class Puppet {
     const breath = live * Math.sin(t * Math.PI * 2 * 0.25 + this.phase); // -1..1
 
     // compose the head: frame through the mask, then the mouth patch on top
+    if (bank?.full && patch >= 0) { this.#renderFull(rig, bank, patch, breath); return; }
     const [bx, by, bw, bh] = R.box;
     const sc = rig.sctx;
     sc.globalCompositeOperation = 'copy';
@@ -507,6 +509,27 @@ export class Puppet {
     c.translate(pvx + hd.x, pvy + hd.y + hd.yb);
     c.rotate((hd.r * Math.PI) / 180);
     c.drawImage(rig.scratch, bx - pvx, by - pvy);
+    c.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  // the whole seat, one video frame (tiles are stored small: drawn back up, hard pixels)
+  #renderFull(rig, bank, patch, breath) {
+    const m = bank.meta;
+    const [tw, th] = m.tile;
+    const [x0, y0, bw, bh] = m.box;
+    const i = m.frames[patch] ? patch : 0;
+    const c = this.ctx;
+    const pad = this.pad;
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.clearRect(0, 0, this.cv.width, this.cv.height);
+    c.imageSmoothingEnabled = false;
+    if (rig.opaque) c.drawImage(rig.body, 0, 0); // close-up: the room
+    else { // breathing: stretch about the desk line
+      const anchor = rig.H * 0.86;
+      const k = (breath * 1.0) / anchor;
+      c.setTransform(1, 0, 0, 1 + k, 0, pad - anchor * k);
+    }
+    c.drawImage(bank.img, (i % m.cols) * tw, Math.floor(i / m.cols) * th, tw, th, x0, y0, bw, bh);
     c.setTransform(1, 0, 0, 1, 0, 0);
   }
 

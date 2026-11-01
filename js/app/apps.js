@@ -153,14 +153,6 @@ export function buildApps(ctx) {
       const move = (m) => { frame.className = 'movie movie--' + m; status.textContent = `${m[0].toUpperCase() + m.slice(1)}: rendered in 11 hours (preview).`; };
       w.body.append(frame, h('div.row', ...['dolly', 'crash', 'orbit'].map((m) => h('button.btn.btn--sm', { type: 'button', onclick: () => move(m) }, m === 'crash' ? 'Crash zoom' : m[0].toUpperCase() + m.slice(1)))), status);
     } },
-    { id: 'granola', label: 'Granola Notes', icon: 'granola', open() {
-      const w = wm.win('granola', { title: 'Granola Notes — Meeting.txt', width: 420 });
-      const extra = ['Action item: someone should probably hire him.', 'He said “voice is the new keyboard” four times. Counted.', 'Note to self: the CD was a pun. It took me a minute.'];
-      let i = 0;
-      const list = h('ul.notes', h('li', 'Candidate burned his CV. On purpose.'), h('li', 'Turned it into a CD, then a podcast, then a modem noise.'), h('li', 'Built the whole thing by talking to it.'));
-      w.body.append(h('p.small', isWispr ? 'Meeting: Wispr India growth ✕ Sameep' : 'Meeting: you ✕ Sameep'), list,
-        h('button.btn', { type: 'button', onclick: (e) => { if (i < extra.length) list.append(h('li.is-new', extra[i++])); if (i >= extra.length) e.currentTarget.disabled = true; } }, 'Enhance notes'));
-    } },
     { id: 'notion', label: 'Notion Organizer', icon: 'notion', open() {
       const w = wm.win('notion', { title: 'Notion Organizer — To Do', width: 360 });
       const items = [['Burn CV', true], ['Press it onto a CD', true], ['Dial up', true], ['Record a podcast with myself', true], [isWispr ? 'Get a reply from Wispr' : 'Get a reply from you', false, true]];

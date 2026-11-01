@@ -123,12 +123,12 @@
     {
      "id": "intro-01",
      "who": "host",
-     "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to whoever is listening.",
+     "text": "This is Off the CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to whoever is listening.",
      "sting": "audio/music/sting-intro.mp3",
      "audio": "audio/clips/intro-01-d.mp3",
      "v": {
       "wispr": {
-       "text": "This is OFF THE CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
+       "text": "This is Off the CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
        "audio": "audio/clips/intro-01.mp3"
       }
      },
@@ -4491,7 +4491,7 @@
     {
      "id": "outro-03",
      "who": "host",
-     "text": "Seven e's. I counted. Good night, my darlings. This has been OFF THE CV.",
+     "text": "Seven e's. I counted. Good night, my darlings. This has been Off the CV.",
      "audio": "audio/clips/outro-03.mp3",
      "shot": "cu",
      "look": "front"
