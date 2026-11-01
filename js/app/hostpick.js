@@ -114,7 +114,8 @@ export function openWelcome(container, { hosts, current, base, persona, routes =
           h('p.hostpick__sub', 'Switch hosts anytime during the show: tap a face on the caption bar under the picture.')],
         length: () => [...head(i, 'How long have you got?', 'Select the speed'), lenRow, h('p.hostpick__sub', SUB)],
         seat: () => [...head(i, 'Grab a seat in the audience', 'Pick who you are in the crowd'),
-          panel.area, h('div.cast__form.hostpick__name', panel.field)],
+          panel.area, h('div.cast__form.hostpick__name', panel.field),
+          h('p.hostpick__sub', { style: { fontSize: '12px', opacity: '.8' } }, 'Sameep sees the name you type and the parts you played, nothing else.')],
       }[kind]();
       inner.append(...page, h('div.hostpick__go', go, kind === 'seat' && h('button.cast__skip', { type: 'button', onclick: () => done(true) }, 'Skip the seat, just listen'), quick, back));
       setTimeout(() => (inner.querySelector('.is-picked') || inner.querySelector('.cast__card, .hostpick__len'))?.focus({ preventScroll: true }), 200);

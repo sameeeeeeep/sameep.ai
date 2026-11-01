@@ -5,6 +5,7 @@ import { unlockAudio } from './unlock.js';
 import { coach } from './coach.js';
 import { resumable, clearResume, markStage } from './resume.js';
 import './power.js';
+import { track, heroProgress } from './analytics.js';
 
 const heroEl = document.getElementById('hero');
 const appEl = document.getElementById('app');
@@ -46,6 +47,7 @@ async function readManifest() {
 async function handoff(info = {}) {
   if (handedOff) return;
   handedOff = true;
+  track('hero_done', { how: info.resume ? 'resume' : info.instant ? 'skip' : 'scroll' });
   store.set(SEEN_KEY, '1');
   if (!info.resume) markStage('app');
   const modP = loadApp();
@@ -265,6 +267,7 @@ function entryGate() {
   };
   const enter = (withSound) => {
     unlockAudio();
+    track('gate_enter', { how: withSound ? 'sound' : 'muted' });
     store.set('offthecv.muted', withSound ? '0' : '1');
     store.set('offthecv.sound', withSound ? 'on' : 'off');
     close();
@@ -282,7 +285,7 @@ function entryGate() {
   };
   g.querySelector('.gate__enter').addEventListener('click', () => enter(true));
   g.querySelector('.gate__quiet').addEventListener('click', () => enter(false));
-  g.querySelector('.gate__skip')?.addEventListener('click', () => { store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
+  g.querySelector('.gate__skip')?.addEventListener('click', () => { track('gate_enter', { how: 'skip' }); store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
   return {
     progress(x) { real = Math.max(real, Math.min(1, x)); },
     ready() {
@@ -348,6 +351,7 @@ function autoplayCard() {
   };
   btn.onclick = () => {
     coach.done('hero-scroll');
+    if (!timer) track('autoplay');
     if (timer) return stop();
     el.classList.add('is-on'); ico.textContent = '❚❚'; label.textContent = 'Playing, tap to pause';
     tick(); timer = setInterval(tick, reduced ? 2400 : 3200);
@@ -384,6 +388,7 @@ async function start() {
         onProgress: (p) => {
           document.documentElement.style.setProperty('--hero-progress', String(p ?? 0));
           if (p > 0.02) coach.done('hero-scroll');
+          heroProgress(p ?? 0);
           stuck.progress(p);
           if (p > 0.6) loadApp().catch(() => {});
         },

@@ -11,6 +11,7 @@ import { bestMatch, rankMatches } from './fuzzy.js';
 import { openDemo, linkDialog } from './demos.js';
 import { openCast, savedVisitor } from './cast.js';
 import { openWelcome } from './hostpick.js';
+import { track } from '../analytics.js';
 import { Studio } from './stage.js';
 import { loadWork, openWork } from './work.js';
 import { Monitor, resolveVisual } from './monitor.js';
@@ -115,6 +116,7 @@ export class Podcast {
       routes: first ? this.routes : null, route: this.routeId, durP: this.durP,
       seat: first && !this.persona.isCustom, countdown: first ? 20 : 0,
     });
+    if (first) track('welcome', { host: res.host, route: res.route, seat: res.visitor?.character?.id, seatLabel: res.visitor?.character?.label, name: res.visitor?.name });
     if (res.route && res.route !== this.routeId) this.setRoute(res.route);
     if (res.visitor) { this.visitor = res.visitor; this.casted = true; this.#renderAudience(); }
     if (first) this.#steerTip();
@@ -192,7 +194,7 @@ export class Podcast {
     if (!sw.children.length) {
       for (const x of this.hosts) {
         sw.append(h('button.hostsw__chip', { type: 'button', role: 'radio', dataset: { host: x.id }, title: `${x.name}: ${x.style || x.kind || ''}`, 'aria-label': `Host: ${x.name}`,
-          onclick: () => { if (x.id === this.hostId) return; sound.tick('pick'); saveHost(x.id); this.setHost(x.id); } },
+          onclick: () => { if (x.id === this.hostId) return; sound.tick('pick'); track('host_switch', { to: x.id, at: this.nodeId }); saveHost(x.id); this.setHost(x.id); } },
         h('img', { src: safeUrl(x.thumb, this.base), alt: '', width: 40, height: 40, draggable: 'false' })));
       }
     }
@@ -517,6 +519,7 @@ export class Podcast {
     this.nodeId = id;
     this.node = node;
     this.visited.add(id);
+    track('node', { id, host: this.hostId });
     // this version's lines (text/audio overrides, version-only lines)
     this.lines = (node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l, this.hostId) }));
     this.durs = this.lines.map(estDur);
@@ -740,7 +743,7 @@ export class Podcast {
       if (tok !== this.token) return;
     }
     const n = this.node;
-    if (n.end || (!n.choices?.length && !n.next) || this.nodeId === 'outro') this.onEnd?.();
+    if (n.end || (!n.choices?.length && !n.next) || this.nodeId === 'outro') { track('end', { at: this.nodeId }); this.onEnd?.(); }
     if (n.choices?.length) {
       this.root.classList.add('is-waiting');
       this.playing = false;
@@ -1075,6 +1078,7 @@ export class Podcast {
   // the audience picks: the card flashes, the host takes it from there
   #pick(choice, said, gesture = false) {
     coach.done();
+    track('choice', { from: this.nodeId, to: choice.to, how: said && (said !== choice.label || !this.node?.choices?.includes(choice)) ? 'voice' : gesture ? 'tap' : 'auto' });
     // a choice can carry a demo ("Open it" / "Show me here")
     if (choice.demo) {
       const d = choice.demo;
