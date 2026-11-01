@@ -986,7 +986,7 @@ p.chooser__or { margin: 2px 0 -4px; }
 .pcard.is-visited:not(.is-now) .pcard__go::after { content: " · heard"; color: #999; font-weight: 500; }
 
 /* phones: the chooser comes up as a sheet pinned to the bottom of the screen (on desktop it
-   sits over the picture), so the options are on screen the moment Delphine asks. ▾ folds it
+   sits over the picture), so the options are on screen the moment Foyra asks. ▾ folds it
    down to its header; the page under it gets room to scroll the say field clear of it. */
 @media (max-width: 760px) {
   .chooser:not([hidden]) {

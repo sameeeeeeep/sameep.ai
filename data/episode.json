@@ -2,7 +2,7 @@
  "title": "OFF THE CV",
  "speakers": {
   "host": {
-   "name": "Delphine Marchbanks",
+   "name": "Foyra Gold",
    "sprite": "img/sprites/host"
   },
   "sameep": {
@@ -123,12 +123,12 @@
     {
      "id": "intro-01",
      "who": "host",
-     "text": "This is Off the CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to whoever is listening.",
+     "text": "This is Off the CV. I am your host, Foyra Gold, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to whoever is listening.",
      "sting": "audio/music/sting-intro.mp3",
      "audio": "audio/clips/intro-01-d.mp3",
      "v": {
       "wispr": {
-       "text": "This is Off the CV. I am your host, Delphine Marchbanks, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
+       "text": "This is Off the CV. I am your host, Foyra Gold, and my guest this evening is the artificial, but I am assured entirely sincere, Sameep. Say hello to the nice people from Wispr.",
        "audio": "audio/clips/intro-01.mp3"
       }
      },
