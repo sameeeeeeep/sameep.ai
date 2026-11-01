@@ -17,6 +17,7 @@ import { FlowBar } from './flowbar.js';
 import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoices, isMainHub, mins } from './chooser.js';
 import { isWispr, pick as pickVersion, shows } from '../version.js';
 import { takeAudio } from '../unlock.js';
+import { projectCards } from './projects.js';
 
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const estDur = (line) => Math.max(2.4, words(line.text) * 0.36 + 0.7);
@@ -219,7 +220,14 @@ export class Podcast {
     this.routeSide = h('div.side__route');
     const legend = h('p.side__legend', { 'aria-hidden': 'true' },
       h('span', h('i.sub__dot.is-heard'), 'heard'), h('span', h('i.sub__dot.is-route'), 'recommended route'));
-    const side = h('aside.pod__side', h('h3.side__title', 'Episode map'), this.routeSide, this.chapEl, legend,
+    // two ways in: by topic (the chapter map) or by project (one card each)
+    this.projEl = h('ul.pcards');
+    const tab = (id, label) => h('button.side__tab', { type: 'button', role: 'tab', dataset: { tab: id }, onclick: () => this.#sideTab(id) }, label);
+    this.sideTabs = h('div.side__tabs', { role: 'tablist', 'aria-label': 'Explore the episode' }, tab('topic', 'By topic'), tab('project', 'By project'));
+    this.topicPanel = h('div.side__panel', { role: 'tabpanel' }, this.routeSide, this.chapEl);
+    this.projPanel = h('div.side__panel', { role: 'tabpanel', hidden: true }, h('p.side__lede', 'Skip the show. Pick a project and hear just that part.'), this.projEl);
+    this.sideNav = h('div.side__nav', this.sideTabs, this.topicPanel, this.projPanel);
+    const side = h('aside.pod__side', h('h3.side__title', 'Episode map'), this.sideNav, legend,
       h('p.side__hint', COPY.hint));
     const chapDrawer = h('details.chap-drawer', h('summary', h('span', 'Episode map'), h('span.chap-drawer__meta')), h('div.chap-drawer__body'));
 
@@ -286,8 +294,8 @@ export class Podcast {
     const narrow = isNarrow();
     const side = this.root.querySelector('.pod__side');
     const drawer = this.chapDrawer.querySelector('.chap-drawer__body');
-    if (narrow && this.chapEl.parentElement !== drawer) drawer.append(this.routeSide, this.chapEl);
-    if (!narrow && this.chapEl.parentElement !== side) side.insertBefore(this.chapEl, side.querySelector('.side__hint')), side.insertBefore(this.routeSide, this.chapEl);
+    if (narrow && this.sideNav.parentElement !== drawer) drawer.append(this.sideNav);
+    if (!narrow && this.sideNav.parentElement !== side) side.insertBefore(this.sideNav, side.querySelector('.side__legend'));
     this.stage.classList.toggle('stage--narrow', narrow);
     this.monitor.narrow = narrow;
     this.monitor.panelHost = this.stageCol;
@@ -310,8 +318,35 @@ export class Podcast {
     }
   }
 
+  #sideTab(id) {
+    this.tab = id;
+    try { sessionStorage.setItem('otcv-sidetab', id); } catch { /* storage blocked */ }
+    this.#renderTabs();
+  }
+
+  #renderTabs() {
+    if (!this.sideTabs) return;
+    if (!this.tab) { try { this.tab = sessionStorage.getItem('otcv-sidetab'); } catch { /* noop */ } }
+    const t = this.tab === 'project' ? 'project' : 'topic';
+    for (const b of this.sideTabs.children) { const on = b.dataset.tab === t; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); }
+    this.topicPanel.hidden = t !== 'topic';
+    this.projPanel.hidden = t !== 'project';
+    this.root.querySelector('.side__legend')?.toggleAttribute('hidden', t !== 'topic');
+  }
+
+  #renderProjects() {
+    if (!this.projEl || !this.map) return;
+    this.projEl.replaceChildren(...projectCards(this.map, {
+      workList: this.workList, base: this.workBase || this.base, currentNode: this.nodeId, visited: this.visited,
+      onGo: (to) => { this.chapDrawer.open = false; this.go(to, { from: 'chapter' }); },
+      onOpen: (id) => openWork(this.wm, this.persona, { focusId: id }),
+    }));
+  }
+
   #renderChapters() {
     if (!this.chapEl) return;
+    this.#renderTabs();
+    this.#renderProjects();
     const cur = this.node?.chapter;
     this.chapEl.replaceChildren(...chapterMap(this.map, {
       visited: this.visited, currentChapter: cur, currentNode: this.nodeId, open: this.mapOpen,

@@ -142,6 +142,7 @@ export class Puppet {
     this.ci = 0; // cue index cache
     this.banks = {}; // look → { img, meta, cur, next, dir, quietSince }
     this.rigs = {}; // look → { body, heads, scratch, sctx, meta }
+    this.hbanks = {}; // look → whole-head bank (head-<pose> in bank.json): the video's own head, every frame
     this.reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.phase = Math.random() * Math.PI * 2; // breathing: every character on their own rhythm
     this.seed = Math.random() * 100;
@@ -236,17 +237,20 @@ export class Puppet {
     if (!idx) return;
     for (const look of Object.keys(this.src)) {
       const twin = Object.keys(this.rigs).find((k) => this.src[k] === this.src[look]);
-      if (twin) { this.banks[look] = this.banks[twin]; this.rigs[look] = this.rigs[twin]; continue; } // a front-only seat
+      if (twin) { this.banks[look] = this.banks[twin]; this.rigs[look] = this.rigs[twin]; this.hbanks[look] = this.hbanks[twin]; continue; } // a front-only seat
       const closed = this.src[look].closed || '';
       const pose = /\/cu-front-closed\.webp/.test(closed) ? 'cu-front' : /\/cu-closed\.webp/.test(closed) ? null : look;
       if (!pose) continue;
       const meta = idx[pose];
       const R = idx.rig?.[pose];
-      const [img, mask, cut] = await Promise.all([
-        meta?.frames?.length ? load(this.dir + meta.sheet) : null,
+      const HM = idx['head-' + pose];
+      const [img, mask, cut, himg] = await Promise.all([
+        meta?.frames?.length && !HM ? load(this.dir + meta.sheet) : null,
         R ? load(this.dir + R.mask) : null,
-        R?.cut ? load(this.dir + R.cut) : null]);
+        R?.cut ? load(this.dir + R.cut) : null,
+        HM?.frames?.length ? load(this.dir + HM.sheet) : null]);
       if (img) this.banks[look] = { img, meta, cur: meta.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0 };
+      if (himg) this.hbanks[look] = { img: himg, meta: HM, cur: HM.rest ?? 0, next: 0, dir: 1, quietSince: 0, idleNext: 0, whole: true };
       if (mask && (!R.cut || cut)) this.rigs[look] = this.#buildRig(look, R, mask, cut);
     }
     if (Object.keys(this.rigs).length) this.#useCanvas();
@@ -278,8 +282,17 @@ export class Puppet {
       }
       heads[k] = c;
     }
+    // whole-head mode: the body also gives up the soft head area, so the still
+    // sprite's own hair edge never shows round the video's head
+    const bodyH = cv(W, H);
+    const bH = bodyH.getContext('2d');
+    bH.drawImage(body, 0, 0);
+    bH.globalCompositeOperation = 'destination-out';
+    bH.drawImage(mask, bx, by);
     const scratch = cv(bw, bh);
-    return { body, heads, scratch, sctx: scratch.getContext('2d'), meta: R, W, H, opaque: !R.cut };
+    const sctx = scratch.getContext('2d');
+    sctx.imageSmoothingEnabled = false;
+    return { body, bodyH, mask, heads, scratch, sctx, meta: R, W, H, opaque: !R.cut };
   }
 
   // one canvas replaces the <img> stack. Alpha seats get a few px of headroom
@@ -378,7 +391,7 @@ export class Puppet {
     // 2. frame bank: the mouth as it comes in the video frames. Once the rig is
     // up the bank always draws (speaking: play; pause: wind down and hold;
     // listening: slow idle walk), so nothing pops between bank and stills.
-    const bank = this.banks[look];
+    const bank = this.hbanks[look] || this.banks[look];
     const rig = this.cv && this.rigs[look];
     const talking = speaking && (pc || level > 0 || this.env > 0.02);
     let patch = -1;
@@ -389,8 +402,10 @@ export class Puppet {
       want = 'closed'; // the base under the patch (eyes can still blink)
     }
 
-    // 3. blinks: random, 2–6 s apart, only with the mouth shut (sometimes a double)
-    if (now < this.blinkUntil) want = want === 'closed' ? 'blink' : want;
+    // 3. blinks: random, 2–6 s apart, only with the mouth shut (sometimes a double).
+    // A whole-head bank blinks on its own, as filmed.
+    if (bank?.whole && rig) { /* the video's own blinks */ }
+    else if (now < this.blinkUntil) want = want === 'closed' ? 'blink' : want;
     else if (this.blinkAgain && now > this.blinkAgain && want === 'closed') {
       this.blinkAgain = 0; this.blinkUntil = now + 110;
     } else if (now > this.nextBlink && want === 'closed') {
@@ -453,8 +468,16 @@ export class Puppet {
     const [bx, by, bw, bh] = R.box;
     const sc = rig.sctx;
     sc.globalCompositeOperation = 'copy';
-    sc.drawImage(rig.heads[this.shape] || rig.heads.closed, 0, 0);
-    if (bank && patch >= 0) {
+    if (bank?.whole && patch >= 0) {
+      // the video's whole head for this frame (close-up tiles are stored small: drawn back up, hard pixels)
+      const m = bank.meta;
+      const [tw, th] = m.tile;
+      const i = m.frames[patch] ? patch : 0;
+      sc.drawImage(bank.img, (i % m.cols) * tw, Math.floor(i / m.cols) * th, tw, th, 0, 0, bw, bh);
+      sc.globalCompositeOperation = 'destination-in';
+      sc.drawImage(rig.mask, 0, 0);
+    } else sc.drawImage(rig.heads[this.shape] || rig.heads.closed, 0, 0);
+    if (bank && !bank.whole && patch >= 0) {
       const m = bank.meta;
       const [px, py, pw, ph] = m.patch;
       const [tw, th] = m.tile || [pw, ph];
@@ -470,14 +493,14 @@ export class Puppet {
     c.clearRect(0, 0, this.cv.width, this.cv.height);
     if (rig.opaque) {
       // close-up: the frame stays put; the head (and a soft margin of room behind it) moves
-      c.drawImage(rig.body, 0, 0);
+      c.drawImage(bank?.whole ? rig.bodyH : rig.body, 0, 0);
       hd.yb = breath * 1.5;
     } else {
       // breathing: stretch about the desk line, so hands stay put and the head rises ~1 px
       const anchor = rig.H * 0.86;
       const k = (breath * 1.0) / anchor;
       c.setTransform(1, 0, 0, 1 + k, 0, pad - anchor * k);
-      c.drawImage(rig.body, 0, 0);
+      c.drawImage(bank?.whole ? rig.bodyH : rig.body, 0, 0);
       hd.yb = 0;
     }
     const [pvx, pvy] = R.pivot;
