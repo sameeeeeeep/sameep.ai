@@ -115,7 +115,7 @@
     {
      "id": "cold-open-04",
      "who": "sameep",
-     "text": "Yeah, so, burning a CD! That's the whole pun. The CV burns, and what comes out is a CD. It goes into the iMac, and the portfolio plays. And the CD isn't a recording, it's an app. Imagine an AI app from the nineties, and instead of interviewing you, it takes someone through your work.",
+     "text": "Yeah, so, burning a CD! That's the whole pun. The burning burns a CD, it goes into the iMac, and the portfolio plays. And the CD isn't a recording, it's an app. Imagine an AI app from the nineties, not for interviewing you, but for taking someone through your work.",
      "audio": "audio/clips/cold-open-04.mp3"
     },
     {
@@ -138,7 +138,7 @@
     {
      "id": "cold-open-06",
      "who": "sameep",
-     "text": "With all the beeps, yes. That's the era when the internet first became reachable for ordinary people. So the idea is: what if today's AI had existed back then?",
+     "text": "With all the beeps, yes. That's the era where the internet just became reachable for ordinary people. Retro-futuristic, as if this tech existed back in the day.",
      "audio": "audio/clips/cold-open-06.mp3"
     }
    ],
@@ -189,7 +189,7 @@
     {
      "id": "intro-02",
      "who": "sameep",
-     "text": "Hi! Quick disclaimer: I'm the AI version of Sameep, and this is still a concept. There may be pauses, answers that aren't complete, a few rough edges. But isn't that imperfection what makes us human? Anyway, you get a say in where we go.",
+     "text": "Hi! Quick disclaimer: I'm the AI version. I talk about the learnings the same way he dictated them, a bit rambling. And I won't cover everything. Pick a door, let's go. You also have a say here, FYI.",
      "messy": "Hi! Quick, um, quick disclaimer, I'm the AI version. I talk about the learnings the same way he dictated them, a bit rambling, sorry. And I won't cover everything. Pick a door, let's go. You, um, you also have a say here, FYI.",
      "audio": "audio/clips/intro-02.mp3",
      "look": "front"
@@ -685,7 +685,7 @@
     {
      "id": "g-intro-02",
      "who": "sameep",
-     "text": "Pre-buzz, I think. Building the noise before a launch or a sale, so people are already waiting when it goes live. At Nykaa, the beauty shopping app, it was the big sales. At Nailinit, it was a launch. Somewhere along the way I realised games are kind of the cheat code. And then there's a Diwali invite you actually play, and a party you applied to by chatting.",
+     "text": "Pre-buzz, I think. Building the noise before a launch or a sale. At Nykaa it was the big sales, at Nailinit it was a launch. And somewhere along the way I realised games are kind of the cheat code. Then there's a Diwali invite, and a party application that looked like a DM.",
      "audio": "audio/clips/g-intro-02.mp3",
      "visual": {
       "type": "work",
@@ -885,7 +885,7 @@
     {
      "id": "g-nykaa-02",
      "who": "sameep",
-     "text": "So at Nykaa I was the product lead for the big sales, the ones the whole app gears up for. The Hot Pink Sale, Pink Friday, the Birthday Sale. One feature was the Pink Box. Before the sale, you fill it like a wishlist, and the moment the sale goes live, it all drops into your cart.",
+     "text": "So at Nykaa I was the product lead for all the sale stuff that used to go live. The Hot Pink Sale, the Pink Friday sale, the Birthday Sale. We had features like the Pink Box, which was essentially a wishlist that automatically became your cart.",
      "messy": "So at Nykaa I was the, the product lead for all of the sale related stuff that used to go live. Hot Pink Sale, the Pink Friday sale, the Birthday Sale. We had features like the Pink Box, which was essentially a wish list that, um, automatically became your cart.",
      "audio": "audio/clips/g-nykaa-02.mp3",
      "cutaway": "img/cutaways/pinkbox-wishlist-to-cart.webp",
@@ -903,7 +903,7 @@
     {
      "id": "g-nykaa-03",
      "who": "sameep",
-     "text": "Then, before the sale, we'd reveal prices early, so you knew what was coming. There was Slash and Save, where you and your friends bring the price of a combo down together. And games to play. People came back again and again just to see what was next. Keep them hooked till the sale went live, and then convert them all in one go.",
+     "text": "Then pre-sale features where we'd reveal the prices of products beforehand. Slash and Save. Games for people to play. People came back again and again just to see what was next. Keep them engaged till the sale went live, and then convert them all in one go.",
      "audio": "audio/clips/g-nykaa-03.mp3",
      "visual": {
       "type": "stats",
@@ -936,7 +936,7 @@
     {
      "id": "g-nykaa-05",
      "who": "sameep",
-     "text": "Ha, kind of. I also owned the whole path from the sale page, to the cart, to the order. So, the numbers I can share. Landing page conversion, meaning how many people who land on a page go on to buy, went up nine percent. Sale conversion went up thirty percent. And the ads on the site earned thirty-five percent more.",
+     "text": "Ha, kind of. I also owned conversion from the landing page to cart to order. Landing pages were my domain. These numbers are on my CV, so they're public: landing page conversion up nine percent, sale conversion up thirty percent, on-site ads earning thirty-five percent more.",
      "audio": "audio/clips/g-nykaa-05.mp3",
      "visual": {
       "type": "stats",
@@ -966,7 +966,7 @@
     {
      "id": "g-nykaa-06",
      "who": "sameep",
-     "text": "The learning I took away: the buzz is a product, not a post. If there's something to do every day before the sale, people come back on their own, and the sale day kind of takes care of itself.",
+     "text": "The learning I took away: the buzz is a product, not a post. If you build the reason to come back, the sale day kind of takes care of itself.",
      "audio": "audio/clips/g-nykaa-06.mp3"
     }
    ],
@@ -1043,14 +1043,14 @@
     {
      "id": "g-nailinit-02",
      "who": "sameep",
-     "text": "Yeah, it's where I am right now. Nailinit is a nail care brand, and I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder called it the Lenskart for nails. Lenskart being the big eyewear brand in India.",
+     "text": "Yeah, it's where I am right now, I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder described it as building the Lenskart for nails.",
      "messy": "Yeah, it's, it's where I am right now, I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder described it as, um, building the Lenskart for nails.",
      "audio": "audio/clips/g-nailinit-02.mp3"
     },
     {
      "id": "g-nailinit-03",
      "who": "sameep",
-     "text": "We launched with a campaign with the actor Khushi Kapoor.",
+     "text": "We did the launch with a campaign with K K.",
      "audio": "audio/clips/g-nailinit-03.mp3"
     },
     {
@@ -1062,7 +1062,7 @@
     {
      "id": "g-nailinit-05",
      "who": "sameep",
-     "text": "The thing I can talk about more is Nia. It's an internal tool I built so the whole company runs from one dashboard. Sales, finance, inventory, content, tasks, all in one place. We're still adding sections, and the newest one is for the warehouse.",
+     "text": "The thing I can talk about more is Nia. Nia is Nailinit's internal OS that I created, in order to make the company run on a dashboard. Sales, finance, inventory, content, tasks, all in one place. The modules are still getting defined. The recent one is the warehouse.",
      "audio": "audio/clips/g-nailinit-05.mp3"
     },
     {
@@ -1085,7 +1085,7 @@
     {
      "id": "g-nailinit-07",
      "who": "sameep",
-     "text": "Ha. One rule I kept with Nia: nothing fake. Every button on it actually works. And if it's about to send something out, it writes a draft first and waits for a person to approve it.",
+     "text": "Ha. One rule I kept with Nia: nothing fake. No pretend buttons. And anything that sends something out, drafts it first and waits for a human to approve.",
      "audio": "audio/clips/g-nailinit-07.mp3"
     }
    ],
@@ -1154,14 +1154,14 @@
     {
      "id": "g-games-02",
      "who": "sameep",
-     "text": "So this is the thread that keeps repeating. Nykaa had games before the sales. The Diwali invite has a whole mela, like an old Indian village fair, full of little games.",
+     "text": "So this is the thread that keeps repeating. Nykaa had games before the sales. The Diwali invite has a whole mela.",
      "messy": "So this is the, the thread that keeps repeating, right? Nykaa had games before the sales. The Diwali invite has a whole, a whole mela.",
      "audio": "audio/clips/g-games-02.mp3"
     },
     {
      "id": "g-games-03",
      "who": "sameep",
-     "text": "And for a sleepover party we ran, once you'd applied, there was an arcade with leaderboards.",
+     "text": "And a sleepover event we ran had an arcade with leaderboards, after you applied.",
      "audio": "audio/clips/g-games-03.mp3",
      "visual": {
       "type": "video",
@@ -1175,7 +1175,7 @@
     {
      "id": "g-games-04",
      "who": "sameep",
-     "text": "And every time, the same thing happens: people open it again and again, they play, and they show it to someone. There's a social side a normal page just doesn't have. So now I think of a game as a reason to come back. And someone coming back is the cheapest marketing there is, because they're already there.",
+     "text": "And every time, the same thing happens: people open it again and again, they play, and they show it to someone. There's a social factor a normal page just doesn't have. So now I think of a game as a reason to re-open. And a re-open is the cheapest marketing there is, because the person is already there.",
      "audio": "audio/clips/g-games-04.mp3"
     }
    ],
@@ -1249,7 +1249,7 @@
     {
      "id": "g-diwali-02",
      "who": "sameep",
-     "text": "So I made our Diwali party invite. It's digital, but so much fun. You strike a match and burn open the envelope to reveal the invite. Then you play games, like an old Indian village fair: a parrot that tells your fortune, a balloon shoot, ring toss, and a lucky draw. And the same idea also became a Diwali wish and a postcard you can send anyone.",
+     "text": "So this week I made our Diwali party invite, digital, but so much fun. You strike a match, light it up to reveal the invite. Then you play games, this old mela vibe: a parrot that tells your fortune, a balloon shoot, ring toss, and a lucky draw. And the same idea took different forms: an invite, a wish, a postcard.",
      "messy": "So this week I made our Diwali party invite, digital but, but so much fun. You strike a match, light it up to reveal the invite. Then you play games, this old, um, mela vibe, a parrot that tells your fortune, balloon shoot, ring toss, and a lucky draw. And the same idea took different forms, an invite, a wish, a postcard.",
      "audio": "audio/clips/g-diwali-02.mp3",
      "visual": {
@@ -1346,7 +1346,7 @@
     {
      "id": "g-diwali-07",
      "who": "sameep",
-     "text": "The numbers, for the party invite. Nine hundred plus people got their own personal invite, and more than ninety percent opened it. Twenty-two hundred plus opens in total, because people kept coming back. Sixteen hundred plus games played, seven hundred plus of them with the fortune-telling parrot. Five hundred plus people said yes to the party. And two hundred plus game results got pinned to a shared wall every guest could see.",
+     "text": "For the party invite: nine hundred plus personal invites, and more than ninety percent got opened. Twenty-two hundred plus opens in total. Sixteen hundred plus games played, and the parrot alone got seven hundred plus. Five hundred plus people said yes. And two hundred plus results got pinned to the public party wall.",
      "audio": "audio/clips/g-diwali-07.mp3",
      "visual": {
       "type": "stats",
@@ -1439,7 +1439,7 @@
     {
      "id": "g-diwali-09",
      "who": "sameep",
-     "text": "And here's why it kept spreading. Every guest got their own personal link, so I could see who opened it and how many times. Whatever you won in a game became a little card you could pin to that shared wall. And inside, there's a button to make your own invite. So the invite kept bringing people back by itself. Almost four hundred and fifty guests opened it more than once. Oh, and the match that burned my CV at the start? Same thing. It's from this invite.",
+     "text": "Every card counts opens per person, every result becomes a card you can pin, and there's a make-your-own button inside, so the invite is its own loop. Also, the match that burned my CV at the start? Same mechanic. It's from this invite.",
      "audio": "audio/clips/g-diwali-09.mp3",
      "visual": {
       "type": "stats",
@@ -1459,7 +1459,7 @@
     {
      "id": "g-diwali-10",
      "who": "sameep",
-     "text": "The learnings were small and kind of humbling. The ring toss was way too hard on phones, so I made it much easier. The match strike got more forgiving after a few misses. And the parrot has five hundred plus fortunes it can give you, and I rewrote the cheeky ones to be warm. Nothing negative goes in a Diwali card.",
+     "text": "Learnings were small and kind of humbling. The ring toss was way too hard on phones, so I made it much easier. The match strike got more forgiving after a few misses. And there are five hundred plus fortunes, and I rewrote the cheeky ones to be warm. Nothing negative goes in a Diwali card.",
      "audio": "audio/clips/g-diwali-10.mp3",
      "visual": {
       "type": "stats",
@@ -1577,7 +1577,7 @@
     {
      "id": "g-slumber-02",
      "who": "sameep",
-     "text": "Ha. It was the Secret Slumber Party, a sleepover with the actor Khushi Kapoor, for Nailinit. An actual sleepover: pyjamas, a ball pit, a nail bar. Here, this is the film.",
+     "text": "Ha. It was the Secret Slumber Party, Khushi Kapoor's sleepover, for Nailinit. An actual sleepover: pyjamas, a ball pit, a nail bar. Here, this is the film.",
      "audio": "audio/clips/g-slumber-02.mp3",
      "visual": {
       "type": "video",
@@ -1591,7 +1591,7 @@
     {
      "id": "g-slumber-03",
      "who": "sameep",
-     "text": "About thirty-five spots, and you had to apply. But the application wasn't a form. It was a chat with Khushi, on a little pink retro computer screen. You get a message, I have a secret to share, and you reply one line at a time.",
+     "text": "About thirty-five spots, and you had to apply. But the application wasn't a form. It was a DM, on a little pink CRT, from Khushi. You get a message, I have a secret to share, and you reply one line at a time.",
      "audio": "audio/clips/g-slumber-03.mp3",
      "visual": {
       "type": "video",
@@ -1622,7 +1622,7 @@
     {
      "id": "g-slumber-05",
      "who": "sameep",
-     "text": "Exactly. And that's why so many people actually filled it in, because we kept it feeling like a chat. Each question is a tiny reply. It feels like being let in, not like paperwork.",
+     "text": "Exactly. And that's why the fill rate was so good, because we kept the interface sort of like a chat. Each question is a tiny reply. It feels like being let in, not like paperwork.",
      "messy": "Exactly. And that's, that's why the fill rate was so good, because we kept the interface sort of like a chat, right. Each question is just a tiny reply. It feels like, um, being let in, not like paperwork.",
      "audio": "audio/clips/g-slumber-05.mp3",
      "visual": {
@@ -1637,7 +1637,7 @@
     {
      "id": "g-slumber-06",
      "who": "sameep",
-     "text": "And I tracked every question on its own. Just knowing someone started doesn't tell you where they gave up. Tracking each question does. Then after you applied, there was an arcade with high scores, so people stuck around and came back to beat each other. Games again.",
+     "text": "And I tracked every single question separately, because started-the-form doesn't tell you where people drop. Per question does. Then after you applied, there was an arcade with leaderboards, so people stuck around and came back to chase scores. Games again.",
      "audio": "audio/clips/g-slumber-06.mp3",
      "visual": {
       "type": "video",
@@ -1651,7 +1651,7 @@
     {
      "id": "g-slumber-07",
      "who": "sameep",
-     "text": "The numbers: thirty-five spots, all by application. On the night, we ran a little live show on the big screen, and forty-six people got their own intro card with a drumroll. Thirty creators and sixteen of Khushi's friends. That live show later became ppt.live, my tool for interactive presentations.",
+     "text": "The numbers: thirty-five spots, all by application. On the night, forty-six people got their own intro card, thirty creators and sixteen of Khushi's friends. And that live show, the cards and the drumroll, later became ppt.live.",
      "audio": "audio/clips/g-slumber-07.mp3",
      "visual": {
       "type": "stats",
@@ -1754,7 +1754,7 @@
     {
      "id": "often-intro-02",
      "who": "sameep",
-     "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking, so, getting you the best deal: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, looking after those trips taught us more than anything we planned.",
+     "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, servicing those trips taught us more than anything we planned.",
      "audio": "audio/clips/often-intro-02.mp3",
      "visual": {
       "type": "stats",
@@ -1829,7 +1829,7 @@
     {
      "id": "often-why-02",
      "who": "sameep",
-     "text": "While looking after these trips, we kept hitting the same real problems people had. And it all came down to one thing. In travel, whoever controls the supply, the hotels and the flights, wins. Which makes it less of a consumer app, and more of a business-to-business play.",
+     "text": "Through a lot of actual user pain points while servicing these trips, we figured out the eventual problem with travel. And that problem was having to command the supply, at the end of the day. Which makes it less of a consumer play and more of a B2B play.",
      "messy": "So through a lot of actual user pain points, while servicing these trips, we figured out the, the eventual problem with travel. And that problem was having to command the supply, at the end of the day. Which makes it less of a consumer side and more of a, of a B2B play.",
      "audio": "audio/clips/often-why-02.mp3"
     },
@@ -1908,7 +1908,7 @@
     {
      "id": "often-lesson-02",
      "who": "sameep",
-     "text": "Getting people to switch to you is really hard, because they barely use a travel app, so it never becomes a habit. Which means word of mouth has to spread extremely fast. You can't really start small and slowly grow big.",
+     "text": "Switching is very difficult, because stickiness is very little. Which means your referral speed needs to be extremely rapid. You can't really be small and grow out to be big.",
      "audio": "audio/clips/often-lesson-02.mp3"
     },
     {
@@ -1931,12 +1931,12 @@
     {
      "id": "often-lesson-04",
      "who": "sameep",
-     "text": "We ran out of money. At the company, and personally. When people only need you once in a while, it's really hard to become a habit. And if you're not a habit, people don't tell their friends either. The exact opposite of something you use every single day.",
+     "text": "We ran out of runway. At the company, and personally. In an infrequent category, it becomes very difficult to build something sticky, because referrals also don't work if it's not sticky. The exact opposite of something you use every single day.",
      "audio": "audio/clips/often-lesson-04-d.mp3",
      "cutaway": "img/cutaways/often-empty-calendar.webp",
      "v": {
       "wispr": {
-       "text": "We ran out of money. At the company, and personally. When people only need you once in a while, it's really hard to become a habit. And if you're not a habit, people don't tell their friends either. The exact opposite of something like Wispr, which is used a lot more regularly.",
+       "text": "We ran out of runway. At the company, and personally. In an infrequent category, it becomes very difficult to build something sticky, because referrals also don't work if it's not sticky. The exact opposite of something like Wispr, which is used a lot more regularly.",
        "audio": "audio/clips/often-lesson-04.mp3"
       }
      }
@@ -2017,7 +2017,7 @@
     {
      "id": "sb-intro-02",
      "who": "sameep",
-     "text": "So I was building Brand Brain, a tool that helps new brands plan their launch and growth. Every time I wanted an AI feature in it, I needed a separate API key, and I'd pay for AI again, on top of the Claude subscription I already had. And I realised I'd have to set that up all over again, for every AI app I make.",
+     "text": "I was creating Brand Brain, and Brand Brain didn't have that plumbing, I had to create it. Every time I wanted an AI feature, I had to rely on API keys, extra charges over and above the subscription I already had. Then I realised I had to create it every single time, for every different AI app that I make.",
      "messy": "So I was creating Brand Brain, and Brand Brain didn't have that, that plumbing, I had to create it. Every time I wanted an AI feature I had to rely on API keys, extra charges over and above the subscription I already had. Then I realised I had to create it every single time, for every, every different AI app that I make.",
      "audio": "audio/clips/sb-intro-02.mp3",
      "cutaway": "img/cutaways/brandbrain-apikeys-bill.webp"
@@ -2025,7 +2025,7 @@
     {
      "id": "sb-intro-03",
      "who": "sameep",
-     "text": "So I built that connection once. Any app can use the Claude I'm already paying for, with everything it already knows about me, and everything it's already plugged into. And then I realised, wait, this works for any app. Any web page, really. It's a Mac app plus a Chrome extension, and the extension borrows Claude from the Mac app.",
+     "text": "So I built the plumbing once, so I could route it through my existing compute, context and connectors. And then I realised, wait, I can do this for any app. Any web page, for that matter. A Chrome extension gets the compute and the connectors from a Mac app.",
      "audio": "audio/clips/sb-intro-03.mp3",
      "cutaway": "img/cutaways/switchboard-plumbing.webp"
     },
@@ -2268,7 +2268,7 @@
     {
      "id": "sb-lineage-02",
      "who": "sameep",
-     "text": "No, no. Long road. In January I made ARIA, a chat assistant that keeps thinking in the background, on a small AI model running on my own laptop. Two days later it became AutoClawd. It listened all the time, watched my screen, and ran on that small model. Two hundred seventy plus commits, so, a lot of updates. And it got big. A little pixel world, the camera, my face, gestures, even a call mode.",
+     "text": "No, no. Long road. In January I made ARIA, a chat that keeps thinking in the background on a local Llama. Two days later it became AutoClawd. Always-on mic, your screen, a small local model. Two hundred seventy plus commits. And it got big. A pixel world, camera, face, gestures, a call mode.",
      "audio": "audio/clips/sb-lineage-02.mp3",
      "visual": {
       "type": "stats",
@@ -2301,7 +2301,7 @@
     {
      "id": "sb-lineage-04",
      "who": "sameep",
-     "text": "It was a garage! So on the twelfth of March I cut it all. Pixel world, call mode, camera, face, text to speech, gestures. Gone, for focus. What was left was Autoclaw, without the d. Hold the F N key, speak, and it writes your prompt for Claude Code, the coding assistant. And then, on the seventh of July, came Switchboard, out of that Brand Brain problem. It's at six hundred plus commits now.",
+     "text": "It was a garage! So on the twelfth of March I cut it all. Pixel world, call mode, camera, face, text to speech, gestures. Gone, for focus. Then came Autoclaw: hold the F N key, speak, and it writes the prompt for Claude Code. And then, on the seventh of July, Switchboard, born out of Brand Brain. It's at six hundred plus commits now.",
      "audio": "audio/clips/sb-lineage-04.mp3",
      "visual": {
       "type": "stats",
@@ -2324,7 +2324,7 @@
     {
      "id": "sb-lineage-05",
      "who": "sameep",
-     "text": "So it all started from AutoClawd. Some features got dropped because small local models just couldn't handle them, and new ones got picked up because I needed them. The notch was one of those, the black cutout at the top of a MacBook screen.",
+     "text": "So it started from AutoClawd. Some features got abandoned because local models just don't favour them, and new ones got picked up because that was the need. The notch was one of those.",
      "audio": "audio/clips/sb-lineage-05.mp3"
     }
    ],
@@ -2393,14 +2393,14 @@
     {
      "id": "sb-local-02",
      "who": "sameep",
-     "text": "They're good at senses, not judgment. I gave a tiny model, a three billion parameter one, a job it couldn't do. In one project it was meant to stay in character and rewrite things, and it failed most of the time. And in Autoclaw my own note literally says: Qwen, the small model, isn't smart enough to learn patterns.",
+     "text": "They're good at senses, not judgment. I gave a three B model a job it couldn't do. In one project it was meant to stay in character and rewrite things, and it failed most of the time. And in Autoclaw my own note literally says: Qwen isn't smart enough to learn patterns.",
      "messy": "They're good at, at senses, not judgment. I gave a three B model a job it, it just couldn't do. In one project it was meant to stay in character and rewrite things, and it failed, like, most of the time. And in Autoclaw my own note literally says, Qwen isn't smart enough to learn patterns.",
      "audio": "audio/clips/sb-local-02.mp3"
     },
     {
      "id": "sb-local-03",
      "who": "sameep",
-     "text": "So the fix was, the small model becomes a bouncer. It just filters and cleans. Claude does the thinking. And on my laptop I keep only the senses: speech to text, text to speech, and Apple's built-in image recognition. Which is how this voice is being made, actually. On a laptop.",
+     "text": "So the fix was, the small model becomes a bouncer. It just filters and cleans. Claude does the thinking. And locally I keep only the senses: speech to text, text to speech, Apple's vision. Which is how this voice is being made, actually. On a laptop.",
      "audio": "audio/clips/sb-local-03.mp3"
     },
     {
@@ -2485,7 +2485,7 @@
     {
      "id": "sb-notch-02",
      "who": "sameep",
-     "text": "The notch was to make working with Claude easy. When Claude needs an answer from me, it shows a little card with options. Originally that card followed my cursor around, and I couldn't click it, because it kept moving with me. Pin it to the notch, the black cutout at the top of the screen, and now you can click it. That one decision ended the whole click versus keyboard saga.",
+     "text": "The notch was to make interacting with Claude easy. Originally the card followed your cursor, and you couldn't click it, because it kept moving with you. A card that's fixed in the notch, you can click. That one decision solved the whole click versus keyboard saga.",
      "audio": "audio/clips/sb-notch-02.mp3",
      "visual": {
       "type": "shots",
@@ -2603,7 +2603,7 @@
     {
      "id": "sb-wrapps-02",
      "who": "sameep",
-     "text": "Both. A wrapp is a little app that runs on your own Claude. Some instructions, some skills, and a screen, put together so it does one job from start to finish. There are ninety plus of them so far. Brand Brain, the launch planner. Flow, for dictation. Voice cloning. Drawing on web pages. Directing a web page like a video. A lot of them. Pick one.",
+     "text": "Both. A wrapp is a series of prompts, skills and an interface that does one task end to end, on your own Claude. The README counts ninety plus. Brand Brain. Flow. The notch and Guru. Voice cloning. Annotating HTML. Thinking of HTML as a video. A lot of them. Pick one.",
      "audio": "audio/clips/sb-wrapps-02.mp3",
      "visual": {
       "type": "stats",
@@ -2824,7 +2824,7 @@
     {
      "id": "w-brandbrain-01",
      "who": "sameep",
-     "text": "Brand Brain helps brands that sell straight to customers online plan their launch and growth. It had thirty-two features that needed a server to talk to the AI. The whole Switchboard idea was, I moved all thirty-two into your browser tab, running on your own Claude. No server. No new API key.",
+     "text": "Brand Brain is a launch and growth hub for D2C brands. It had thirty-two API routes, and the whole Switchboard idea was, I moved all thirty-two to run in your browser tab, on your own Claude. No backend. No new API key.",
      "audio": "audio/clips/w-brandbrain-01.mp3",
      "visual": {
       "type": "stats",
@@ -2861,7 +2861,7 @@
     {
      "id": "w-brandbrain-03",
      "who": "sameep",
-     "text": "Ha. The funny mistake there was a three-day fight with a grid of results that kept loading empty. Two bits of code were racing each other, and the wrong one kept winning. Three days.",
+     "text": "Ha. The funny mistake there was a three-day fight with a grid that kept loading empty. Classic race condition. Three days.",
      "audio": "audio/clips/w-brandbrain-03.mp3",
      "visual": {
       "type": "stats",
@@ -3003,7 +3003,7 @@
     {
      "id": "w-flow-02",
      "who": "sameep",
-     "text": "Yeah, I know. Mine is dictation inside Switchboard: hold a key and talk. In my defence, it's a very small Flow. The big one is Wispr Flow, and that's what I used to dictate this whole site.",
+     "text": "Yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a very small Flow. The big one is what I used to dictate this whole site.",
      "audio": "audio/clips/w-flow-02-d.mp3",
      "v": {
       "wispr": {
@@ -3078,7 +3078,7 @@
     {
      "id": "w-voice-01",
      "who": "sameep",
-     "text": "Voice cloning, on your own Mac. You drop in a few seconds of your voice, and Switchboard can speak in it. No cloud, no credits. It uses Pocket TTS, a small open voice model, running on Apple's own chips. The voice I'm talking in right now came out of that.",
+     "text": "Voice cloning, on device. You drop a few seconds of audio, and Switchboard can speak in that voice. No cloud, no credits. It's Kyutai's Pocket TTS running on Apple's own M L X. The voice I'm talking in right now came out of that pipeline.",
      "audio": "audio/clips/w-voice-01.mp3"
     },
     {
@@ -3163,7 +3163,7 @@
     {
      "id": "w-cut-01",
      "who": "sameep",
-     "text": "Cut started life as Redline, a way to review landing pages inside Brand Brain. The idea is, you treat a web page like a film. Instead of fiddling with the code for colours and spacing, every control says what you want the page to do. So you're directing the page, like a video.",
+     "text": "Redline started as reviewing a landing page the Brand Brain way, and it became Cut. The idea is, the page is a film, and every knob is an intent. So instead of editing CSS, you're directing the page, like a video.",
      "messy": "So Redline started as, um, reviewing a landing page the Brand Brain way, and it became Cut. The idea is the page is a film, and every knob is an intent. So instead of editing CSS, you're kind of directing the page, like a, like a video.",
      "audio": "audio/clips/w-cut-01.mp3"
     },
@@ -3226,7 +3226,7 @@
     {
      "id": "w-annotate-01",
      "who": "sameep",
-     "text": "That one's simple. Claude makes a lot of web pages for me, and I wanted to just draw on them. Circle things, scribble, and hand it back with notes. Like marking up a printout, but the printout is alive.",
+     "text": "That one's simple. Claude makes a lot of HTML for me, and I wanted to just draw on it. Circle things, scribble, and hand it back with notes. Like marking up a printout, but the printout is alive.",
      "audio": "audio/clips/w-annotate-01.mp3"
     },
     {
@@ -3288,7 +3288,7 @@
     {
      "id": "w-cartridge-01",
      "who": "sameep",
-     "text": "Cartridge. You describe a game, and your own Claude builds it. It was the headline wrapp when the Switchboard store launched. Before that, I got a bit distracted and made a whole open-world game set in a neon Mumbai, which, yeah. Detour.",
+     "text": "Cartridge. You describe a game, and your own Claude builds it. It headlined the store at launch. Before that, I got a bit distracted and made a whole open-world game set in a neon Mumbai, which, yeah. Detour.",
      "audio": "audio/clips/w-cartridge-01.mp3"
     },
     {
@@ -3375,7 +3375,7 @@
     {
      "id": "w-prophexy-01",
      "who": "sameep",
-     "text": "Prophexy. One genuinely computed reading a day. Astrology, tarot, palm. And it can do the reading in three ways: your own Claude, a model on your device, or just plain maths. The fun part was stripping out all the jargon.",
+     "text": "Prophexy. One genuinely computed reading a day. Astrology, tarot, palm. And it can read from three places: your own Claude, a model on your device, or pure computation. The fun part was stripping out all the jargon.",
      "audio": "audio/clips/w-prophexy-01.mp3"
     },
     {
@@ -3532,7 +3532,7 @@
     {
      "id": "ppt-intro-04",
      "who": "sameep",
-     "text": "But the existing tools only had a handful of question types, and they only sold annual plans, for one party. So last month, when I hosted a gathering of creators, I built my own. Your slides go on a TV, the room scans a QR code, and phones vote, answer, ask, play. No app, no signup. We tested it with fifty phones joining at once. Zero errors.",
+     "text": "But the tools only had a handful of question types, and they only sold annual plans, for one party. So last month, when I hosted a gathering of creators, I built my own. Your slides go on a TV, the room scans a QR, and phones vote, answer, ask, play. No app, no signup. We load-tested it with fifty phones. Zero errors.",
      "audio": "audio/clips/ppt-intro-04.mp3",
      "visual": {
       "type": "stats",
@@ -3742,7 +3742,7 @@
     {
      "id": "ppt-more-01",
      "who": "sameep",
-     "text": "The rules I baked in. Every four to seven minutes, give the room something new to do. The first thing to do comes within three minutes. Test people, don't just tell them. And never end on the rating, the how-was-this-session slide.",
+     "text": "The rules I baked in: change the room's state every four to seven minutes. First interaction within three minutes. Test, don't just tell. And never end on the rating.",
      "audio": "audio/clips/ppt-more-01.mp3",
      "visual": {
       "type": "stats",
@@ -3781,7 +3781,7 @@
     {
      "id": "ppt-more-03",
      "who": "sameep",
-     "text": "And it plugs into Claude, so you can say, make me a twenty-minute all-hands with a mood poll and a quiz, and Claude builds the whole show.",
+     "text": "And there's a Claude connector, so you can say, make me a twenty-minute all-hands with a mood poll and a quiz, and Claude builds the whole show.",
      "demo": {
       "type": "link",
       "url": "https://github.com/sameeeeeeep/ppt-live-claude",
@@ -3843,7 +3843,7 @@
     {
      "id": "ppt-uses-01",
      "who": "sameep",
-     "text": "All-hands, trainings, classrooms, sales pitches. But also weddings, sangeets, which is the music night before an Indian wedding, and birthdays. There's a Diwali office-night template with Cracker Awards, silly awards the room votes on live. Anywhere from a five-person standup to a few hundred people.",
+     "text": "All-hands, trainings, classrooms, sales pitches. But also weddings, sangeets, birthdays. There's a Diwali office-night template with Cracker Awards that the room votes on live. Anywhere from a five-person standup to a few hundred people.",
      "audio": "audio/clips/ppt-uses-01.mp3"
     },
     {
@@ -3917,7 +3917,7 @@
     {
      "id": "ppt-games-01",
      "who": "sameep",
-     "text": "Thirty-four of them. Word Spies, Mafia, Antakshari, the Indian singing game, Housie, which is bingo, and Dumb Charades. And a bluffing one called Unicorn. You get two secret cards and two crore, that's twenty million rupees of pretend money, and you bluff your way to being the last founder standing.",
+     "text": "Thirty-four of them. Word Spies, Mafia, Antakshari, Housie, Dumb Charades. And a bluffing one called Unicorn. Two secret cards, two crore, bluff your way to be the last founder standing.",
      "audio": "audio/clips/ppt-games-01.mp3",
      "visual": {
       "type": "stats",
@@ -4100,7 +4100,7 @@
     {
      "id": "tools-intro-02",
      "who": "sameep",
-     "text": "Ha, yeah. Mostly, when Claude can't do something, I give it the ability. video2ai, because Claude couldn't watch videos. Slash refs, so it looks at real design references before it designs anything. The notch, so it can ask me questions. A plug-in so it can build ppt.live shows. And some tiny ones I make to get around my own ADHD.",
+     "text": "Ha, yeah. Mostly, when Claude can't do something, I give it the ability. video2ai, because Claude couldn't watch videos. Slash refs, so it designs against real references. The notch. The ppt.live connector. And some tiny ones I make to get around my own ADHD.",
      "messy": "Ha, yeah. Mostly when Claude can't do something, I, I give it the ability. video2ai because Claude couldn't watch videos. Slash refs, so it designs against real references. The notch. The ppt.live connector. And, um, some tiny ones I make to get around my own ADHD.",
      "audio": "audio/clips/tools-intro-02.mp3",
      "visual": {
@@ -4272,7 +4272,7 @@
     {
      "id": "t-video-01",
      "who": "sameep",
-     "text": "I don't really start with a plan. I start with a problem that's annoying me. I'd send Claude an Instagram video as a reference, and back then, it simply could not watch it.",
+     "text": "I don't really start with a plan. I start with a problem that's annoying me. Claude was really bad at getting Instagram references. Back in the day, it simply could not.",
      "messy": "So I don't really start with a plan, I start with a problem that's, that's annoying me. Like, Claude was really bad at getting Instagram references. Back in the day it, it simply could not.",
      "audio": "audio/clips/t-video-01.mp3",
      "cutaway": "img/cutaways/video2ai-squint.webp"
@@ -4303,7 +4303,7 @@
     {
      "id": "t-video-04",
      "who": "sameep",
-     "text": "Okay. Picking which frames matter is a maths problem, not an AI problem. Apple's image engine is already on your Mac. It gives each frame a kind of fingerprint, and you only keep the frames where the picture actually changed. So a video goes from about a hundred and seventy thousand tokens, which is a lot of reading for Claude, to about a hundred and fifty lines. Way faster, and way easier to use as a reference.",
+     "text": "Okay. Frame selection is a vector math problem, not an LLM problem. Apple's engine, already on your Mac, gives each frame a fingerprint, and you keep only the ones where the picture actually changed. A video goes from about a hundred and seventy thousand tokens to about a hundred and fifty lines. Way faster, way more effective, and easy to give references.",
      "audio": "audio/clips/t-video-04.mp3",
      "visual": {
       "type": "stats",
@@ -4325,7 +4325,7 @@
     {
      "id": "t-video-05",
      "who": "sameep",
-     "text": "And the mistake: I first tried CLIP, a popular open image model. It ate two gigs of memory. Apple's version was already sitting on the machine.",
+     "text": "And the mistake: I tried CLIP first. It ate two gigs of RAM. Apple's thing was already sitting on the machine.",
      "audio": "audio/clips/t-video-05.mp3",
      "visual": {
       "type": "stats",
@@ -4417,7 +4417,7 @@
     {
      "id": "t-refs-01",
      "who": "sameep",
-     "text": "Slash refs is a command for Claude. Before it designs anything, it shows you real references. Award winners, great ads, launch films, as picture cards right above your prompt, and you pick a direction. Because otherwise you get the AI average. Same thing as the CV pile, really.",
+     "text": "Slash refs. Before Claude designs anything, it shows you real references. Award winners, great ads, launch films, as picture cards right above your prompt, and you pick a direction. Because otherwise you get the AI average. Same thing as the CV pile, really.",
      "audio": "audio/clips/t-refs-01.mp3"
     },
     {
@@ -4627,7 +4627,7 @@
     {
      "id": "fun-intro-02",
      "who": "sameep",
-     "text": "So, wallpap is the fun one. It's the live wallpaper literally behind us right now. psspss, AI cats on your phone, was good, but can be better. And then a bunch of small recent ones: a cat that lives on your Mac, sending files as sound, a bar for AI agents.",
+     "text": "So, wallpap is the fun one, it's literally behind us right now. psspss was good, but can be better. And then a bunch of small recent ones: a cat that lives on your Mac, sending files as sound, a bar for AI agents.",
      "messy": "So, wallpap is the fun one, it's, it's literally behind us right now. psspss was good but, but can be better. And then a bunch of small recent ones, a cat that lives on your Mac, sending files as sound, a, a bar for AI agents.",
      "audio": "audio/clips/fun-intro-02.mp3",
      "visual": {
@@ -4867,7 +4867,7 @@
     {
      "id": "f-wallpap-03",
      "who": "sameep",
-     "text": "Learnings: for anything that moves, put all the frames on one big image and flip through it. It's way lighter. And the wallpaper used to flash black every time your screen brightness changed, because every window rebuilt itself. Now it waits a beat and rebuilds once.",
+     "text": "Learnings: always use sprite sheets for anything that moves. And the wallpaper used to flash black every time your screen brightness changed, because every window rebuilt itself. Debounced now.",
      "audio": "audio/clips/f-wallpap-03.mp3"
     },
     {
@@ -4973,7 +4973,7 @@
     {
      "id": "f-psspss-01",
      "who": "sameep",
-     "text": "psspss is a household of AI cats on your phone, powered by your own Claude. They go through your mail and calendar, using the access your Claude already has, and bring you what matters. And they ask before anything that sends, books or deletes.",
+     "text": "psspss is a household of AI cats on your phone, powered by your own Claude. They go through your mail and calendar with the connectors you already have, and bring you what matters. And they ask before anything that sends, books or deletes.",
      "audio": "audio/clips/f-psspss-01.mp3"
     },
     {
@@ -5367,7 +5367,7 @@
     {
      "id": "f-alter-03",
      "who": "sameep",
-     "text": "It's a prototype. No landing page yet. But two of the wallpap scenes grew out of it: the singing bowls, and the cymatics one, where sand makes patterns from sound.",
+     "text": "It's a prototype. No landing page yet. But two of the wallpap scenes, the singing bowls and the cymatics, grew out of it.",
      "audio": "audio/clips/f-alter-03.mp3"
     },
     {
@@ -5429,7 +5429,7 @@
     {
      "id": "f-vibedj-01",
      "who": "sameep",
-     "text": "Vibe DJ. An AI DJ that mixes your own music, keeping the beats in time, and reads the crowd's energy from a webcam, so the set ramps up instead of whiplashing. Honest status: the webcam part has only been tested in a simulator. So the crowd, so far, is imaginary.",
+     "text": "Vibe DJ. An AI DJ that beatmatches your library and reads the crowd's energy from a webcam, so the set ramps up instead of whiplashing. Honest status: the webcam part has only been tested in a simulator. So the crowd, so far, is imaginary.",
      "audio": "audio/clips/f-vibedj-01.mp3"
     },
     {
@@ -5968,7 +5968,7 @@
     {
      "id": "meta-voice-03",
      "who": "sameep",
-     "text": "Each line gets generated, then Whisper, a speech-to-text model, listens back and checks it actually said the words. If it mumbles, it retries, up to four times, and keeps the best take. Then I cut out the dead air between words, and ran Whisper again to make sure no word got cut.",
+     "text": "Each line gets generated, then whisper listens back and checks it actually said the words. If it mumbles, it retries, up to four times, and keeps the best take. Then I cut out the dead air between words, and ran whisper again to make sure no word got cut.",
      "audio": "audio/clips/meta-voice-03.mp3",
      "visual": {
       "type": "stats",
@@ -6076,7 +6076,7 @@
     {
      "id": "meta-faces-02",
      "who": "sameep",
-     "text": "We're pixel art. Each of us has a short talking video for every camera angle. I cut out the background, put all the frames onto one big image, and the browser flips through them while the audio plays.",
+     "text": "We're pixel art, in the same style as the Slumber Party illustrations. Each of us has a short talking video for every camera angle. I key out the backdrop, pack the frames into one sheet, and the browser plays them while the audio plays.",
      "audio": "audio/clips/meta-faces-02.mp3"
     },
     {
@@ -6187,7 +6187,7 @@
     {
      "id": "meta-code-02",
      "who": "sameep",
-     "text": "Claude Code, mostly, with me steering it by voice. I'd dictate a messy brain dump with Wispr Flow, and Claude turns it into a plan and splits it across sessions: the burning CV, the app, the faces, the voices. They ran side by side, overnight, and Switchboard popped a card into my notch whenever something needed a decision.",
+     "text": "Claude Code, mostly, with me steering it by voice. I'd dictate a messy brain dump with Flow, Claude turns it into a plan and splits it across sessions: the burning CV, the app, the faces, the voices. They ran in parallel, overnight, and Switchboard pinged my notch whenever something needed a decision.",
      "audio": "audio/clips/meta-code-02.mp3",
      "visual": {
       "type": "shots",
@@ -6202,7 +6202,7 @@
     {
      "id": "meta-code-03",
      "who": "sameep",
-     "text": "It's plain HTML and JavaScript, no framework. The burning CV is three.js, a 3D library for the browser. The screen you're watching is made to look like an old tube TV. And before every push, a privacy scan runs, because the code is public and I didn't want a phone number slipping out.",
+     "text": "It's plain HTML and JavaScript, no framework. The burning CV is three.js with shaders. The screen you're watching is a CRT shader. And before every push, a privacy scan runs, because the repo is public and I didn't want a phone number slipping out.",
      "audio": "audio/clips/meta-code-03.mp3",
      "visual": {
       "type": "stats",
@@ -6438,7 +6438,7 @@
     {
      "id": "meta-90s-02",
      "who": "sameep",
-     "text": "Everyone's building with the same AI models now, so everything kind of looks the same. So I tried to stand out on every part of it. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you get to steer it.",
+     "text": "Everyone's building with the same model intelligence now, so the average looks the same. So I tried to differentiate on every aspect. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you get to steer it.",
      "messy": "So everyone's building with the same model intelligence now, right, so the average looks the, the same. So I tried to differentiate on every aspect. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you, you get to steer it.",
      "audio": "audio/clips/meta-90s-02.mp3"
     }
@@ -6515,7 +6515,7 @@
     {
      "id": "outro-make-02",
      "who": "sameep",
-     "text": "Anyone. That's the point. With Switchboard, anyone's own Claude can read their work, their GitHub, their notes, then write the questions and the answers, and make the voices. So it's not just my portfolio. Anyone can have one, by connecting Switchboard to their Claude.",
+     "text": "Anyone. That's the point. Through Switchboard, anyone's Claude can read their work, their GitHub, their notes, fill the context, write the questions and the answers, generate the voice. So it's not just my portfolio. It's anyone's, by connecting Switchboard and Claude.",
      "messy": "Anyone, that's, that's the point. Through Switchboard, anyone's Claude can read their work, their GitHub, their notes, fill the context, write the questions and the answers, generate the voice. So it's not just my portfolio. It's anyone's, by, by connecting Switchboard and Claude.",
      "demo": {
       "type": "link",
@@ -6555,7 +6555,7 @@
     {
      "id": "outro-02",
      "who": "sameep",
-     "text": "Thanks for steering. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want one of these for yourself, that's Switchboard.",
+     "text": "Thanks for picking the doors. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want your own, Switchboard.",
      "audio": "audio/clips/outro-02.mp3",
      "look": "front"
     },
@@ -6631,7 +6631,7 @@
     {
      "id": "about-02",
      "who": "sameep",
-     "text": "Ha. So, I'm Sameep, from Mumbai. I'm a product and growth person. I've spent most of my career in consumer internet: ShopClues, an online marketplace, then Nykaa, the beauty shopping app, where I ran the big sales, the pre-buzz, the games, the landing pages. Then Mosaic Wellness, a health and wellness company.",
+     "text": "Ha. So, I'm Sameep, from Mumbai. I'm a product and growth person. I've spent most of my career in consumer internet: ShopClues, then Nykaa, where I ran the big sales, the pre-buzz, the games, the landing pages. Then Mosaic Wellness.",
      "audio": "audio/clips/about-02.mp3",
      "look": "side",
      "visual": {
