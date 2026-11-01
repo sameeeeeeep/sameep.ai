@@ -18,6 +18,7 @@ import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoi
 import { isWispr, pick as pickVersion, shows } from '../version.js';
 import { takeAudio } from '../unlock.js';
 import { projectCards } from './projects.js';
+import { coach } from '../coach.js';
 
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const estDur = (line) => Math.max(2.4, words(line.text) * 0.36 + 0.7);
@@ -618,6 +619,7 @@ export class Podcast {
       this.chooser.hidden = false;
       setTimeout(() => this.flow.ensureFocus(), 50);
       this.#startAuto();
+      this.#tips();
       // something was said while the answer played: use it now
       if (this.queued) { const q = this.queued; this.queued = null; this.#heard(q, { atFork: true }); }
     } else if (n.next) {
@@ -626,6 +628,22 @@ export class Podcast {
       this.playing = false;
       this.#setPlayIcon();
     }
+  }
+
+  // first-time guides at a fork: how to choose (first fork), then the project shortcut (a few in)
+  #tips() {
+    setTimeout(() => {
+      if (!this.root.classList.contains('is-waiting')) return;
+      const prim = this.chooser.querySelector('.prim');
+      if (coach.show('fork', prim, isWispr
+        ? '<b>Your turn.</b> Tap a card, or hold your <b>Flow</b> key and just say where to go. Do nothing and the recommended one plays.'
+        : '<b>Your turn.</b> Tap a card, or say or type where to go ("tell me about ppt.live"). Do nothing and the recommended one plays.', { place: 'top' })) return;
+      if (this.visited.size < 6) return;
+      const narrow = isNarrow();
+      coach.show('projects', narrow ? this.chooser.querySelector('.chooser__head') : this.sideTabs, narrow
+        ? 'Short on time? Open the <b>Episode map</b> under the player and pick <b>By project</b> to jump straight to one.'
+        : 'Short on time? <b>By project</b> lists every project. Tap one to hear just that part.', { place: narrow ? 'top' : 'bottom' });
+    }, 700);
   }
 
   async #cast() {
@@ -909,6 +927,7 @@ export class Podcast {
 
   // the audience picks: the card flashes, the host takes it from there
   #pick(choice, said, gesture = false) {
+    coach.done();
     // a choice can carry a demo ("Open it" / "Show me here")
     if (choice.demo) {
       const d = choice.demo;

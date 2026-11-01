@@ -2,6 +2,7 @@
 // hero → onDone → zoom into the iMac's glass → reveal #app and mount it.
 import { isWispr } from './version.js';
 import { unlockAudio } from './unlock.js';
+import { coach } from './coach.js';
 
 const heroEl = document.getElementById('hero');
 const appEl = document.getElementById('app');
@@ -239,6 +240,11 @@ function entryGate() {
     store.set('offthecv.muted', withSound ? '0' : '1');
     store.set('offthecv.sound', withSound ? 'on' : 'off');
     close();
+    // first time: say how the intro moves (it only moves when you do)
+    const touch = matchMedia('(pointer: coarse)').matches;
+    setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
+      touch ? '<b>Swipe up</b> to move the story along. One swipe, one step. Swipe down to go back.'
+        : '<b>Scroll</b> (or press <b>↓</b>) to move the story along. One step at a time; scroll up to go back.'), 1400);
     // the hero's own sound pill reflects its state; nudge it to match the choice
     setTimeout(() => {
       const pill = heroEl.querySelector('.hero-sound');
@@ -280,6 +286,7 @@ async function start() {
         onDone: (info) => handoff(info || {}),
         onProgress: (p) => {
           document.documentElement.style.setProperty('--hero-progress', String(p ?? 0));
+          if (p > 0.02) coach.done('hero-scroll');
           if (p > 0.6) loadApp().catch(() => {});
         },
       });
