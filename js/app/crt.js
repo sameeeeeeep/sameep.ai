@@ -5,6 +5,8 @@
 //  • "glass" mode: the DOM desktop shows through; the shader only adds what sits
 //    *on* the glass (very light scanlines + mask, curvature shading, reflection,
 //    vignette, grain). It never resamples the DOM, so text stays crisp.
+//    `strength` (0..1) takes glass from a faint film (0) to the boot's weight (1):
+//    deep scanlines, triads, tube falloff, phosphor haze, flicker. Off = hidden.
 
 const VS = `attribute vec2 p; varying vec2 v; void main(){ v = p*0.5+0.5; gl_Position = vec4(p,0.,1.); }`;
 
@@ -19,6 +21,7 @@ uniform float mode;     // 0 = screen, 1 = glass
 uniform float power;    // 0..1 power-on raster
 uniform float k;        // curvature amount
 uniform float flick;
+uniform float strength; // glass mode: 0 faint .. 1 as heavy as the boot
 
 float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
 
@@ -82,18 +85,20 @@ void main(){
     vec2 c = uv0*2.-1.;
     float edge = smoothstep(0.55, 1.35, length(c * vec2(0.92, 1.0)));
     float dark = 0.0;
-    dark += (1. - scan) * 0.075;                // fine scanlines
-    dark += (1. - (mask.r+mask.g+mask.b)/3.) * 0.12; // phosphor triads
-    dark += edge * 0.42;                         // curvature falloff
-    dark += (1. - pow(vig, 0.35)) * 0.25;
-    dark = clamp(dark + grain*0.03, 0., 0.9);
+    float s = strength;
+    dark += (1. - scan) * mix(0.075, 0.24, s);                  // scanlines
+    dark += (1. - (mask.r+mask.g+mask.b)/3.) * mix(0.12, 0.3, s); // phosphor triads
+    dark += edge * mix(0.42, 0.48, s);                          // curvature falloff
+    dark += (1. - pow(vig, 0.35)) * mix(0.25, 0.3, s);
+    dark = clamp(dark + grain*mix(0.03, 0.06, s), 0., 0.92);
     // glass reflection: soft diagonal sheen top-left + tube rim highlight
     float sheen = smoothstep(0.5, 0., length((uv0 - vec2(0.18, 0.12)) * vec2(1.0, 1.6))) * 0.07;
     float rim = smoothstep(0.985, 1.0, max(abs(c.x), abs(c.y))) * 0.08;
-    float fl = (sin(time*120.)*0.5+0.5) * 0.012 * flick;
+    float fl = (sin(time*120.)*0.5+0.5) * mix(0.012, 0.03, strength) * flick;
     vec3 tint = vec3(0.72, 1.0, 0.91);
     float a = dark + fl;
-    vec3 rgb = tint * (sheen + rim);
+    float haze = 0.022 * strength * (1. - edge);   // the phosphor's faint green-white glow over everything
+    vec3 rgb = tint * (sheen + rim + haze);
     float cm = cornerMask(uv0, 0.035);
     gl_FragColor = vec4(rgb, clamp(a + sheen + rim, 0., 1.)) * cm + vec4(0.,0.,0.,1.-cm);
   }
@@ -115,6 +120,8 @@ export class CRT {
     this.ro = new ResizeObserver(() => this.#resize());
     this.ro.observe(host);
     this.t0 = performance.now();
+    this.strength = 1;
+    window.__otcvCrt = this; // the CRT switch (js/crtfx.js) reaches it here
     this.running = true;
     this.#loop();
   }
@@ -146,7 +153,7 @@ export class CRT {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
     this.u = {};
-    ['tex', 'res', 'texRes', 'time', 'mode', 'power', 'k', 'flick'].forEach((n) => (this.u[n] = gl.getUniformLocation(this.pr, n)));
+    ['tex', 'res', 'texRes', 'time', 'mode', 'power', 'k', 'flick', 'strength'].forEach((n) => (this.u[n] = gl.getUniformLocation(this.pr, n)));
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     return true;
@@ -171,6 +178,7 @@ export class CRT {
     this.#resize();
   }
   setPower(p) { this.power = p; }
+  setStrength(s) { this.strength = s; this.canvas.classList.toggle('is-off-glass', s < 0); this.dirty = true; } // -1 = off in glass mode
 
   #loop = () => {
     if (!this.running) return;
@@ -201,6 +209,7 @@ export class CRT {
     gl.uniform1f(this.u.power, this.power);
     gl.uniform1f(this.u.k, this.size.w < 600 ? 0.035 : 0.06);
     gl.uniform1f(this.u.flick, this.reduced ? 0 : 1);
+    gl.uniform1f(this.u.strength, Math.max(0, this.strength ?? 1));
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
 

@@ -1,0 +1,13 @@
+/* crt.css — the CRT look on the desktop and podcast (see js/crtfx.js). The shader
+   overlay does the tube; this adds what the glass can't: a slight red/blue
+   convergence fringe and a phosphor glow on text (inherited, so it's one rule).
+   No CSS filters here: a filter would turn the phone's fixed chooser sheet into a
+   child of the screen and break it. */
+.crt-full .crt__screen.is-on { text-shadow: .55px 0 rgba(255, 50, 90, .28), -.55px 0 rgba(50, 200, 255, .28), 0 0 6px rgba(184, 255, 233, .16); }
+.crt-full .crt__screen.is-on :is(img, video, canvas) { box-shadow: 0 0 14px rgba(184, 255, 233, .06); }
+.crt-gl.is-glass.is-off-glass { display: none; }
+
+.menubar__crt { height: 100%; padding: 0 8px; border: 0; background: none; color: inherit; font: 800 11px/1 var(--f-dot, monospace); letter-spacing: .08em; cursor: pointer; }
+.menubar__crt:hover, .menubar__crt:focus-visible { background: #141210; color: var(--crt-glow, #b8ffe9); }
+.menubar__crt.is-off { opacity: .45; text-decoration: line-through; }
+@media (max-width: 760px) { .menubar__crt { display: none; } } /* phones: Special › CRT effect */
