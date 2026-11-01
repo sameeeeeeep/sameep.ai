@@ -274,6 +274,8 @@ export class Podcast {
     this.monitor = new Monitor(stage, { base: this.base, reduced: this.reduced, onOpenWork: (id) => openWork(this.wm, this.persona, { focusId: id }) });
     this.monitor.onSkip = () => { this.visSkip = this.nodeId; };
     this.monitor.pickCorner = () => this.#corner();
+    this.monitor.audio = this.audio; // menu cards light up against the line's audio clock
+    this.monitor.onGo = (to) => this.#pick((this.node?.choices || []).find((c) => c.to === to) || { to }, null, true);
 
     // puppets
     const ph = { host: { color: '#7b4fd6', skin: '#e0b48c', hair: '#c7c7c7' }, guest: { color: '#0a8fa8', skin: '#b07a52', hair: '#1c120c' } };
@@ -584,7 +586,7 @@ export class Podcast {
     const work = this.workList || [];
     if (line.visual) {
       const v = resolveVisual(line.visual, work, this.workBase || this.base);
-      if (v) return this.#showVisual(v, 'line:' + line.id);
+      if (v) return this.#showVisual(v, 'line:' + (line.visual.key || line.id)); // a shared key keeps one clip running across lines
     }
     if (seat === 'host') return; // keep what's showing
     if (this.node.work && work.length) {

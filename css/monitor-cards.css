@@ -1,0 +1,22 @@
+/* the studio monitor's menu: topic cards that light up as the host names them (monitor.js #cards) */
+.mon[data-type="cards"] .mon__screen { background: radial-gradient(120% 90% at 0% 0%, #1b2a2b, #0b0a09 70%); overflow: auto; scrollbar-width: thin; }
+.mon[data-type="cards"]:not([data-size="full"]) .mon__screen { aspect-ratio: auto; max-height: 60cqw; }
+.mcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 12px; }
+.mcard { display: grid; grid-template-rows: auto auto 1fr; gap: 4px; min-width: 0; padding: 6px 6px 8px; border: 1px solid rgba(243,238,226,.22); border-radius: 5px; background: rgba(243,238,226,.04); color: var(--paper); text-align: left; cursor: pointer; opacity: .62; transition: opacity .3s, border-color .3s, box-shadow .3s, transform .3s var(--ease-out, ease-out); }
+.mcard.is-seen { opacity: .86; }
+.mcard.is-lit { opacity: 1; border-color: var(--flame); box-shadow: 0 0 0 1px var(--flame), 0 0 18px rgba(255,169,70,.45); transform: translateY(-2px) scale(1.03); }
+.mcard:hover, .mcard:focus-visible { opacity: 1; border-color: var(--paper); outline: none; }
+.mcard__pic { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 3px; background: #000; }
+.mcard__pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mcard__t { font: 700 13px/1.2 var(--f-ui); }
+.mcard.is-lit .mcard__t { color: var(--flame); }
+.mcard__b { font: 400 11px/1.35 var(--f-ui); color: #c9c0ae; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* small monitor: titles only, the lit card stays readable */
+.mon[data-size="pip"] .mcards, .mon[data-size="strip"] .mcards { grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
+.mon[data-size="pip"] .mcard__pic, .mon[data-size="pip"] .mcard__b { display: none; }
+.mon[data-size="pip"] .mcard { padding: 4px 6px; }
+.mon[data-size="pip"] .mcard__t { font-size: 10px; }
+.mon[data-size="strip"][data-type="cards"] .mon__screen { display: none; }
+.mon[data-size="strip"][data-type="cards"] { grid-template-columns: minmax(0, 1fr); }
+.mon[data-size="strip"][data-type="cards"] .mon__bar { grid-column: 1; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .mcard { transition: none; } .mcard.is-lit { transform: none; } }

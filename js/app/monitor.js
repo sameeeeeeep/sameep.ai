@@ -11,6 +11,8 @@
 // line.visual: {type:'shots', work, shots?} | {type:'video', src, poster?, work?}
 //              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]]}, funnel:{title,rows}, hold?}
 //              | {type:'work', work}   (shots or recording, whichever the project has)
+//              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}, hold?}
+//                (the menu: each card lights up as the line's audio reaches its cue; click one to go there)
 //              | 'none'
 import { h, safeUrl } from './util.js';
 
@@ -98,6 +100,7 @@ export class Monitor {
     this.key = null;
     this.pinned = false;
     clearInterval(this.slideT);
+    clearInterval(this.cueT);
     this.screen.querySelector('video')?.pause();
     this.screen.replaceChildren();
   }
@@ -107,6 +110,7 @@ export class Monitor {
     if (!v) return this.hide();
     if (key && key === this.key && this.on) return;
     clearInterval(this.slideT);
+    clearInterval(this.cueT);
     clearTimeout(this.shrinkT);
     this.key = key;
     this.pinned = false;
@@ -128,6 +132,10 @@ export class Monitor {
     } else if (v.type === 'shots') {
       this.screen.replaceChildren(this.#slides(v));
       hold = v.hold || 3400;
+    } else if (v.type === 'cards') {
+      this.screen.replaceChildren(this.#cards(v));
+      const last = Math.max(0, ...Object.values(v.cue || {}).flat().map((c) => c[0]));
+      hold = v.hold || (last ? (last + 3) * 1000 : 6000);
     } else return this.hide();
     const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
     if (this.el.parentElement !== host) host.append(this.el);
@@ -166,6 +174,32 @@ export class Monitor {
       let i = 0;
       this.slideT = setInterval(() => { imgs[i].classList.remove('is-on'); i = (i + 1) % imgs.length; imgs[i].classList.add('is-on'); }, 3200);
     }
+    return wrap;
+  }
+
+  // the menu as cards; the one being talked about lights up (cue times are per clip, so every host's take works)
+  #cards(v) {
+    const cards = v.items.map((it) => h('button.mcard', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onGo?.(it.to); } },
+      h('span.mcard__pic', it.thumb && h('img', { src: it.thumb, alt: '', loading: 'eager', draggable: 'false' })),
+      h('span.mcard__t', it.title), h('span.mcard__b', it.blurb)));
+    const wrap = h('div.mcards', cards);
+    if (!v.cue) return wrap;
+    const t0 = performance.now();
+    let lit = -1;
+    const tick = () => {
+      const a = this.audio;
+      const file = a?.src ? decodeURIComponent(a.src.split('/').pop().split('?')[0]) : '';
+      const cue = v.cue[file] || v.cue.default;
+      if (!cue) return;
+      const t = v.cue[file] ? a.currentTime : (performance.now() - t0) / 1000;
+      let i = -1;
+      for (const [s, k] of cue) if (t >= s) i = k;
+      if (i === lit) return;
+      lit = i;
+      cards.forEach((c, k) => { c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen'); });
+    };
+    this.cueT = setInterval(tick, 120);
+    tick();
     return wrap;
   }
 
@@ -219,6 +253,7 @@ export function resolveVisual(raw, work, base) {
   const title = raw.title || it?.title || '';
   const shots = (raw.shots || it?.shots || []).map(abs).filter(Boolean);
   if (raw.type === 'stats') return raw;
+  if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
   if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, work: it?.id } : null; }
   if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, work: it?.id } : null;
   if (raw.type === 'work' && it) {
