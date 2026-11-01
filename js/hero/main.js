@@ -1100,6 +1100,14 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     built,
     stats: () => ({ avg: stats.avg, worst: stats.worst, spikes: stats.spikes.slice(), quality }),
     beats: BEATS.map(({ id, a, b }) => ({ id, a, b })),
+    // voice and hands: one groove on (1) or back (-1), or glide to a named pose (same path scroll takes)
+    step(dir) { if (gLive) go(dir); },
+    goto(name) {
+      const i = { pile: 0, envelope: 3, mine: 3, fold: 4, plane: 4, fly: 5, crumple: 6, shred: 7, strike: 8, match: 8, burn: 9, cd: 10, insert: 11 }[name];
+      if (i === undefined || !gLive) return false;
+      layoutGrooves(); glide(gTop[i]); return true;
+    },
+    get groove() { const y = scrollY; return gTop.reduce((a, t, i) => (Math.abs(t - y) < Math.abs(gTop[a] - y) ? i : a), 0); },
     jump(p) {
       const top = dom.track.getBoundingClientRect().top + scrollY + p * (dom.track.offsetHeight - dom.stage.clientHeight);
       scrollTo({ top, behavior: 'instant' }); readScroll(); prog = target; camSnap = true;

@@ -929,6 +929,7 @@ export class Podcast {
       { key: 'pause', cmd: 'pause', phrases: ['pause', 'stop', 'hold on', 'wait'], weight: 0.95 },
       { key: 'play', cmd: 'play', phrases: ['play', 'resume', 'unpause'], weight: 0.95 },
       { key: 'menu', cmd: 'menu', phrases: ['menu', 'main menu', 'what else', 'other topics', 'something else'], weight: 0.9 },
+      { key: 'host', cmd: 'host', phrases: ['change host', 'change the host', 'switch host', 'new host', 'different host', 'another host'], weight: 0.95 },
     );
     return items;
   }
@@ -987,7 +988,7 @@ export class Podcast {
       this.#msg([h('span.say__k', 'Heard'), ` “${q}”. Did you mean `, h('button.say__link', { type: 'button', onclick: () => this.#steer(q) }, label), '? Press Enter.'], 'maybe');
       return;
     }
-    if (a.item.cmd && a.item.cmd !== 'menu') return this.#steer(q); // transport commands act at once
+    if (a.item.cmd && a.item.cmd !== 'menu' && a.item.cmd !== 'host') return this.#steer(q); // transport commands act at once
     if (!waiting) {
       // mid-answer: queue it, go when the options appear (or now, if they say so)
       this.queued = q;
@@ -1036,6 +1037,7 @@ export class Podcast {
     if (it.cmd === 'back') this.back();
     if (it.cmd === 'pause') this.pause();
     if (it.cmd === 'play') this.play();
+    if (it.cmd === 'host') this.pickHost();
     if (it.cmd === 'menu') { const hub = this.ep.nodes.hub ? 'hub' : this.ep.start; this.#pick({ to: hub, label: q }, q); }
   }
 

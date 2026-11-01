@@ -5,6 +5,7 @@ import { unlockAudio } from './unlock.js';
 import { coach } from './coach.js';
 import { resumable, clearResume, markStage } from './resume.js';
 import './power.js';
+import { voice } from './voice.js';
 
 const heroEl = document.getElementById('hero');
 const appEl = document.getElementById('app');
@@ -48,6 +49,7 @@ async function handoff(info = {}) {
   handedOff = true;
   store.set(SEEN_KEY, '1');
   if (!info.resume) markStage('app');
+  voice.setPhase('boot', { command: bootCommand, sound: soundTo });
   const modP = loadApp();
 
   if (!reduced && !info.instant) {
@@ -186,6 +188,32 @@ function placeholderHero(reason) {
   if (reason) console.info('[boot] hero placeholder:', reason);
 }
 
+// ---------------------------------------------------------------- voice
+// what "fold it", "next", "burn it" do in the hero (voice.js routes the words here)
+const soundTo = (on) => {
+  const pill = heroEl.querySelector('.hero-sound');
+  if (pill && !heroEl.hidden) { if ((pill.getAttribute('aria-pressed') === 'true') !== on) pill.click(); }
+  else import('./app/audio.js').then(({ sound }) => sound.set(on)).catch(() => {});
+};
+const heroVoice = {
+  step: (dir) => heroApi?.step?.(dir),
+  sound: soundTo,
+  command(k) {
+    if (!heroApi) { if (k === 'skip' || k === 'insert' || k === 'next') handoff(); return; }
+    if (k === 'next') heroApi.step(1);
+    else if (k === 'back') heroApi.step(-1);
+    else if (k === 'skip') heroEl.querySelector('.hero-skip')?.click();
+    else if (['dart', 'glider', 'stunt'].includes(k)) { if (!heroApi.foldStyle?.(k)) heroApi.goto('fold'); }
+    else heroApi.goto(k);
+  },
+};
+let bootTries = 0;
+function bootCommand() {
+  // first: whatever the screen is waiting for (power on); again: skip the dial-up
+  if (bootTries++ === 0 || !document.querySelector('.boot-skip')) dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+  else document.querySelector('.boot-skip')?.click();
+}
+
 // ---------------------------------------------------------------- entry gate
 // A loader while the studio builds, then one click in. That click is the gesture browsers
 // need for audio, so the story starts with sound on (or muted, if they pick that).
@@ -211,7 +239,13 @@ function entryGate() {
         </div>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
-      <p class="gate__hint">Best with headphones. Scroll, swipe or use the arrow keys.</p>
+      <ol class="gate__ways" aria-label="Two ways to use this site">
+        <li class="gate__way"><b aria-hidden="true">1</b><span><strong>Scroll or tap.</strong> ${matchMedia('(pointer: coarse)').matches ? 'Swipe up' : 'Scroll or press ↓'} to move the story, tap what you see.</span></li>
+        <li class="gate__way${isWispr ? ' gate__way--flow' : ''}"><b aria-hidden="true">2</b><span>${isWispr
+          ? `<strong><img src="img/ui/wispr.svg" alt="" width="16" height="16"> Say it, with Wispr Flow.</strong> ${matchMedia('(pointer: coarse)').matches ? 'Tap the mic (or use the Flow keyboard)' : 'Hold <kbd>fn</kbd>'} and say what to do: “fold it”, “burn it”, “next”. The whole site listens.`
+          : `<strong>Say it.</strong> ${matchMedia('(pointer: coarse)').matches ? 'Tap the mic' : 'Hold your Flow key (<kbd>fn</kbd>) or click the mic'} and say what to do: “fold it”, “next”.`}</span></li>
+      </ol>
+      <p class="gate__hint">Best with headphones.</p>
     </div>`;
   document.body.append(g);
   document.documentElement.classList.add('is-gated');
@@ -240,6 +274,7 @@ function entryGate() {
     store.set('offthecv.muted', withSound ? '0' : '1');
     store.set('offthecv.sound', withSound ? 'on' : 'off');
     close();
+    voice.setPhase('hero', heroVoice);
     // first time: say how the intro moves (it only moves when you do)
     const touch = matchMedia('(pointer: coarse)').matches;
     setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
@@ -251,6 +286,13 @@ function entryGate() {
       if (pill && (pill.getAttribute('aria-pressed') === 'true') !== withSound) pill.click();
     }, 60);
   };
+  voice.setPhase('gate', {
+    command(k) {
+      const b = g.querySelector(k === 'quiet' ? '.gate__quiet' : '.gate__enter');
+      if (!b.disabled) b.click();
+      else g.addEventListener('gate-ready', () => b.click(), { once: true });
+    },
+  });
   g.querySelector('.gate__enter').addEventListener('click', () => enter(true));
   g.querySelector('.gate__quiet').addEventListener('click', () => enter(false));
   g.querySelector('.gate__skip')?.addEventListener('click', () => { store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
@@ -261,6 +303,7 @@ function entryGate() {
       status.firstChild.textContent = 'Ready. ';
       g.querySelectorAll('.gate__enter, .gate__quiet').forEach((b) => { b.disabled = false; });
       g.querySelector('.gate__enter').focus({ preventScroll: true });
+      g.dispatchEvent(new Event('gate-ready'));
     },
   };
 }
@@ -289,6 +332,7 @@ function resumeGate(r) {
   document.documentElement.classList.add('is-gated');
   const go = g.querySelector('.gate__enter');
   go.focus({ preventScroll: true });
+  voice.setPhase('gate', { command: () => go.click() });
   go.addEventListener('click', () => {
     unlockAudio();
     document.documentElement.classList.remove('is-gated');
@@ -327,6 +371,7 @@ async function start() {
         onProgress: (p) => {
           document.documentElement.style.setProperty('--hero-progress', String(p ?? 0));
           if (p > 0.02) coach.done('hero-scroll');
+          voice.heroProgress(p);
           if (p > 0.6) loadApp().catch(() => {});
         },
       });

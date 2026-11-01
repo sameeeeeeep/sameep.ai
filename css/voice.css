@@ -1,3 +1,14 @@
 /* voice.css — the resume dialog, the "two ways in" explainer, the voice pill and the hands-on hints */
 .gate--resume .gate__name { font-size: clamp(22px, 5vw, 30px); line-height: 1.1; margin-top: 6px; }
 .gate--resume .gate__by { text-transform: none; letter-spacing: 0; }
+
+/* entry screen: the two ways in */
+.gate__ways { align-self: stretch; margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.gate__way { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; border-radius: 16px; background: rgba(13,13,13,.6);
+  box-shadow: 0 0 0 1px rgba(243,238,226,.1); color: rgba(243,238,226,.7); font: 400 13px/1.4 var(--f-ui); text-align: left; }
+.gate__way > b { flex: none; display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; background: var(--paper, #f3eee2); color: #111; font: 800 12px/1 var(--f-ui); }
+.gate__way strong { color: var(--paper, #f3eee2); font-weight: 700; }
+.gate__way strong img { vertical-align: -3px; margin-right: 2px; }
+.gate__way kbd { padding: 0 5px; border-radius: 4px; background: rgba(243,238,226,.14); color: var(--paper, #f3eee2); font: 700 11px/1.5 var(--f-ui); }
+.gate__way--flow { background: #0d0d0d; box-shadow: 0 0 0 1.5px rgba(243,238,226,.35); color: rgba(243,238,226,.82); font-size: 14px; }
+@media (max-height: 640px) { .gate__way { padding: 7px 12px; font-size: 12px; } }
