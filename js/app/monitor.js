@@ -13,6 +13,8 @@
 //              | {type:'work', work}   (shots or recording, whichever the project has)
 //              video extras: layout:'side' (a tall 9:16 panel beside the studio), sound:true (its own audio, ducked
 //              under the voice; follows the mute switch and the podcast's play/pause), key (keep it running across lines)
+//              | {type:'embed', work}  (the live product in a sandboxed iframe, inert until tapped; phones and low power get
+//                the project's shots instead)
 //              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}, hold?}
 //                (the menu: each card lights up as the line's audio reaches its cue; click one to go there)
 //              | 'none'
@@ -139,6 +141,9 @@ export class Monitor {
     } else if (v.type === 'shots') {
       this.screen.replaceChildren(this.#slides(v));
       hold = v.hold || 3400;
+    } else if (v.type === 'embed') {
+      this.screen.replaceChildren(this.#embed(v));
+      hold = v.hold || 9000;
     } else if (v.type === 'cards') {
       this.screen.replaceChildren(this.#cards(v));
       const last = Math.max(0, ...Object.values(v.cue || {}).flat().map((c) => c[0]));
@@ -177,10 +182,28 @@ export class Monitor {
     const wrap = h('div.mon__slides');
     const imgs = v.shots.map((s, i) => h('img', { src: s, alt: `${v.title || 'Screenshot'} ${i + 1}`, loading: i ? 'lazy' : 'eager', draggable: 'false', class: i ? '' : 'is-on' }));
     wrap.append(...imgs);
+    if (v.cue && imgs.length > 1) {
+      this.#cued(v.cue, (i) => { if (i < 0) return; imgs.forEach((im, k) => im.classList.toggle('is-on', k === i)); });
+      return wrap;
+    }
     if (imgs.length > 1 && !this.reduced) {
       let i = 0;
       this.slideT = setInterval(() => { imgs[i].classList.remove('is-on'); i = (i + 1) % imgs.length; imgs[i].classList.add('is-on'); }, 3200);
     }
+    return wrap;
+  }
+
+  // the live product: inert (no focus, no clicks) until tapped, so it never steals the say field or the keyboard;
+  // if it hasn't loaded in 8s, the project's shots take its place
+  #embed(v) {
+    const frame = h('iframe.mon__frame', { src: v.src, title: v.title || 'Live product', loading: 'lazy', referrerpolicy: 'no-referrer',
+      sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups', allow: 'autoplay; fullscreen', tabindex: '-1' });
+    frame.inert = true;
+    const tap = h('button.mon__tap', { type: 'button', onclick: (e) => { e.stopPropagation(); frame.inert = false; frame.removeAttribute('tabindex'); tap.remove(); this.pinned = true; clearTimeout(this.shrinkT); frame.focus?.(); } }, 'Tap to try it live');
+    const wrap = h('div.mon__embed', frame, tap);
+    const t = setTimeout(() => { if (wrap.isConnected && !loaded && v.shots?.length) wrap.replaceWith(this.#slides(v)); }, 8000);
+    let loaded = false;
+    frame.addEventListener('load', () => { loaded = true; clearTimeout(t); }, { once: true });
     return wrap;
   }
 
@@ -212,24 +235,27 @@ export class Monitor {
       h('span.mcard__pic', it.thumb && h('img', { src: it.thumb, alt: '', loading: 'eager', draggable: 'false' })),
       h('span.mcard__t', it.title), h('span.mcard__b', it.blurb)));
     const wrap = h('div.mcards', cards);
-    if (!v.cue) return wrap;
+    if (v.cue) this.#cued(v.cue, (i) => cards.forEach((c, k) => { c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen'); }));
+    return wrap;
+  }
+
+  // run apply(i) as the line's audio reaches each [seconds, index] cue; cue is per clip file, so every host's take lines up
+  // (no matching clip → the first list on a wall clock)
+  #cued(cueMap, apply) {
     const t0 = performance.now();
-    let lit = -1;
+    let at = null;
     const tick = () => {
       const a = this.audio;
       const file = a?.src ? decodeURIComponent(a.src.split('/').pop().split('?')[0]) : '';
-      const cue = v.cue[file] || v.cue.default;
+      const cue = cueMap[file] || cueMap.default || Object.values(cueMap)[0];
       if (!cue) return;
-      const t = v.cue[file] ? a.currentTime : (performance.now() - t0) / 1000;
+      const t = cueMap[file] ? a.currentTime : (performance.now() - t0) / 1000;
       let i = -1;
-      for (const [s, k] of cue) if (t >= s) i = k;
-      if (i === lit) return;
-      lit = i;
-      cards.forEach((c, k) => { c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen'); });
+      for (const [sec, k] of cue) if (t >= sec) i = k;
+      if (i !== at) { at = i; apply(i); }
     };
     this.cueT = setInterval(tick, 120);
     tick();
-    return wrap;
   }
 
   #stats(v) {
@@ -282,9 +308,14 @@ export function resolveVisual(raw, work, base) {
   const title = raw.title || it?.title || '';
   const shots = (raw.shots || it?.shots || []).map(abs).filter(Boolean);
   if (raw.type === 'stats') return raw;
+  if (raw.type === 'embed' && it) {
+    const live = it.embed && !document.documentElement.classList.contains('power-low') && !matchMedia('(max-width: 760px)').matches;
+    if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, hold: raw.hold, work: it.id };
+    return resolveVisual({ ...raw, type: 'work' }, work, base);
+  }
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
   if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
-  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, work: it?.id } : null;
+  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, work: it?.id, cue: raw.cue } : null;
   if (raw.type === 'work' && it) {
     if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, work: it.id };
     if (shots.length) return { type: 'shots', shots, title, work: it.id };

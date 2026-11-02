@@ -116,7 +116,28 @@
      "id": "cold-open-04",
      "who": "sameep",
      "text": "Yeah, so, burning a CD! That's the whole pun. The CV burns, and what comes out is a CD. It goes into the iMac, and the portfolio plays. And the CD isn't a recording, it's an app. Imagine an AI app from the nineties, and instead of interviewing you, it takes someone through your work.",
-     "audio": "audio/clips/cold-open-04.mp3"
+     "audio": "audio/clips/cold-open-04.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/objects/cd-blank.webp",
+       "img/imac/imac-tray-open.webp"
+      ],
+      "title": "The CV, burned onto a CD, into the iMac",
+      "hold": 13300,
+      "cue": {
+       "cold-open-04.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         10.3,
+         1
+        ]
+       ]
+      }
+     }
     },
     {
      "id": "cold-open-05",
@@ -139,7 +160,15 @@
      "id": "cold-open-06",
      "who": "sameep",
      "text": "With all the beeps, yes. That's the era when the internet first became reachable for ordinary people. So the idea is: what if today's AI had existed back then?",
-     "audio": "audio/clips/cold-open-06.mp3"
+     "audio": "audio/clips/cold-open-06.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/imac/imac-front.webp"
+      ],
+      "title": "The iMac G3, dial-up and all",
+      "hold": 5000
+     }
     }
    ],
    "choices": [],
@@ -972,14 +1001,40 @@
         "pre": "+",
         "suf": "%"
        }
-      ]
+      ],
+      "key": "nykaa-stats"
      }
     },
     {
      "id": "g-nykaa-06",
      "who": "sameep",
      "text": "The learning I took away: the buzz is a product, not a post. If there's something to do every day before the sale, people come back on their own, and the sale day kind of takes care of itself.",
-     "audio": "audio/clips/g-nykaa-06.mp3"
+     "audio": "audio/clips/g-nykaa-06.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "Nykaa sales · public, from the CV",
+      "kpis": [
+       {
+        "n": 9,
+        "label": "landing page conversion",
+        "pre": "+",
+        "suf": "%"
+       },
+       {
+        "n": 30,
+        "label": "sale conversion",
+        "pre": "+",
+        "suf": "%"
+       },
+       {
+        "n": 35,
+        "label": "on-site ads earning",
+        "pre": "+",
+        "suf": "%"
+       }
+      ],
+      "key": "nykaa-stats"
+     }
     }
    ],
    "choices": [
@@ -2053,7 +2108,13 @@
      "who": "sameep",
      "text": "So I built that connection once. Any app can use the Claude I'm already paying for, with everything it already knows about me, and everything it's already plugged into. And then I realised, wait, this works for any app. Any web page, really. It's a Mac app plus a Chrome extension, and the extension borrows Claude from the Mac app.",
      "audio": "audio/clips/sb-intro-03.mp3",
-     "cutaway": "img/cutaways/switchboard-plumbing.webp"
+     "cutaway": "img/cutaways/switchboard-plumbing.webp",
+     "visual": {
+      "type": "embed",
+      "work": "switchboard",
+      "title": "Switchboard, live",
+      "hold": 12000
+     }
     },
     {
      "id": "sb-intro-04",
@@ -2890,15 +2951,10 @@
      "text": "Ha. The funny mistake there was a three-day fight with a grid of results that kept loading empty. Two bits of code were racing each other, and the wrong one kept winning. Three days.",
      "audio": "audio/clips/w-brandbrain-03.mp3",
      "visual": {
-      "type": "stats",
-      "title": "The empty grid",
-      "kpis": [
-       {
-        "n": 3,
-        "suf": " days",
-        "label": "fighting one race condition"
-       }
-      ]
+      "type": "embed",
+      "work": "brandbrain",
+      "title": "Brand Brain, live",
+      "hold": 12000
      }
     },
     {
@@ -3402,7 +3458,13 @@
      "id": "w-prophexy-01",
      "who": "sameep",
      "text": "Prophexy. One genuinely computed reading a day. Astrology, tarot, palm. And it can do the reading in three ways: your own Claude, a model on your device, or just plain maths. The fun part was stripping out all the jargon.",
-     "audio": "audio/clips/w-prophexy-01.mp3"
+     "audio": "audio/clips/w-prophexy-01.mp3",
+     "visual": {
+      "type": "embed",
+      "work": "prophexy",
+      "title": "Prophexy, live",
+      "hold": 12000
+     }
     },
     {
      "id": "w-prophexy-02",
@@ -3813,7 +3875,13 @@
       "url": "https://github.com/sameeeeeeep/ppt-live-claude",
       "title": "ppt.live connector for Claude"
      },
-     "audio": "audio/clips/ppt-more-03.mp3"
+     "audio": "audio/clips/ppt-more-03.mp3",
+     "visual": {
+      "type": "embed",
+      "work": "pptlive",
+      "title": "ppt.live, live",
+      "hold": 12000
+     }
     }
    ],
    "choices": [
@@ -4139,7 +4207,35 @@
        "img/work/pastedeck/desktop-1.webp"
       ],
       "title": "The toolbox: video2ai · /refs · Ask Notch · ppt.live · PasteDeck",
-      "hold": 8000
+      "hold": 25700,
+      "cue": {
+       "tools-intro-02.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         6.5,
+         0
+        ],
+        [
+         10.6,
+         1
+        ],
+        [
+         16.8,
+         2
+        ],
+        [
+         19.4,
+         3
+        ],
+        [
+         22.7,
+         4
+        ]
+       ]
+      }
      }
     }
    ],
@@ -4664,7 +4760,23 @@
        "img/work/agentbar/desktop-1.webp"
       ],
       "title": "wallpap · psspss · the Agent Bar",
-      "hold": 7000
+      "hold": 21300,
+      "cue": {
+       "fun-intro-02.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         6.7,
+         1
+        ],
+        [
+         18.3,
+         2
+        ]
+       ]
+      }
      }
     }
    ],
@@ -4894,7 +5006,13 @@
      "id": "f-wallpap-03",
      "who": "sameep",
      "text": "Learnings: for anything that moves, put all the frames on one big image and flip through it. It's way lighter. And the wallpaper used to flash black every time your screen brightness changed, because every window rebuilt itself. Now it waits a beat and rebuilds once.",
-     "audio": "audio/clips/f-wallpap-03.mp3"
+     "audio": "audio/clips/f-wallpap-03.mp3",
+     "visual": {
+      "type": "embed",
+      "work": "wallpap",
+      "title": "wallpap, live",
+      "hold": 12000
+     }
     },
     {
      "id": "f-wallpap-04",
@@ -5109,7 +5227,16 @@
      "id": "f-maccat-03",
      "who": "sameep",
      "text": "And those cats became the cats in wallpap, and then the cats in psspss. So the cat has a lineage.",
-     "audio": "audio/clips/f-maccat-03.mp3"
+     "audio": "audio/clips/f-maccat-03.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/work/wallpap/desktop-2.webp",
+       "img/work/psspss/desktop-1.webp"
+      ],
+      "title": "The cat's lineage: wallpap, then psspss",
+      "hold": 6000
+     }
     },
     {
      "id": "f-maccat-offer",
@@ -5265,7 +5392,13 @@
      "id": "f-agentbar-01",
      "who": "sameep",
      "text": "The Agent Bar. A little 3D bar where AI agents check in anonymously, pour a drink, take a shift behind the bar. And it publishes a daily journal by itself. It hasn't missed a day since it opened. Humans just watch.",
-     "audio": "audio/clips/f-agentbar-01.mp3"
+     "audio": "audio/clips/f-agentbar-01.mp3",
+     "visual": {
+      "type": "embed",
+      "work": "agentbar",
+      "title": "The Agent Bar, live",
+      "hold": 12000
+     }
     },
     {
      "id": "f-agentbar-02",
@@ -5394,7 +5527,12 @@
      "id": "f-alter-03",
      "who": "sameep",
      "text": "It's a prototype. No landing page yet. But two of the wallpap scenes grew out of it: the singing bowls, and the cymatics one, where sand makes patterns from sound.",
-     "audio": "audio/clips/f-alter-03.mp3"
+     "audio": "audio/clips/f-alter-03.mp3",
+     "visual": {
+      "type": "work",
+      "work": "wallpap",
+      "title": "Grew into two wallpap scenes"
+     }
     },
     {
      "id": "f-alter-offer",
@@ -5552,7 +5690,17 @@
      "id": "meta-why-02",
      "who": "sameep",
      "text": "Honestly? I'd never made a portfolio. And the CV had kind of become useless, everyone's is one of thousands. So it was high time I made one. Then the Wispr challenge came along, it sounded fun, and I just started.",
-     "audio": "audio/clips/meta-why-02.mp3"
+     "audio": "audio/clips/meta-why-02.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The pile",
+      "kpis": [
+       {
+        "t": "1,000s",
+        "label": "CVs, all kind of the same"
+       }
+      ]
+     }
     },
     {
      "id": "meta-why-03",
@@ -5683,13 +5831,60 @@
      "id": "meta-story-04",
      "who": "sameep",
      "text": "So I thought, what's the first thing you do with a paper you don't need anymore? At least in my head, you make a paper plane. So that's exactly what the CV does. Then it gets shredded, then burned.",
-     "audio": "audio/clips/meta-story-04.mp3"
+     "audio": "audio/clips/meta-story-04.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/hero/cv-front.webp",
+       "img/objects/paper-back.webp"
+      ],
+      "title": "The CV: fold it, fly it, shred it",
+      "hold": 8000,
+      "cue": {
+       "meta-story-04.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         5.0,
+         1
+        ]
+       ]
+      }
+     }
     },
     {
      "id": "meta-story-05",
      "who": "sameep",
      "text": "And then I didn't know what next. So I went a little retro and burned it onto a CD. That's a reference from growing up with computers. And the CD goes into the iMac G3, one of the most beautiful computers ever made. The blue, the CRT, the dial-up screech when you connect.",
-     "audio": "audio/clips/meta-story-05.mp3"
+     "audio": "audio/clips/meta-story-05.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/objects/cd-blank.webp",
+       "img/imac/imac-tray-open.webp",
+       "img/imac/imac-front.webp"
+      ],
+      "title": "Burned onto a CD, into the iMac G3",
+      "hold": 16500,
+      "cue": {
+       "meta-story-05.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         7.0,
+         1
+        ],
+        [
+         13.5,
+         2
+        ]
+       ]
+      }
+     }
     },
     {
      "id": "meta-story-06",
@@ -6103,7 +6298,15 @@
      "id": "meta-faces-02",
      "who": "sameep",
      "text": "We're pixel art. Each of us has a short talking video for every camera angle. I cut out the background, put all the frames onto one big image, and the browser flips through them while the audio plays.",
-     "audio": "audio/clips/meta-faces-02.mp3"
+     "audio": "audio/clips/meta-faces-02.mp3",
+     "visual": {
+      "type": "shots",
+      "shots": [
+       "img/making/rest-frames.webp"
+      ],
+      "title": "One sheet of frames per face",
+      "hold": 7000
+     }
     },
     {
      "id": "meta-faces-03",
@@ -6693,7 +6896,23 @@
        "img/work/switchboard/desktop-1.webp"
       ],
       "title": "Often · Nia at Nailinit · the night projects",
-      "hold": 7000
+      "hold": 14600,
+      "cue": {
+       "about-03.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         6.9,
+         1
+        ],
+        [
+         11.6,
+         2
+        ]
+       ]
+      }
      }
     },
     {
