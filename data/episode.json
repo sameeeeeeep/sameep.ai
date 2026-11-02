@@ -82,12 +82,12 @@
      "visual": {
       "type": "stats",
       "title": "The pile",
-      "kpis": [
-       {
-        "t": "1,000s",
-        "label": "CVs, all kind of the same"
-       }
-      ]
+      "grid": {
+       "n": 84,
+       "cols": 14,
+       "icon": "cv",
+       "label": "One of these is yours."
+      }
      },
      "v": {
       "wispr": {
@@ -931,14 +931,12 @@
      "audio": "audio/clips/g-nykaa-02.mp3",
      "cutaway": "img/cutaways/pinkbox-wishlist-to-cart.webp",
      "visual": {
-      "type": "stats",
-      "title": "Nykaa's Pink Box",
-      "kpis": [
-       {
-        "t": "Pink Box",
-        "label": "a wishlist that drops into your cart when the sale goes live"
-       }
-      ]
+      "type": "shots",
+      "shots": [
+       "img/cutaways/pinkbox-wishlist-to-cart.webp"
+      ],
+      "title": "Nykaa's Pink Box: a wishlist that lands in your cart at go-live",
+      "hold": 6000
      }
     },
     {
@@ -948,13 +946,30 @@
      "audio": "audio/clips/g-nykaa-03.mp3",
      "visual": {
       "type": "stats",
-      "title": "Before the sale",
-      "kpis": [
-       {
-        "t": "Slash & Save",
-        "label": "you and your friends bring a combo's price down together"
-       }
-      ]
+      "title": "The week before a Nykaa sale",
+      "steps": {
+       "rows": [
+        {
+         "when": "Days before",
+         "t": "Prices revealed early",
+         "sub": "so you know what's coming"
+        },
+        {
+         "when": "Days before",
+         "t": "Slash & Save",
+         "sub": "you and your friends bring a combo's price down together"
+        },
+        {
+         "when": "Every day",
+         "t": "Games to play",
+         "sub": "a reason to open the app again"
+        },
+        {
+         "when": "Sale day",
+         "t": "The Pink Box drops into your cart"
+        }
+       ]
+      }
      }
     },
     {
@@ -981,25 +996,25 @@
      "audio": "audio/clips/g-nykaa-05.mp3",
      "visual": {
       "type": "stats",
-      "title": "Nykaa sales · public, from the CV",
+      "title": "Nykaa sales, 2019–21 · from the CV",
       "kpis": [
        {
-        "n": 9,
-        "label": "landing page conversion",
+        "n": 30,
         "pre": "+",
-        "suf": "%"
+        "suf": "%",
+        "label": "sale conversion"
        },
        {
-        "n": 30,
-        "label": "sale conversion",
+        "n": 9,
         "pre": "+",
-        "suf": "%"
+        "suf": "%",
+        "label": "landing page conversion"
        },
        {
         "n": 35,
-        "label": "on-site ads earning",
         "pre": "+",
-        "suf": "%"
+        "suf": "%",
+        "label": "on-site ads earning"
        }
       ],
       "key": "nykaa-stats"
@@ -1012,25 +1027,25 @@
      "audio": "audio/clips/g-nykaa-06.mp3",
      "visual": {
       "type": "stats",
-      "title": "Nykaa sales · public, from the CV",
+      "title": "Nykaa sales, 2019–21 · from the CV",
       "kpis": [
        {
-        "n": 9,
-        "label": "landing page conversion",
+        "n": 30,
         "pre": "+",
-        "suf": "%"
+        "suf": "%",
+        "label": "sale conversion"
        },
        {
-        "n": 30,
-        "label": "sale conversion",
+        "n": 9,
         "pre": "+",
-        "suf": "%"
+        "suf": "%",
+        "label": "landing page conversion"
        },
        {
         "n": 35,
-        "label": "on-site ads earning",
         "pre": "+",
-        "suf": "%"
+        "suf": "%",
+        "label": "on-site ads earning"
        }
       ],
       "key": "nykaa-stats"
@@ -1530,7 +1545,20 @@
         "n": 448,
         "label": "guests who opened it again"
        }
-      ]
+      ],
+      "funnel": {
+       "title": "Of the guests who opened it",
+       "rows": [
+        [
+         "Opened",
+         868
+        ],
+        [
+         "Came back",
+         448
+        ]
+       ]
+      }
      }
     },
     {
@@ -1540,13 +1568,21 @@
      "audio": "audio/clips/g-diwali-10.mp3",
      "visual": {
       "type": "stats",
-      "title": "The parrot's deck",
+      "title": "Patch notes, after the first guests",
       "kpis": [
        {
         "n": 540,
-        "label": "fortunes, rewritten to be warm"
+        "label": "parrot fortunes, the cheeky ones rewritten warm"
        }
-      ]
+      ],
+      "checks": {
+       "title": "Fixed",
+       "rows": [
+        "Ring toss: much easier on phones",
+        "Match strike: forgiving after a few misses",
+        "Fortunes: nothing negative in a Diwali card"
+       ]
+      }
      }
     },
     {
@@ -1744,13 +1780,19 @@
        },
        {
         "n": 46,
-        "label": "guests with their own intro card"
-       },
-       {
-        "n": 30,
-        "label": "creators"
+        "label": "intro cards on the big screen"
        }
-      ]
+      ],
+      "grid": {
+       "n": 46,
+       "cols": 23,
+       "icon": "dot",
+       "hl": {
+        "n": 30,
+        "label": "30 creators"
+       },
+       "label": "16 of Khushi's friends"
+      }
      }
     },
     {
@@ -1838,9 +1880,19 @@
      "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking, so, getting you the best deal: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, looking after those trips taught us more than anything we planned.",
      "audio": "audio/clips/often-intro-02.mp3",
      "visual": {
-      "type": "work",
-      "work": "often",
-      "title": "Often: AI for travel hacking"
+      "type": "stats",
+      "title": "Often: AI for travel hacking, 2025–26",
+      "kpis": [
+       {
+        "n": 1200,
+        "pre": "~",
+        "label": "trips powered"
+       }
+      ],
+      "photo": {
+       "src": "img/work/often/desktop-1.webp",
+       "cap": "Trippy: what to book, when, and rebooking you if the price drops"
+      }
      }
     }
    ],
@@ -2366,13 +2418,32 @@
      "audio": "audio/clips/sb-lineage-02.mp3",
      "visual": {
       "type": "stats",
-      "title": "AutoClawd",
+      "title": "Before Switchboard",
       "kpis": [
        {
         "n": 271,
-        "label": "commits"
+        "label": "commits on AutoClawd"
        }
-      ]
+      ],
+      "steps": {
+       "rows": [
+        {
+         "when": "January",
+         "t": "ARIA",
+         "sub": "a chat assistant on a small model, on my laptop"
+        },
+        {
+         "when": "Two days later",
+         "t": "AutoClawd",
+         "sub": "always listening, watching the screen"
+        },
+        {
+         "when": "Then",
+         "t": "It got big",
+         "sub": "pixel world, camera, face, gestures, call mode"
+        }
+       ]
+      }
      }
     },
     {
@@ -2400,17 +2471,32 @@
      "visual": {
       "type": "stats",
       "title": "The lineage",
-      "bars": {
-       "title": "Commits",
+      "kpis": [
+       {
+        "n": 648,
+        "label": "commits on Switchboard"
+       },
+       {
+        "n": 271,
+        "label": "on AutoClawd"
+       }
+      ],
+      "steps": {
        "rows": [
-        [
-         "AutoClawd",
-         271
-        ],
-        [
-         "Switchboard",
-         648
-        ]
+        {
+         "when": "January",
+         "t": "ARIA → AutoClawd"
+        },
+        {
+         "when": "12 March",
+         "t": "Autoclaw",
+         "sub": "everything cut but: hold Fn, speak, get a prompt"
+        },
+        {
+         "when": "7 July",
+         "t": "Switchboard",
+         "sub": "out of the Brand Brain problem"
+        }
        ]
       }
      }
@@ -2703,9 +2789,27 @@
       "kpis": [
        {
         "n": 94,
-        "label": "wrapps in the README"
+        "label": "wrapps so far"
        }
-      ]
+      ],
+      "flow": {
+       "title": "What a wrapp is",
+       "rows": [
+        {
+         "t": "Instructions"
+        },
+        {
+         "t": "Skills"
+        },
+        {
+         "t": "A screen"
+        },
+        {
+         "t": "One job, start to finish",
+         "hot": true
+        }
+       ]
+      }
      }
     }
    ],
@@ -2937,11 +3041,46 @@
       "kpis": [
        {
         "n": 32,
-        "label": "API routes moved to the browser"
+        "label": "AI features moved into the browser tab"
        },
        {
         "n": 0,
-        "label": "backends, new API keys"
+        "label": "servers or new API keys"
+       }
+      ],
+      "flow": [
+       {
+        "title": "Before",
+        "rows": [
+         {
+          "t": "Brand Brain"
+         },
+         {
+          "t": "Its own server"
+         },
+         {
+          "t": "Its own API key"
+         },
+         {
+          "t": "Its own AI bill"
+         }
+        ]
+       },
+       {
+        "title": "After",
+        "hot": true,
+        "rows": [
+         {
+          "t": "Brand Brain, in your tab"
+         },
+         {
+          "t": "Switchboard"
+         },
+         {
+          "t": "The Claude you already pay for",
+          "hot": true
+         }
+        ]
        }
       ]
      }
@@ -3658,7 +3797,11 @@
         "pre": "~",
         "label": "people, each holding a drink"
        }
-      ]
+      ],
+      "photo": {
+       "src": "img/cutaways/pptlive-qr-crowd.webp",
+       "cap": "You have the room until the drink is done"
+      }
      }
     },
     {
@@ -3689,13 +3832,22 @@
       "kpis": [
        {
         "n": 50,
-        "label": "phones at once"
+        "label": "phones joining at once"
        },
        {
         "n": 0,
         "label": "errors"
        }
-      ]
+      ],
+      "grid": {
+       "n": 50,
+       "cols": 25,
+       "icon": "phone",
+       "hl": {
+        "n": 50,
+        "label": "joined"
+       }
+      }
      }
     },
     {
@@ -3895,19 +4047,27 @@
      "audio": "audio/clips/ppt-more-01.mp3",
      "visual": {
       "type": "stats",
-      "title": "House rules",
-      "kpis": [
-       {
-        "n": 3,
-        "label": "first interaction within",
-        "suf": " min"
-       },
-       {
-        "t": "4–7",
-        "suf": " min",
-        "label": "change the room's state every"
-       }
-      ]
+      "title": "House rules, in a 30-minute talk",
+      "steps": {
+       "rows": [
+        {
+         "when": "By minute 3",
+         "t": "The first thing to do"
+        },
+        {
+         "when": "Every 4–7 min",
+         "t": "Change what the room is doing"
+        },
+        {
+         "when": "Throughout",
+         "t": "Test people, don't just tell them"
+        },
+        {
+         "when": "The end",
+         "t": "Never the rating slide"
+        }
+       ]
+      }
      }
     },
     {
@@ -4076,13 +4236,24 @@
      "audio": "audio/clips/ppt-games-01.mp3",
      "visual": {
       "type": "stats",
-      "title": "ppt.live",
+      "title": "ppt.live games",
       "kpis": [
        {
         "n": 34,
-        "label": "games"
+        "label": "games the room can play"
        }
-      ]
+      ],
+      "tags": {
+       "title": "A few",
+       "rows": [
+        "Unicorn: bluff with ₹2 crore of pretend money",
+        "Word Spies",
+        "Mafia",
+        "Antakshari",
+        "Housie",
+        "Dumb Charades"
+       ]
+      }
      }
     },
     {
@@ -4503,19 +4674,34 @@
      "audio": "audio/clips/t-video-04.mp3",
      "visual": {
       "type": "stats",
-      "title": "One video, before and after",
+      "title": "One video, before and after video2ai",
       "kpis": [
        {
         "n": 170000,
-        "label": "tokens, before",
-        "pre": "~"
+        "pre": "~",
+        "label": "tokens: the raw video, for Claude to read"
        },
        {
         "n": 150,
-        "label": "lines, after",
-        "pre": "~"
+        "pre": "~",
+        "label": "lines after: only the frames that changed"
        }
-      ]
+      ],
+      "flow": {
+       "title": "How",
+       "rows": [
+        {
+         "t": "Every frame"
+        },
+        {
+         "t": "Apple's fingerprint, on your Mac"
+        },
+        {
+         "t": "Keep only real changes",
+         "hot": true
+        }
+       ]
+      }
      }
     },
     {
@@ -4529,8 +4715,13 @@
       "kpis": [
        {
         "n": 2,
-        "label": "of RAM, eaten by CLIP",
-        "suf": " GB"
+        "suf": " GB",
+        "label": "of memory, eaten by CLIP"
+       },
+       {
+        "t": "0",
+        "suf": " GB",
+        "label": "extra for Apple's, already on the Mac"
        }
       ]
      }
@@ -5772,12 +5963,12 @@
      "visual": {
       "type": "stats",
       "title": "The pile",
-      "kpis": [
-       {
-        "t": "1,000s",
-        "label": "CVs, all kind of the same"
-       }
-      ]
+      "grid": {
+       "n": 84,
+       "cols": 14,
+       "icon": "cv",
+       "label": "One of these is yours."
+      }
      }
     },
     {
@@ -6274,10 +6465,35 @@
       "title": "Every line, checked",
       "kpis": [
        {
+        "n": 488,
+        "label": "voiced clips, three hosts"
+       },
+       {
         "n": 4,
         "label": "tries per line, best take kept"
        }
-      ]
+      ],
+      "flow": {
+       "rows": [
+        {
+         "t": "Generate"
+        },
+        {
+         "t": "Whisper listens back",
+         "hot": true
+        },
+        {
+         "t": "Best of 4"
+        },
+        {
+         "t": "Cut dead air"
+        },
+        {
+         "t": "Whisper again"
+        }
+       ],
+       "loop": "mumbled? generate again"
+      }
      }
     },
     {
@@ -6516,11 +6732,11 @@
       "title": "Off the CV, by the numbers",
       "kpis": [
        {
-        "n": 57,
+        "n": 60,
         "label": "story nodes"
        },
        {
-        "n": 200,
+        "n": 219,
         "label": "voiced lines"
        },
        {
@@ -6944,20 +7160,30 @@
      "visual": {
       "type": "stats",
       "title": "Before now",
-      "kpis": [
-       {
-        "t": "ShopClues",
-        "label": "online marketplace"
-       },
-       {
-        "t": "Nykaa",
-        "label": "beauty shopping app: the big sales"
-       },
-       {
-        "t": "Mosaic",
-        "label": "Mosaic Wellness: health and wellness"
-       }
-      ]
+      "steps": {
+       "rows": [
+        {
+         "when": "First",
+         "t": "ShopClues",
+         "sub": "an online marketplace"
+        },
+        {
+         "when": "2019–21",
+         "t": "Nykaa",
+         "sub": "the big sales: sale conversion +30%"
+        },
+        {
+         "when": "2021–22",
+         "t": "Mosaic Wellness",
+         "sub": "platform product for three brands"
+        },
+        {
+         "when": "2025–",
+         "t": "Often, then Nailinit",
+         "sub": "co-founder, then chief of staff"
+        }
+       ]
+      }
      }
     },
     {

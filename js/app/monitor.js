@@ -9,7 +9,10 @@
 // it opens full-width under the picture and collapses to a slim strip.
 //
 // line.visual: {type:'shots', work, shots?} | {type:'video', src, poster?, work?}
-//              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]]}, funnel:{title,rows}, hold?}
+//              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]],log?,unit?}, funnel:{title,rows}, hold?}
+//                stats extras, any mix: grid:{n, icon:'cv'|'phone'|'glass'|'dot', hl:{n,label}, label} (a pictogram),
+//                steps:{rows:[{when,t,sub}]} (a timeline), flow:{rows:[{t,sub,hot}], loop} (a pipeline), tags:{rows},
+//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src,cap}, source
 //              | {type:'work', work}   (shots or recording, whichever the project has)
 //              video extras: layout:'side' (a tall 9:16 panel beside the studio), sound:true (its own audio, ducked
 //              under the voice; follows the mute switch and the podcast's play/pause), key (keep it running across lines)
@@ -128,7 +131,7 @@ export class Monitor {
     let hold = 3400;
     if (v.type === 'stats') {
       this.screen.replaceChildren(this.#stats(v));
-      const big = (v.kpis?.length || 0) > 2 || v.funnel || (v.bars?.rows?.length || 0) > 2;
+      const big = (v.kpis?.length || 0) > 2 || v.funnel || (v.bars?.rows?.length || 0) > 2 || v.news || v.steps || v.flow || v.grid || v.tags || v.checks || v.photo;
       hold = v.hold || (big ? 7000 : 4200);
     } else if (v.type === 'video') {
       const vid = h('video.mon__video', { muted: true, playsInline: true, loop: true, autoplay: true, preload: 'auto', poster: v.poster || null, src: v.src, 'aria-label': (v.title || 'Screen recording') + ', muted' });
@@ -259,39 +262,77 @@ export class Monitor {
   }
 
   #stats(v) {
-    const el = h('div.stats');
+    // layout: the numbers lead on the left (the first one is the hero), the one picture that explains them on the right
+    const lead = h('div.stats__lead'), main = h('div.stats__main');
+    const el = h('div.stats', lead, main);
     const counters = [];
     if (v.kpis?.length) {
-      el.append(h('div.stats__kpis', v.kpis.map((k) => {
+      lead.append(h('div.stats__kpis', v.kpis.map((k) => {
         const num = h('span.stats__n');
         if (k.t != null) num.textContent = k.t;
         else counters.push([num, k.n]);
-        return h('div.stats__kpi', h('p.stats__v', k.pre && h('span.stats__fix', k.pre), num, k.suf && h('span.stats__fix', k.suf)), h('p.stats__l', k.label));
+        const long = String(k.t ?? fmtNum(k.n)).length + (k.pre || '').length + (k.suf || '').length > 5;
+        return h('div.stats__kpi' + (long ? '.is-long' : ''), h('p.stats__v', k.pre && h('span.stats__fix', k.pre), num, k.suf && h('span.stats__fix', k.suf)), h('p.stats__l', k.label));
       })));
     }
+    // spec.log: for before/after rows a million miles apart, so the small one still shows
     const rowsOf = (spec, cls) => {
-      const max = Math.max(...spec.rows.map((r) => r[1]));
+      const sc = spec.log ? (n) => Math.log10(n + 1) : (n) => n;
+      const max = Math.max(...spec.rows.map((r) => sc(r[1])));
       const first = spec.rows[0][1];
       return h('div.stats__chart.' + cls,
         spec.title && h('p.stats__ct', spec.title),
         h('div.stats__rows', spec.rows.map(([label, n], i) => {
           const fill = h('i.stats__fill', { style: { transitionDelay: (0.15 + i * 0.09) + 's' } });
-          fill.style.setProperty('--f', String(n / max));
+          fill.style.setProperty('--f', String(Math.max(0.012, sc(n) / max)));
           const num = h('span.stats__rv');
-          counters.push([num, n]);
+          counters.push([num, n, spec.unit?.[i] ?? spec.unit]);
           return h('div.stats__row', h('span.stats__rl', label), h('span.stats__track', fill), num,
             cls === 'stats--funnel' && i > 0 ? h('span.stats__pct', Math.round((n / first) * 100) + '%') : null);
         })));
     };
-    if (v.funnel) el.append(rowsOf(v.funnel, 'stats--funnel'));
-    if (v.bars) el.append(rowsOf(v.bars, 'stats--bars'));
+    if (v.funnel) main.append(rowsOf(v.funnel, 'stats--funnel'));
+    if (v.bars) main.append(rowsOf(v.bars, 'stats--bars'));
+    if (v.photo) main.append(h('figure.stats__photo', h('img', { src: safeUrl(v.photo.src, this.base), alt: v.photo.cap || '', draggable: 'false' }), v.photo.cap && h('figcaption', v.photo.cap)));
+    // a pictogram: n little icons filling in, the first hl.n of them lit
+    if (v.grid) {
+      const g = v.grid, lit = g.hl?.n ?? 0;
+      main.append(h('div.stats__chart.stats--grid', g.title && h('p.stats__ct', g.title),
+        h('div.stats__grid', { dataset: { icon: g.icon || 'dot' }, style: { '--cols': g.cols || Math.ceil(Math.sqrt(g.n * 2)) } },
+          Array.from({ length: g.n }, (_, i) => h('i', { class: i < lit ? 'is-hl' : '', style: { transitionDelay: (i * Math.min(0.03, 1.2 / g.n)).toFixed(3) + 's', '--r': (((i * 37) % 17) - 8) + 'deg' } }))),
+        h('p.stats__legend', g.hl && h('span.stats__key.is-hl', g.hl.label), g.label && h('span.stats__key', g.label))));
+    }
+    // a timeline: dated steps, lighting up left to right
+    if (v.steps) {
+      main.append(h('div.stats__chart.stats--steps', v.steps.title && h('p.stats__ct', v.steps.title),
+        h('ol.stats__steps', v.steps.rows.map((s, i) => h('li', { style: { transitionDelay: (0.2 + i * 0.35) + 's' } },
+          h('span.stats__when', s.when), h('b', s.t), s.sub && h('span.stats__sub', s.sub))))));
+    }
+    // a pipeline: steps joined by arrows, with an optional loop back
+    // (several flows, e.g. before and after, stack as rows of one chart)
+    if (v.flow) {
+      const flows = [].concat(v.flow);
+      main.append(h('div.stats__chart.stats--flow', flows.map((f, k) => h('div.stats__fl', f.title && h('p.stats__ct', f.title),
+        h('ol.stats__flow' + (f.hot ? '.is-hot' : ''), f.rows.map((s, i) => h('li', { class: s.hot ? 'is-hot' : '', style: { transitionDelay: (0.15 + k * 0.6 + i * 0.22) + 's' } }, s.t || s, s.sub && h('small', s.sub)))),
+        f.loop && h('p.stats__loop', '↺ ' + f.loop)))));
+    }
+    if (v.tags) main.append(h('div.stats__chart.stats--tags', v.tags.title && h('p.stats__ct', v.tags.title),
+      h('ul.stats__tags', v.tags.rows.map((t, i) => h('li', { style: { transitionDelay: (0.1 + i * 0.06) + 's' } }, t)))));
+    if (v.checks) main.append(h('div.stats__chart.stats--checks', v.checks.title && h('p.stats__ct', v.checks.title),
+      h('ul.stats__checks', v.checks.rows.map((t, i) => h('li', { style: { transitionDelay: (0.2 + i * 0.3) + 's' } }, t)))));
+    // press clippings: masthead, headline, date, the fact that matters
+    if (v.news) main.append(h('div.stats__news', v.news.map((n, i) => h('a.clip', { href: safeUrl(n.url, this.base), target: '_blank', rel: 'noopener', style: { transitionDelay: (0.15 + i * 0.25) + 's' }, onclick: (e) => e.stopPropagation() },
+      h('span.clip__pub', n.pub), h('b.clip__head', n.head), n.fact && h('span.clip__fact', n.fact), h('span.clip__date', n.date)))));
+    if (v.source) el.append(h('p.stats__src', v.source));
+    if (!lead.childElementCount) lead.remove();
+    if (!main.childElementCount) main.remove();
     // count up (light: one rAF loop, ~0.9s)
     const T = this.reduced ? 0 : 900;
     const t0 = performance.now();
     const tick = (now) => {
       const p = T ? Math.min(1, (now - t0) / T) : 1;
       const e = 1 - Math.pow(1 - p, 3);
-      for (const [node, n] of counters) node.textContent = fmtNum(n * e);
+      for (const [node, n, u] of counters) node.textContent = fmtNum(n * e) + (u || '');
       if (p < 1 && el.isConnected) requestAnimationFrame(tick);
     };
     for (const [node] of counters) node.textContent = '0';
