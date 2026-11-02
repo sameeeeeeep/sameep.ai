@@ -8,7 +8,7 @@ import { createWM } from './wm.js';
 import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
-import { jukebox, installer, splash, PROJECTS, GAMES } from './era.js';
+import { jukebox, installer, installed, splash, login, PROJECTS, GAMES } from './era.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
@@ -61,7 +61,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     askName: (q) => (pod ? pod.askName(q) : Promise.resolve('')),
     installing: false,
     openPodcast() {
-      if (ctx.installing) { desk.notice('OFF THE CV is still installing. It opens by itself in a moment.'); return; }
+      if (ctx.installing) { desk.notice('OFF THE CV is still installing. It opens by itself when it’s done.'); return; }
+      if (ctx.launch) { ctx.launch(); return; }
       if (!pod) { desk.notice('The tape is still being recorded. Try again in a minute.'); return; }
       pod.win.el.hidden ? wm.win('podcast') : pod.win.focus();
     },
@@ -80,6 +81,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   desk.renderProjects([...PROJECTS, ...GAMES]);  // the work, then 90s games that still run in a browser; all open in a new tab
   desk.renderMenus(ctx, apps);
   const era = eraOn;
+  // Wispr version: right after the modem connects, Mac OS asks who you are (the team, with faces)
+  const loggedIn = era && isWispr ? await login(desk.area, persona, { reduced }) : null;
   const juke = era ? jukebox(wm, { reduced }) : null;
 
   if (episode && episode.nodes) {
@@ -89,7 +92,11 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       desk.setInstalling(true);
       await installer(wm, { reduced });
       ctx.installing = false;
-      desk.setInstalling(false);
+      desk.setInstalling(false);  // the icon lands on the desktop
+      const ready = installed(wm, { reduced });
+      ctx.launch = ready.open;
+      await ready.done;
+      ctx.launch = null;
       await Promise.all([juke.fadeOut(), splash(desk.area, persona, { reduced })]);
       juke.win.close();
     } else await wait(reduced ? 0 : 500);
@@ -105,7 +112,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       (resume.visited || []).forEach((id) => pod.visited.add(id));
       pod.go(resume.node, { push: false, line: resume.line || 0 });
     } else {
-      if (!q.has('skiphost')) await pod.pickHost({ first: true });
+      if (!q.has('skiphost')) await pod.pickHost({ first: true, visitor: loggedIn });
       pod.start();
     }
   } else {
@@ -148,7 +155,7 @@ function buildDesktop(screen, persona) {
         h('span.icon__label', p.label)))));
       area.insertBefore(ul, toast);
     },
-    setInstalling(on) { icons.querySelector('.icon')?.classList.toggle('is-installing', on); },
+    setInstalling(on) { const li = icons.querySelector('.icon')?.parentElement; if (!li) return; li.hidden = on; if (!on) { li.classList.add('is-new'); sound.tick('pick'); } },
     renderMenus(ctx, apps) {
       const clock = h('span.menubar__clock');
       const tick = () => { const d = new Date(); clock.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };

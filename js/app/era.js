@@ -76,14 +76,23 @@ export function jukebox(wm, { reduced } = {}) {
 
 // ---------------------------------------------------------------- the installer
 // resolves when the install is done (at least minMs, and not before `ready`); "Open now" skips ahead
-export function installer(wm, { ready, minMs = 15000, reduced } = {}) {
+export function installer(wm, { ready, minMs = 60000, reduced } = {}) {
   const w = wm.win('install', { title: 'Installer', width: 400, y: 40, className: 'win--install', sheet: false });
   const steps = [
     ['Reading “OFF THE CV 1.0” disc…', 'Installer'],
+    ['Checking for viruses (none, probably)…', 'Norton AntiVirus 5.0'],
     ['Copying 488 voice clips…', 'audio/clips/cold-open-01.mp3'],
     ['Teaching three hosts to lip-sync…', 'sprites/foyra.webp'],
+    ['Removing CV.pdf…', 'CV.pdf → Trash'],
     ['Hanging 60 story nodes…', 'data/episode.json'],
     ['Seating the audience…', 'img/characters/'],
+    ['Defragmenting the anecdotes…', 'stories.db'],
+    ['Teaching Gus the offside rule…', 'hosts/gus.cfg'],
+    ['Calibrating K-56’s anxiety…', 'hosts/k56.cfg'],
+    ['Pressing the Diwali invite…', 'work/diwali/'],
+    ['Wiring Switchboard…', 'work/switchboard/'],
+    ['Pouring drinks at the Agent Bar…', 'work/agentbar/'],
+    ['Feeding the koi…', 'wallpap/koi.scene'],
     ['Warming up the tube…', 'crt.js'],
     ['Rewinding the tape…', 'Episode 01'],
   ];
@@ -97,7 +106,7 @@ export function installer(wm, { ready, minMs = 15000, reduced } = {}) {
   w.body.append(h('div.inst',
     h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installing “OFF THE CV”'), h('p.inst__s', 'Items remaining to be installed: ', left))),
     doing, bar, file,
-    h('div.inst__row', h('span.inst__note', 'Sit back. It plays itself when it’s ready.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Open now'))));
+    h('div.inst__row', h('span.inst__note', 'Have a play while you wait: the games and the projects are on the left.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Skip'))));
   return new Promise((resolve) => {
     const t0 = performance.now();
     const total = reduced ? 1500 : minMs;
@@ -118,7 +127,7 @@ export function installer(wm, { ready, minMs = 15000, reduced } = {}) {
       done = true;
       fill.style.transform = 'scaleX(1)';
       doing.textContent = 'Installation was successful.';
-      file.textContent = 'OFF THE CV will open by itself.';
+      file.textContent = 'OFF THE CV is on your desktop.';
       left.textContent = '0';
       sound.tick('pick');
       await wait(reduced ? 0 : 900);
@@ -170,4 +179,73 @@ export function openGames(wm) {
     h('ul.folder__grid', GAMES.map((g) => h('li', h('a.icon.icon--file', { href: g.url, target: '_blank', rel: 'noopener', onclick: () => sound.tick('click') },
       h('img', { src: `img/ui/proj-${g.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
       h('span.icon__label', g.label))))));
+}
+
+// ---------------------------------------------------------------- Multiple Users (Wispr version)
+// Mac OS 9 asked who you were after startup. Here it lists the Wispr Flow team, with their
+// faces, plus Guest. Logging in as someone makes you them in the audience (same store the
+// seat picker uses), so the host greets you by name and the seat step is skipped.
+export function login(layer, persona, { reduced } = {}) {
+  const team = (persona.characters || []).filter((c) => c.team);
+  if (!team.length) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    let pick = null;
+    // a lock screen: the desktop blurred behind, the time big, every account as a round face
+    const time = h('p.lock__time'), date = h('p.lock__date');
+    const tick = () => { const d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); };
+    tick(); const clk = setInterval(tick, 15000);
+    const pw = h('input.lock__pw', { type: 'password', placeholder: 'No password needed', 'aria-label': 'Password', autocomplete: 'off' });
+    const arrow = h('button.lock__go', { type: 'submit', 'aria-label': 'Log in' }, '→');
+    const form = h('form.lock__form', { onsubmit: (e) => { e.preventDefault(); finish(); } }, pw, arrow);
+    const back = h('button.lock__back', { type: 'button', onclick: () => choose(null) }, '← Other accounts');
+    const accounts = [...team, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', thumb: null }];
+    const list = h('ul.lock__users', { role: 'listbox', 'aria-label': 'Accounts' }, accounts.map((c) => h('li', h('button.lock__user', { type: 'button', role: 'option', 'aria-selected': 'false', dataset: { id: c.id }, onclick: () => choose(c) },
+      h('span.lock__face', c.thumb || c.src ? h('img', { src: c.thumb || c.src, alt: '', width: 96, height: 96 }) : h('span.lock__guest', { 'aria-hidden': 'true' })),
+      h('span.lock__name', c.label), c.blurb && h('span.lock__role', c.blurb)))));
+    const hint = h('p.lock__hint', 'Choose your account');
+    const el = h('div.lock', { role: 'dialog', 'aria-label': 'Log in' },
+      h('div.lock__top', time, date),
+      h('div.lock__mid', list, form, back, hint));
+    function choose(c) {
+      pick = c;
+      el.classList.toggle('is-picked', !!c);
+      list.querySelectorAll('.lock__user').forEach((n) => { const on = c && n.dataset.id === c.id; n.classList.toggle('is-on', !!on); n.setAttribute('aria-selected', String(!!on)); });
+      hint.textContent = c ? (c.id === 'guest' ? 'Press return to look around' : `Hi ${c.label}. Press return to log in`) : 'Choose your account';
+      if (c) { sound.tick('pick'); setTimeout(() => pw.focus({ preventScroll: true }), 50); }
+    }
+    const finish = async () => {
+      if (!pick) return;
+      el.classList.add('is-out');
+      clearInterval(clk);
+      sound.tick('open');
+      await wait(reduced ? 0 : 450);
+      el.remove();
+      desk?.classList.remove('is-locked');
+      if (pick.id === 'guest') return resolve(null);
+      const v = { name: pick.label, character: { ...pick }, photo: null };
+      try { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: v.name, character: pick.id })); } catch { /* this visit only */ }
+      resolve(v);
+    };
+    const desk = layer.closest('.desk');
+    desk?.classList.add('is-locked');
+    layer.append(el);
+    requestAnimationFrame(() => el.classList.add('is-on'));
+  });
+}
+
+// ---------------------------------------------------------------- installed: open it, or it opens itself
+// resolves when the visitor clicks Open (here or on the new desktop icon via `open`), or after `secs`
+export function installed(wm, { secs = 60, reduced } = {}) {
+  let go;
+  const p = new Promise((r) => { go = r; });
+  const w = wm.win('installed', { title: 'Installer', width: 380, y: 40, className: 'win--install', sheet: false });
+  const left = h('b', String(secs));
+  w.body.append(h('div.inst',
+    h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is now on your desktop.'))),
+    h('p.inst__doing', 'Open it now, or it opens by itself in ', left, ' seconds.'),
+    h('div.inst__row', h('span.inst__note', 'Double-click its icon any time.'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open'))));
+  sound.tick('pick');
+  let n = reduced ? 3 : secs;
+  const t = setInterval(() => { n -= 1; left.textContent = String(Math.max(0, n)); if (n <= 0) go(); }, 1000);
+  return { open: () => go(), done: p.then(() => { clearInterval(t); w.close(); }) };
 }

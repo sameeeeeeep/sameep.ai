@@ -108,7 +108,7 @@ export class Podcast {
   // ---------------------------------------------------------------- host pick
   // the welcome window before the cold open: host, length, audience seat (counts down, keeps the
   // saved or default picks); later, "Change host" opens just the host part
-  async pickHost({ first = false } = {}) {
+  async pickHost({ first = false, visitor = null } = {}) {
     if (first && new URLSearchParams(location.search).has('host')) return;
     if (!first) return this.#flashHosts(); // mid-episode: the face switcher on the caption bar
 
@@ -118,11 +118,12 @@ export class Podcast {
     const res = await openWelcome(this.win.body, {
       hosts: this.hosts, current: this.hostId, base: this.base, persona: this.persona,
       routes: first ? this.routes : null, route: this.routeId, durP: this.durP,
-      seat: first && !this.persona.isCustom, countdown: first ? 20 : 0,
+      seat: first && !this.persona.isCustom && !visitor, countdown: first ? 20 : 0,  // logged in on the desktop: already seated
     });
-    if (first) track('welcome', { host: res.host, route: res.route, seat: res.visitor?.character?.id, seatLabel: res.visitor?.character?.label, name: res.visitor?.name });
+    const vis = res.visitor || visitor;
+    if (first) track('welcome', { host: res.host, route: res.route, seat: vis?.character?.id, seatLabel: vis?.character?.label, name: vis?.name, login: !!visitor });
     if (res.route && res.route !== this.routeId) this.setRoute(res.route);
-    if (res.visitor) { this.visitor = res.visitor; this.casted = true; this.#renderAudience(); }
+    if (vis) { this.visitor = vis; this.casted = true; this.#renderAudience(); }
     if (first) this.#steerTip();
     const id = res.host;
     saveHost(id);
