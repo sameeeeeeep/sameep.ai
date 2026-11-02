@@ -17,9 +17,10 @@ import { makeFireWall } from './firewall.js';
 import { drawCVFront, drawCVBack, drawCDLabel, drawTable, drawPileAtlas } from './textures.js';
 import { makeHands } from './hands.js';
 import { isLow } from '../power.js';
+import { isWispr } from '../version.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
-  { id: 'pile', len: 1.0, cap: 'Every CV looks the <b>same</b>.' },
+  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you received <b>2,000</b> CVs, all very similar.' : 'Every CV sent gets piled with <b>a thousand</b> others.' },
   { id: 'envelope', len: 1.4, cap: 'So I took <i>mine</i>,' },
   { id: 'origami', len: 1.3, cap: 'Made a <i>plane</i> out of it,' },
   { id: 'flight', len: 0.8, cap: '<b>Flew</b> it around,' },
