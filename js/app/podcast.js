@@ -83,6 +83,8 @@ export class Podcast {
   }
 
   #abs(u) { return u ? safeUrl(u, this.base) : null; }
+  // a line's clip, with its fingerprint from durations.json so a changed clip is never served from an old cache
+  #clip(u) { const v = (this.clipV || this.dur?.v)?.[u]; return this.#abs(u && v ? `${u}?v=${v}` : u); }
 
   #resolveSpeakers() {
     const sp = this.ep.speakers || {};
@@ -559,10 +561,12 @@ export class Podcast {
     return lines;
   }
 
-  #preloadDurations() {
+  async #preloadDurations() {
     const tok = this.nodeId;
+    if (!this.clipV && this.durP) this.clipV = (await Promise.race([this.durP, new Promise((r) => setTimeout(r, 1500))]))?.v;   // clip fingerprints
+    if (this.nodeId !== tok) return;
     this.lines.forEach((l, i) => {
-      const u = this.#abs(l.audio);
+      const u = this.#clip(l.audio);
       if (!u) return;
       const a = new Audio();
       a.preload = 'metadata';
@@ -700,8 +704,14 @@ export class Podcast {
   }
 
   #startLine(line, offset, tok) {
+    // the first line can start before durations.json lands: wait (briefly, once) for the clip fingerprints
+    if (line.audio && !this.clipV && !this.dur && this.durP && !this.clipWait) {
+      this.clipWait = true;
+      Promise.race([this.durP, new Promise((r) => setTimeout(r, 1500))]).then((d) => { this.clipV ||= d?.v; if (tok === this.token) this.#startLine(line, offset, tok); });
+      return;
+    }
     // audio, else a word-count timer
-    const url = this.#abs(line.audio);
+    const url = this.#clip(line.audio);
     this.offset = offset;
     if (url && !this.failed?.has(url)) {
       this.mode = 'audio';
