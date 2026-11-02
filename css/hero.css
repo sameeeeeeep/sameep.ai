@@ -118,3 +118,6 @@
 }
 .hero.is-lost .hero-canvas { opacity: 0; }
 .hero.is-lost .hero-stage { background: radial-gradient(ellipse at 50% 60%, #2a1e14, var(--night, #0f0d0b) 70%); }
+/* the caption sits on the paper pile: a soft dark floor under the bottom band keeps it readable */
+.hero-bottom::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: calc(-1 * (var(--g) + env(safe-area-inset-bottom, 0px))); height: calc(100% + var(--g) * 3); background: linear-gradient(transparent, rgba(15, 13, 11, .78)); pointer-events: none; }
+.hero-cap__txt { text-shadow: 0 2px 18px rgba(0, 0, 0, .7); }

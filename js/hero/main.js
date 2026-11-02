@@ -478,7 +478,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     [G('envelope', 0.04), 'paper-slide', 0.8], [G('envelope', 0.46), 'paper-slide', 0.7], [G('envelope', 0.63), 'paper-flip', 0.9],
     [G('envelope', 0.8), 'paper-slide', 0.8],
     ...FOLD_T.slice(0, 6).map(([a]) => [G('origami', a + 0.02), 'paper-fold', 0.8]),
-    [G('flight', 0.06), 'whoosh', 0.9], [G('flight', 0.5), 'whoosh', 0.7],
+    [G('flight', 0.06), 'whoosh', 0.9],
     [G('crumple', 0.05), 'crumple', 1], [G('shred', 0.03), 'crumple', 0.45], [G('shred', 0.33), 'shred', 1],
     [G('burn', 0.09), 'paper-slide', 0.5], [G('burn', 0.285), 'match-strike', 1],
     [G('cd', 0.06), 'whoosh', 0.6], [G('insert', 0.66), 'cd-whirr', 1],
