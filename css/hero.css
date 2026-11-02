@@ -121,3 +121,14 @@
 /* the caption sits on the paper pile: a soft dark floor under the bottom band keeps it readable */
 .hero-bottom::before { content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: calc(-1 * (var(--g) + env(safe-area-inset-bottom, 0px))); height: calc(100% + var(--g) * 3); background: linear-gradient(transparent, rgba(15, 13, 11, .78)); pointer-events: none; }
 .hero-cap__txt { text-shadow: 0 2px 18px rgba(0, 0, 0, .7); }
+
+/* the caption, centred along the bottom, one control row up; the controls (Play left, Skip right) sit beneath it */
+@media (min-width: 768px) {
+  .hero-cap { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); width: min(760px, calc(100% - 2 * var(--g))); max-width: none; text-align: center; }
+  .hero-skip { margin-left: auto; }
+  .hero-hint { bottom: calc(var(--g) + 190px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (max-width: 767px) {
+  .hero-bottom { align-items: center; }
+  .hero-cap { text-align: center; }
+}

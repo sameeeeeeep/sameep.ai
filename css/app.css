@@ -1159,3 +1159,4 @@ p.chooser__or { margin: 2px 0 -4px; }
 .autoplay__ico { width: 18px; height: 18px; background: transparent; color: var(--flame); box-shadow: inset 0 0 0 1px currentColor; font-size: 8px; }
 .autoplay.is-on .autoplay__ico { background: transparent; color: var(--paper); }
 @media (max-width: 767px) { .autoplay { bottom: auto; top: calc(max(16px, var(--gutter, 24px)) + 56px + env(safe-area-inset-top, 0px)); } .autoplay__or { display: none; } }
+@media (min-width: 768px) { .autoplay { right: auto; left: calc(max(16px, var(--gutter, 24px)) + env(safe-area-inset-left, 0px)); bottom: calc(max(16px, var(--gutter, 24px)) + env(safe-area-inset-bottom, 0px)); flex-direction: row; } }
