@@ -78,6 +78,8 @@ export class Podcast {
     this.bed.volume = 0.32;
     this.#resolveSpeakers();
     this.#castNode();
+    // Wispr version: the host greets the visitor's seat by name (data/greetings.json)
+    if (isWispr && !persona.isCustom) fetch(this.#abs('data/greetings.json')).then((r) => (r.ok ? r.json() : null)).then((g) => { this.greetings = g; }).catch(() => {});
   }
 
   #abs(u) { return u ? safeUrl(u, this.base) : null; }
@@ -521,7 +523,7 @@ export class Podcast {
     this.visited.add(id);
     track('node', { id, host: this.hostId });
     // this version's lines (text/audio overrides, version-only lines)
-    this.lines = (node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l, this.hostId) }));
+    this.lines = this.#greet(id, (node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l, this.hostId) })));
     this.durs = this.lines.map(estDur);
     this.#preloadDurations();
     this.visSkip = null;
@@ -541,6 +543,20 @@ export class Podcast {
     this.flow.ensureFocus();
     if (!this.lines.length) return this.#nodeEnded();
     this.#playLine(Math.max(0, Math.min(line, this.lines.length - 1)), 0);
+  }
+
+  // the seat's own lines go in after the line greetings.json names: a welcome after the intro, "you steer" at
+  // the first fork. A Wispr teammate's seat is greeted by name; any other seat gets the generic line ('*').
+  #greet(id, lines) {
+    const g = this.greetings, seat = this.visitor?.character?.id;
+    for (const [kind, at] of Object.entries(g?.at || {})) {
+      if (at.node !== id) continue;
+      const of = g.lines.filter((l) => l.kind === kind);
+      const l = of.find((x) => x.seat === seat) || of.find((x) => x.seat === '*');
+      const i = lines.findIndex((x) => x.id === at.after);
+      if (l && i >= 0) lines.splice(i + 1, 0, { ...l, ...pickVersion(l, this.hostId) });
+    }
+    return lines;
   }
 
   #preloadDurations() {

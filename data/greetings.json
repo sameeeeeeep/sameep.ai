@@ -1,0 +1,547 @@
+{
+ "_": "Wispr version only: the host greets the visitor's seat by name after the intro, and tells them they steer at the first fork. 'seat' is the persona character id ('*' = anyone else). Voiced by build/script-tools/render.py like episode lines.",
+ "at": {
+  "greet": {
+   "node": "intro",
+   "after": "intro-01"
+  },
+  "steer": {
+   "node": "hub-first",
+   "after": "hub-first-01"
+  }
+ },
+ "lines": [
+  {
+   "id": "greet-tanay",
+   "kind": "greet",
+   "seat": "w-tanay",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Tanay, Wispr's co-founder and CEO. Welcome, darling.",
+   "audio": "audio/clips/greet-tanay.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Tanay, Wispr's co-founder and CEO. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-tanay-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Tanay, Wispr's co-founder and CEO! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-tanay-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-sahaj",
+   "kind": "greet",
+   "seat": "w-sahaj",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Sahaj, Wispr's co-founder and CTO. Welcome, darling.",
+   "audio": "audio/clips/greet-sahaj.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Sahaj, Wispr's co-founder and CTO. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-sahaj-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Sahaj, Wispr's co-founder and CTO! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-sahaj-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-nimisha",
+   "kind": "greet",
+   "seat": "w-nimisha",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Nimisha, who leads Wispr in India. Welcome, darling.",
+   "audio": "audio/clips/greet-nimisha.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Nimisha, who leads Wispr in India. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-nimisha-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Nimisha, who leads Wispr in India! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-nimisha-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-rohan",
+   "kind": "greet",
+   "seat": "w-rohan",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Rohan, who leads growth for Wispr in India. Welcome, darling.",
+   "audio": "audio/clips/greet-rohan.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Rohan, who leads growth for Wispr in India. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-rohan-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Rohan, who leads growth for Wispr in India! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-rohan-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-shivam",
+   "kind": "greet",
+   "seat": "w-shivam",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Shivam, from Wispr's India growth team. Welcome, darling.",
+   "audio": "audio/clips/greet-shivam.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Shivam, from Wispr's India growth team. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-shivam-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Shivam, from Wispr's India growth team! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-shivam-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-vasundhara",
+   "kind": "greet",
+   "seat": "w-vasundhara",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Vasundhara, from Wispr's growth team. Welcome, darling.",
+   "audio": "audio/clips/greet-vasundhara.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Vasundhara, from Wispr's growth team. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-vasundhara-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Vasundhara, from Wispr's growth team! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-vasundhara-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-vishal",
+   "kind": "greet",
+   "seat": "w-vishal",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Vishal, from Wispr's customer success team. Welcome, darling.",
+   "audio": "audio/clips/greet-vishal.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Vishal, from Wispr's customer success team. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-vishal-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Vishal, from Wispr's customer success team! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-vishal-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-meghna",
+   "kind": "greet",
+   "seat": "w-meghna",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Meghna, from Wispr's customer success team. Welcome, darling.",
+   "audio": "audio/clips/greet-meghna.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Meghna, from Wispr's customer success team. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-meghna-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Meghna, from Wispr's customer success team! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-meghna-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-deepansh",
+   "kind": "greet",
+   "seat": "w-deepansh",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Deepansh, who builds Wispr's website in Webflow. Welcome, darling.",
+   "audio": "audio/clips/greet-deepansh.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Deepansh, who builds Wispr's website in Webflow. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-deepansh-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Deepansh, who builds Wispr's website in Webflow! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-deepansh-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-sitansu",
+   "kind": "greet",
+   "seat": "w-sitansu",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Sitansu, from Wispr's QA team. Welcome, darling.",
+   "audio": "audio/clips/greet-sitansu.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Sitansu, from Wispr's QA team. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-sitansu-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Sitansu, from Wispr's QA team! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-sitansu-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-suraj",
+   "kind": "greet",
+   "seat": "w-suraj",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Suraj, an AI engineer at Wispr. Welcome, darling.",
+   "audio": "audio/clips/greet-suraj.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Suraj, an AI engineer at Wispr. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-suraj-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Suraj, an AI engineer at Wispr! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-suraj-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-raushan",
+   "kind": "greet",
+   "seat": "w-raushan",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Raushan, from Wispr India. Welcome, darling.",
+   "audio": "audio/clips/greet-raushan.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Raushan, from Wispr India. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-raushan-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Raushan, from Wispr India! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-raushan-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-adarsh",
+   "kind": "greet",
+   "seat": "w-adarsh",
+   "who": "host",
+   "text": "And joining us in the audience tonight: Adarsh, who writes for Wispr. Welcome, darling.",
+   "audio": "audio/clips/greet-adarsh.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. Joining us tonight: Adarsh, who writes for Wispr. Welcome. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-adarsh-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's Adarsh, who writes for Wispr! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-adarsh-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "greet-any",
+   "kind": "greet",
+   "seat": "*",
+   "who": "host",
+   "text": "And joining us in the audience tonight: you. Welcome, darling. Do make yourself comfortable.",
+   "audio": "audio/clips/greet-any.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Audience scan complete. One very welcome guest detected: you. I have polished my manners for the occasion.",
+     "audio": "audio/clips/greet-any-k56.mp3"
+    },
+    "gus": {
+     "text": "And there in the crowd tonight, it's you! What a pleasure to have you with us!",
+     "audio": "audio/clips/greet-any-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-tanay",
+   "kind": "steer",
+   "seat": "w-tanay",
+   "who": "host",
+   "text": "Tanay, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-tanay.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Tanay, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-tanay-k56.mp3"
+    },
+    "gus": {
+     "text": "Tanay, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-tanay-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-sahaj",
+   "kind": "steer",
+   "seat": "w-sahaj",
+   "who": "host",
+   "text": "Sahaj, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-sahaj.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Sahaj, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-sahaj-k56.mp3"
+    },
+    "gus": {
+     "text": "Sahaj, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-sahaj-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-nimisha",
+   "kind": "steer",
+   "seat": "w-nimisha",
+   "who": "host",
+   "text": "Nimisha, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-nimisha.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Nimisha, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-nimisha-k56.mp3"
+    },
+    "gus": {
+     "text": "Nimisha, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-nimisha-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-rohan",
+   "kind": "steer",
+   "seat": "w-rohan",
+   "who": "host",
+   "text": "Rohan, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-rohan.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Rohan, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-rohan-k56.mp3"
+    },
+    "gus": {
+     "text": "Rohan, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-rohan-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-shivam",
+   "kind": "steer",
+   "seat": "w-shivam",
+   "who": "host",
+   "text": "Shivam, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-shivam.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Shivam, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-shivam-k56.mp3"
+    },
+    "gus": {
+     "text": "Shivam, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-shivam-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-vasundhara",
+   "kind": "steer",
+   "seat": "w-vasundhara",
+   "who": "host",
+   "text": "Vasundhara, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-vasundhara.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Vasundhara, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-vasundhara-k56.mp3"
+    },
+    "gus": {
+     "text": "Vasundhara, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-vasundhara-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-vishal",
+   "kind": "steer",
+   "seat": "w-vishal",
+   "who": "host",
+   "text": "Vishal, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-vishal.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Vishal, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-vishal-k56.mp3"
+    },
+    "gus": {
+     "text": "Vishal, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-vishal-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-meghna",
+   "kind": "steer",
+   "seat": "w-meghna",
+   "who": "host",
+   "text": "Meghna, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-meghna.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Meghna, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-meghna-k56.mp3"
+    },
+    "gus": {
+     "text": "Meghna, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-meghna-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-deepansh",
+   "kind": "steer",
+   "seat": "w-deepansh",
+   "who": "host",
+   "text": "Deepansh, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-deepansh.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Deepansh, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-deepansh-k56.mp3"
+    },
+    "gus": {
+     "text": "Deepansh, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-deepansh-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-sitansu",
+   "kind": "steer",
+   "seat": "w-sitansu",
+   "who": "host",
+   "text": "Sitansu, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-sitansu.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Sitansu, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-sitansu-k56.mp3"
+    },
+    "gus": {
+     "text": "Sitansu, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-sitansu-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-suraj",
+   "kind": "steer",
+   "seat": "w-suraj",
+   "who": "host",
+   "text": "Suraj, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-suraj.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Suraj, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-suraj-k56.mp3"
+    },
+    "gus": {
+     "text": "Suraj, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-suraj-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-raushan",
+   "kind": "steer",
+   "seat": "w-raushan",
+   "who": "host",
+   "text": "Raushan, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-raushan.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Raushan, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-raushan-k56.mp3"
+    },
+    "gus": {
+     "text": "Raushan, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-raushan-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-adarsh",
+   "kind": "steer",
+   "seat": "w-adarsh",
+   "who": "host",
+   "text": "Adarsh, from here on, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-adarsh.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Adarsh, steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-adarsh-k56.mp3"
+    },
+    "gus": {
+     "text": "Adarsh, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-adarsh-gus.mp3"
+    }
+   }
+  },
+  {
+   "id": "steer-any",
+   "kind": "steer",
+   "seat": "*",
+   "who": "host",
+   "text": "From here on, darling, you steer. Tap a card, or hold your Flow key and just say it.",
+   "audio": "audio/clips/steer-any.mp3",
+   "look": "front",
+   "h": {
+    "k56": {
+     "text": "Steering control is now yours. Tap a card, or hold your Flow key and say it. I am ready. Mostly.",
+     "audio": "audio/clips/steer-any-k56.mp3"
+    },
+    "gus": {
+     "text": "The ball is at your feet! Tap a card, or hold your Flow key and call the play!",
+     "audio": "audio/clips/steer-any-gus.mp3"
+    }
+   }
+  }
+ ]
+}
