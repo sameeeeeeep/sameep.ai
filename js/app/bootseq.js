@@ -12,7 +12,7 @@ const C = {
 
 const loadImg = (src) => new Promise((r) => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
 
-export async function runBoot({ crt, root, persona, reduced }) {
+export async function runBoot({ crt, root, persona, reduced, installer = true }) {
   const cv = document.createElement('canvas');
   const g = cv.getContext('2d');
   let W = 800, H = 600;
@@ -172,7 +172,8 @@ export async function runBoot({ crt, root, persona, reduced }) {
   await sleep(2100);
   if (skipped) { cleanup(); return { skipped: true }; }
 
-  // ---------------------------------------------------------- C. installer
+  // ---------------------------------------------------------- C. installer (skipped when the desktop does the installing: era.js)
+  if (installer) {
   const steps = persona.installSteps || [
     'Installing the host…',
     `Installing ${persona.shortName || 'Sameep'} (AI)…`,
@@ -210,6 +211,7 @@ export async function runBoot({ crt, root, persona, reduced }) {
   };
   await sleep(instDur * 1000 + 600);
   if (skipped) { cleanup(); return { skipped: true }; }
+  }
 
   // ---------------------------------------------------------- D. dial-up
   const dial = renderDialup(22050);

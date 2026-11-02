@@ -8,6 +8,7 @@ import { createWM } from './wm.js';
 import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
+import { jukebox, installer, splash, PROJECTS, openGames } from './era.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
@@ -25,12 +26,14 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
 
   const dataP = loadPersona({ episodeUrl });
   const fast = new URLSearchParams(location.search).has('fast') || !!resume; // a resume skips the boot it already saw
+  const q0 = new URLSearchParams(location.search);
+  const eraOn = !fast && !q0.has('debug') && !q0.has('noera'); // the 1999 minute: music, a desktop installer, then the show
   let persona;
   if (!fast) {
     // the boot needs persona copy; wait briefly, never long
     const quick = await Promise.race([dataP, wait(1200).then(() => null)]);
     persona = quick?.persona || { name: 'Sameep Rehlan', shortName: 'Sameep' };
-    await runBoot({ crt, root: glass, persona, reduced });
+    await runBoot({ crt, root: glass, persona, reduced, installer: !eraOn });
   } else {
     await sound.unlock();
   }
@@ -56,7 +59,9 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     podcast: () => pod,
     alert: wm.alert,
     askName: (q) => (pod ? pod.askName(q) : Promise.resolve('')),
+    installing: false,
     openPodcast() {
+      if (ctx.installing) { desk.notice('OFF THE CV is still installing. It opens by itself in a moment.'); return; }
       if (!pod) { desk.notice('The tape is still being recorded. Try again in a minute.'); return; }
       pod.win.el.hidden ? wm.win('podcast') : pod.win.focus();
     },
@@ -65,12 +70,30 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     endCard: (fromIcon) => endCard(wm, persona, () => pod, fromIcon),
   };
   const apps = buildApps(ctx);
-  desk.renderIcons(apps);
+  // the system side keeps a few of the old toys; the left side is the real work, one icon each
+  const extra = [
+    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', open: () => window.open('https://emergent.sh/', '_blank', 'noopener') },
+    { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) },
+  ];
+  const all = [...apps, ...extra];
+  const KEEP = ['offthecv', 'hd', 'wispr', 'claude', 'chatgpt', 'emergent', 'games', 'work', 'readme', 'resume', 'sayhi', 'switchboard', 'trash'];
+  desk.renderIcons(KEEP.map((id) => all.find((a) => a.id === id)).filter(Boolean));
+  desk.renderProjects(PROJECTS);
   desk.renderMenus(ctx, apps);
+  const era = eraOn;
+  const juke = era ? jukebox(wm, { reduced }) : null;
 
   if (episode && episode.nodes) {
     pod = new Podcast({ wm, layer: desk.area, persona, episode, onEnd: () => ctx.endCard() });
-    await wait(reduced ? 0 : 500);
+    if (era) {
+      ctx.installing = true;
+      desk.setInstalling(true);
+      await installer(wm, { reduced });
+      ctx.installing = false;
+      desk.setInstalling(false);
+      await Promise.all([juke.fadeOut(), splash(desk.area, persona, { reduced })]);
+      juke.win.close();
+    } else await wait(reduced ? 0 : 500);
     pod.open();
     const q = new URLSearchParams(location.search);
     if (q.has('debug') && q.get('seat')) pod.studioReady.then(() => pod.seatForQA(q.get('seat')));
@@ -119,6 +142,14 @@ function buildDesktop(screen, persona) {
         h('img', { src: `img/ui/${a.icon}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
         h('span.icon__label', a.label)))));
     },
+    // projects: their own column on the left, each opens the real thing in a new tab
+    renderProjects(list) {
+      const ul = h('ul.icons.icons--proj', { 'aria-label': 'Projects' }, list.map((p) => h('li', h('a.icon.icon--proj', { href: p.url, target: '_blank', rel: 'noopener', title: p.label + ' (opens in a new tab)', onclick: () => sound.tick('click') },
+        h('img', { src: `img/ui/proj-${p.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
+        h('span.icon__label', p.label)))));
+      area.insertBefore(ul, toast);
+    },
+    setInstalling(on) { icons.querySelector('.icon')?.classList.toggle('is-installing', on); },
     renderMenus(ctx, apps) {
       const clock = h('span.menubar__clock');
       const tick = () => { const d = new Date(); clock.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
