@@ -8,7 +8,7 @@ import { createWM } from './wm.js';
 import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
-import { jukebox, installer, splash, PROJECTS, openGames } from './era.js';
+import { jukebox, installer, splash, PROJECTS, GAMES } from './era.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
@@ -73,12 +73,11 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   // the system side keeps a few of the old toys; the left side is the real work, one icon each
   const extra = [
     { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', open: () => window.open('https://emergent.sh/', '_blank', 'noopener') },
-    { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) },
   ];
   const all = [...apps, ...extra];
-  const KEEP = ['offthecv', 'hd', 'wispr', 'claude', 'chatgpt', 'emergent', 'games', 'work', 'readme', 'resume', 'sayhi', 'switchboard', 'trash'];
+  const KEEP = ['offthecv', 'hd', 'wispr', 'claude', 'chatgpt', 'emergent', 'work', 'readme', 'resume', 'sayhi', 'switchboard', 'trash'];
   desk.renderIcons(KEEP.map((id) => all.find((a) => a.id === id)).filter(Boolean));
-  desk.renderProjects(PROJECTS);
+  desk.renderProjects([...PROJECTS, ...GAMES]);  // the work, then 90s games that still run in a browser; all open in a new tab
   desk.renderMenus(ctx, apps);
   const era = eraOn;
   const juke = era ? jukebox(wm, { reduced }) : null;
