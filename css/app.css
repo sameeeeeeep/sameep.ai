@@ -1262,3 +1262,9 @@ a.icon { text-decoration: none; }
 .icons li.is-new .icon__label { background: #111; color: #fff; }
 @keyframes icon-land { 0% { transform: scale(.3) translateY(-30px); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: none; } }
 .desk.is-locked .menubar, .desk.is-locked .icons { visibility: hidden; }
+/* lock screen type: a display grotesque for the clock (thin-ish, tight, tabular), like the real thing */
+.lock__time { font-family: 'Bricolage Grotesque', var(--f-ui); font-weight: 600; font-variation-settings: 'opsz' 96; font-size: clamp(72px, 14vw, 150px); letter-spacing: -.045em; font-variant-numeric: tabular-nums; text-shadow: 0 2px 24px rgba(0,0,0,.25); }
+.lock__date { font-family: 'Bricolage Grotesque', var(--f-ui); font-weight: 600; letter-spacing: -.01em; }
+.lock__name { font-family: 'Bricolage Grotesque', var(--f-ui); font-weight: 600; font-size: 14px; }
+.lock__pw { -webkit-text-security: disc; }
+.lock__role, .lock__hint, .lock__pw, .lock__back { font-family: 'Bricolage Grotesque', var(--f-ui); }

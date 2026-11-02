@@ -194,7 +194,7 @@ export function login(layer, persona, { reduced } = {}) {
     const time = h('p.lock__time'), date = h('p.lock__date');
     const tick = () => { const d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); };
     tick(); const clk = setInterval(tick, 15000);
-    const pw = h('input.lock__pw', { type: 'password', placeholder: 'No password needed', 'aria-label': 'Password', autocomplete: 'off' });
+    const pw = h('input.lock__pw', { type: 'text', placeholder: 'No passcode needed', 'aria-label': 'Passcode', autocomplete: 'off', spellcheck: false });
     const arrow = h('button.lock__go', { type: 'submit', 'aria-label': 'Log in' }, '→');
     const form = h('form.lock__form', { onsubmit: (e) => { e.preventDefault(); finish(); } }, pw, arrow);
     const back = h('button.lock__back', { type: 'button', onclick: () => choose(null) }, '← Other accounts');
