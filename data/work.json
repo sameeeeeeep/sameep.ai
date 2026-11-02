@@ -47,7 +47,8 @@
   "video": "video/brandbrain.mp4",
   "poster": "video/brandbrain-poster.webp",
   "embed": "https://brandbrain.thelastprompt.ai",
-  "explainer": null
+  "explainer": "video/brandbrain-explainer.mp4",
+  "explainerPoster": "video/brandbrain-explainer-poster.webp"
  },
  {
   "id": "pptlive",
@@ -148,7 +149,8 @@
   "video": "video/asknotch.mp4",
   "poster": "video/asknotch-poster.webp",
   "embed": null,
-  "explainer": null
+  "explainer": "video/asknotch-explainer.mp4",
+  "explainerPoster": "video/asknotch-explainer-poster.webp"
  },
  {
   "id": "wallpap",

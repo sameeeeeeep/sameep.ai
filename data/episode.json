@@ -1838,15 +1838,9 @@
      "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking, so, getting you the best deal: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, looking after those trips taught us more than anything we planned.",
      "audio": "audio/clips/often-intro-02.mp3",
      "visual": {
-      "type": "stats",
-      "title": "Often / Trippy",
-      "kpis": [
-       {
-        "n": 1200,
-        "label": "trips powered",
-        "pre": "~"
-       }
-      ]
+      "type": "work",
+      "work": "often",
+      "title": "Often: AI for travel hacking"
      }
     }
    ],
@@ -2093,6 +2087,19 @@
        "text": "Switchboard! Someone told me it's MetaMask for AI, and I nodded like I'd seen the replay. What did you actually use it for, when you started?",
        "audio": "audio/clips/sb-intro-01-gus.mp3"
       }
+     }
+    },
+    {
+     "id": "sb-intro-02a",
+     "who": "sameep",
+     "text": "Okay, the plain version first. Switchboard is a Mac app that lets any app, or any web page, run on the Claude you already pay for. No new account, no new AI bill. But when I started, it was just for me.",
+     "audio": "audio/clips/sb-intro-02a.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/switchboard-explainer.mp4",
+      "poster": "video/switchboard-explainer-poster.webp",
+      "title": "Switchboard: bring your AI, every app gets it",
+      "work": "switchboard"
      }
     },
     {
@@ -2575,13 +2582,11 @@
      "text": "The notch was to make working with Claude easy. When Claude needs an answer from me, it shows a little card with options. Originally that card followed my cursor around, and I couldn't click it, because it kept moving with me. Pin it to the notch, the black cutout at the top of the screen, and now you can click it. That one decision ended the whole click versus keyboard saga.",
      "audio": "audio/clips/sb-notch-02.mp3",
      "visual": {
-      "type": "shots",
-      "work": "asknotch",
-      "shots": [
-       "img/work/asknotch/card-dark.webp"
-      ],
-      "title": "Claude's question, as a card in the notch",
-      "hold": 9000
+      "type": "video",
+      "src": "video/asknotch-explainer.mp4",
+      "poster": "video/asknotch-explainer-poster.webp",
+      "title": "Ask Notch: Claude's questions, as a card in the notch",
+      "work": "asknotch"
      }
     },
     {
@@ -2909,9 +2914,22 @@
    "chapter": "Switchboard",
    "lines": [
     {
+     "id": "w-brandbrain-00",
+     "who": "sameep",
+     "text": "So, Brand Brain is for anyone starting a brand that sells online. You type your idea in one sentence, and it does the homework: research on the market, a playbook, a pitch deck, and real people to reach out to.",
+     "audio": "audio/clips/w-brandbrain-00.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/brandbrain-explainer.mp4",
+      "poster": "video/brandbrain-explainer-poster.webp",
+      "title": "Brand Brain: one sentence in, a brand plan out",
+      "work": "brandbrain"
+     }
+    },
+    {
      "id": "w-brandbrain-01",
      "who": "sameep",
-     "text": "Basically, Brand Brain helps brands that sell straight to customers online plan their launch and growth. It had thirty-two features that needed a server to talk to the AI. The whole Switchboard idea was, I moved all thirty-two into your browser tab, running on your own Claude. No server. No new API key.",
+     "text": "Under the hood, it had thirty-two features that needed a server to talk to the AI. The whole Switchboard idea was, I moved all thirty-two into your browser tab, running on the Claude you already pay for. So, no server, and no new API key.",
      "audio": "audio/clips/w-brandbrain-01.mp3",
      "visual": {
       "type": "stats",
@@ -3092,6 +3110,12 @@
        "text": "Yeah, I know. It's dictation inside Switchboard, hold a key and talk. In my defence, it's a very small Flow. Yours is the one I used to build this whole site.",
        "audio": "audio/clips/w-flow-02.mp3"
       }
+     },
+     "visual": {
+      "type": "video",
+      "src": "video/flow-explainer.mp4",
+      "poster": "video/flow-explainer-poster.webp",
+      "title": "Flow: hold a key and talk"
      }
     },
     {
@@ -3161,7 +3185,13 @@
      "id": "w-voice-01",
      "who": "sameep",
      "text": "Voice cloning, on your own Mac. You drop in a few seconds of your voice, and Switchboard can speak in it. No cloud, no credits. It uses Pocket TTS, a small open voice model, running on Apple's own chips. The voice I'm talking in right now came out of that.",
-     "audio": "audio/clips/w-voice-01.mp3"
+     "audio": "audio/clips/w-voice-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/voice-explainer.mp4",
+      "poster": "video/voice-explainer-poster.webp",
+      "title": "Voice cloning, on your own Mac"
+     }
     },
     {
      "id": "w-voice-02",
@@ -3245,9 +3275,15 @@
     {
      "id": "w-cut-01",
      "who": "sameep",
-     "text": "Cut started life as Redline, a way to review landing pages inside Brand Brain. The idea is, you treat a web page like a film. Instead of fiddling with the code for colours and spacing, every control says what you want the page to do. So you're directing the page, like a video.",
+     "text": "So, Cut lets you direct a web page like a film. Instead of fiddling with the code for colours and spacing, every control says what you want the page to do. It started life as Redline, a way to review landing pages inside Brand Brain.",
      "messy": "So Redline started as, um, reviewing a landing page the Brand Brain way, and it became Cut. The idea is the page is a film, and every knob is an intent. So instead of editing CSS, you're kind of directing the page, like a, like a video.",
-     "audio": "audio/clips/w-cut-01.mp3"
+     "audio": "audio/clips/w-cut-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/cut-explainer.mp4",
+      "poster": "video/cut-explainer-poster.webp",
+      "title": "Cut: direct a web page like a film"
+     }
     },
     {
      "id": "w-cut-02",
@@ -3309,7 +3345,13 @@
      "id": "w-annotate-01",
      "who": "sameep",
      "text": "That one's simple. Claude makes a lot of web pages for me, and I wanted to just draw on them. Circle things, scribble, and hand it back with notes. Like marking up a printout, but the printout is alive.",
-     "audio": "audio/clips/w-annotate-01.mp3"
+     "audio": "audio/clips/w-annotate-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/annotate-explainer.mp4",
+      "poster": "video/annotate-explainer-poster.webp",
+      "title": "Annotate: draw on the page, hand it back"
+     }
     },
     {
      "id": "w-annotate-02",
@@ -3371,7 +3413,13 @@
      "id": "w-cartridge-01",
      "who": "sameep",
      "text": "Cartridge. You describe a game, and your own Claude builds it. It was the headline wrapp when the Switchboard store launched. Before that, I got a bit distracted and made a whole open-world game set in a neon Mumbai, which, yeah. Detour.",
-     "audio": "audio/clips/w-cartridge-01.mp3"
+     "audio": "audio/clips/w-cartridge-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/cartridge-explainer.mp4",
+      "poster": "video/cartridge-explainer-poster.webp",
+      "title": "Cartridge: describe a game, Claude builds it"
+     }
     },
     {
      "id": "w-cartridge-02",
@@ -3582,9 +3630,22 @@
      }
     },
     {
+     "id": "ppt-intro-02a",
+     "who": "sameep",
+     "text": "That's exactly it! ppt.live turns a talk into a live show. Your slides go on the big screen, everyone scans a code with their phone, and they vote, answer questions and play games, live. No app, no sign-up.",
+     "audio": "audio/clips/ppt-intro-02a.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/pptlive-explainer.mp4",
+      "poster": "video/pptlive-explainer-poster.webp",
+      "title": "ppt.live: the room plays along on their phones",
+      "work": "pptlive"
+     }
+    },
+    {
      "id": "ppt-intro-02",
      "who": "sameep",
-     "text": "That's exactly it! It started in Diwali week, twenty nineteen. I had to host our office Diwali party, about fifty people, all holding a drink. You have their attention until the drink is done. So instead of a regular deck, I made it interactive. Everyone scanned a QR, and the presentation became a drinking game.",
+     "text": "It started in Diwali week, twenty nineteen. I had to host our office Diwali party, about fifty people, all holding a drink. You have their attention until the drink is done. So instead of a regular deck, I made it interactive. Everyone scanned a QR, and the presentation became a drinking game.",
      "messy": "That's, that's exactly it! It started in Diwali week, twenty nineteen. I had to host our office Diwali party, about fifty people, all holding a drink. You have their attention until the, the drink is done. So instead of a regular deck I made it interactive. Everyone scanned a QR and the presentation became a drinking game.",
      "audio": "audio/clips/ppt-intro-02.mp3",
      "cutaway": "img/cutaways/pptlive-qr-crowd.webp",
@@ -3620,7 +3681,7 @@
     {
      "id": "ppt-intro-04",
      "who": "sameep",
-     "text": "But the existing tools only had a handful of question types, and they only sold annual plans, for one party. So last month, when I hosted a gathering of creators, I built my own. Your slides go on a TV, the room scans a QR code, and phones vote, answer, ask, play. No app, no signup. We tested it with fifty phones joining at once. Zero errors.",
+     "text": "But the existing tools only had a handful of question types, and they only sold annual plans, for one party. So last month, when I hosted a gathering of creators, I built my own. We tested it with fifty phones joining at once. Zero errors.",
      "audio": "audio/clips/ppt-intro-04.mp3",
      "visual": {
       "type": "stats",
@@ -4392,6 +4453,19 @@
    "chapter": "The toolbox",
    "lines": [
     {
+     "id": "t-video-00",
+     "who": "sameep",
+     "text": "video2ai is a little tool that lets Claude watch videos. You give it a link, and it hands back what's being said, plus only the frames that matter, all on one page Claude can read easily.",
+     "audio": "audio/clips/t-video-00.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/video2ai-explainer.mp4",
+      "poster": "video/video2ai-explainer-poster.webp",
+      "title": "video2ai: a video Claude can read",
+      "work": "video2ai"
+     }
+    },
+    {
      "id": "t-video-01",
      "who": "sameep",
      "text": "I don't really start with a plan. I start with a problem that's annoying me. I'd send Claude an Instagram video as a reference, and back then, it simply could not watch it.",
@@ -4992,14 +5066,9 @@
      "text": "That is wallpap! Live wallpapers for your Mac. Twelve scenes. Koi that come for food when you click, cats that follow your cursor, singing bowls you can ring. It follows your real weather and time of day, and rests at about zero energy when you're not looking.",
      "audio": "audio/clips/f-wallpap-02.mp3",
      "visual": {
-      "type": "stats",
-      "title": "wallpap",
-      "kpis": [
-       {
-        "n": 12,
-        "label": "live scenes"
-       }
-      ]
+      "type": "work",
+      "work": "wallpap",
+      "title": "wallpap: live wallpapers for your Mac"
      }
     },
     {
@@ -5204,7 +5273,13 @@
      "id": "f-maccat-01",
      "who": "sameep",
      "text": "MacCat! A pixel cat in your menu bar that chases your cursor. And in focus mode, if you open Instagram, your pets start fighting on screen to stop you doomscrolling.",
-     "audio": "audio/clips/f-maccat-01.mp3"
+     "audio": "audio/clips/f-maccat-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/maccat-explainer.mp4",
+      "poster": "video/maccat-explainer-poster.webp",
+      "title": "MacCat: a menu bar cat that guards your focus"
+     }
     },
     {
      "id": "f-maccat-02",
@@ -5300,19 +5375,10 @@
      "text": "Bluetune. You send text or images between devices, as sound. Proper modem stuff, error correction, the works. Built in one day. And then I spent the next hour making fourteen logos.",
      "audio": "audio/clips/f-bluetune-01.mp3",
      "visual": {
-      "type": "stats",
-      "title": "Bluetune",
-      "kpis": [
-       {
-        "n": 1,
-        "label": "to build",
-        "suf": " day"
-       },
-       {
-        "n": 14,
-        "label": "logos after that"
-       }
-      ]
+      "type": "video",
+      "src": "video/bluetune-explainer.mp4",
+      "poster": "video/bluetune-explainer-poster.webp",
+      "title": "Bluetune: text and pictures, sent as sound"
      }
     },
     {
@@ -5504,7 +5570,13 @@
      "id": "f-alter-01",
      "who": "sameep",
      "text": "Alter. Singing bowls you play by drawing circles. The shape you draw is literally the shape the bowl vibrates in, so nothing arbitrary sits between your hand and the sound. And the sand in the background collects where the bowl is still, the same way real sand would.",
-     "audio": "audio/clips/f-alter-01.mp3"
+     "audio": "audio/clips/f-alter-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/alter-explainer.mp4",
+      "poster": "video/alter-explainer-poster.webp",
+      "title": "Alter: draw a circle, hear the bowl"
+     }
     },
     {
      "id": "f-alter-02",
@@ -5594,7 +5666,13 @@
      "id": "f-vibedj-01",
      "who": "sameep",
      "text": "Vibe DJ. An AI DJ that mixes your own music, keeping the beats in time, and reads the crowd's energy from a webcam, so the set ramps up instead of whiplashing. Honest status: the webcam part has only been tested in a simulator. So the crowd, so far, is imaginary.",
-     "audio": "audio/clips/f-vibedj-01.mp3"
+     "audio": "audio/clips/f-vibedj-01.mp3",
+     "visual": {
+      "type": "video",
+      "src": "video/vibedj-explainer.mp4",
+      "poster": "video/vibedj-explainer-poster.webp",
+      "title": "Vibe DJ: an AI DJ that reads the room"
+     }
     },
     {
      "id": "f-vibedj-02",
