@@ -1227,44 +1227,52 @@ a.icon { text-decoration: none; }
 .folder__grid .icon { width: 100%; }
 .folder__grid .icon__label { background: none; }
 
-/* the lock screen (Wispr version): who's logging in, after the modem connects */
-.lock { position: absolute; inset: -28px 0 0; z-index: 9500; display: grid; grid-template-rows: auto 1fr; justify-items: center; padding: clamp(28px, 7vh, 72px) 16px 24px; color: #fff; background: rgba(10,30,40,.35); -webkit-backdrop-filter: blur(22px) saturate(1.3); backdrop-filter: blur(22px) saturate(1.3); opacity: 0; transition: opacity .45s; text-shadow: 0 1px 12px rgba(0,0,0,.35); overflow: auto; }
-.lock.is-on { opacity: 1; }
-.lock.is-out { opacity: 0; transform: scale(1.03); transition: opacity .45s, transform .45s; }
-.lock__top { text-align: center; }
-.lock__top p { margin: 0; }
-.lock__time { font: 700 clamp(56px, 11vw, 112px)/1 var(--f-ui); letter-spacing: -.02em; }
-.lock__date { margin-top: 6px !important; font: 500 clamp(15px, 2vw, 20px) var(--f-ui); opacity: .9; }
-.lock__mid { align-self: end; display: grid; justify-items: center; gap: 14px; width: 100%; max-width: 980px; }
-.lock__users { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 10px; }
-.lock__user { width: 92px; display: grid; justify-items: center; gap: 5px; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; transition: opacity .3s, transform .3s var(--ease-out); }
-.lock__face { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; display: block; background: rgba(255,255,255,.25); box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 2px rgba(255,255,255,.35); transition: box-shadow .2s, width .3s var(--ease-out), height .3s var(--ease-out); }
-.lock__face img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.lock__guest { display: block; width: 100%; height: 100%; background: radial-gradient(circle at 50% 38%, #fff 0 17%, transparent 18%), radial-gradient(ellipse at 50% 100%, #fff 0 36%, transparent 37%), linear-gradient(#9aa3ad, #6d7783); }
-.lock__user:hover .lock__face, .lock__user:focus-visible .lock__face { box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 3px #fff; }
-.lock__user:focus-visible { outline: none; }
-.lock__name { font: 600 13px/1.2 var(--f-ui); }
-.lock__role { font: 400 11px/1.2 var(--f-ui); opacity: .8; text-align: center; }
-.lock.is-picked .lock__user:not(.is-on) { display: none; }
-.lock.is-picked .lock__user.is-on { width: 200px; }
-.lock.is-picked .lock__user.is-on .lock__face { width: 112px; height: 112px; }
-.lock.is-picked .lock__user.is-on .lock__name { font-size: 20px; }
-.lock__form { display: none; align-items: center; gap: 0; width: min(260px, 100%); height: 34px; border-radius: 999px; background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); overflow: hidden; }
-.lock.is-picked .lock__form { display: flex; }
-.lock__pw { flex: 1; min-width: 0; height: 100%; padding: 0 14px; border: 0; background: none; color: #fff; font: 500 14px var(--f-ui); outline: none; }
-.lock__pw::placeholder { color: rgba(255,255,255,.75); }
-.lock__go { width: 30px; height: 30px; margin-right: 2px; border: 0; border-radius: 50%; background: rgba(255,255,255,.85); color: #123; font: 700 15px var(--f-ui); cursor: pointer; }
-.lock__back { display: none; padding: 4px 10px; border: 0; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font: 500 12px var(--f-ui); cursor: pointer; }
-.lock.is-picked .lock__back { display: inline-block; }
-.lock__hint { margin: 0; font: 500 13px var(--f-ui); opacity: .85; }
-@media (max-width: 760px) { .lock__user { width: 74px; } .lock__face { width: 54px; height: 54px; } .lock__mid { align-self: center; } }
 .icons li.is-new .icon { animation: icon-land .7s var(--ease-out) both; }
 .icons li.is-new .icon__label { background: #111; color: #fff; }
 @keyframes icon-land { 0% { transform: scale(.3) translateY(-30px); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: none; } }
+
+/* the lock screen (js/app/era.js login): blurred desktop, big clock, floating account bubbles */
 .desk.is-locked .menubar, .desk.is-locked .icons { visibility: hidden; }
-/* lock screen type: a display grotesque for the clock (thin-ish, tight, tabular), like the real thing */
-.lock__time { font-family: 'Bricolage Grotesque', var(--f-ui); font-weight: 600; font-variation-settings: 'opsz' 96; font-size: clamp(72px, 14vw, 150px); letter-spacing: -.045em; font-variant-numeric: tabular-nums; text-shadow: 0 2px 24px rgba(0,0,0,.25); }
-.lock__date { font-family: 'Bricolage Grotesque', var(--f-ui); font-weight: 600; letter-spacing: -.01em; }
-.lock__name { font-family: 'Bricolage Grotesque', var(--f-ui); font-weight: 600; font-size: 14px; }
-.lock__pw { -webkit-text-security: disc; }
-.lock__role, .lock__hint, .lock__pw, .lock__back { font-family: 'Bricolage Grotesque', var(--f-ui); }
+.lock { position: absolute; inset: -28px 0 0; z-index: 9500; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 8px; padding: clamp(24px, 6vh, 64px) 16px clamp(16px, 4vh, 32px); color: #fff; background: rgba(10,30,40,.35); -webkit-backdrop-filter: blur(22px) saturate(1.3); backdrop-filter: blur(22px) saturate(1.3); opacity: 0; transition: opacity .45s, transform .45s; text-shadow: 0 1px 12px rgba(0,0,0,.35); font-family: 'Bricolage Grotesque', var(--f-ui); }
+.lock.is-on { opacity: 1; }
+.lock.is-out { opacity: 0; transform: scale(1.03); }
+.lock p { margin: 0; }
+.lock__top { text-align: center; display: grid; justify-items: center; gap: 6px; }
+.lock__time { font-weight: 600; font-variation-settings: 'opsz' 96; font-size: clamp(64px, 13vw, 140px); line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; text-shadow: 0 2px 24px rgba(0,0,0,.25); }
+.lock__date { font-weight: 600; font-size: clamp(15px, 2vw, 20px); opacity: .92; }
+.lock__online { display: inline-flex; align-items: center; gap: 7px; margin-top: 4px !important; padding: 4px 11px; border-radius: 999px; background: rgba(255,255,255,.16); font-weight: 600; font-size: 13px; }
+.lock__online::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #5df07a; box-shadow: 0 0 8px #5df07a; animation: lock-pulse 1.6s ease-in-out infinite; }
+@keyframes lock-pulse { 50% { opacity: .35; } }
+.lock__mid { width: 100%; max-width: 1100px; min-height: 0; display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 12px; }
+.lock__field { position: relative; width: 100%; height: 100%; min-height: 240px; }
+.lock__field[hidden], .lock__picked[hidden], .lock__add[hidden], .lock__bottom[hidden] { display: none; }
+.lock__user { position: absolute; left: 0; top: 0; width: 108px; display: grid; justify-items: center; gap: 4px; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; will-change: transform; font-family: inherit; }
+.lock__user > * { transition: transform .25s var(--ease-out), opacity .3s; }
+.lock__user:hover .lock__face { transform: scale(1.08); box-shadow: 0 6px 22px rgba(0,0,0,.35), 0 0 0 3px #fff; }
+.lock__user.is-gone > * { opacity: 0; transform: scale(.3); }
+.lock__user.is-gone { pointer-events: none; }
+.lock__face { width: 76px; height: 76px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: rgba(255,255,255,.22); box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 2px rgba(255,255,255,.4); }
+.lock__face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lock__glyph { font: 300 38px/1 'Bricolage Grotesque', sans-serif; color: #fff; }
+.lock__user.is-guest .lock__face { background: radial-gradient(circle at 50% 38%, #fff 0 17%, transparent 18%), radial-gradient(ellipse at 50% 100%, #fff 0 36%, transparent 37%), linear-gradient(#9aa3ad, #6d7783); }
+.lock__user.is-add .lock__face { background: rgba(255,255,255,.1); box-shadow: 0 0 0 2px rgba(255,255,255,.7) inset; border: 0; }
+.lock__name { font-weight: 600; font-size: 14px; line-height: 1.15; }
+.lock__role { font-weight: 500; font-size: 11px; line-height: 1.2; opacity: .8; text-align: center; max-width: 108px; }
+.lock__bottom { display: grid; justify-items: center; gap: 8px; width: min(320px, 100%); }
+.lock__search, .lock__pw { width: 100%; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); color: #fff; font: 500 14px 'Bricolage Grotesque', var(--f-ui); outline: none; text-align: center; }
+.lock__search::placeholder, .lock__pw::placeholder { color: rgba(255,255,255,.78); }
+.lock__search:focus, .lock__pw:focus { box-shadow: inset 0 0 0 1.5px #fff; }
+.lock__hint { font-weight: 500; font-size: 13px; opacity: .85; }
+.lock__picked, .lock__add { align-self: center; display: grid; justify-items: center; gap: 8px; width: min(320px, 100%); animation: lock-rise .4s var(--ease-out) both; }
+@keyframes lock-rise { from { opacity: 0; transform: translateY(12px) scale(.96); } }
+.lock__picked .lock__face, .lock__add .lock__face { width: 120px; height: 120px; }
+.lock__facebtn { padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; }
+.lock__big { font-weight: 600; font-size: 24px; }
+.lock__form { position: relative; display: flex; width: min(260px, 100%); margin-top: 6px; }
+.lock__form .lock__pw { padding-right: 40px; -webkit-text-security: disc; }
+.lock__form .lock__name-in { -webkit-text-security: none; }
+.lock__go { position: absolute; right: 3px; top: 3px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(255,255,255,.9); color: #123; font: 700 15px var(--f-ui); cursor: pointer; }
+.lock__back { padding: 5px 12px; border: 0; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; font: 500 12px 'Bricolage Grotesque', var(--f-ui); cursor: pointer; }
+@media (max-width: 760px) { .lock__user { width: 86px; } .lock__face { width: 60px; height: 60px; } .lock__role { display: none; } }
+@media (prefers-reduced-motion: reduce) { .lock__online::before { animation: none; } }
+.lock__online[hidden] { display: none; }

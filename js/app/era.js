@@ -4,6 +4,7 @@
 // Also: one desktop icon per project, each opening the real thing in a new tab.
 import { h, wait } from './util.js';
 import { sound } from './audio.js';
+import { presence } from '../presence.js';
 
 // Eiffel 65, Blue (Da Ba Dee), 1999: the official upload from the label (Bliss Corporation)
 const SONG = { id: '68ugkg9RePc', artist: 'Eiffel 65', title: 'Blue (Da Ba Dee)', file: 'eiffel65_-_blue_(da_ba_dee).mp3', size: '3.4 MB' };
@@ -181,54 +182,167 @@ export function openGames(wm) {
       h('span.icon__label', g.label))))));
 }
 
-// ---------------------------------------------------------------- Multiple Users (Wispr version)
-// Mac OS 9 asked who you were after startup. Here it lists the Wispr Flow team, with their
-// faces, plus Guest. Logging in as someone makes you them in the audience (same store the
-// seat picker uses), so the host greets you by name and the seat step is skipped.
-export function login(layer, persona, { reduced } = {}) {
-  const team = (persona.characters || []).filter((c) => c.team);
-  if (!team.length) return Promise.resolve(null);
+// ---------------------------------------------------------------- the lock screen
+// After the modem connects, Mac OS asks who you are. Everyone floats as a bubble (ppt.live style:
+// a little physics, they drift and nudge each other); type your name to filter, or tap your face.
+// Wispr version: the team are there. Anyone can add their own account (name + selfie); it lives on
+// their device only and is there next time. Logging in seats you in the audience as yourself.
+const ACCOUNTS = 'offthecv.accounts';
+const ownAccounts = () => { try { return JSON.parse(localStorage.getItem(ACCOUNTS) || '[]'); } catch { return []; } };
+const saveOwn = (list) => { try { localStorage.setItem(ACCOUNTS, JSON.stringify(list.slice(-4))); } catch { /* full or private: this visit only */ } };
+
+export function login(layer, persona, { reduced, stylise } = {}) {
   return new Promise((resolve) => {
-    let pick = null;
-    // a lock screen: the desktop blurred behind, the time big, every account as a round face
-    const time = h('p.lock__time'), date = h('p.lock__date');
+    const team = (persona.characters || []).filter((c) => c.team);
+    const time = h('p.lock__time'), date = h('p.lock__date'), online = h('p.lock__online', { hidden: true });
     const tick = () => { const d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); };
     tick(); const clk = setInterval(tick, 15000);
-    const pw = h('input.lock__pw', { type: 'text', placeholder: 'No passcode needed', 'aria-label': 'Passcode', autocomplete: 'off', spellcheck: false });
-    const arrow = h('button.lock__go', { type: 'submit', 'aria-label': 'Log in' }, '→');
-    const form = h('form.lock__form', { onsubmit: (e) => { e.preventDefault(); finish(); } }, pw, arrow);
-    const back = h('button.lock__back', { type: 'button', onclick: () => choose(null) }, '← Other accounts');
-    const accounts = [...team, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', thumb: null }];
-    const list = h('ul.lock__users', { role: 'listbox', 'aria-label': 'Accounts' }, accounts.map((c) => h('li', h('button.lock__user', { type: 'button', role: 'option', 'aria-selected': 'false', dataset: { id: c.id }, onclick: () => choose(c) },
-      h('span.lock__face', c.thumb || c.src ? h('img', { src: c.thumb || c.src, alt: '', width: 96, height: 96 }) : h('span.lock__guest', { 'aria-hidden': 'true' })),
-      h('span.lock__name', c.label), c.blurb && h('span.lock__role', c.blurb)))));
-    const hint = h('p.lock__hint', 'Choose your account');
+    const stopHere = presence((n) => { online.hidden = !n; online.textContent = n > 1 ? `${n} in the room right now` : 'Just you in the room right now'; });
+
+    const field = h('div.lock__field', { role: 'listbox', 'aria-label': 'Accounts' });
+    const search = h('input.lock__search', { type: 'text', placeholder: team.length ? 'Type your name, or tap your face' : 'Type your name', 'aria-label': 'Your name', autocomplete: 'off', spellcheck: false, enterkeyhint: 'go' });
+    const hint = h('p.lock__hint', team.length ? 'Or add your own account' : 'Add your own account, or come in as a guest');
+    const pickView = h('div.lock__picked', { hidden: true });
+    const addView = h('form.lock__add', { hidden: true });
     const el = h('div.lock', { role: 'dialog', 'aria-label': 'Log in' },
-      h('div.lock__top', time, date),
-      h('div.lock__mid', list, form, back, hint));
-    function choose(c) {
-      pick = c;
-      el.classList.toggle('is-picked', !!c);
-      list.querySelectorAll('.lock__user').forEach((n) => { const on = c && n.dataset.id === c.id; n.classList.toggle('is-on', !!on); n.setAttribute('aria-selected', String(!!on)); });
-      hint.textContent = c ? (c.id === 'guest' ? 'Press return to look around' : `Hi ${c.label}. Press return to log in`) : 'Choose your account';
-      if (c) { sound.tick('pick'); setTimeout(() => pw.focus({ preventScroll: true }), 50); }
+      h('div.lock__top', time, date, online),
+      h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', search, hint)));
+
+    // ---- bubbles
+    let bubbles = [];
+    const face = (a) => h('span.lock__face', a.src ? h('img', { src: a.src, alt: '', width: 96, height: 96 }) : h('span.lock__glyph', { 'aria-hidden': 'true' }, a.glyph ?? (a.label || '?')[0].toUpperCase()));
+    function build() {
+      const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c })),
+        { id: 'add', label: 'Add account', blurb: 'Name and a selfie', glyph: '+' }, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', glyph: '' }];
+      field.replaceChildren();
+      bubbles = accounts.map((a) => {
+        const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
+          face(a), h('span.lock__name', a.label), a.blurb && h('span.lock__role', a.blurb));
+        field.append(b);
+        return { a, el: b, x: 0, y: 0, vx: 0, vy: 0, on: true };
+      });
+      place();
     }
+    // physics: soft circles that push apart, bounce off the edges and wander a little
+    let W = 0, H = 0, R = 52, raf = 0, last = 0;
+    function place() {
+      W = field.clientWidth; H = field.clientHeight; R = W < 500 ? 42 : 54;
+      const n = bubbles.length, cols = Math.max(2, Math.min(n, Math.floor(W / (R * 2.3)))), rows = Math.ceil(n / cols), cw = Math.min(W / cols, R * 3.2);
+      bubbles.forEach((b, i) => { const r = Math.floor(i / cols), inRow = Math.min(cols, n - r * cols); b.x = W / 2 + ((i % cols) - (inRow - 1) / 2) * cw + (Math.random() - 0.5) * 20; b.y = (Math.floor(i / cols) + 0.5) * (H / Math.max(rows, 1)) + (Math.random() - 0.5) * 20; b.vx = (Math.random() - 0.5) * 0.4; b.vy = (Math.random() - 0.5) * 0.4; });
+      for (let k = 0; k < 120; k++) step(1, true);
+      draw();
+    }
+    function step(dt, settle) {
+      const live = bubbles.filter((b) => b.on);
+      for (const b of live) {
+        if (!settle) { b.vx += (Math.random() - 0.5) * 0.05 * dt; b.vy += (Math.random() - 0.5) * 0.05 * dt; }
+        if (live.length < bubbles.length) { b.vx += (W / 2 - b.x) * 0.0006 * dt; b.vy += (H / 2 - b.y) * 0.0006 * dt; }
+      }
+      for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
+        const p = live[i], q = live[j], dx = q.x - p.x, dy = (q.y - p.y) * 1.15, d = Math.hypot(dx, dy) || 0.01, min = R * 2.05;
+        if (d < min) { const f = ((min - d) / d) * 0.06 * dt; p.vx -= dx * f; p.vy -= dy * f; q.vx += dx * f; q.vy += dy * f; }
+      }
+      for (const b of live) {
+        b.vx *= 0.94; b.vy *= 0.94;
+        const sp = Math.hypot(b.vx, b.vy), max = settle ? 6 : 0.9;
+        if (sp > max) { b.vx *= max / sp; b.vy *= max / sp; }
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx); } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx); }
+        if (b.y < R * 0.9) { b.y = R * 0.9; b.vy = Math.abs(b.vy); } if (b.y > H - R * 1.1) { b.y = H - R * 1.1; b.vy = -Math.abs(b.vy); }
+      }
+    }
+    function draw() { for (const b of bubbles) b.el.style.transform = `translate(${(b.x - R).toFixed(1)}px, ${(b.y - R).toFixed(1)}px)`; }
+    const loop = (t) => { const dt = Math.min(3, (t - (last || t)) / 16.7); last = t; step(dt); draw(); raf = requestAnimationFrame(loop); };
+    const ro = new ResizeObserver(() => { if (Math.abs(field.clientWidth - W) > 4 || Math.abs(field.clientHeight - H) > 4) place(); });
+
+    // ---- typing filters
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      for (const b of bubbles) { b.on = !q || b.a.id === 'add' || b.a.label.toLowerCase().split(' ').some((w) => w.startsWith(q)); b.el.classList.toggle('is-gone', !b.on); }
+    });
+    search.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const q = search.value.trim().toLowerCase();
+      const hits = bubbles.filter((b) => b.on && b.a.id !== 'add' && b.a.id !== 'guest');
+      const exact = hits.find((b) => b.a.label.toLowerCase() === q);
+      if (exact || hits.length === 1) choose((exact || hits[0]).a);
+      else if (q && !hits.length) openAdd(search.value.trim());
+    });
+
+    // ---- picked: the face big, a passcode pill, return logs in
+    let pick = null;
+    function choose(a) {
+      if (a.id === 'add') return openAdd(search.value.trim());
+      pick = a;
+      sound.tick('pick');
+      const pw = h('input.lock__pw', { type: 'text', placeholder: 'No passcode needed', 'aria-label': 'Passcode', autocomplete: 'off', spellcheck: false });
+      pickView.replaceChildren(face(a), h('p.lock__big', a.label), a.blurb && h('p.lock__role', a.blurb),
+        h('form.lock__form', { onsubmit: (e) => { e.preventDefault(); finish(); } }, pw, h('button.lock__go', { type: 'submit', 'aria-label': 'Log in' }, '→')),
+        h('button.lock__back', { type: 'button', onclick: back }, '← Other accounts'));
+      show('pick');
+      setTimeout(() => pw.focus({ preventScroll: true }), 60);
+    }
+    function back() { pick = null; show('field'); setTimeout(() => search.focus({ preventScroll: true }), 30); }
+    function show(which) {
+      el.dataset.view = which;
+      field.hidden = which !== 'field'; pickView.hidden = which !== 'pick'; addView.hidden = which !== 'add';
+      el.querySelector('.lock__bottom').hidden = which !== 'field';
+    }
+
+    // ---- add your own account: a name and a selfie, kept on this device
+    function openAdd(name = '') {
+      sound.tick('pick');
+      let photo = null;
+      const nameIn = h('input.lock__pw.lock__name-in', { type: 'text', value: name, placeholder: 'Your name', 'aria-label': 'Your name', maxlength: '24', autocomplete: 'given-name' });
+      const pic = h('span.lock__face.lock__face--add', h('span.lock__glyph', { 'aria-hidden': 'true' }, '+'));
+      const file = h('input', { type: 'file', accept: 'image/*', capture: 'user', hidden: true });
+      const snap = h('button.lock__back', { type: 'button', onclick: () => file.click() }, 'Take a selfie');
+      file.addEventListener('change', async () => {
+        const f = file.files?.[0]; if (!f) return;
+        snap.textContent = 'Developing…';
+        photo = stylise ? await stylise(f) : null;
+        snap.textContent = photo ? 'Retake' : 'Take a selfie';
+        if (photo) pic.replaceChildren(h('img', { src: photo, alt: 'Your selfie', width: 96, height: 96 }));
+      });
+      addView.onsubmit = (e) => {
+        e.preventDefault();
+        const label = nameIn.value.trim().slice(0, 24);
+        if (!label) return nameIn.focus();
+        const a = { id: 'me-' + Math.random().toString(36).slice(2, 9), label, blurb: 'Your account, on this device', src: photo };
+        saveOwn([...ownAccounts(), a]);
+        build();
+        choose({ ...a, own: true });
+      };
+      addView.replaceChildren(h('button.lock__facebtn', { type: 'button', onclick: () => file.click(), 'aria-label': 'Take a selfie' }, pic), file,
+        h('p.lock__big', 'New account'), h('p.lock__role', 'Your selfie stays on this device. Nothing is uploaded.'),
+        h('div.lock__form', nameIn, h('button.lock__go', { type: 'submit', 'aria-label': 'Create account' }, '→')), snap,
+        h('button.lock__back', { type: 'button', onclick: back }, '← Other accounts'));
+      show('add');
+      setTimeout(() => nameIn.focus({ preventScroll: true }), 60);
+    }
+
     const finish = async () => {
       if (!pick) return;
       el.classList.add('is-out');
-      clearInterval(clk);
+      clearInterval(clk); cancelAnimationFrame(raf); ro.disconnect(); stopHere();
       sound.tick('open');
       await wait(reduced ? 0 : 450);
       el.remove();
       desk?.classList.remove('is-locked');
       if (pick.id === 'guest') return resolve(null);
-      const v = { name: pick.label, character: { ...pick }, photo: null };
-      try { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: v.name, character: pick.id })); } catch { /* this visit only */ }
-      resolve(v);
+      const character = pick.team ? { ...pick.team } : { id: 'photo', label: pick.label, src: pick.src };
+      try { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: pick.label, character: pick.team ? pick.id : null })); } catch { /* this visit only */ }
+      resolve({ name: pick.label, character: pick.src || pick.team ? character : null, photo: pick.team ? null : pick.src || null });
     };
+
     const desk = layer.closest('.desk');
     desk?.classList.add('is-locked');
     layer.append(el);
+    show('field');
+    build();
+    ro.observe(field);
+    if (!reduced) raf = requestAnimationFrame(loop);
     requestAnimationFrame(() => el.classList.add('is-on'));
   });
 }

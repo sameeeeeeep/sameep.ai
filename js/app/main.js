@@ -8,6 +8,7 @@ import { createWM } from './wm.js';
 import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
+import { stylisePhoto } from './cast.js';
 import { jukebox, installer, installed, splash, login, PROJECTS, GAMES } from './era.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
@@ -81,8 +82,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   desk.renderProjects([...PROJECTS, ...GAMES]);  // the work, then 90s games that still run in a browser; all open in a new tab
   desk.renderMenus(ctx, apps);
   const era = eraOn;
-  // Wispr version: right after the modem connects, Mac OS asks who you are (the team, with faces)
-  const loggedIn = era && isWispr ? await login(desk.area, persona, { reduced }) : null;
+  // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
+  const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
   const juke = era ? jukebox(wm, { reduced }) : null;
 
   if (episode && episode.nodes) {
