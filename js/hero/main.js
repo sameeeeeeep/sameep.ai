@@ -21,10 +21,10 @@ import { isWispr } from '../version.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
   // the pile holds two captions: the second (cap2) takes over at `split` of the beat, with its own scroll step
-  { id: 'pile', len: 1.0, split: 0.55, cap: isWispr ? 'Heard you received <b>2,000</b> CVs, all very similar.' : 'Every job role receives <b>thousands</b> of CVs.',
-    cap2: 'Sending one seems <i>pointless</i>.' },
+  { id: 'pile', len: 1.0, split: 0.55, cap: isWispr ? 'Heard y\'all received <b>2,000+</b> CVs' : 'Sending a CV seems <i>pointless</i>',
+    cap2: isWispr ? 'and don\'t want <i>another one</i>.' : 'when it\'s going to end up in a <b>pile</b>.' },
   { id: 'envelope', len: 1.4, cap: 'So I took <i>mine</i>,' },
-  { id: 'origami', len: 1.3, cap: 'Made a <i>plane</i> out of it,' },
+  { id: 'origami', len: 1.3, cap: 'Turned it into a <i>plane</i>,' },
   { id: 'flight', len: 0.8, cap: '<b>Flew</b> it around,' },
   { id: 'crumple', len: 0.7, cap: '<s>Crumpled</s> it,' },
   { id: 'shred', len: 1.1, cap: '<u>shredded</u> it,' },
