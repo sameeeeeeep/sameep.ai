@@ -61,20 +61,22 @@ const fetchPlan = () => (loaded ||= api('/data').then((d) => { D.load(d.content)
 
 // ---------------------------------------------------------------- helpers
 const MODULES = [
-  { id: 'home', label: 'Start here', c: '#111', render: home },
+  { id: 'home', label: 'Start here', c: 'var(--vast)', render: home },
   { id: 'dash', label: 'Dashboard', c: 'var(--lime)', render: dash },
   { sep: true },
   { id: 'campaigns', label: 'Campaigns', c: 'var(--bondi)', render: campaigns },
   { id: 'events', label: 'Events & popups', c: 'var(--tangerine)', render: events },
   { id: 'collabs', label: 'Brand collabs', c: 'var(--grape)', render: collabs },
   { id: 'creators', label: 'Creators', c: 'var(--strawberry)', render: creators },
-  { id: 'linkedin', label: 'LinkedIn & founders', c: '#2f6fd6', render: linkedin },
-  { id: 'brand', label: 'Brand: cool in India', c: '#e0b400', render: brand },
+  { id: 'linkedin', label: 'LinkedIn & founders', c: 'var(--pulse)', render: linkedin },
+  { id: 'brand', label: 'Brand: cool in India', c: 'var(--glow)', render: brand },
   { sep: true },
   { id: 'crm', label: 'CRM', c: 'var(--plat-4)', render: crm },
-  { id: 'sources', label: 'Sources', c: '#fff', render: sources },
+  { id: 'sources', label: 'Sources', c: 'var(--line-2)', render: sources },
 ];
 const mod = (id) => MODULES.find((m) => m.id === id);
+const TONES = { '#2f6fd6': 'var(--pulse)', '#e0b400': 'var(--glow)' };
+const tone = (c) => TONES[c] || c;
 const fmtD = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 const days = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 864e5);
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -128,7 +130,8 @@ const head = (m, why, ...tools) => h('header.gos__head', { style: { '--c': m.c }
 // ---------------------------------------------------------------- the window
 export function openGrowthOS(wm, { visitor, start } = {}) {
   const v = visitorOf(visitor);
-  const w = wm.win('growthos', { title: 'Wispr Growth OS', width: 1000, height: 680, className: 'win--gos' });
+  if (!document.getElementById('font-wispr')) document.head.append(h('link#font-wispr', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600&display=swap' }));
+  const w = wm.win('growthos', { title: 'Wispr Growth OS', width: 1000, height: 680, className: 'win--gos', sheet: false });
   if (w.body.dataset.ready) { if (start) w.go?.(start); return w; }
   w.body.dataset.ready = '1';
   if (!canSeeGrowthOS(v)) {
@@ -151,7 +154,7 @@ export function openGrowthOS(wm, { visitor, start } = {}) {
 function signIn(w, done, notice) {
   let email = '';
   const msg = h('p.gos-signin__msg', { role: 'status', 'aria-live': 'polite' }, notice || '');
-  const icon = h('img', { src: new URL('../../growth-os/icon.svg', import.meta.url).href, alt: '', width: 64, height: 64 });
+  const icon = h('p.gos__kicker', 'A growth plan for Flow in India');
   const box = h('div.gos-lock.gos-signin');
   const busy = (f, on) => { f.querySelectorAll('input, button').forEach((x) => { x.disabled = on; }); };
   const askEmail = () => {
@@ -163,7 +166,7 @@ function signIn(w, done, notice) {
       busy(f, true); msg.textContent = 'Sending…';
       try { await api('/login', { method: 'POST', body: { email } }); askCode(); } catch (err) { msg.textContent = err.message; busy(f, false); }
     } }, inp, h('button.btn.btn--primary', { type: 'submit' }, 'Send code'));
-    box.replaceChildren(icon, h('p.big', 'This folder is for the Wispr team.'), h('p', 'Enter your @wispr.ai email and I\u2019ll send you a code.'), f, msg);
+    box.replaceChildren(icon, h('p.big', 'For the Wispr team, ', h('em', 'only.')), h('p', 'Enter your @wispr.ai email and I\u2019ll send you a code.'), f, msg);
     setTimeout(() => inp.focus({ preventScroll: true }), 60);
   };
   const askCode = () => {
@@ -174,7 +177,7 @@ function signIn(w, done, notice) {
       try { const d = await api('/verify', { method: 'POST', body: { email, code: inp.value } }); token.set(d.token); await fetchPlan(); sound.tick('pick'); done(); } catch (err) { msg.textContent = err.message; busy(f, false); inp.select(); }
     } }, inp, h('button.btn.btn--primary', { type: 'submit' }, 'Open'));
     msg.textContent = '';
-    box.replaceChildren(icon, h('p.big', 'Check your email.'), h('p', 'A 6-digit code is on its way to ', h('b', email), '. Or tap the link in the same email. Both last 15 minutes.'), f, msg,
+    box.replaceChildren(icon, h('p.big', 'Check your ', h('em', 'email.')), h('p', 'A 6-digit code is on its way to ', h('b', email), '. Or tap the link in the same email. Both last 15 minutes.'), f, msg,
       h('button.gos-signin__alt', { type: 'button', onclick: askEmail }, 'Use a different email'));
     setTimeout(() => inp.focus({ preventScroll: true }), 60);
   };
@@ -278,7 +281,7 @@ function campaigns(m, opts) {
     h('div.tl__months', h('div', { style: { padding: '0 8px' } }, 'Campaign'), h('div.tl__mrow', months.map((d) => { const iso = d.toISOString().slice(0, 10) < first ? first : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`; return h('span.tl__m', { style: { left: x(iso) } }, d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })); }))),
     h('div', { style: { position: 'relative' } },
       list.map((c) => h('div.tl__row', h('button.tl__name', { type: 'button', onclick: () => open(c) }, c.name),
-        h('div.tl__track', h('button.tl__bar' + (statusOf(c) === 'cut' ? '.is-cut' : ''), { type: 'button', title: `${c.name}: ${fmtD(c.start)} – ${fmtD(c.end)}`, 'aria-label': c.name, onclick: () => open(c), style: { left: x(c.start), width: `max(8px, calc(${Math.max(1, days(c.start, c.end)) / 7} * var(--wk)))`, '--c': c.c || 'var(--bondi)' } })))),
+        h('div.tl__track', h('button.tl__bar' + (statusOf(c) === 'cut' ? '.is-cut' : ''), { type: 'button', title: `${c.name}: ${fmtD(c.start)} – ${fmtD(c.end)}`, 'aria-label': c.name, onclick: () => open(c), style: { left: x(c.start), width: `max(8px, calc(${Math.max(1, days(c.start, c.end)) / 7} * var(--wk)))`, '--c': tone(c.c) || 'var(--bondi)' } })))),
       h('div', { style: { position: 'absolute', inset: '0 0 0 200px', pointerEvents: 'none' } },
         D.CALENDAR.marks.map((k) => h('span.tl__mark', { style: { left: x(k.d), top: '0' } }, h('span.tl__marklabel', k.t))),
         TODAY >= first && TODAY <= last ? h('span.tl__mark.tl__today', { style: { left: x(TODAY), top: '0' } }, h('span.tl__marklabel', 'Today')) : null))));
@@ -302,7 +305,7 @@ function campaigns(m, opts) {
   return view;
 }
 function campCard(c, onclick) {
-  return h('button.card', { type: 'button', onclick, style: { '--c': c.c } },
+  return h('button.card', { type: 'button', onclick, style: { '--c': tone(c.c) } },
     h('div.card__top', h('p.card__t', c.name), tag(statusOf(c))),
     h('p.card__p', rich(c.goal)),
     h('p.card__meta', h('span', `${fmtD(c.start)} – ${fmtD(c.end)}`), c.tier && h('span', c.tier)));
@@ -310,7 +313,7 @@ function campCard(c, onclick) {
 function briefView(c, rerender, { go } = {}) {
   const st = statusOf(c);
   const page = document.querySelector('.gos__page');
-  return h('article.brief', { style: { '--c': c.c } },
+  return h('article.brief', { style: { '--c': tone(c.c) } },
     h('div.brief__head',
       h('div', h('h3.brief__t', c.name), h('p.brief__dates', `${fmtD(c.start)} – ${fmtD(c.end)} · ${days(c.start, c.end) + 1} days · ${c.owner || 'Owner: tbc'}`, c.tier ? ' · ' : '', c.tier && h('b', c.tier))),
       h('div.row', { style: { marginTop: 0 } }, tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
@@ -357,13 +360,13 @@ function newCampaignForm(rerender) {
 function events(m) {
   const detail = h('div');
   let on = null;
-  const cards = h('div.gos-grid', D.EVENTS.map((e) => h('button.card', { type: 'button', 'aria-pressed': 'false', style: { '--c': e.c }, onclick: (ev) => show(e, ev.currentTarget) },
+  const cards = h('div.gos-grid', D.EVENTS.map((e) => h('button.card', { type: 'button', 'aria-pressed': 'false', style: { '--c': tone(e.c) }, onclick: (ev) => show(e, ev.currentTarget) },
     h('div.card__top', h('p.card__t', e.name), tag(e.tier, e.tier === 'Cut' ? 'cut' : 'real')), h('p.card__p', e.one), h('p.card__meta', h('span', e.where), h('span', e.cost)))));
   function show(e, btn) {
     on = e.id;
     cards.querySelectorAll('.card').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
     const done = S.checks[e.id] || {};
-    detail.replaceChildren(h('article.brief', { style: { '--c': e.c } },
+    detail.replaceChildren(h('article.brief', { style: { '--c': tone(e.c) } },
       h('div.brief__head', h('div', h('h3.brief__t', e.name), h('p.brief__dates', `${e.where} · ${e.when} · ${e.cost}`))),
       h('p.lede', rich(e.idea)),
       e.game && gboxW('Try the stall: type vs talk', typeVsTalk()),
