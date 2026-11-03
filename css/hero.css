@@ -97,6 +97,8 @@
 .hero-hint i { width: 1px; height: 34px; background: linear-gradient(rgba(243, 238, 226, .6), transparent); transform-origin: top; animation: hero-hint 1.8s var(--ease-io, ease-in-out) infinite; }
 @keyframes hero-hint { 0% { transform: scaleY(0); opacity: 1; } 60% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
 .hero.is-scrolled .hero-hint { opacity: 0; }
+/* the entry gate and the 'or scroll' pill already say how to move; the floating hint sat on the caption counter */
+.hero-hint { display: none; }
 
 .hero-progress { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(243, 238, 226, .06); }
 .hero-progress i { display: block; height: 100%; background: linear-gradient(90deg, var(--flame, #ffa946), var(--ember, #ff6c4c)); transform-origin: left; transform: scaleX(0); }

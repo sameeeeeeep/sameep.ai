@@ -20,7 +20,9 @@ import { isLow } from '../power.js';
 import { isWispr } from '../version.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
-  { id: 'pile', len: 1.0, cap: isWispr ? 'Getting <b>2,000</b> CVs, all very similar, makes sending a CV <i>pointless</i>.' : 'A pile of <b>a thousand</b> CVs makes sending a CV <i>pointless</i>.' },
+  // the pile holds two captions: the second (cap2) takes over at `split` of the beat, with its own scroll step
+  { id: 'pile', len: 1.0, split: 0.55, cap: isWispr ? 'Heard you received <b>2,000</b> CVs, all very similar.' : 'Every job role receives <b>thousands</b> of CVs.',
+    cap2: 'Sending one seems <i>pointless</i>.' },
   { id: 'envelope', len: 1.4, cap: 'So I took <i>mine</i>,' },
   { id: 'origami', len: 1.3, cap: 'Made a <i>plane</i> out of it,' },
   { id: 'flight', len: 0.8, cap: '<b>Flew</b> it around,' },
@@ -36,15 +38,17 @@ const TOTAL = BEATS.reduce((a, b) => a + b.len, 0);
   for (const b of BEATS) { b.a = acc / TOTAL; acc += b.len; b.b = acc / TOTAL; }
 }
 const BI = Object.fromEntries(BEATS.map((b, i) => [b.id, i]));
+// captions in order (a beat with cap2 shows two), so the counter reads 01 … 10
+const CAPS = BEATS.flatMap((b, i) => (b.cap2 ? [[i, 0], [i, 1]] : [[i, 0]]));
 const G = (id, local) => { const b = BEATS[BI[id]]; return b.a + (b.b - b.a) * local; };
 // Scroll grooves: resting poses the page snaps to, so a scroll never stops mid-fold.
 // One gesture moves one groove (scroll-snap-stop: always).
-const GROOVES = () => [0, G('envelope', 0.57), G('envelope', 0.75), G('envelope', 1), G('origami', 1) - 1e-4, G('flight', 0.5),
+const GROOVES = () => [0, G('pile', 0.7), G('envelope', 0.57), G('envelope', 0.75), G('envelope', 1), G('origami', 1) - 1e-4, G('flight', 0.5),
   G('crumple', 0.9), G('shred', 1) - 1e-4, G('burn', 0.3), G('burn', 0.62), G('cd', 0.95), G('insert', 0.5), 1];
 // The burn is one step: striking the match (burn 0.3) carries on by itself to the flames and then the CD,
-// a beat apart. Any other pose waits for the visitor, and moves on alone after IDLE_MS of nothing.
+// a beat apart. Every other pose waits for the visitor (IDLE_MS > 0 would move them on alone; off by request).
 const CHAIN_FROM = () => [G('burn', 0.3), G('burn', 0.62)];
-const CHAIN_MS = 1000, IDLE_MS = 5000;
+const CHAIN_MS = 1000, IDLE_MS = 0;   // 0 = no auto-advance
 
 const S = new THREE.Vector3(2.5, 1.15, 0.7);       // the stage, where the sheet performs
 const PILE_C = new THREE.Vector3(-0.35, 0, -2.0);
@@ -102,7 +106,7 @@ function buildDOM(root, reduced) {
         </div>
         <footer class="hero-bottom">
           <div class="hero-cap" aria-live="polite">
-            <p class="hero-cap__idx"><span class="hero-cap__n">01</span> / ${String(BEATS.length).padStart(2, '0')}</p>
+            <p class="hero-cap__idx"><span class="hero-cap__n">01</span> / ${String(CAPS.length).padStart(2, '0')}</p>
             <p class="hero-cap__txt">${BEATS[0].cap}</p>
           </div>
           <button class="hero-pill hero-skip" type="button">Skip to the work <span aria-hidden="true">↓</span></button>
@@ -152,10 +156,11 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   // after every landing: chain on (the burn), or wait IDLE_MS and take the next step alone. Any input re-arms it.
   const arm = (ms) => {
     clearTimeout(gAuto);
+    if (!ms) return;   // idle auto-advance is off; only the burn chains
     if (!groovesOn) return;
     gAuto = setTimeout(() => {
       if (document.documentElement.classList.contains('is-gated')) return;   // the gate closing re-arms it (below)
-      if (!inHero() || gBusy || hands?.busy || document.hidden) return arm(IDLE_MS);
+      if (!inHero() || gBusy || hands?.busy || document.hidden) return arm(ms);
       gDir = 1; go(1);
     }, ms);
   };
@@ -515,13 +520,14 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
 
   // ------------------------------------------------------------------ captions
   let capIdx = -1, lastCount = -1, lastProgUI = -1, lastCounterVis = -1;
-  function setCaption(i) {
-    if (i === capIdx) return;
-    capIdx = i;
+  function setCaption(i, sub = 0) {
+    const k = CAPS.findIndex(([b, s]) => b === i && s === sub);
+    if (k === capIdx) return;
+    capIdx = k;
     dom.cap.classList.remove('is-in');
     void dom.cap.offsetWidth;
-    dom.capN.textContent = String(i + 1).padStart(2, '0');
-    dom.capT.innerHTML = BEATS[i].cap;
+    dom.capN.textContent = String(k + 1).padStart(2, '0');
+    dom.capT.innerHTML = sub ? BEATS[i].cap2 : BEATS[i].cap;
     dom.cap.classList.add('is-in');
   }
 
@@ -927,7 +933,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
 
     if (DEBUG) PROF[8] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     // ---- UI
-    setCaption(bi);
+    { const b = BEATS[bi]; setCaption(bi, b.cap2 && (p - b.a) / (b.b - b.a) >= b.split ? 1 : 0); }
     if (Math.abs(p - lastProgUI) > 0.0005) { lastProgUI = p; dom.prog.style.transform = `scaleX(${p.toFixed(4)})`; }
     rootEl.classList.toggle('is-scrolled', p > 0.004);
     rootEl.classList.toggle('is-end', ins > 0.6);
@@ -1069,7 +1075,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   const stats = { avg: 0, worst: 0, spikes: [] };
   let running = true, visible = true, last = performance.now(), time = 0, raf = 0;
   let rmKey = -1, rmBusy = false;
-  const RM_KEYS = [G('pile', 0.5), G('envelope', 0.57), G('envelope', 0.75), G('origami', 1) - 1e-4, G('flight', 0.5), G('crumple', 0.9),
+  const RM_KEYS = [G('pile', 0.3), G('pile', 0.7), G('envelope', 0.57), G('envelope', 0.75), G('origami', 1) - 1e-4, G('flight', 0.5), G('crumple', 0.9),
     G('shred', 1) - 1e-4, G('burn', 0.62), G('cd', 0.95), G('insert', 0.5), 1];
 
   // ?timer drives frames with setTimeout (for headless/hidden test panes where rAF is paused)
