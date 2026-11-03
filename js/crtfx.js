@@ -37,7 +37,7 @@ function saved() {
 let mode = saved() || 'flat';
 let btn = null, item = null;
 
-const can = (m) => m !== 'curved' || desk.matches;
+const can = (m) => m !== 'curved';   // Curved is off for now: the switch is Flat / Off, a saved Curved shows as Flat
 const shown = () => (can(mode) ? mode : 'flat'); // a saved Curved shows as Flat on a phone
 function next() {
   let i = MODES.indexOf(shown());
