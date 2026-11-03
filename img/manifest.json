@@ -307,7 +307,8 @@
     "cu-front-wide",
     "cu-front-oo"
    ],
-   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet"
+   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet",
+   "set": "drawingroom"
   },
   "host-gus": {
    "dir": "img/sprites/hosts/gus",
@@ -331,7 +332,8 @@
     "cu-front-wide",
     "cu-front-oo"
    ],
-   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet"
+   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet",
+   "set": "booth"
   },
   "host-kimmy": {
    "dir": "img/sprites/hosts/kimmy",
@@ -358,10 +360,7 @@
     "cu-front-blink"
    ],
    "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet",
-   "studio": {
-    "bg": "img/sprites/hosts/kimmy/studio-bg.webp",
-    "_": "his own late-night set: same canvas, desk line, iMac and seats as img/studio/studio-bg.webp; stage.js swaps it in when he hosts"
-   }
+   "set": "latenight"
   }
  },
  "characters": {
@@ -427,5 +426,26 @@
    "adhd-recorder-sleep",
    "pptlive-qr-crowd"
   ]
+ },
+ "sets": {
+  "_": "a host's own studio: sprites['host-<id>'].set names one. Same 1672x941 canvas, desk line, iMac, visitor pouf and seat boxes as studio.bg, so wide and medium shots just swap the plate. closeups[spriteKey] = the dir holding that speaker's cu-front-* frames baked on this set's room (build/sets/build.py). A speaker with no entry here gets no close-up in this set (medium instead).",
+  "latenight": {
+   "bg": "img/sets/latenight/bg.webp",
+   "closeups": {
+    "host-kimmy": "img/sprites/hosts/kimmy/sets/latenight"
+   }
+  },
+  "drawingroom": {
+   "bg": "img/sets/drawingroom/bg.webp",
+   "closeups": {
+    "host-k56": "img/sprites/hosts/k56/sets/drawingroom"
+   }
+  },
+  "booth": {
+   "bg": "img/sets/booth/bg.webp",
+   "closeups": {
+    "host-gus": "img/sprites/hosts/gus/sets/booth"
+   }
+  }
  }
 }

@@ -587,7 +587,35 @@ export class Puppet {
       c.setTransform(1, 0, 0, 1 + k, 0, pad - anchor * k);
     }
     tile(i);
+    // the video tile is a box: whatever of the person runs past it (a shoulder, an arm) comes from the still,
+    // feathered into the tile edge, so the seat never ends in a hard vertical cut
+    c.drawImage(rig.rims?.get(m) || this.#rim(rig, m), 0, 0);
     c.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  // the still's body with the video tile's box cut out of it, soft at the box edge (once per rig + bank)
+  #rim(rig, m) {
+    const [x0, y0, bw, bh] = m.box;
+    const rim = document.createElement('canvas');
+    rim.width = rig.W; rim.height = rig.H;
+    const r = rim.getContext('2d');
+    r.drawImage(rig.body, 0, 0);
+    r.globalCompositeOperation = 'destination-out';
+    const f = Math.max(4, Math.round(Math.min(bw, bh) * 0.03));
+    r.fillStyle = '#000';
+    r.fillRect(x0 + f, y0 + f, bw - 2 * f, bh - 2 * f);
+    const band = (gx0, gy0, gx1, gy1, x, y, w, h) => {
+      const g = r.createLinearGradient(gx0, gy0, gx1, gy1);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, '#000');
+      r.fillStyle = g; r.fillRect(x, y, w, h);
+    };
+    // each edge fades from the still (outside) to the video (inside); an edge on the canvas border needs none
+    if (x0 > 0) band(x0, 0, x0 + f, 0, x0, y0 + f, f, bh - 2 * f); else r.fillRect(x0, y0 + f, f, bh - 2 * f);
+    if (x0 + bw < rig.W) band(x0 + bw, 0, x0 + bw - f, 0, x0 + bw - f, y0 + f, f, bh - 2 * f); else r.fillRect(x0 + bw - f, y0 + f, f, bh - 2 * f);
+    if (y0 > 0) band(0, y0, 0, y0 + f, x0, y0, bw, f); else r.fillRect(x0, y0, bw, f);
+    if (y0 + bh < rig.H) band(0, y0 + bh, 0, y0 + bh - f, x0, y0 + bh - f, bw, f); else r.fillRect(x0, y0 + bh - f, bw, f);
+    (rig.rims ||= new Map()).set(m, rim);
+    return rim;
   }
 
   // loudness → shape (the fallback when a clip has no cue timeline)

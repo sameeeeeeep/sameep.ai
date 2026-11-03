@@ -10,7 +10,8 @@ const loadOK = (src) => new Promise((r) => { if (!src) return r(null); const i =
 
 let manifestP = null;
 export function loadManifest(base) {
-  manifestP ||= fetch(safeUrl('img/manifest.json', base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+  // ?v= in 10-minute steps: the CDN caches img/ for days, so a new set or host shows up within minutes, not after a purge
+  manifestP ||= fetch(safeUrl(`img/manifest.json?v=${Math.floor(Date.now() / 6e5)}`, base), { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   return manifestP;
 }
 // the manifest the Studio already asked for (puppets read their frame lists from it)
@@ -127,7 +128,8 @@ export class Studio {
     const key = who === 'host' ? this.hostSprite || this.hostKey : this.guestKey;
     const sp = this.manifest?.sprites?.[key];
     if (!sp?.dir || !sp.closeup) return null;
-    const dir = sp.dir.replace(/\/$/, '');
+    const set = this.#set(); // cut() keeps a speaker with no close-up in this set on the medium shot
+    const dir = (set?.closeups?.[key] || sp.dir).replace(/\/$/, '');
     const f = (n) => safeUrl(`${dir}/${n}.webp`, this.P.base);
     const names = sp.closeup;
     const pick = names.some((n) => n.startsWith('cu-front-')) ? names.filter((n) => n.startsWith('cu-front-')) : names;
@@ -137,11 +139,17 @@ export class Studio {
   }
 
   // another host in the host seat: the desk layer without the default host's hands on it
-  // A host can bring its own set (manifest sprites["host-<id>"].studio: { bg, deskFg }), same canvas and seats.
+  // the picked host's own set (manifest sprites["host-<id>"].set -> sets[name]), null for the podcast studio
+  #set() {
+    const name = this.hostSprite && this.manifest?.sprites?.[this.hostSprite]?.set;
+    return (name && this.manifest?.sets?.[name]) || null;
+  }
+
+  // A host can bring its own set: same canvas, desk line and seats, so only the plate (and desk layer) change.
   setHostSprite(key) {
     this.hostSprite = key || null;
     if (!this.layered) return;
-    const own = key && this.manifest?.sprites?.[key]?.studio;
+    const own = this.#set();
     this.bgSrc ||= this.bg.src;
     this.bg.src = own?.bg ? safeUrl(own.bg, this.P.base) : this.bgSrc;
     this.fg.src = own?.deskFg ? safeUrl(own.deskFg, this.P.base) : key ? safeUrl('img/sprites/hosts/desk-fg.webp', this.P.base) : this.fgSrc;
@@ -161,6 +169,8 @@ export class Studio {
   cut(shot, who) {
     if (this.reduced && shot !== 'insert') shot = 'wide';
     if (shot === 'cu' && !(who in this.hasCU && this.hasCU[who])) shot = 'ms';
+    const set = this.#set(); // in a host's own set, only speakers with close-ups baked on its room get one
+    if (shot === 'cu' && set && !set.closeups?.[who === 'host' ? this.hostSprite : this.guestKey]) shot = 'ms';
     for (const k of ['host', 'guest']) this.cu[k].hidden = !(shot === 'cu' && k === who);
     this.insertEl.hidden = shot !== 'insert' || !this.insertPlate;
     let r = null;
