@@ -52,6 +52,9 @@ img { max-width: 100%; }
 .gate__quiet:not(:disabled):hover, .gate__skip:hover { background: linear-gradient(#fff, var(--plat-1)); }
 .gate__skip { margin-top: 14px; align-self: flex-end; background: none; border-style: dashed; box-shadow: none; }
 .gate__hint { margin: 0; font: 400 12px var(--f-ui); color: rgba(243,238,226,.55); text-align: center; }
+/* the page behind the entry window never scrolls; a scroll is how you enter */
+html.is-gated, html.is-gated body { overflow: hidden; overscroll-behavior: none; }
+html.is-gated .gate { touch-action: none; }
 .gate__how { align-self: stretch; margin: 12px 0 0; text-align: right; font: 500 12px var(--f-ui); color: var(--plat-5); }
 .gate__how kbd { padding: 1px 6px; border: 1px solid var(--plat-4); border-bottom-width: 2px; border-radius: 4px; background: #fff; font: 600 11px var(--f-ui); color: #000; }
 @media (pointer: coarse) { .gate__how { display: none; } }

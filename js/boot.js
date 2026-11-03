@@ -288,12 +288,18 @@ function entryGate() {
   // (the entering press must not also count as the hero's first step, so it's stopped here; a flick's
   // inertia tail is swallowed for a moment too)
   let gateOpen = false, swallow = 0;
+  const gated = () => document.documentElement.classList.contains('is-gated');
   const viaKey = (e) => {
-    if (!gateOpen || e.key !== ' ' || e.target.closest?.('button:not(.gate__enter), input, textarea')) return;
+    const scrolls = [' ', 'ArrowDown', 'PageDown', 'ArrowUp', 'PageUp', 'Home', 'End'].includes(e.key);
+    if (!gateOpen) { if (scrolls && gated() && !e.target.closest?.('button')) e.preventDefault(); return; }   // still loading: nothing moves
+    if (e.key !== ' ' || e.target.closest?.('button:not(.gate__enter), input, textarea')) return;
     e.preventDefault(); e.stopImmediatePropagation(); off(); enter(true);
   };
   const viaWheel = (e) => {
-    if (!gateOpen) { if (performance.now() < swallow) { e.preventDefault(); e.stopImmediatePropagation(); } return; }
+    if (!gateOpen) {
+      if (gated() || performance.now() < swallow) { e.preventDefault(); e.stopImmediatePropagation(); }   // loading, or a flick's tail
+      return;
+    }
     if (e.deltaY <= 0) return;
     e.preventDefault(); e.stopImmediatePropagation(); off(); enter(true);   // a wheel isn't a gesture browsers unlock audio on: the next tap does
   };
