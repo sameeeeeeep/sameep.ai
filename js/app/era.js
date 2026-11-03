@@ -25,22 +25,61 @@ const PLAYLIST = [
 // the filename it would have had in a 1999 shared folder
 const fileOf = (s) => (s.artist + '_-_' + s.title).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9()._-]+/g, '_').replace(/_+/g, '_') + '.mp3';
 
-// projects on the desktop (the left column): icon, label, where it opens (the project's own site or repo)
-export const PROJECTS = [
-  { id: 'switchboard', label: 'Switchboard', url: 'https://thelastprompt.ai/switchboard' },
-  { id: 'pptlive', label: 'ppt.live', url: 'https://www.ppt.live' },
-  { id: 'brandbrain', label: 'Brand Brain', url: 'https://brandbrain.thelastprompt.ai' },
-  { id: 'wallpap', label: 'wallpap', url: 'https://wallpap.live' },
-  { id: 'video2ai', label: 'video2ai', url: 'https://github.com/sameeeeeeep/video2ai' },
-  { id: 'refs', label: '/refs', url: 'https://github.com/sameeeeeeep/references-mcp' },
-  { id: 'asknotch', label: 'Ask Notch', url: 'https://github.com/sameeeeeeep/ask-notch' },
-  { id: 'psspss', label: 'psspss', url: 'https://github.com/sameeeeeeep/psspss' },
-];
-// side quests and half-finished things: the right-hand side of the desktop
-export const FUN = [
-  { id: 'prophexy', label: 'Prophexy', url: 'https://thelastprompt.ai/prophexy/' },
-  { id: 'agentbar', label: 'The Agent Bar', url: 'https://thelastprompt.ai/agentbreakroom/' },
-  { id: 'happydiwali', label: 'happydiwali.to', url: 'https://happydiwali.to/' },
+// projects on the desktop: the left column is five folders, every item opening a working page in a new tab.
+// Where a project has no public page, it gets a short one on this site (sameep.ai/<slug>/). Icon: img/ui/proj-<id>.svg
+// Hover cards: each item's copy is its data/work.json entry (`card`); a folder's own card is here.
+export const FOLDERS = [
+  { id: 'growth', label: 'Growth work', card: { what: 'Getting people talking before a launch or a sale', role: 'PM at Nykaa, chief of staff at Nailinit', proof: '+30% sale conversion at Nykaa', thumb: 'img/work/diwali/desktop-1.webp', node: 'g-intro' }, items: [
+    { id: 'pinkbox', label: 'Nykaa Pink Box', url: 'pinkbox/' },
+    { id: 'khushi', label: 'Khushi Kapoor launch', url: 'khushi-launch/' },
+    { id: 'slumber', label: 'Secret Slumber Party', url: 'secretslumberparty/' },
+    { id: 'diwali', label: 'Diwali invite', url: 'https://diwaliparty.live/' },
+    { id: 'happydiwali', label: 'happydiwali.to', url: 'https://happydiwali.to/' },
+  ] },
+  // Switchboard is a folder of its own wrapps: the app, its public site and store, then the best wrapps built on it
+  { id: 'switchboard', label: 'Switchboard', card: { what: 'Switchboard, its store, and the wrapps that run on it', role: 'Built all of it', proof: '90+ wrapps so far, none needing an API key', thumb: 'video/switchboard-poster.webp', node: 'sb-intro' }, items: [
+    { id: 'switchboard', label: 'Switchboard', url: 'https://thelastprompt.ai/switchboard' },
+    { id: 'thelastprompt', label: 'The Last Prompt', url: 'https://thelastprompt.ai/' },
+    { id: 'brandbrain', label: 'Brand Brain', url: 'https://brandbrain.thelastprompt.ai' },
+    { id: 'adforge', label: 'AdForge', url: 'https://adforge.thelastprompt.ai' },
+    { id: 'adpulse', label: 'AdPulse', url: 'https://adpulse.thelastprompt.ai' },
+    { id: 'reel', label: 'Reel', url: 'https://reel.thelastprompt.ai' },
+    { id: 'marquee', label: 'Marquee', url: 'https://marquee.thelastprompt.ai' },
+    { id: 'adgen', label: 'Adwall', url: 'https://adgen.thelastprompt.ai' },
+    { id: 'aplus', label: 'A-Plus', url: 'https://aplus.thelastprompt.ai' },
+    { id: 'prism', label: 'Prism', url: 'https://thelastprompt.ai/apps/prism-landing.html' },
+    { id: 'cast', label: 'Cast', url: 'https://cast.thelastprompt.ai' },
+    { id: 'take', label: 'Take', url: 'https://take.thelastprompt.ai' },
+    { id: 'shelf', label: 'Shelf', url: 'https://shelf.thelastprompt.ai' },
+    { id: 'batch', label: 'Batch', url: 'https://batch.thelastprompt.ai' },
+    { id: 'copyflow', label: 'Copyflow', url: 'copyflow/' },
+    { id: 'repurpose', label: 'Repurpose', url: 'repurpose/' },
+    { id: 'reachout', label: 'Reachout', url: 'reachout/' },
+  ] },
+  { id: 'tools', label: 'Claude tools', card: { what: 'Small tools that make Claude better at my work', role: 'Built them for myself', proof: 'Four are open source on GitHub', thumb: 'video/video2ai-poster.webp', node: 'tools-intro' }, items: [
+    { id: 'video2ai', label: 'video2ai', url: 'https://github.com/sameeeeeeep/video2ai' },
+    { id: 'refs', label: '/refs', url: 'https://github.com/sameeeeeeep/references-mcp' },
+    { id: 'asknotch', label: 'Ask Notch', url: 'https://github.com/sameeeeeeep/ask-notch' },
+    { id: 'cut', label: 'Cut', url: 'cut/' },
+    { id: 'annotate', label: 'Annotate', url: 'annotate/' },
+    { id: 'cartridge', label: 'Cartridge', url: 'https://cartridge.thelastprompt.ai' },
+    { id: 'pastedeck', label: 'PasteDeck', url: 'pastedeck/' },
+  ] },
+  { id: 'products', label: 'Products', card: { what: 'Products I built or co-founded', role: 'Founder, co-founder, builder', proof: 'ppt.live: 50 phones joined at once, zero errors', thumb: 'video/pptlive-poster.webp', node: 'ppt-intro' }, items: [
+    { id: 'pptlive', label: 'ppt.live', url: 'https://www.ppt.live' },
+    { id: 'often', label: 'Often & Trippy', url: 'often/' },
+    { id: 'nia', label: 'Nia', url: 'nia/' },
+    { id: 'prophexy', label: 'Prophexy', url: 'https://thelastprompt.ai/prophexy/' },
+  ] },
+  { id: 'fun', label: 'Fun', card: { what: 'Side quests and half-finished things', role: 'Built for fun', proof: 'MacCat’s cats led to wallpap’s, then psspss', thumb: 'video/wallpap-poster.webp', node: 'fun-intro' }, items: [
+    { id: 'wallpap', label: 'wallpap', url: 'https://wallpap.live' },
+    { id: 'psspss', label: 'psspss', url: 'https://github.com/sameeeeeeep/psspss' },
+    { id: 'agentbar', label: 'The Agent Bar', url: 'https://thelastprompt.ai/agentbreakroom/' },
+    { id: 'maccat', label: 'MacCat', url: 'https://github.com/sameeeeeeep/maccat' },
+    { id: 'bluetune', label: 'Bluetune', url: 'https://thelastprompt.ai/bluetune/' },
+    { id: 'alter', label: 'Alter', url: 'https://github.com/sameeeeeeep/alter' },
+    { id: 'vibedj', label: 'Vibe DJ', url: 'https://github.com/sameeeeeeep/vibe-dj' },
+  ] },
 ];
 
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -152,13 +191,14 @@ export function installer(wm, { ready, minMs = 60000, reduced, onProgress, bindS
     ['Reading “OFF THE CV 1.0” disc…', 'Installer'],
     ['Checking for viruses (none, probably)…', 'Norton AntiVirus 5.0'],
     ['Copying 488 voice clips…', 'audio/clips/cold-open-01.mp3'],
-    ['Teaching three hosts to lip-sync…', 'sprites/foyra.webp'],
+    ['Teaching four hosts to lip-sync…', 'sprites/foyra.webp'],
     ['Removing CV.pdf…', 'CV.pdf → Trash'],
     ['Hanging 60 story nodes…', 'data/episode.json'],
     ['Seating the audience…', 'img/characters/'],
     ['Defragmenting the anecdotes…', 'stories.db'],
     ['Teaching Gus the offside rule…', 'hosts/gus.cfg'],
     ['Calibrating K-56’s anxiety…', 'hosts/k56.cfg'],
+    ['Tuning Kimmy’s house band…', 'hosts/kimmy.cfg'],
     ['Pressing the Diwali invite…', 'work/diwali/'],
     ['Wiring Switchboard…', 'work/switchboard/'],
     ['Pouring drinks at the Agent Bar…', 'work/agentbar/'],
@@ -245,12 +285,19 @@ export const GAMES = [
   { id: 'pacman', label: 'Pac-Man', url: 'https://www.google.com/logos/2010/pacman10-i.html' },
 ];
 
-export function openGames(wm) {
-  const w = wm.win('games', { title: 'Games', width: 420, className: 'win--folder' });
+export function openGames(wm) { openFolder(wm, { id: 'games', label: 'Games', items: GAMES }); }
+
+// a Mac OS folder window: a grid of icons, each opening the real thing in a new tab
+export function openFolder(wm, f) {
+  // cascade like the Finder: each folder window that's already open pushes the next one down and right
+  const width = f.items.length > 6 ? 500 : 420, area = document.querySelector('.desk__area')?.getBoundingClientRect();
+  const n = document.querySelectorAll('.win--folder:not([hidden])').length;
+  const at = area ? { x: (area.width - width) / 2 - 48 + n * 26, y: 48 + n * 26 } : {};
+  const w = wm.win('folder-' + f.id, { title: f.label, width, className: 'win--folder', ...at });
   if (w.body.childElementCount) return;
-  w.body.append(h('p.folder__bar', `${GAMES.length} items · each opens in a new tab`),
-    h('ul.folder__grid', GAMES.map((g) => h('li', h('a.icon.icon--file', { href: g.url, target: '_blank', rel: 'noopener', onclick: () => sound.tick('click') },
-      h('img', { src: `img/ui/proj-${g.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
+  w.body.append(h('p.folder__bar', `${f.items.length} items · each opens in a new tab`),
+    h('ul.folder__grid', f.items.map((g) => h('li', h('a.icon.icon--file', { href: g.url, target: '_blank', rel: 'noopener', dataset: { card: g.id }, onclick: () => sound.tick('click') },
+      h('img', { src: `img/ui/${g.icon || 'proj-' + g.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
       h('span.icon__label', g.label))))));
 }
 

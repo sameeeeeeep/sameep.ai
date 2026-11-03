@@ -9,8 +9,10 @@ import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { stylisePhoto } from './cast.js';
-import { jukebox, installer, installed, splash, login, PROJECTS, FUN, openGames } from './era.js';
+import { jukebox, installer, installed, splash, login, FOLDERS, openFolder, openGames } from './era.js';
 import { fillUrl } from './demos.js';
+import { installCards } from './infocard.js';
+import { loadWork } from './work.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
 
@@ -83,14 +85,20 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   };
   const apps = buildApps(ctx);
   const pick = (ids) => ids.map((id) => apps.find((a) => a.id === id)).filter(Boolean);
-  // left: the real work, one icon each. right: the system (HD up top, Trash at the bottom), then the toys and side quests
-  desk.renderProjects(pick(['work']), [{ id: 'emergent', label: 'Emergent', url: 'https://emergent.sh/' }, ...PROJECTS]);
-  desk.renderIcons(pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'readme', 'resume', 'sayhi', 'switchboard', 'trash']),
-    [...pick(['claude', 'chatgpt']), ...FUN, { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }]);
+  // left: all the work, in five folders (Growth OS adds itself above them). right: the system, HD up top and
+  // Trash at the bottom, plus the 1999 toys, which aren't projects
+  desk.renderProjects([...FOLDERS.map((f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) })), ...pick(['work'])], []);
+  desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
+    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }, ...pick(['trash'])]);
   desk.renderMenus(ctx, apps);
+  // hover (or first tap) on a project or folder: what it is, my part, one proof point, where it opens
+  installCards({ area: desk.area, folders: FOLDERS, loadList: () => loadWork(persona).then((r) => r.list),
+    chapter: (id) => { const n = pod?.ep?.nodes?.[id]; return n && (n.title || n.chapter); },
+    onHear: (id) => { ctx.openPodcast(); pod?.go(id); } });
   const era = eraOn;
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
   const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
+  if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
 
   if (episode && episode.nodes) {
@@ -155,8 +163,9 @@ function buildDesktop(screen, persona) {
   const appIcon = (a, cls = '') => {
     const img = h('img', { src: `img/ui/${a.icon || 'proj-' + a.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' });
     const k = [cls, a.className].filter(Boolean).map((c) => '.' + c).join('');
-    if (a.url) return h('a.icon' + k, { href: a.url, target: '_blank', rel: 'noopener', title: a.label + ' (opens in a new tab)', onclick: () => sound.tick('click') }, img, h('span.icon__label', a.label));
-    return h('button.icon' + k, { type: 'button', onclick: (e) => { sound.tick('click'); home.querySelectorAll('.is-selected').forEach((n) => n.classList.remove('is-selected')); e.currentTarget.classList.add('is-selected'); a.open(); } },
+    const dataset = a.card ? { card: a.card } : null;  // a hover card (js/app/infocard.js)
+    if (a.url) return h('a.icon' + k, { href: a.url, target: '_blank', rel: 'noopener', title: a.label + ' (opens in a new tab)', dataset, onclick: () => sound.tick('click') }, img, h('span.icon__label', a.label));
+    return h('button.icon' + k, { type: 'button', dataset, onclick: (e) => { sound.tick('click'); home.querySelectorAll('.is-selected').forEach((n) => n.classList.remove('is-selected')); e.currentTarget.classList.add('is-selected'); a.open(); } },
       img, h('span.icon__label', a.label));
   };
 
@@ -220,7 +229,7 @@ function buildDesktop(screen, persona) {
         { label: 'File', items: [['Open Podcast', () => ctx.openPodcast()], ['Change host…', () => { ctx.openPodcast(); pod()?.pickHost(); }], ['Open Wispr Flow', () => ctx.open('wispr')], ['-'], ['Close Window', () => document.querySelector('.win.is-front .win__close')?.click()]] },
         { label: 'Edit', items: [['Undo CV burning', null], ['Cut', null], ['Copy', null], ['Paste', null]] },
         { label: 'Podcast', items: [['Play / Pause', () => pod()?.toggle()], ['Skip', () => pod()?.skip()], ['Back', () => pod()?.back()], ['-'], ['Change my character…', () => { ctx.openPodcast(); pod()?.recast(); }]] },
-        { label: 'Special', items: [['Empty Trash', () => ctx.open('trash')], ['Make your own…', () => ctx.endCard(true)], ['Shut Down', () => ctx.endCard(true)]] },
+        { label: 'Special', items: [['Empty Trash', () => ctx.open('trash')], ['Make your own sameep.ai…', () => ctx.endCard(true)], ['Shut Down', () => ctx.endCard(true)]] },
         { label: 'Help', items: [['Read Me', () => ctx.open('readme')], ['Résumé.doc', () => ctx.open('resume')]] },
       ];
       let openMenu = null;
@@ -241,24 +250,28 @@ function buildDesktop(screen, persona) {
       document.addEventListener('pointerdown', (e) => { if (!e.target.closest('.menubar')) closeAll(); });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
       // the way into Switchboard: always one click from anywhere in the app
-      const make = h('a.menubar__make', { href: withVersion('make/'), target: '_blank', rel: 'noopener', title: 'Make your own with Switchboard' }, h('span', 'Make your own'), h('span', { 'aria-hidden': 'true' }, '↗'));
+      const make = h('a.menubar__make', { href: MAKE_URL, target: '_blank', rel: 'noopener', title: MAKE_SAY }, h('span', 'Make your own'), h('span', { 'aria-hidden': 'true' }, '↗'));
       menubar.append(left, h('div.menubar__right', make, h('span.menubar__app', persona.showName), soundBtn, clock));
     },
   };
 }
 
 // ---------------------------------------------------------------------------
+// the one call to action, everywhere: say one sentence to your own Claude
+const MAKE_URL = 'https://sameep.ai/make';
+const MAKE_SAY = 'Use Wispr to tell your Claude to “make your own sameep.ai using your GitHub profile”';
 function endCard(wm, persona, pod, fromIcon) {
-  const make = persona.links.find((l) => l.kind === 'make');
-  const others = persona.links.filter((l) => l !== make);
+  const others = persona.links.filter((l) => l.kind !== 'make');
   const L = wm.get('podcast')?.el.getBoundingClientRect();
   const w = wm.win('end', { title: 'Make your own', width: 440, className: 'win--end', center: true });
   if (w.body.childElementCount) return;
   w.body.append(h('div.end',
-    h('p.end__kicker', fromIcon ? 'Switchboard' : 'That’s a wrap'),
+    h('p.end__kicker', fromIcon ? 'One sentence' : 'That’s a wrap'),
     h('h2.end__title', 'Make your own.'),
-    h('p.end__lede', `This app isn’t only ${persona.shortName}’s. Point your Claude at your own work through Switchboard, and it drafts the questions, the answers, the voice and the cast: your own episode, on this same iMac.`),
-    make && h('a.btn.btn--primary.btn--lg', { href: make.url, target: '_blank', rel: 'noopener' }, (make.label || 'Make your own') + ' ↗'),
+    h('p.end__lede', `This app isn’t only ${persona.shortName}’s. Use Wispr to tell your Claude:`),
+    h('p.end__say', { style: 'margin:0 0 14px;padding:10px 12px;border:2px solid currentColor;font:500 15px/1.4 "Spline Sans Mono",monospace' }, '“Make your own sameep.ai using your GitHub profile.”'),
+    h('p.end__lede', 'It reads your GitHub, writes your episode in your voice, draws your pixel guest, and builds this same iMac for you.'),
+    h('a.btn.btn--primary.btn--lg', { href: MAKE_URL, target: '_blank', rel: 'noopener' }, 'sameep.ai/make ↗'),
     h('ul.end__links', others.map((l) => h('li', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗')))),
     h('div.end__row',
       h('button.btn', { type: 'button', onclick: () => { w.close(); pod()?.go(pod().ep.nodes.hub ? 'hub' : pod().ep.start); } }, 'Pick another thread'),

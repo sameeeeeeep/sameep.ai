@@ -25,7 +25,14 @@
   "poster": "video/switchboard-poster.webp",
   "embed": "https://thelastprompt.ai/switchboard",
   "explainer": "video/switchboard-explainer.mp4",
-  "explainerPoster": "video/switchboard-explainer-poster.webp"
+  "explainerPoster": "video/switchboard-explainer-poster.webp",
+  "card": {
+   "what": "Run any app on the Claude you already pay for",
+   "role": "Built it, solo",
+   "proof": "Runs 90+ wrapps with no new API key",
+   "node": "sb-intro",
+   "thumb": "video/switchboard-poster.webp"
+  }
  },
  {
   "id": "brandbrain",
@@ -48,7 +55,14 @@
   "poster": "video/brandbrain-poster.webp",
   "embed": "https://brandbrain.thelastprompt.ai",
   "explainer": "video/brandbrain-explainer.mp4",
-  "explainerPoster": "video/brandbrain-explainer-poster.webp"
+  "explainerPoster": "video/brandbrain-explainer-poster.webp",
+  "card": {
+   "what": "Idea to brand: research, a playbook, a deck, who to reach",
+   "role": "Built it",
+   "proof": "32 server features moved into your browser tab",
+   "node": "w-brandbrain",
+   "thumb": "video/brandbrain-poster.webp"
+  }
  },
  {
   "id": "pptlive",
@@ -76,7 +90,14 @@
   "poster": "video/pptlive-poster.webp",
   "embed": "https://www.ppt.live",
   "explainer": "video/pptlive-explainer.mp4",
-  "explainerPoster": "video/pptlive-explainer-poster.webp"
+  "explainerPoster": "video/pptlive-explainer-poster.webp",
+  "card": {
+   "what": "Turn any talk into a live show the room plays on their phones",
+   "role": "Built it",
+   "proof": "50 phones joined at once, zero errors",
+   "node": "ppt-intro",
+   "thumb": "video/pptlive-poster.webp"
+  }
  },
  {
   "id": "video2ai",
@@ -104,7 +125,14 @@
   "embed": null,
   "explainer": "video/video2ai-explainer.mp4",
   "explainerPoster": "video/video2ai-explainer-poster.webp",
-  "note": "The review-screen visual is an illustration built from the README."
+  "note": "The review-screen visual is an illustration built from the README.",
+  "card": {
+   "what": "Lets Claude watch videos: the words, plus only the frames that matter",
+   "role": "Built it",
+   "proof": "Picks key frames on-device with Apple’s own image engine",
+   "node": "t-video",
+   "thumb": "video/video2ai-poster.webp"
+  }
  },
  {
   "id": "refs",
@@ -126,7 +154,14 @@
   "video": "video/refs.mp4",
   "poster": "video/refs-poster.webp",
   "embed": null,
-  "explainer": null
+  "explainer": null,
+  "card": {
+   "what": "Real references, before Claude designs anything",
+   "role": "Built it",
+   "proof": "Open source, as an MCP server",
+   "node": "t-refs",
+   "thumb": "video/refs-poster.webp"
+  }
  },
  {
   "id": "asknotch",
@@ -150,7 +185,14 @@
   "poster": "video/asknotch-poster.webp",
   "embed": null,
   "explainer": "video/asknotch-explainer.mp4",
-  "explainerPoster": "video/asknotch-explainer-poster.webp"
+  "explainerPoster": "video/asknotch-explainer-poster.webp",
+  "card": {
+   "what": "Claude’s questions drop from your Mac’s notch as a card",
+   "role": "Built it",
+   "proof": "Open source Claude Code plugin",
+   "node": "sb-notch",
+   "thumb": "video/asknotch-poster.webp"
+  }
  },
  {
   "id": "wallpap",
@@ -180,7 +222,14 @@
   "video": "video/wallpap.mp4",
   "poster": "video/wallpap-poster.webp",
   "embed": "https://wallpap.live/scenes/koi.html?muted=1",
-  "explainer": null
+  "explainer": null,
+  "card": {
+   "what": "Live wallpapers for your Mac",
+   "role": "Built it",
+   "proof": "12 scenes that follow your real weather and time",
+   "node": "f-wallpap",
+   "thumb": "video/wallpap-poster.webp"
+  }
  },
  {
   "id": "diwali",
@@ -204,7 +253,14 @@
   "video": "video/diwali.mp4",
   "poster": "video/diwali-poster.webp",
   "embed": "https://diwaliparty.live/?name=Wispr",
-  "explainer": null
+  "explainer": null,
+  "card": {
+   "what": "An office Diwali invite you play, not open",
+   "role": "Made it and ran the guest side",
+   "proof": "900+ personal invites, over 90% opened",
+   "node": "g-diwali",
+   "thumb": "video/diwali-poster.webp"
+  }
  },
  {
   "id": "happydiwali",
@@ -232,7 +288,14 @@
   "video": "video/happydiwali.mp4",
   "poster": "video/happydiwali-poster.webp",
   "embed": "https://happydiwali.to/?wispr-from-sameep",
-  "explainer": null
+  "explainer": null,
+  "card": {
+   "what": "A Diwali postcard with their name in the link",
+   "role": "Made it",
+   "proof": "The invite’s mela of games, for anyone",
+   "node": "g-diwali",
+   "thumb": "video/happydiwali-poster.webp"
+  }
  },
  {
   "id": "prophexy",
@@ -259,7 +322,14 @@
   "video": "video/prophexy.mp4",
   "poster": "video/prophexy-poster.webp",
   "embed": "https://thelastprompt.ai/prophexy/",
-  "explainer": null
+  "explainer": null,
+  "card": {
+   "what": "One genuinely computed reading a day, jargon stripped out",
+   "role": "Built it",
+   "proof": "Reads on your Claude, on-device, or with plain maths",
+   "node": "w-prophexy",
+   "thumb": "video/prophexy-poster.webp"
+  }
  },
  {
   "id": "psspss",
@@ -282,7 +352,14 @@
   "poster": "video/psspss-poster.webp",
   "embed": null,
   "explainer": null,
-  "note": "psspss.dev was unreachable at capture time, so the shots are of the repo."
+  "note": "psspss.dev was unreachable at capture time, so the shots are of the repo.",
+  "card": {
+   "what": "A household of AI cats on your phone",
+   "role": "Built it",
+   "proof": "They ask before anything that sends, books or deletes",
+   "node": "f-psspss",
+   "thumb": "video/psspss-poster.webp"
+  }
  },
  {
   "id": "agentbar",
@@ -312,7 +389,14 @@
   "video": "video/agentbar.mp4",
   "poster": "video/agentbar-poster.webp",
   "embed": "https://thelastprompt.ai/agentbreakroom/",
-  "explainer": null
+  "explainer": null,
+  "card": {
+   "what": "A 3D bar where AI agents check in and hang out",
+   "role": "Built it",
+   "proof": "Hasn’t missed a daily journal since it opened",
+   "node": "f-agentbar",
+   "thumb": "video/agentbar-poster.webp"
+  }
  },
  {
   "id": "pastedeck",
@@ -330,7 +414,14 @@
   "poster": "video/pastedeck-poster.webp",
   "embed": null,
   "explainer": null,
-  "note": "Mockup of a local Mac app; every value shown is fake."
+  "note": "Mockup of a local Mac app; every value shown is fake.",
+  "card": {
+   "what": "A floating panel of values you paste yourself",
+   "role": "Built it",
+   "proof": "Keeps the sensitive bits out of Claude’s hands",
+   "node": "t-adhd",
+   "thumb": "video/pastedeck-poster.webp"
+  }
  },
  {
   "id": "often",
@@ -346,7 +437,14 @@
   "poster": "video/often-poster.webp",
   "embed": null,
   "explainer": null,
-  "note": "Recreated card from public posts; the product has shut down."
+  "note": "Recreated card from public posts; the product has shut down.",
+  "card": {
+   "what": "AI for travel hacking: what to book, when, and rebooking",
+   "role": "Co-founder: product, tech, customers",
+   "proof": "About 1,200 trips powered",
+   "node": "often-intro",
+   "thumb": "video/often-poster.webp"
+  }
  },
  {
   "id": "nia",
@@ -362,6 +460,627 @@
   "poster": "video/nia-poster.webp",
   "embed": null,
   "explainer": null,
-  "note": "Illustrative mockup with fake data; the real system is private."
+  "note": "Illustrative mockup with fake data; the real system is private.",
+  "card": {
+   "what": "The whole company on one dashboard",
+   "role": "Built it, as chief of staff at Nailinit",
+   "proof": "Every button works; anything outgoing waits for approval",
+   "node": "g-nailinit",
+   "thumb": "video/nia-poster.webp"
+  }
+ },
+ {
+  "id": "pinkbox",
+  "title": "Nykaa Pink Box",
+  "oneLiner": "A wishlist that turned into your cart the moment a Nykaa sale went live.",
+  "status": "archived",
+  "links": [
+   {
+    "label": "Open Nykaa Pink Box",
+    "url": "pinkbox/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "A wishlist that becomes your cart when the sale opens",
+   "role": "Product manager for Nykaa’s big sales",
+   "proof": "+30% sale conversion across the sales",
+   "thumb": "img/work/thumbs/pinkbox.webp",
+   "node": "g-nykaa"
+  }
+ },
+ {
+  "id": "khushi",
+  "title": "Nailinit × Khushi Kapoor",
+  "oneLiner": "Nailinit’s launch campaign with the actor Khushi Kapoor.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Nailinit × Khushi Kapoor",
+    "url": "khushi-launch/"
+   }
+  ],
+  "shots": [],
+  "video": "video/slumber-ad-phone.mp4",
+  "poster": "video/slumber-ad-phone.jpg",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Nailinit’s launch campaign with Khushi Kapoor",
+   "role": "The online side: site, pre-buzz pages, ads, tracking",
+   "proof": "Grew into the Secret Slumber Party",
+   "thumb": "video/slumber-ad-phone.jpg",
+   "node": "g-nailinit"
+  }
+ },
+ {
+  "id": "slumber",
+  "title": "The Secret Slumber Party",
+  "oneLiner": "A sleepover with Khushi Kapoor for Nailinit that you applied to by chatting with her.",
+  "status": "archived",
+  "links": [
+   {
+    "label": "Open The Secret Slumber Party",
+    "url": "secretslumberparty/"
+   }
+  ],
+  "shots": [],
+  "video": "img/events/slumber-film.mp4",
+  "poster": "img/events/slumber-film.jpg",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "A sleepover with Khushi Kapoor you applied to by DM",
+   "role": "Built the whole online side",
+   "proof": "35 spots; 46 guests got an intro card on the big screen",
+   "thumb": "img/events/slumber-film.jpg",
+   "node": "g-slumber"
+  }
+ },
+ {
+  "id": "thelastprompt",
+  "title": "The Last Prompt",
+  "oneLiner": "The public site and store for Switchboard and its wrapps.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open The Last Prompt",
+    "url": "https://thelastprompt.ai/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "The public site and store for Switchboard",
+   "role": "Built and run it",
+   "proof": "90+ wrapps so far",
+   "thumb": "img/work/thumbs/thelastprompt.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "adforge",
+  "title": "AdForge",
+  "oneLiner": "URL in, ads out: three ad concepts from a link, one recommended.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open AdForge",
+    "url": "https://adforge.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "URL in, ads out: three ad concepts from a link",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/adforge.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "adpulse",
+  "title": "AdPulse",
+  "oneLiner": "A Meta ads post-mortem: see where the money leaked.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open AdPulse",
+    "url": "https://adpulse.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "A Meta ads post-mortem: find the wasted spend",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/adpulse.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "reel",
+  "title": "Reel",
+  "oneLiner": "One line to a launch reel: Claude scripts it, Higgsfield paints it.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Reel",
+    "url": "https://reel.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "One line to a launch reel, rendered in your browser",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/reel.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "marquee",
+  "title": "Marquee",
+  "oneLiner": "One line to a cinematic, scrolling landing page.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Marquee",
+    "url": "https://marquee.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "One line to a cinematic landing page",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/marquee.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "adgen",
+  "title": "Adwall",
+  "oneLiner": "A wall of six ad directions from a brand you lend it.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Adwall",
+    "url": "https://adgen.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "A wall of six ad directions from your brand",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/adgen.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "aplus",
+  "title": "A-Plus",
+  "oneLiner": "Amazon A+ content in one pass, from a brand you lend it.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open A-Plus",
+    "url": "https://aplus.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Amazon A+ content in one pass",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/aplus.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "prism",
+  "title": "Prism",
+  "oneLiner": "An on-brand image studio on your own Higgsfield.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Prism",
+    "url": "https://thelastprompt.ai/apps/prism-landing.html"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "On-brand images: it drafts the shots, you render",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/prism.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "cast",
+  "title": "Cast",
+  "oneLiner": "An AI creator that stays on-model across every face, scene and reel.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Cast",
+    "url": "https://cast.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "An AI creator that stays on-model",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/cast.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "take",
+  "title": "Take",
+  "oneLiner": "Script it, then record screen or camera right in the page.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Take",
+    "url": "https://take.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Script it, then record it, right in the page",
+   "role": "Built it on Switchboard",
+   "proof": "The take never leaves your browser",
+   "thumb": "img/work/thumbs/take.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "shelf",
+  "title": "Shelf",
+  "oneLiner": "Your inventory, triaged: reorder now, watch, and dead weight.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Shelf",
+    "url": "https://shelf.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Your inventory triaged: reorder, watch, dead weight",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/shelf.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "batch",
+  "title": "Batch",
+  "oneLiner": "Your YC application, drafted on your own Claude, nothing invented.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Batch",
+    "url": "https://batch.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Your YC application, drafted on your own Claude",
+   "role": "Built it on Switchboard",
+   "proof": "Every gap is marked, nothing invented",
+   "thumb": "img/work/thumbs/batch.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "copyflow",
+  "title": "Copyflow",
+  "oneLiner": "Show a workflow once and it runs itself, on schedule.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Copyflow",
+    "url": "copyflow/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Show a workflow once; it runs itself",
+   "role": "Built it on Switchboard",
+   "proof": "Switchboard runs it on a schedule",
+   "thumb": "img/work/thumbs/copyflow.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "repurpose",
+  "title": "Repurpose",
+  "oneLiner": "One piece of content, rewritten for every channel.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Repurpose",
+    "url": "repurpose/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Write it once, post it everywhere",
+   "role": "Built it on Switchboard",
+   "proof": "Runs on your own Claude, no API key",
+   "thumb": "img/work/thumbs/repurpose.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "reachout",
+  "title": "Reachout",
+  "oneLiner": "Personal outreach sequences, staged as Gmail drafts.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Reachout",
+    "url": "reachout/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Personal outreach drafts; you press send",
+   "role": "Built it on Switchboard",
+   "proof": "Nothing is ever sent on its own",
+   "thumb": "img/work/thumbs/reachout.webp",
+   "node": "sb-wrapps"
+  },
+  "index": false
+ },
+ {
+  "id": "cut",
+  "title": "Cut",
+  "oneLiner": "Direct a web page like a film.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Cut",
+    "url": "cut/"
+   }
+  ],
+  "shots": [],
+  "video": "video/cut-explainer.mp4",
+  "poster": "video/cut-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Direct a web page like a film",
+   "role": "Built it",
+   "proof": "Started as Redline, inside Brand Brain",
+   "thumb": "video/cut-explainer-poster.webp",
+   "node": "w-cut"
+  }
+ },
+ {
+  "id": "annotate",
+  "title": "Annotate",
+  "oneLiner": "Draw on the pages Claude makes, and hand them back with notes.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Annotate",
+    "url": "annotate/"
+   }
+  ],
+  "shots": [],
+  "video": "video/annotate-explainer.mp4",
+  "poster": "video/annotate-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Draw on Claude’s pages and hand them back",
+   "role": "Built it",
+   "thumb": "video/annotate-explainer-poster.webp",
+   "node": "w-annotate"
+  }
+ },
+ {
+  "id": "cartridge",
+  "title": "Cartridge",
+  "oneLiner": "Describe a game and your own Claude builds it, as one file.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open Cartridge",
+    "url": "https://cartridge.thelastprompt.ai"
+   }
+  ],
+  "shots": [],
+  "video": "video/cartridge-explainer.mp4",
+  "poster": "video/cartridge-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Describe a game; your Claude builds it",
+   "role": "Built it",
+   "proof": "The headline wrapp when the Switchboard store launched",
+   "thumb": "video/cartridge-explainer-poster.webp",
+   "node": "w-cartridge"
+  }
+ },
+ {
+  "id": "maccat",
+  "title": "MacCat",
+  "oneLiner": "A pixel cat in your menu bar that chases your cursor.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open MacCat",
+    "url": "https://github.com/sameeeeeeep/maccat"
+   }
+  ],
+  "shots": [],
+  "video": "video/maccat-explainer.mp4",
+  "poster": "video/maccat-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "A pixel cat in your menu bar",
+   "role": "Built it",
+   "proof": "In focus mode it fights your doomscrolling",
+   "thumb": "video/maccat-explainer-poster.webp",
+   "node": "f-maccat"
+  }
+ },
+ {
+  "id": "bluetune",
+  "title": "Bluetune",
+  "oneLiner": "Send text and pictures between devices, as sound.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Bluetune",
+    "url": "https://thelastprompt.ai/bluetune/"
+   }
+  ],
+  "shots": [],
+  "video": "video/bluetune-explainer.mp4",
+  "poster": "video/bluetune-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Send text and pictures as sound",
+   "role": "Built it in a day",
+   "proof": "Proper modem stuff, error correction included",
+   "thumb": "video/bluetune-explainer-poster.webp",
+   "node": "f-bluetune"
+  }
+ },
+ {
+  "id": "alter",
+  "title": "Alter",
+  "oneLiner": "Singing bowls you play by drawing circles.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Alter",
+    "url": "https://github.com/sameeeeeeep/alter"
+   }
+  ],
+  "shots": [],
+  "video": "video/alter-explainer.mp4",
+  "poster": "video/alter-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Singing bowls you play by drawing circles",
+   "role": "Built it",
+   "proof": "Its bowls became a wallpap scene",
+   "thumb": "video/alter-explainer-poster.webp",
+   "node": "f-alter"
+  }
+ },
+ {
+  "id": "vibedj",
+  "title": "Vibe DJ",
+  "oneLiner": "An AI DJ that mixes your own music and reads the crowd’s energy.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Vibe DJ",
+    "url": "https://github.com/sameeeeeeep/vibe-dj"
+   }
+  ],
+  "shots": [],
+  "video": "video/vibedj-explainer.mp4",
+  "poster": "video/vibedj-explainer-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "An AI DJ that reads the room",
+   "role": "Built it",
+   "proof": "Keeps the beats in time across your own library",
+   "thumb": "video/vibedj-explainer-poster.webp",
+   "node": "f-vibedj"
+  }
  }
 ]

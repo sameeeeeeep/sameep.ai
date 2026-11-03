@@ -35,7 +35,7 @@ export async function openWork(wm, persona, { focusId } = {}) {
   w.body.dataset.ready = '1';
   w.body.append(h('p.work__loading', 'Reading the drive…'));
   const { list, base } = await loadWork(persona);
-  const items = list.filter((it) => it && it.title);
+  const items = list.filter((it) => it && it.title && it.index !== false);  // index:false: desktop hover-card copy only (the wrapps)
 
   const nav = h('ul.work__list', { role: 'listbox', 'aria-label': 'Projects' });
   const detail = h('article.work__detail', { tabindex: '-1' });
