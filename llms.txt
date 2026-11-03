@@ -79,6 +79,12 @@ A static site (plain HTML/JS, no build step, no server) that is the person's own
 - Don't pass it off as Sameep's work, and don't keep his name, case studies or domain in theirs.
   Keep the MIT LICENSE.
 
+## How this one was built
+
+- Seven days (29 Oct to 4 Nov 2026), 21 Claude Code sessions running up to 7 at once, 191 prompts from Sameep,
+  8,541 tool calls, 110 commits. 10,122 words dictated in Wispr Flow at an average of 129 wpm.
+- Every number comes from the real logs: https://sameep.ai/data/build-stats.json
+
 ## Links
 
 - Make your own: https://sameep.ai/make
