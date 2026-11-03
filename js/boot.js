@@ -275,7 +275,7 @@ function entryGate() {
     const touch = matchMedia('(pointer: coarse)').matches;
     setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
       touch ? '<b>Swipe up</b> to move the story along. One swipe, one step. Swipe down to go back.'
-        : '<b>Scroll</b> (or press <b>↓</b>) to move the story along. One step at a time; scroll up to go back.'), 1400);
+        : '<b>Scroll</b> (or press <b>↓</b>) to move the story along. One step at a time; scroll up to go back.', { follow: false }), 1400);
     autoplayCard();
     // the hero's own sound pill reflects its state; nudge it to match the choice
     setTimeout(() => {

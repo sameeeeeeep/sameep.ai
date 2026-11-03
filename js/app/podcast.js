@@ -602,7 +602,7 @@ export class Podcast {
     this.monitor.place(this.#corner());
     this.name.textContent = this.speakers[who]?.name || who;
     const text = fillName(line.text, this.visitor?.name);
-    this.subCtl = renderSubtitle(this.sub, { text });
+    this.subCtl = renderSubtitle(this.sub, { text, media: this.audio, clip: line.audio, base: this.base });
     this.studio.cutaway(line.cutaway ? this.#abs(line.cutaway) : null, line.text);
     this.#visual(line, seat);
     this.sub.classList.toggle('is-long', words(text) > 34);
@@ -1364,7 +1364,8 @@ export class Podcast {
         const d = this.durs[this.li] || 1;
         const lh = parseFloat(getComputedStyle(this.sub).lineHeight) || 20;
         const max = this.sub.scrollHeight - this.sub.clientHeight;
-        const top = Math.min(max, Math.round(max * clamp((this.t - 0.15 * d) / (0.75 * d), 0, 1) / lh) * lh);
+        const wt = this.subCtl?.wordTop?.(); // the lit word's line, one line of context above it
+        const top = Math.min(max, wt != null ? Math.max(0, Math.floor(wt / lh) * lh - lh) : Math.round(max * clamp((this.t - 0.15 * d) / (0.75 * d), 0, 1) / lh) * lh);
         if (Math.abs(this.sub.scrollTop - top) > 1) this.sub.scrollTop = top;
         this.subMore = true; this.sub.classList.toggle('is-more', top < max - 1);
       } else if (this.subMore !== false) { this.subMore = false; this.sub.classList.remove('is-more'); }

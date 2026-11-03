@@ -3,11 +3,13 @@
 // counts the guide down. It points at the thing to use ("swipe to move the
 // story", "tap a card or just say it"). Each tip shows once per visitor
 // (localStorage), one at a time, and goes away the moment it's acted on.
-//   coach.show(id, anchorEl, html, { place: 'top' | 'bottom', ms, title, once, replace })
+//   coach.show(id, anchorEl, html, { place: 'top' | 'bottom', ms, title, once, replace, follow })
 //   coach.done(id)
 // anchorEl may be 'dock' (bottom right, above the voice button) for guides about the voice.
 // once:false guides (stuck? didn't catch that?) can show again; replace:true takes over
-// from a guide that's up. html/title are our own static copy, never anything a visitor typed.
+// from a guide that's up. follow:false places the guide once, on the page, so it scrolls away
+// with it (for anchors on a sticky stage, where following would pin it to the screen).
+// html/title are our own static copy, never anything a visitor typed.
 const KEY = 'otcv-tip-';
 const seen = (id) => { try { return localStorage.getItem(KEY + id) === '1'; } catch { return false; } };
 const mark = (id) => { try { localStorage.setItem(KEY + id, '1'); } catch { /* private mode: shows again, harmless */ } };
@@ -72,9 +74,11 @@ function place() {
   const x = Math.max(12, Math.min(innerWidth - b.width - 12, r.left + r.width / 2 - b.width / 2));
   const y = where === 'top' ? r.top - b.height - 12 : r.bottom + 12;
   el.dataset.place = where;
-  el.style.left = x + 'px'; el.style.top = Math.max(4, y) + 'px';
+  const page = !cur.follow; // on the page, not the screen: scrolls with it
+  el.style.position = page ? 'absolute' : '';
+  el.style.left = x + (page ? scrollX : 0) + 'px'; el.style.top = Math.max(4, y) + (page ? scrollY : 0) + 'px';
   el.querySelector('.coach__tip').style.left = Math.max(16, Math.min(b.width - 28, r.left + r.width / 2 - x - 6)) + 'px';
-  cur.raf = requestAnimationFrame(place);
+  if (!page) cur.raf = requestAnimationFrame(place);
 }
 
 function hide() {
@@ -87,7 +91,7 @@ function hide() {
 
 export const coach = {
   // false if it was already seen (or another tip is up), so callers can skip follow-ups
-  show(id, anchor, html, { place: where = 'top', ms = 14000, title = '', once = true, replace = false, onClose } = {}) {
+  show(id, anchor, html, { place: where = 'top', ms = 14000, title = '', once = true, replace = false, follow = true, onClose } = {}) {
     if (!anchor || (once && seen(id) && !force)) return false;
     if (cur && !(replace || cur.id === id)) return false;
     if (cur) hide();
@@ -101,7 +105,7 @@ export const coach = {
     el.querySelector('.coach__x').onclick = () => coach.done(id);
     document.body.append(el);
     if (once) mark(id);
-    cur = { id, el, anchor, place: where, raf: 0, timer: setTimeout(hide, ms), onClose };
+    cur = { id, el, anchor, place: where, follow, raf: 0, timer: setTimeout(hide, ms), onClose };
     place();
     return el;
   },
