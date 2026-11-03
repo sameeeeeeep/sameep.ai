@@ -24,7 +24,7 @@ const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwritin
   { id: 'envelope', len: 1.4, cap: 'So I took <i>mine</i>,' },
   { id: 'origami', len: 1.3, cap: 'Made a <i>plane</i> out of it,' },
   { id: 'flight', len: 0.8, cap: '<b>Flew</b> it around,' },
-  { id: 'crumple', len: 0.7, cap: 'Got <s>bored</s>,' },
+  { id: 'crumple', len: 0.7, cap: '<s>Crumpled</s> it,' },
   { id: 'shred', len: 1.1, cap: '<u>shredded</u> it,' },
   { id: 'burn', len: 1.8, cap: 'and <em>burned</em> it…' },
   { id: 'cd', len: 1.0, cap: '…onto a <b>CD</b>…' },

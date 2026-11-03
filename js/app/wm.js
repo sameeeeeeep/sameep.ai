@@ -8,17 +8,20 @@ const open = new Map();
 
 export function createWM(layer) {
   function win(id, { title, width = 420, height, x, y, className = '', onClose, tools = [], modal = false, center = false, sheet = true, label, persist = false } = {}) {
-    if (id && open.has(id)) { const w = open.get(id); if (w.el.hidden) { w.el.hidden = false; sound.tick('open'); w.onShow?.(); } w.focus(); return w; }
+    if (id && open.has(id)) { const w = open.get(id); if (w.el.hidden) { w.el.hidden = false; sound.tick('open'); w.onShow?.(); } if (w.el.classList.contains('is-shaded')) w.shade(false); w.focus(); return w; }
     const body = h('div.win__body');
     const closeBtn = h('button.win__close', { type: 'button', 'aria-label': 'Close ' + title });
+    const narrow = isNarrow() && sheet;
+    // Mac OS 8 had no minimise: the collapse box rolls the window up to its title bar (so does a double-click)
+    const shadeBtn = narrow || modal ? null : h('button.win__shade', { type: 'button', 'aria-label': 'Collapse ' + title, 'aria-pressed': 'false', title: 'Collapse' });
     const bar = h('header.win__bar',
       closeBtn,
       h('div.win__stripes', { 'aria-hidden': 'true' }),
       h('h2.win__title', title),
       h('div.win__tools', tools),
+      shadeBtn,
     );
     const el = h('section.win' + (className ? '.' + className.split(' ').join('.') : ''), { role: 'dialog', 'aria-label': label || title, tabindex: '-1' }, bar, body);
-    const narrow = isNarrow() && sheet;
     if (narrow) el.classList.add('win--sheet');
     if (modal) el.classList.add('win--modal');
     layer.append(el);
@@ -48,7 +51,18 @@ export function createWM(layer) {
         onClose?.();
       },
       setTitle(t) { bar.querySelector('.win__title').textContent = t; },
+      shade(on = !el.classList.contains('is-shaded')) {
+        if (!shadeBtn) return;
+        el.classList.toggle('is-shaded', on);
+        shadeBtn.setAttribute('aria-pressed', String(on));
+        shadeBtn.setAttribute('aria-label', (on ? 'Expand ' : 'Collapse ') + title);
+        sound.tick('click');
+      },
     };
+    if (shadeBtn) {
+      shadeBtn.addEventListener('click', (e) => { e.stopPropagation(); api.shade(); });
+      bar.addEventListener('dblclick', (e) => { if (!e.target.closest('button, a, input')) api.shade(); });
+    }
     closeBtn.addEventListener('click', (e) => { e.stopPropagation(); api.close(); });
     el.addEventListener('pointerdown', () => api.focus());
     el.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal) { e.stopPropagation(); api.close(); } });

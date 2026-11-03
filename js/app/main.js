@@ -9,7 +9,7 @@ import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { stylisePhoto } from './cast.js';
-import { jukebox, installer, installed, splash, login, PROJECTS, GAMES } from './era.js';
+import { jukebox, installer, installed, splash, login, PROJECTS, FUN, openGames } from './era.js';
 import { fillUrl } from './demos.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
@@ -53,7 +53,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   await wait(reduced ? 0 : 420);
 
   const wm = createWM(desk.area);
-  let pod = null;
+  let pod = null, juke = null;
   const ctx = {
     wm, persona,
     connectedAt: Date.now(),
@@ -74,21 +74,24 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     open(id) { apps.find((a) => a.id === id)?.open(); },
     setWallHour: (hr) => desk.setWall(hr),
     endCard: (fromIcon) => endCard(wm, persona, () => pod, fromIcon),
+    // the jukebox icon: bring it back after it's been closed (or open it for the first time on ?fast)
+    openJukebox() {
+      const w = wm.get('jukebox');
+      if (w) { if (w.el.classList.contains('is-shaded')) w.shade(false); w.focus(); return; }
+      juke = jukebox(wm, { reduced });
+    },
   };
   const apps = buildApps(ctx);
-  // the system side keeps a few of the old toys; the left side is the real work, one icon each
-  const extra = [
-    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', open: () => window.open('https://emergent.sh/', '_blank', 'noopener') },
-  ];
-  const all = [...apps, ...extra];
-  const KEEP = ['offthecv', 'hd', 'wispr', 'claude', 'chatgpt', 'emergent', 'work', 'readme', 'resume', 'sayhi', 'switchboard', 'trash'];
-  desk.renderIcons(KEEP.map((id) => all.find((a) => a.id === id)).filter(Boolean));
-  desk.renderProjects([...PROJECTS, ...GAMES]);  // the work, then 90s games that still run in a browser; all open in a new tab
+  const pick = (ids) => ids.map((id) => apps.find((a) => a.id === id)).filter(Boolean);
+  // left: the real work, one icon each. right: the system (HD up top, Trash at the bottom), then the toys and side quests
+  desk.renderProjects(pick(['work']), [{ id: 'emergent', label: 'Emergent', url: 'https://emergent.sh/' }, ...PROJECTS]);
+  desk.renderIcons(pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'readme', 'resume', 'sayhi', 'switchboard', 'trash']),
+    [...pick(['claude', 'chatgpt']), ...FUN, { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }]);
   desk.renderMenus(ctx, apps);
   const era = eraOn;
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
   const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
-  const juke = era ? jukebox(wm, { reduced }) : null;
+  juke = era ? jukebox(wm, { reduced }) : null;
 
   if (episode && episode.nodes) {
     pod = new Podcast({ wm, layer: desk.area, persona, episode, onEnd: () => ctx.endCard() });
@@ -148,25 +151,32 @@ function buildDesktop(screen, persona) {
   const desk = h('div.desk', h('div.desk__fallback'), wall, menubar, area);
   screen.append(desk);
 
+  // one desktop icon: a button that opens a window, or a link (url) that opens the real thing in a new tab
+  const appIcon = (a, cls = '') => {
+    const img = h('img', { src: `img/ui/${a.icon || 'proj-' + a.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' });
+    const k = [cls, a.className].filter(Boolean).map((c) => '.' + c).join('');
+    if (a.url) return h('a.icon' + k, { href: a.url, target: '_blank', rel: 'noopener', title: a.label + ' (opens in a new tab)', onclick: () => sound.tick('click') }, img, h('span.icon__label', a.label));
+    return h('button.icon' + k, { type: 'button', onclick: (e) => { sound.tick('click'); home.querySelectorAll('.is-selected').forEach((n) => n.classList.remove('is-selected')); e.currentTarget.classList.add('is-selected'); a.open(); } },
+      img, h('span.icon__label', a.label));
+  };
+
   return {
     area,
     setWall(hr) { wall.classList.remove('is-loaded'); wall.src = wallSrc(hr); },
     notice(msg) { toast.textContent = msg; toast.classList.add('is-on'); clearTimeout(toast._t); toast._t = setTimeout(() => toast.classList.remove('is-on'), 4200); },
-    renderIcons(apps) {
-      icons.replaceChildren(...apps.map((a) => h('li', h('button.icon' + (a.className ? '.' + a.className : ''), { type: 'button', onclick: (e) => { sound.tick('click'); icons.querySelectorAll('.is-selected').forEach((n) => n.classList.remove('is-selected')); e.currentTarget.classList.add('is-selected'); a.open(); } },
-        h('img', { src: `img/ui/${a.icon}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
-        h('span.icon__label', a.label)))));
+    // right edge: system icons (Mac OS put the disk top right and the Trash bottom right), then the fun stuff
+    // in its own column; on a phone the fun stuff sits after the projects
+    renderIcons(apps, fun = []) {
+      icons.replaceChildren(...apps.map((a) => h('li.is-' + a.id, appIcon(a))), ...fun.map((a, i) => h('li.is-fun' + (i ? '' : '.is-fun-first'), appIcon(a, 'icon--proj'))));
     },
     // projects: their own column on the left, each opens the real thing in a new tab
-    renderProjects(list) {
-      const ul = h('ul.icons.icons--proj', { 'aria-label': 'Projects' }, list.map((p) => h('li', h('a.icon.icon--proj', { href: p.url, target: '_blank', rel: 'noopener', title: p.label + ' (opens in a new tab)', onclick: () => sound.tick('click') },
-        h('img', { src: `img/ui/proj-${p.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
-        h('span.icon__label', p.label)))));
+    renderProjects(apps, list) {
+      const ul = h('ul.icons.icons--proj', { 'aria-label': 'Projects' }, ...apps.map((a) => h('li', appIcon(a))), ...list.map((p) => h('li', appIcon(p, 'icon--proj'))));
       home.append(ul);
     },
     // desktop: the icon appears when the install is done; phone: it sits there downloading, like an app
     setInstalling(on) {
-      const btn = icons.querySelector('.icon'), li = btn?.parentElement;
+      const btn = icons.querySelector('.is-offthecv .icon'), li = btn?.parentElement;
       if (!li) return;
       const label = btn.querySelector('.icon__label');
       if (on && isNarrow()) {
@@ -184,7 +194,7 @@ function buildDesktop(screen, persona) {
     setProgress(p) { icons.querySelector('.icon.is-installing')?.style.setProperty('--p', p.toFixed(3)); },
     // phone: a badge counts down to the show opening by itself; null clears it
     setBadge(n) {
-      const btn = icons.querySelector('.icon');
+      const btn = icons.querySelector('.is-offthecv .icon');
       if (!btn || !isNarrow()) return;
       const label = btn.querySelector('.icon__label');
       let b = btn.querySelector('.icon__badge');

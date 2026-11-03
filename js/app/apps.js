@@ -40,6 +40,45 @@ function chatApp(w, { greeting, replies, accent, placeholder }) {
   setTimeout(() => inp.focus({ preventScroll: true }), 50);
 }
 
+// Wispr Flow's brand as I read it off wisprflow.ai (Nov 2026), laid out as a 1999 word-processor document
+const WISPR = [
+  ['Lumen', '#ffffeb', 'The paper. Most of every page.'], ['Vast', '#1a1a1a', 'The ink. Text, and the dark sections.'],
+  ['Fathom', '#034f46', 'Deep green, for calm moments.'], ['Dawn', '#f0d7ff', 'Soft lilac.'], ['Signal', '#ffbcf2', 'Pink, in small doses.'],
+  ['Glow', '#ffa946', 'Warm orange.'], ['Flare', '#ff6c4c', 'The loudest one; use it once.'], ['Pulse', '#7f1c34', 'Wine, for depth.'],
+];
+function openStyleGuide(wm) {
+  const w = wm.win('styleguide', { title: 'Wispr Style Guide.cwk', width: 540, className: 'win--guide' });
+  if (w.body.childElementCount) return;
+  if (!document.getElementById('font-wispr')) document.head.append(h('link#font-wispr', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;600&display=swap' }));
+  const sec = (n, t, ...kids) => h('section.guide__sec', h('h3.guide__h', h('span', n), t), ...kids);
+  const list = (cls, items) => h('ul.' + cls, items.map((t) => h('li', t)));
+  w.body.append(
+    h('div.guide__ruler', { 'aria-hidden': 'true' }),
+    h('div.guide__page',
+      h('p.guide__kicker', 'Wispr Flow · brand notes, as I read them'),
+      h('h2.guide__title', 'Don’t type, just speak.'),
+      h('p.guide__lede', 'I spent an evening on wisprflow.ai until I could hear it. This is my read of the brand, not the official book. Correct me in the interview.'),
+      sec('1', 'Logo',
+        h('div.guide__marks', h('span.guide__mark', 'Flow'), h('span.guide__mark.is-dark', 'Flow')),
+        list('guide__list', ['Ink on paper or paper on ink. Nothing in between.', 'Give it room. The page is mostly empty on purpose.', 'No gradients, no outlines, no stretching. (The rainbow label on my desktop icon is 1999 talking. I wouldn’t ship it.)'])),
+      sec('2', 'Colour',
+        h('ul.guide__swatches', WISPR.map(([n, hex, note]) => h('li', h('i', { style: { background: hex } }), h('b', n), h('code', hex.toUpperCase()), h('span', note)))),
+        h('p.guide__note', 'Mostly Lumen and Vast. The warm ones are seasoning.')),
+      sec('3', 'Type',
+        h('p.guide__serif', 'You have a way with words.'),
+        h('p.guide__spec', 'EB Garamond · headlines. A serif that sounds like a person, not a product.'),
+        h('p.guide__sans', 'Speak at the speed you think, in every app.'),
+        h('p.guide__spec', 'Figtree · body and buttons. Gets out of the way.')),
+      sec('4', 'Voice and tone',
+        list('guide__list', ['Write it the way you’d say it out loud.', 'Short lines. One idea each.', 'Confident, never loud. The product is quiet, so is the brand.', 'Lead with the feeling (it’s fast, it’s effortless), then the proof (4x faster than typing).'])),
+      sec('5', 'Do’s and don’ts',
+        h('div.guide__dd',
+          h('div', h('p.guide__do', 'Do'), list('guide__list', ['Warm paper, lots of air', 'Real people, mid-sentence', 'Plain words', 'Privacy said simply: your voice stays yours'])),
+          h('div', h('p.guide__dont', 'Don’t'), list('guide__list', ['Robot blue, glowing waveforms', '“AI-powered transcription solutions”', 'Exclamation marks', 'Shouting the speed. Show it.'])))),
+      h('p.guide__foot', 'Colours and type sampled from wisprflow.ai, Nov 2026. Not affiliated, just a fan.')),
+    h('div.guide__status', h('span', 'Page 1 of 1'), h('span', '100%')));
+}
+
 export function buildApps(ctx) {
   const { wm, persona, podcast, alert } = ctx;
   const P = persona;
@@ -168,6 +207,8 @@ export function buildApps(ctx) {
       board.addEventListener('pointerup', () => { if (s && s.offsetWidth < 4) s.remove(); s = null; });
       w.body.append(board, h('p.small', 'Multiplayer: 1 cursor (you). Drag to draw.'));
     } },
+    { id: 'styleguide', label: 'Wispr Style Guide', icon: 'styleguide', open: () => openStyleGuide(wm) },
+    { id: 'jukebox', label: 'Jukebox ’99', icon: 'jukebox', open: () => ctx.openJukebox() },
     { id: 'switchboard', label: 'Make your own', icon: 'switchboard', open: () => ctx.endCard(true) },
     { id: 'sayhi', label: 'Say hi', icon: 'sayhi', open() {
       const w = wm.win('sayhi', { title: 'Say hi', width: 340 });

@@ -6,10 +6,26 @@ import { h, wait, isNarrow } from './util.js';
 import { sound } from './audio.js';
 import { presence } from '../presence.js';
 
-// Eiffel 65, Blue (Da Ba Dee), 1999: the official upload from the label (Bliss Corporation)
-const SONG = { id: '68ugkg9RePc', artist: 'Eiffel 65', title: 'Blue (Da Ba Dee)', file: 'eiffel65_-_blue_(da_ba_dee).mp3', size: '3.4 MB' };
+// the 1999 playlist: what every shared folder had, global and Bollywood. Each id is an upload that allows embedding
+// (checked Nov 2026: playableInEmbed true); the player is audio only, the video never shows
+const PLAYLIST = [
+  { id: '68ugkg9RePc', artist: 'Eiffel 65', title: 'Blue (Da Ba Dee)' },
+  { id: 'p47fEXGabaY', artist: 'Ricky Martin', title: 'Livin’ la Vida Loca' },
+  { id: 'rjtUQAz2KsU', artist: 'A.R. Rahman', title: 'Taal Se Taal Mila' },
+  { id: '4fndeDfaWCg', artist: 'Backstreet Boys', title: 'I Want It That Way' },
+  { id: 'FrLequ6dUdM', artist: 'TLC', title: 'No Scrubs' },
+  { id: 'Tfjoyp0g5HA', artist: 'Kavita Krishnamurthy & Vinod Rathod', title: 'Dholi Taro Dhol Baaje' },
+  { id: 'EK_LN3XEcnw', artist: 'Lou Bega', title: 'Mambo No. 5' },
+  { id: 'J8zlroVMYeM', artist: 'Sonu Nigam', title: 'Deewana Tera' },
+  { id: '6Whgn_iE5uc', artist: 'Santana ft. Rob Thomas', title: 'Smooth' },
+  { id: 'L_jWHffIx5E', artist: 'Smash Mouth', title: 'All Star' },
+  { id: 'kIDWgqDBNXA', artist: 'Christina Aguilera', title: 'Genie in a Bottle' },
+  { id: 'zLGZhp14UgY', artist: 'Jagjit Singh', title: 'Hoshwalon Ko Khabar Kya' },
+];
+// the filename it would have had in a 1999 shared folder
+const fileOf = (s) => (s.artist + '_-_' + s.title).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9()._-]+/g, '_').replace(/_+/g, '_') + '.mp3';
 
-// projects on the desktop: icon, label, where it opens (the project's own site or repo)
+// projects on the desktop (the left column): icon, label, where it opens (the project's own site or repo)
 export const PROJECTS = [
   { id: 'switchboard', label: 'Switchboard', url: 'https://thelastprompt.ai/switchboard' },
   { id: 'pptlive', label: 'ppt.live', url: 'https://www.ppt.live' },
@@ -18,8 +34,11 @@ export const PROJECTS = [
   { id: 'video2ai', label: 'video2ai', url: 'https://github.com/sameeeeeeep/video2ai' },
   { id: 'refs', label: '/refs', url: 'https://github.com/sameeeeeeep/references-mcp' },
   { id: 'asknotch', label: 'Ask Notch', url: 'https://github.com/sameeeeeeep/ask-notch' },
-  { id: 'prophexy', label: 'Prophexy', url: 'https://thelastprompt.ai/prophexy/' },
   { id: 'psspss', label: 'psspss', url: 'https://github.com/sameeeeeeep/psspss' },
+];
+// side quests and half-finished things: the right-hand side of the desktop
+export const FUN = [
+  { id: 'prophexy', label: 'Prophexy', url: 'https://thelastprompt.ai/prophexy/' },
   { id: 'agentbar', label: 'The Agent Bar', url: 'https://thelastprompt.ai/agentbreakroom/' },
   { id: 'happydiwali', label: 'happydiwali.to', url: 'https://happydiwali.to/' },
 ];
@@ -36,35 +55,76 @@ export function jukebox(wm, { reduced } = {}) {
   // audio only: the YouTube player is mounted invisibly (it has to be on screen to play); the LCD is the only UI
   const host = h('div.juke__host', { 'aria-hidden': 'true' });
   const w = wm.win('jukebox', { title: 'Jukebox ’99', width: 320, x, y: 9999, className: 'win--juke' + (narrow ? ' win--island' : ''), sheet: false,
-    onClose: () => { host.remove(); layer?.classList.remove('has-island'); } });
+    onClose: () => { host.remove(); layer?.classList.remove('has-island'); removeEventListener('message', onMsg); off?.(); clearInterval(timer); } });
   if (narrow) layer?.classList.add('has-island');
-  const src = `https://www.youtube-nocookie.com/embed/${SONG.id}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&mute=${sound.on ? 0 : 1}&origin=${encodeURIComponent(location.origin)}`;
-  const frame = h('iframe.juke__vid', { src, title: `${SONG.artist}, ${SONG.title} (music video)`, allow: 'autoplay; encrypted-media', referrerpolicy: 'strict-origin-when-cross-origin', tabindex: '-1' });
-  const cmd = (func, args = []) => { try { frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args }), '*'); } catch { /* not ready */ } };
+  let i = 0;
+  const src = `https://www.youtube-nocookie.com/embed/${PLAYLIST[0].id}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&mute=${sound.on ? 0 : 1}&origin=${encodeURIComponent(location.origin)}`;
+  const frame = h('iframe.juke__vid', { src, title: 'Jukebox ’99 (audio)', allow: 'autoplay; encrypted-media', referrerpolicy: 'strict-origin-when-cross-origin', tabindex: '-1' });
+  const post = (msg) => { try { frame.contentWindow?.postMessage(JSON.stringify(msg), '*'); } catch { /* not ready */ } };
+  const cmd = (func, args = []) => post({ event: 'command', func, args });
   const clock = h('span.juke__time', '0:00');
   const state = h('span.juke__state', '▶');
-  const status = h('p.juke__status', `Download complete: ${SONG.file} · ${SONG.size} · via LimeWire`);
-  const bars = h('div.juke__bars', { 'aria-hidden': 'true' }, Array.from({ length: 14 }, (_, i) => h('i', { style: { animationDelay: (-(i * 37) % 900) + 'ms' } })));
-  let t = 0, playing = true, timer = 0;
+  const track = h('span.juke__track');
+  const marquee = h('div.juke__marquee', track);
+  const status = h('p.juke__status');
+  const bars = h('div.juke__bars', { 'aria-hidden': 'true' }, Array.from({ length: 14 }, (_, k) => h('i', { style: { animationDelay: (-(k * 37) % 900) + 'ms' } })));
+  let t = 0, playing = true, timer = 0, live = false, lastGo = 0;
+  // the clock ticks locally, and snaps to the player's own time whenever it reports one
   const run = () => { clearInterval(timer); timer = setInterval(() => { if (playing) { t += 1; clock.textContent = fmt(t); } }, 1000); };
-  const toggle = h('button.juke__toggle', { type: 'button', 'aria-label': 'Pause', onclick: (e) => { e.stopPropagation(); if (playing) { cmd('pauseVideo'); setPlaying(false); } else { cmd('playVideo'); setPlaying(true); } } }, '❚❚');
   const setPlaying = (on, label) => { playing = on; w.el.classList.toggle('is-playing', on); state.textContent = label || (on ? '▶' : '❚❚'); toggle.textContent = on ? '❚❚' : '▶'; toggle.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
+  const show = () => {
+    const s = PLAYLIST[i];
+    track.textContent = `${i + 1}. ${s.artist.toUpperCase()} - ${s.title.toUpperCase()} *** 1999 *** `.repeat(2);
+    status.textContent = `Now playing · ${i + 1} of ${PLAYLIST.length} · ${fileOf(s)}`;
+    w.el.setAttribute('aria-label', `Jukebox ’99, now playing ${s.title} by ${s.artist}`);
+  };
+  const go = (n) => {
+    i = (n + PLAYLIST.length) % PLAYLIST.length; lastGo = Date.now();
+    t = 0; clock.textContent = '0:00';
+    cmd('loadVideoById', [PLAYLIST[i].id]);
+    setPlaying(true); show(); sound.tick('click');
+  };
+  // the player can report one ending twice, and the old track's end can arrive just after a skip: ignore those
+  const ended = (grace = 2500) => { if (Date.now() - lastGo > grace) go(i + 1); };
+  const next = () => go(i + 1), prev = () => (t > 3 ? (cmd('seekTo', [0, true]), t = 0, clock.textContent = '0:00') : go(i - 1));
+  const toggle = h('button.juke__toggle', { type: 'button', 'aria-label': 'Pause', onclick: (e) => { e.stopPropagation(); if (playing) { cmd('pauseVideo'); setPlaying(false); } else { cmd('playVideo'); setPlaying(true); } } }, '❚❚');
+  const skip = h('button.juke__toggle.juke__skip', { type: 'button', 'aria-label': 'Next track', onclick: (e) => { e.stopPropagation(); next(); } }, '⏭');
   const btn = (txt, aria, fn) => h('button.juke__btn', { type: 'button', 'aria-label': aria, title: aria, onclick: (e) => { e.stopPropagation(); fn(); } }, txt);
+  // the player talks back over postMessage: its time, and when a track ends (state 0) or can't play (onError)
+  function onMsg(e) {
+    if (e.source !== frame.contentWindow) return;
+    let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
+    if (!d || !d.event) return;
+    live = true;
+    if (d.event === 'onStateChange' && d.info === 0) ended();
+    else if (d.event === 'onError') ended(300);  // blocked or removed upload: skip it
+    else if (d.event === 'infoDelivery' && d.info) {
+      if (d.info.playerState === 0) ended();
+      if (typeof d.info.currentTime === 'number' && d.info.currentTime > 0) { t = Math.floor(d.info.currentTime); clock.textContent = fmt(t); }
+    }
+  }
+  addEventListener('message', onMsg);
   host.append(frame);
   (layer || w.el).append(host);
   w.body.append(h('div.juke',
     h('div.juke__lcd',
       h('div.juke__row', state, clock, h('span.juke__kbps', '128 kbps · 44 kHz · stereo')),
-      h('div.juke__marquee', h('span', `${SONG.artist.toUpperCase()} - ${SONG.title.toUpperCase()} *** 1999 *** `.repeat(2))),
-      bars, toggle),
+      marquee, bars, toggle, skip),
     h('div.juke__ctrl',
-      btn('⏮', 'Back to the start', () => { cmd('seekTo', [0, true]); t = 0; clock.textContent = '0:00'; }),
+      btn('⏮', 'Previous track', prev),
       btn('▶', 'Play', () => { cmd('playVideo'); setPlaying(true); }),
       btn('❚❚', 'Pause', () => { cmd('pauseVideo'); setPlaying(false); }),
-      btn('■', 'Stop', () => { cmd('pauseVideo'); cmd('seekTo', [0, true]); t = 0; clock.textContent = '0:00'; setPlaying(false, '■'); })),
+      btn('■', 'Stop', () => { cmd('pauseVideo'); cmd('seekTo', [0, true]); t = 0; clock.textContent = '0:00'; setPlaying(false, '■'); }),
+      btn('⏭', 'Next track', next)),
     status));
+  show();
   w.el.classList.add('is-playing');
-  frame.addEventListener('load', () => { setTimeout(() => cmd(sound.on ? 'unMute' : 'mute'), 600); run(); });
+  frame.addEventListener('load', () => {
+    // subscribe to the player's events (what the IFrame API does under the hood)
+    const hello = () => { if (!live && frame.isConnected) { post({ event: 'listening', id: 'juke', channel: 'widget' }); setTimeout(hello, 400); } };
+    hello();
+    setTimeout(() => cmd(sound.on ? 'unMute' : 'mute'), 600); run();
+  });
   const off = sound.onChange((on) => cmd(on ? 'unMute' : 'mute'));
   void reduced;
   return {
@@ -72,7 +132,7 @@ export function jukebox(wm, { reduced } = {}) {
     // the end of an era: volume down over a couple of seconds, then the tape stops
     async fadeOut(ms = 2600) {
       const steps = 13;
-      for (let i = steps; i >= 0; i--) { cmd('setVolume', [Math.round((i / steps) * 100)]); await wait(ms / steps); }
+      for (let k = steps; k >= 0; k--) { cmd('setVolume', [Math.round((k / steps) * 100)]); await wait(ms / steps); }
       cmd('pauseVideo');
       setPlaying(false, '■');
       clearInterval(timer);
