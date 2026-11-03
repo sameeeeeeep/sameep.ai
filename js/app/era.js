@@ -6,22 +6,74 @@ import { h, wait, isNarrow } from './util.js';
 import { sound } from './audio.js';
 import { presence } from '../presence.js';
 
-// the 1999 playlist: what every shared folder had, global and Bollywood. Each id is an upload that allows embedding
-// (checked Nov 2026: playableInEmbed true); the player is audio only, the video never shows
+// the jukebox: 60 songs from the shared folder of '99 (mostly 1997–99, a few earlier classics), 48 English and
+// 12 Hindi pop. Each id is an upload that allows embedding (checked Nov 2026: playableInEmbed true, and each
+// played in the hidden player); the player is audio only, the video never shows
 const PLAYLIST = [
-  { id: '68ugkg9RePc', artist: 'Eiffel 65', title: 'Blue (Da Ba Dee)' },
-  { id: 'p47fEXGabaY', artist: 'Ricky Martin', title: 'Livin’ la Vida Loca' },
-  { id: 'rjtUQAz2KsU', artist: 'A.R. Rahman', title: 'Taal Se Taal Mila' },
-  { id: '4fndeDfaWCg', artist: 'Backstreet Boys', title: 'I Want It That Way' },
-  { id: 'FrLequ6dUdM', artist: 'TLC', title: 'No Scrubs' },
-  { id: 'Tfjoyp0g5HA', artist: 'Kavita Krishnamurthy & Vinod Rathod', title: 'Dholi Taro Dhol Baaje' },
-  { id: 'EK_LN3XEcnw', artist: 'Lou Bega', title: 'Mambo No. 5' },
-  { id: 'J8zlroVMYeM', artist: 'Sonu Nigam', title: 'Deewana Tera' },
-  { id: '6Whgn_iE5uc', artist: 'Santana ft. Rob Thomas', title: 'Smooth' },
-  { id: 'L_jWHffIx5E', artist: 'Smash Mouth', title: 'All Star' },
+  { id: '1lyu1KKwC74', artist: 'The Verve', title: 'Bitter Sweet Symphony' },
+  { id: 'VV1XWJN3nJo', artist: 'Natalie Imbruglia', title: 'Torn' },
+  { id: 'Jnq9wPDoDKg', artist: 'Sixpence None the Richer', title: 'Kiss Me' },
+  { id: 'E1fzJ_AYajA', artist: 'Len', title: 'Steal My Sunshine' },
+  { id: 'ruAi4VBoBSM', artist: 'Fatboy Slim', title: 'Praise You' },
+  { id: 'SSbBvKaM6sk', artist: 'Blur', title: 'Song 2' },
+  { id: '2H5uWRjFsGc', artist: 'Chumbawamba', title: 'Tubthumping' },
+  { id: 'gJLIiF15wjQ', artist: 'Spice Girls', title: 'Wannabe' },
+  { id: '6M6samPEMpM', artist: 'Backstreet Boys', title: 'Everybody (Backstreet’s Back)' },
+  { id: '_ZcmuKsyvzg', artist: '*NSYNC', title: 'Tearin’ Up My Heart' },
+  { id: 'C-u5WLJ9Yk4', artist: 'Britney Spears', title: '...Baby One More Time' },
   { id: 'kIDWgqDBNXA', artist: 'Christina Aguilera', title: 'Genie in a Bottle' },
-  { id: 'zLGZhp14UgY', artist: 'Jagjit Singh', title: 'Hoshwalon Ko Khabar Kya' },
+  { id: 'FrLequ6dUdM', artist: 'TLC', title: 'No Scrubs' },
+  { id: 'NiF6-0UTqtc', artist: 'Destiny’s Child', title: 'Bills, Bills, Bills' },
+  { id: 'T6QKqFPRZSA', artist: 'Lauryn Hill', title: 'Doo Wop (That Thing)' },
+  { id: '3JcmQONgXJM', artist: 'Will Smith', title: 'Gettin’ Jiggy Wit It' },
+  { id: 'fiBLgEx6svA', artist: 'Will Smith', title: 'Men in Black' },
+  { id: 'EK_LN3XEcnw', artist: 'Lou Bega', title: 'Mambo No. 5' },
+  { id: 'p47fEXGabaY', artist: 'Ricky Martin', title: 'Livin’ la Vida Loca' },
+  { id: '_66jPJVS4JE', artist: 'Jennifer Lopez', title: 'Waiting for Tonight' },
+  { id: 'nZXRV4MezEw', artist: 'Cher', title: 'Believe' },
+  { id: 'x3ov9USxVxY', artist: 'Madonna', title: 'Ray of Light' },
+  { id: '68ugkg9RePc', artist: 'Eiffel 65', title: 'Blue (Da Ba Dee)' },
+  { id: '6Zbi0XmGtMw', artist: 'Vengaboys', title: 'We Like to Party!' },
+  { id: 'ZyhrYis509A', artist: 'Aqua', title: 'Barbie Girl' },
+  { id: 'L_jWHffIx5E', artist: 'Smash Mouth', title: 'All Star' },
+  { id: '3cqU1pFRqYE', artist: 'Sugar Ray', title: 'Every Morning' },
+  { id: 'beINamVRGy4', artist: 'Third Eye Blind', title: 'Semi-Charmed Life' },
+  { id: 'xGytDsqkQY8', artist: 'Semisonic', title: 'Closing Time' },
+  { id: 'NdYWuo9OFAw', artist: 'Goo Goo Dolls', title: 'Iris' },
+  { id: 'mzJj5-lubeM', artist: 'Red Hot Chili Peppers', title: 'Scar Tissue' },
+  { id: '6Whgn_iE5uc', artist: 'Santana ft. Rob Thomas', title: 'Smooth' },
+  { id: 'NHozn0YXAeE', artist: 'Hanson', title: 'MMMBop' },
+  { id: 'WQnAxOQxQIU', artist: 'Savage Garden', title: 'Truly Madly Deeply' },
+  { id: 'nPXqkjpXZ_k', artist: 'All Saints', title: 'Never Ever' },
+  { id: 'xcWOviMI6Lk', artist: 'Robbie Williams', title: 'Millennium' },
+  { id: 'NI6aOFI7hms', artist: 'The Cardigans', title: 'Lovefool' },
+  { id: 'mqFLXayD6e8', artist: 'Shania Twain', title: 'That Don’t Impress Me Much' },
+  { id: '4fndeDfaWCg', artist: 'Backstreet Boys', title: 'I Want It That Way' },
+  { id: '9Ht5RZpzPqw', artist: 'blink-182', title: 'All the Small Things' },
+  { id: '6hzrDeceEKc', artist: 'Oasis', title: 'Wonderwall' },
+  { id: 'PHzOOQfhPFg', artist: 'No Doubt', title: 'Just a Girl' },
+  { id: 'fPO76Jlnz6c', artist: 'Coolio ft. L.V.', title: 'Gangsta’s Paradise' },
+  { id: 'oKOtzIo-uYw', artist: 'Fugees', title: 'Killing Me Softly' },
+  { id: 'Jne9t8sHpUc', artist: 'Alanis Morissette', title: 'Ironic' },
+  { id: '0hiUuL5uTKc', artist: 'Montell Jordan', title: 'This Is How We Do It' },
+  { id: 'HEXWRTEbj1I', artist: 'Haddaway', title: 'What Is Love' },
+  { id: 'etviGf1uWlg', artist: 'Deee-Lite', title: 'Groove Is in the Heart' },
+  // Hindi pop and Bollywood, the upbeat ones
+  { id: '92ydUdqWE1g', artist: 'Daler Mehndi', title: 'Tunak Tunak Tun' },
+  { id: 'h6Ze5Hqa1wA', artist: 'Daler Mehndi', title: 'Bolo Ta Ra Ra' },
+  { id: 'dWqb-WqbGh8', artist: 'Lucky Ali', title: 'O Sanam' },
+  { id: 'IvloHsmi_vg', artist: 'Alisha Chinai', title: 'Made in India' },
+  { id: 'h6g9EoxKAdw', artist: 'Bombay Vikings', title: 'Kya Soorat Hai' },
+  { id: 'cuMYU4bqZ_A', artist: 'Colonial Cousins', title: 'Sa Ni Dha Pa' },
+  { id: 'ecPMVO7JuTo', artist: 'Silk Route', title: 'Dooba Dooba' },
+  { id: 'nrT69Z1rlis', artist: 'Stereo Nation', title: 'Nachange Saari Raat' },
+  { id: 'J8zlroVMYeM', artist: 'Sonu Nigam', title: 'Deewana Tera' },
+  { id: '0tjVtYtZ384', artist: 'Falguni Pathak', title: 'Maine Payal Hai Chhankai' },
+  { id: '8inhC8XvJS0', artist: 'Udit Narayan & Alka Yagnik', title: 'Koi Mil Gaya' },
+  { id: '_rGz16v3CUM', artist: 'Bally Sagoo', title: 'Gur Nalon Ishq Mitha' },
 ];
+// every visit gets its own shuffled order, so everyone walks in on a different song
+const shuffled = (list) => { const a = list.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
 // the filename it would have had in a 1999 shared folder
 const fileOf = (s) => (s.artist + '_-_' + s.title).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9()._-]+/g, '_').replace(/_+/g, '_') + '.mp3';
 
@@ -67,7 +119,8 @@ export const FOLDERS = [
   ] },
   { id: 'products', label: 'Products', card: { what: 'Products I built or co-founded', role: 'Founder, co-founder, builder', proof: 'ppt.live: 50 phones joined at once, zero errors', thumb: 'video/pptlive-poster.webp', node: 'ppt-intro' }, items: [
     { id: 'pptlive', label: 'ppt.live', url: 'https://www.ppt.live' },
-    { id: 'often', label: 'Often & Trippy', url: 'often/' },
+    { id: 'often', label: 'Often', url: 'often/' },
+    { id: 'trippy', label: 'Trippy', url: 'trippy/' },
     { id: 'nia', label: 'Nia', url: 'nia/' },
     { id: 'prophexy', label: 'Prophexy', url: 'https://thelastprompt.ai/prophexy/' },
   ] },
@@ -96,8 +149,9 @@ export function jukebox(wm, { reduced } = {}) {
   const w = wm.win('jukebox', { title: 'Jukebox ’99', width: 320, x, y: 9999, className: 'win--juke' + (narrow ? ' win--island' : ''), sheet: false,
     onClose: () => { host.remove(); layer?.classList.remove('has-island'); removeEventListener('message', onMsg); off?.(); clearInterval(timer); } });
   if (narrow) layer?.classList.add('has-island');
+  const Q = shuffled(PLAYLIST);  // this visit's order: Next, Previous and auto-advance all follow it
   let i = 0;
-  const src = `https://www.youtube-nocookie.com/embed/${PLAYLIST[0].id}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&mute=${sound.on ? 0 : 1}&origin=${encodeURIComponent(location.origin)}`;
+  const src = `https://www.youtube-nocookie.com/embed/${Q[0].id}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&mute=${sound.on ? 0 : 1}&origin=${encodeURIComponent(location.origin)}`;
   const frame = h('iframe.juke__vid', { src, title: 'Jukebox ’99 (audio)', allow: 'autoplay; encrypted-media', referrerpolicy: 'strict-origin-when-cross-origin', tabindex: '-1' });
   const post = (msg) => { try { frame.contentWindow?.postMessage(JSON.stringify(msg), '*'); } catch { /* not ready */ } };
   const cmd = (func, args = []) => post({ event: 'command', func, args });
@@ -112,15 +166,15 @@ export function jukebox(wm, { reduced } = {}) {
   const run = () => { clearInterval(timer); timer = setInterval(() => { if (playing) { t += 1; clock.textContent = fmt(t); } }, 1000); };
   const setPlaying = (on, label) => { playing = on; w.el.classList.toggle('is-playing', on); state.textContent = label || (on ? '▶' : '❚❚'); toggle.textContent = on ? '❚❚' : '▶'; toggle.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
   const show = () => {
-    const s = PLAYLIST[i];
+    const s = Q[i];
     track.textContent = `${i + 1}. ${s.artist.toUpperCase()} - ${s.title.toUpperCase()} *** 1999 *** `.repeat(2);
-    status.textContent = `Now playing · ${i + 1} of ${PLAYLIST.length} · ${fileOf(s)}`;
+    status.textContent = `Now playing · ${i + 1} of ${Q.length} · ${fileOf(s)}`;
     w.el.setAttribute('aria-label', `Jukebox ’99, now playing ${s.title} by ${s.artist}`);
   };
   const go = (n) => {
-    i = (n + PLAYLIST.length) % PLAYLIST.length; lastGo = Date.now();
+    i = (n + Q.length) % Q.length; lastGo = Date.now();
     t = 0; clock.textContent = '0:00';
-    cmd('loadVideoById', [PLAYLIST[i].id]);
+    cmd('loadVideoById', [Q[i].id]);
     setPlaying(true); show(); sound.tick('click');
   };
   // the player can report one ending twice, and the old track's end can arrive just after a skip: ignore those
@@ -182,9 +236,9 @@ export function jukebox(wm, { reduced } = {}) {
 }
 
 // ---------------------------------------------------------------- the installer
-// resolves when the install is done (at least minMs, and not before `ready`); "Open now" skips ahead
+// resolves when the install is done (about 3 s, and not before `ready`); "Skip" jumps to the end
 // on a phone there's no window: the desktop icon fills up like an app downloading (onProgress), and tapping it skips (bindSkip)
-export function installer(wm, { ready, minMs = 60000, reduced, onProgress, bindSkip } = {}) {
+export function installer(wm, { ready, minMs = 3000, reduced, onProgress, bindSkip } = {}) {
   const narrow = isNarrow();
   const w = narrow ? null : wm.win('install', { title: 'Installer', width: 400, y: 40, className: 'win--install', sheet: false });
   const steps = [
@@ -217,7 +271,7 @@ export function installer(wm, { ready, minMs = 60000, reduced, onProgress, bindS
   w?.body.append(h('div.inst',
     h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installing “OFF THE CV”'), h('p.inst__s', 'Items remaining to be installed: ', left))),
     doing, bar, file,
-    h('div.inst__row', h('span.inst__note', 'Have a play while you wait: the games and the projects are on the left.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Skip'))));
+    h('div.inst__row', h('span.inst__note', 'Projects are on the left, fun things and games on the right.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Skip'))));
   return new Promise((resolve) => {
     const t0 = performance.now();
     const total = reduced ? 1500 : minMs;
@@ -243,7 +297,7 @@ export function installer(wm, { ready, minMs = 60000, reduced, onProgress, bindS
       file.textContent = 'OFF THE CV is on your desktop.';
       left.textContent = '0';
       sound.tick('pick');
-      await wait(reduced || narrow ? 0 : 900);
+      await wait(reduced || narrow ? 0 : 500);
       w?.close();
       resolve();
     };
@@ -304,8 +358,9 @@ export function openFolder(wm, f) {
 // ---------------------------------------------------------------- the lock screen
 // After the modem connects, Mac OS asks who you are. Everyone floats as a bubble (ppt.live style:
 // a little physics, they drift and nudge each other); type your name to filter, or tap your face.
-// Wispr version: the team are there. Anyone can add their own account (name + selfie); it lives on
-// their device only and is there next time. Logging in seats you in the audience as yourself.
+// Wispr version: the whole team is there (data/wispr-team.json: first name, role, public photo, source).
+// Tapping your bubble turns it green and lets you straight in; there's no passcode. Anyone not listed
+// can add their own account (name + selfie); it lives on their device only and is there next time.
 const ACCOUNTS = 'offthecv.accounts';
 const ownAccounts = () => { try { return JSON.parse(localStorage.getItem(ACCOUNTS) || '[]'); } catch { return []; } };
 const saveOwn = (list) => { try { localStorage.setItem(ACCOUNTS, JSON.stringify(list.slice(-4))); } catch { /* full or private: this visit only */ } };
@@ -313,6 +368,7 @@ const saveOwn = (list) => { try { localStorage.setItem(ACCOUNTS, JSON.stringify(
 export function login(layer, persona, { reduced, stylise } = {}) {
   return new Promise((resolve) => {
     const team = (persona.characters || []).filter((c) => c.team);
+    let roster = null;  // the Wispr lobby: everyone on the team, from data/wispr-team.json
     const time = h('p.lock__time'), date = h('p.lock__date'), online = h('p.lock__online', { hidden: true });
     const tick = () => { const d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); };
     tick(); const clk = setInterval(tick, 15000);
@@ -331,7 +387,10 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     let bubbles = [];
     const face = (a) => h('span.lock__face', a.src ? h('img', { src: a.src, alt: '', width: 96, height: 96 }) : h('span.lock__glyph', { 'aria-hidden': 'true' }, a.glyph ?? (a.label || '?')[0].toUpperCase()));
     function build() {
-      const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c })),
+      // a teammate with an illustrated character (persona.json) also takes that seat in the audience
+      const people = roster ? roster.map((m) => { const c = team.find((t) => t.id === m.id); return { id: m.id, label: m.name, blurb: m.role, src: m.photo || c?.thumb || null, team: c || null, member: true }; })
+        : team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c }));
+      const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...people,
         { id: 'add', label: 'Add account', blurb: 'Name and a selfie', glyph: '+' }, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', glyph: '' }];
       field.replaceChildren();
       bubbles = accounts.map((a) => {
@@ -343,9 +402,16 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       place();
     }
     // physics: soft circles that push apart, bounce off the edges and wander a little
-    let W = 0, H = 0, R = 52, raf = 0, last = 0;
+    let W = 0, H = 0, R = 52, VY = 1.15, raf = 0, last = 0;
     function place() {
-      W = field.clientWidth; H = field.clientHeight; R = W < 500 ? 42 : 54;
+      W = field.clientWidth; H = field.clientHeight;
+      // a big lobby shrinks the bubbles so everyone fits
+      const narrow = W < 500;
+      R = Math.round(Math.max(narrow ? 21 : 30, Math.min(narrow ? 42 : 54, Math.sqrt((W * H) / Math.max(1, bubbles.length)) / (narrow ? 2.9 : 2.4))));
+      field.style.setProperty('--bub', R + 'px');
+      field.classList.toggle('is-crowd', R < 40);
+      field.classList.toggle('is-tight', R < 30);  // a phone full of people: names only
+      VY = R < 40 ? 0.72 : 1.15;  // a name sits under each face, so crowded bubbles keep more room up and down
       const n = bubbles.length, cols = Math.max(2, Math.min(n, Math.floor(W / (R * 2.3)))), rows = Math.ceil(n / cols), cw = Math.min(W / cols, R * 3.2);
       bubbles.forEach((b, i) => { const r = Math.floor(i / cols), inRow = Math.min(cols, n - r * cols); b.x = W / 2 + ((i % cols) - (inRow - 1) / 2) * cw + (Math.random() - 0.5) * 20; b.y = (Math.floor(i / cols) + 0.5) * (H / Math.max(rows, 1)) + (Math.random() - 0.5) * 20; b.vx = (Math.random() - 0.5) * 0.4; b.vy = (Math.random() - 0.5) * 0.4; });
       for (let k = 0; k < 120; k++) step(1, true);
@@ -358,7 +424,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
         if (live.length < bubbles.length) { b.vx += (W / 2 - b.x) * 0.0006 * dt; b.vy += (H / 2 - b.y) * 0.0006 * dt; }
       }
       for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
-        const p = live[i], q = live[j], dx = q.x - p.x, dy = (q.y - p.y) * 1.15, d = Math.hypot(dx, dy) || 0.01, min = R * 2.05;
+        const p = live[i], q = live[j], dx = q.x - p.x, dy = (q.y - p.y) * VY, d = Math.hypot(dx, dy) || 0.01, min = R * 2.05;
         if (d < min) { const f = ((min - d) / d) * 0.06 * dt; p.vx -= dx * f; p.vy -= dy * f; q.vx += dx * f; q.vy += dy * f; }
       }
       for (const b of live) {
@@ -389,18 +455,18 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       else if (q && !hits.length) openAdd(search.value.trim());
     });
 
-    // ---- picked: the face big, a passcode pill, return logs in
+    // ---- picked: your bubble turns green and you're in (no passcode)
     let pick = null;
     function choose(a) {
       if (a.id === 'add') return openAdd(search.value.trim());
+      if (pick) return;
       pick = a;
       sound.tick('pick');
-      const pw = h('input.lock__pw', { type: 'text', placeholder: 'No passcode needed', 'aria-label': 'Passcode', autocomplete: 'off', spellcheck: false });
-      pickView.replaceChildren(face(a), h('p.lock__big', a.label), a.blurb && h('p.lock__role', a.blurb),
-        h('form.lock__form', { onsubmit: (e) => { e.preventDefault(); finish(); } }, pw, h('button.lock__go', { type: 'submit', 'aria-label': 'Log in' }, '→')),
-        h('button.lock__back', { type: 'button', onclick: back }, '← Other accounts'));
-      show('pick');
-      setTimeout(() => pw.focus({ preventScroll: true }), 60);
+      const b = bubbles.find((x) => x.a.id === a.id);
+      b?.el.classList.add('is-picked');
+      if (b) { b.vx = b.vy = 0; }
+      field.classList.add('has-pick');
+      setTimeout(finish, reduced ? 150 : 650);
     }
     function back() { pick = null; show('field'); setTimeout(() => search.focus({ preventScroll: true }), 30); }
     function show(which) {
@@ -431,6 +497,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
         const a = { id: 'me-' + Math.random().toString(36).slice(2, 9), label, blurb: 'Your account, on this device', src: photo };
         saveOwn([...ownAccounts(), a]);
         build();
+        show('field');
         choose({ ...a, own: true });
       };
       addView.replaceChildren(h('button.lock__facebtn', { type: 'button', onclick: () => file.click(), 'aria-label': 'Take a selfie' }, pic), file,
@@ -450,9 +517,10 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       el.remove();
       desk?.classList.remove('is-locked');
       if (pick.id === 'guest') return resolve(null);
-      const character = pick.team ? { ...pick.team } : { id: 'photo', label: pick.label, src: pick.src };
-      try { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: pick.label, character: pick.team ? pick.id : null })); } catch { /* this visit only */ }
-      resolve({ name: pick.label, character: pick.src || pick.team ? character : null, photo: pick.team ? null : pick.src || null });
+      // team members without an illustrated character come in as their photo, keeping their w- id (Growth OS)
+      const character = pick.team ? { ...pick.team } : { id: pick.member ? pick.id : 'photo', label: pick.label, src: pick.src };
+      try { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: pick.label, character: pick.team || pick.member ? pick.id : null })); } catch { /* this visit only */ }
+      resolve({ name: pick.label, character: pick.src || pick.team || pick.member ? character : null, photo: pick.team ? null : pick.src || null });
     };
 
     const desk = layer.closest('.desk');
@@ -460,6 +528,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     layer.append(el);
     show('field');
     build();
+    if (team.length) fetch('data/wispr-team.json').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d?.team?.length && !pick) { roster = d.team; build(); } }).catch(() => {});
     ro.observe(field);
     if (!reduced) raf = requestAnimationFrame(loop);
     requestAnimationFrame(() => el.classList.add('is-on'));
@@ -469,18 +538,43 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 // ---------------------------------------------------------------- installed: open it, or it opens itself
 // resolves when the visitor clicks Open (here or on the new desktop icon via `open`), or after `secs`
 // on a phone there's no window: the icon wears a badge counting down (onCount), and tapping it opens the show
-export function installed(wm, { secs = 60, reduced, onCount } = {}) {
+export function installed(wm, { secs = 15, onCount, hold = () => false, layer } = {}) {
+  // The install is done: Open goes straight in; otherwise a visible countdown opens the show by itself.
+  // "Stay on the desktop" cancels it, and then the icon just waits to be opened. The countdown holds
+  // while hold() is true (the desktop tour is showing), so it never cuts the tour short.
   let go;
   const p = new Promise((r) => { go = r; });
-  const w = isNarrow() ? null : wm.win('installed', { title: 'Installer', width: 380, y: 40, className: 'win--install', sheet: false });
+  const narrow = isNarrow();
   const left = h('b', String(secs));
+  const line = h('p.inst__doing', 'Opens by itself in ', left, ' s');
+  let n = secs, t = 0, held = false;
+  const stop = (fromClose) => {
+    clearInterval(t); t = 0;
+    onCount?.(null);
+    if (fromClose !== true) w?.close();
+    bar?.remove();
+  };
+  const btns = () => [h('button.btn', { type: 'button', onclick: () => stop() }, narrow ? 'Not yet' : 'Stay on the desktop'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open')];
+  const w = narrow ? null : wm.win('installed', { title: 'Installer', width: 420, y: 40, className: 'win--install', sheet: false, onClose: () => { if (t) stop(true); } });
   w?.body.append(h('div.inst',
-    h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is now on your desktop.'))),
-    h('p.inst__doing', 'Open it now, or it opens by itself in ', left, ' seconds.'),
-    h('div.inst__row', h('span.inst__note', 'Double-click its icon any time.'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open'))));
+    h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is on your desktop. Open its icon any time.'))),
+    line,
+    h('div.inst__row.inst__row--end', ...btns())));
+  // phone: no window, so a small bar under the grid does the same job as the badge on the icon
+  const bar = narrow ? h('div.inst-bar', { role: 'status' }, h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 28, height: 28 }), h('p', h('b', 'OFF THE CV'), ' opens in ', left, ' s'), ...btns()) : null;
+  if (bar) (layer || document.querySelector('.desk__area'))?.append(bar);
   sound.tick('pick');
-  let n = reduced ? 3 : secs;
   onCount?.(n);
-  const t = setInterval(() => { n -= 1; left.textContent = String(Math.max(0, n)); onCount?.(Math.max(0, n)); if (n <= 0) go(); }, 1000);
-  return { open: () => go(), done: p.then(() => { clearInterval(t); w?.close(); onCount?.(null); }) };
+  const sync = () => {
+    const h0 = hold();
+    if (h0 !== held) { held = h0; bar?.classList.toggle('is-held', held); if (w) line.replaceChildren(...(held ? ['Opens by itself ', left, ' s after the tour'] : ['Opens by itself in ', left, ' s'])); }
+    return held;
+  };
+  sync();
+  t = setInterval(() => {
+    if (sync()) return;
+    n -= 1; left.textContent = String(Math.max(0, n)); onCount?.(Math.max(0, n));
+    if (n <= 0) go();
+  }, 1000);
+  return { open: () => go(), done: p.then(() => { clearInterval(t); t = 0; w?.close(); bar?.remove(); onCount?.(null); }) };
 }

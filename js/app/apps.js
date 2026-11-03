@@ -79,6 +79,39 @@ function openStyleGuide(wm) {
     h('div.guide__status', h('span', 'Page 1 of 1'), h('span', '100%')));
 }
 
+// "Built with": the real build numbers (data/build-stats.json, from the transcripts, Flow history and git)
+async function openBuiltWith(wm) {
+  const w = wm.win('builtwith', { title: 'Built with', width: 460, className: 'win--built' });
+  if (w.body.childElementCount) return;
+  w.body.append(h('p.built__load', 'Counting…'));
+  let d;
+  try { d = await (await fetch('data/build-stats.json', { cache: 'no-cache' })).json(); } catch { d = null; }
+  if (!d) { w.body.replaceChildren(h('p.built__load', 'The numbers are still being counted. Try again in a minute.')); return; }
+  const n = (v) => Number(v || 0).toLocaleString('en-US');
+  const C = d.claude || {}, F = d.flow || {}, G = d.git || {}, days = d.window?.days || 0;
+  const tile = (big, label, sub) => h('li', h('b', big), h('span', label), sub && h('em', sub));
+  const byDay = Object.entries(C.promptsByDay || {});
+  const top = Math.max(1, ...byDay.map(([, v]) => v));
+  const day = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short' });
+  w.body.replaceChildren(h('div.built',
+    h('p.built__t', `Built in ${days} days, by talking to Claude`),
+    h('p.built__s', `Claude Code did the building. Much of the talking went through Wispr Flow: ${Math.round((d.voice?.spokenShare || 0) * 100)}% of my prompt words, at least, were dictated.`),
+    h('ul.built__tiles',
+      tile(n(days), 'days'),
+      tile(n(C.sessions), 'Claude sessions', `up to ${n(C.peakParallelSessions)} at once`),
+      tile(n(C.prompts), 'prompts'),
+      tile(n(F.words), 'words dictated', 'in Wispr Flow'),
+      tile(n(F.wpm), 'wpm, on average', F.peakWpm ? `peak ${n(F.peakWpm)}` : null),
+      tile(n(C.toolCalls), 'tool calls'),
+      tile(n(G.commits), 'commits')),
+    byDay.length && h('div.built__chart', { role: 'img', 'aria-label': 'Prompts per day: ' + byDay.map(([k, v]) => `${day(k)} ${v}`).join(', ') },
+      h('p.built__ch', 'Prompts per day'),
+      h('ol', byDay.map(([k, v]) => h('li', h('i', { style: { height: Math.max(4, Math.round((v / top) * 100)) + '%' } }), h('b', String(v)), h('span', day(k)))))),
+    h('p.built__note', `Counted from the Claude Code transcripts, Wispr Flow’s history and the git log, ${d.window?.from} to ${d.window?.to}.`)));
+  // the numbers arrive after the window opened: keep the whole window on screen
+  requestAnimationFrame(() => { const L = w.el.parentElement?.getBoundingClientRect(); if (!L || w.el.classList.contains('win--sheet')) return; const hh = w.el.offsetHeight; w.el.style.top = Math.max(12, Math.min(parseFloat(w.el.style.top) || 12, L.height - hh - 12)) + 'px'; });
+}
+
 export function buildApps(ctx) {
   const { wm, persona, podcast, alert } = ctx;
   const P = persona;
@@ -235,6 +268,7 @@ export function buildApps(ctx) {
       w.body.append(h('p', 'Connected at 56,000 bps.'), h('p.small', 'Time online: ', clock), h('div.row', h('button.btn', { type: 'button', onclick: () => alert({ icon: 'img/ui/stop.svg', title: 'Disconnect', message: 'Hanging up now would end the podcast mid-sentence. The host would never forgive you.', buttons: [{ label: 'Stay connected', primary: true }] }) }, 'Disconnect')));
       tick();
     } },
+    { id: 'builtwith', label: 'Built with', icon: 'builtwith', open: () => openBuiltWith(wm) },
     { id: 'readme', label: 'Read Me.txt', icon: 'readme', open() {
       const w = wm.win('readme', { title: 'Read Me.txt', width: 480, className: 'win--text' });
       w.body.append(h('div.simpletext',

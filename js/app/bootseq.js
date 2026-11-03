@@ -4,6 +4,7 @@ import { sound } from './audio.js';
 import { renderDialup } from './synth.js';
 import { h, wait } from './util.js';
 import { isWispr } from '../version.js';
+import { curveK, unbarrel } from './crt.js';
 
 const C = {
   bg: '#04232b', bg2: '#063542', glow: '#b8ffe9', dim: '#5fb3a3', flame: '#ffa946', ember: '#ff6c4c',
@@ -35,14 +36,56 @@ export async function runBoot({ crt, root, persona, reduced, installer = true })
   const cd = await loadImg('img/ui/offthecv.svg');
   const modem = await loadImg('img/ui/dialup.svg');
 
-  // ---------------------------------------------------------- DOM chrome (skip + sound)
+  // ---------------------------------------------------------- skip + sound, on the glass
+  // Drawn into the boot canvas (drawChrome) so they bend with the tube like the rest of the
+  // screen. The real <button>s stay for keys, focus and screen readers: invisible, laid
+  // over the spot the barrel draws them at (unbarrel(), js/app/crt.js), so clicks land.
   let skipped = false;
   let onSkip = () => {};
   const skipBtn = h('button.boot-skip', { type: 'button', onclick: () => { skipped = true; onSkip(); } }, 'Skip', h('span', { 'aria-hidden': 'true' }, ' ›'));
   const soundBtn = h('button.boot-sound', { type: 'button', 'aria-pressed': String(sound.on), onclick: () => { sound.toggle(); } }, sound.on ? 'Sound on' : 'Sound off');
   const offSound = sound.onChange((on) => { soundBtn.textContent = on ? 'Sound on' : 'Sound off'; soundBtn.setAttribute('aria-pressed', String(on)); });
-  const chrome = h('div.boot-chrome', soundBtn, skipBtn);
+  const chrome = h('div.boot-chrome.is-glass', soundBtn, skipBtn);
   root.append(chrome);
+  // the menu bar's speaker (css/app.css .ico--speaker), 16×16: waves when on, a cross when off
+  const SPK = new Path2D('M1 5h3l4-3v12l-4-3H1z');
+  const WAVES = new Path2D('M10 5a4 4 0 010 6l-1-1a2.6 2.6 0 000-4zM12 3a7 7 0 010 10l-1-1a5.6 5.6 0 000-8z');
+  const MUTE = new Path2D('M10 5l1-1 2 2 2-2 1 1-2 2 2 2-1 1-2-2-2 2-1-1 2-2z');
+  const drawChrome = () => {
+    const s = W / Math.max(1, crt.size.w); // canvas px per CSS px: the buttons keep their CSS size
+    const pad = 14 * s, bh = 44 * s, gap = 8 * s, ico = 18 * s, edge = 32 * s; // in from the edge, clear of the dark corner
+    font(25 * s); // a touch over the old 22px DOM size: the tube softens it
+    const on = sound.on;
+    const bs = [{ el: soundBtn, label: on ? 'Sound on' : 'Sound off', icon: true }, { el: skipBtn, label: 'Skip ›' }];
+    let x = W - edge;
+    const y = H - edge - bh;
+    for (const b of [...bs].reverse()) { b.w = g.measureText(b.label).width + pad * 2 + (b.icon ? ico + 8 * s : 0); x -= b.w; b.x = x; x -= gap; }
+    const k = curveK(crt.size.w), tube = crt.host.getBoundingClientRect(), box = root.getBoundingClientRect();
+    for (const b of bs) {
+      const hot = b.el.matches(':hover'), dim = b.icon && !on;
+      g.save();
+      g.globalAlpha = dim && !hot ? 0.75 : 1;
+      g.beginPath(); g.roundRect ? g.roundRect(b.x, y, b.w, bh, 4 * s) : g.rect(b.x, y, b.w, bh);
+      g.fillStyle = hot ? C.glow : 'rgba(4,35,43,.6)'; g.fill();
+      g.lineWidth = Math.max(1, s); g.strokeStyle = 'rgba(184,255,233,.5)'; g.stroke();
+      if (b.el.matches(':focus-visible')) { g.lineWidth = 2 * s; g.strokeStyle = C.flame; g.strokeRect(b.x - 3 * s, y - 3 * s, b.w + 6 * s, bh + 6 * s); }
+      const ink = hot ? C.bg : C.glow;
+      if (!hot) { g.shadowColor = 'rgba(184,255,233,.6)'; g.shadowBlur = 8 * s; }
+      let tx = b.x + pad;
+      if (b.icon) {
+        g.save(); g.translate(tx, y + bh / 2 - ico / 2); g.scale(ico / 16, ico / 16);
+        g.fillStyle = ink; g.fill(SPK); g.fill(on ? WAVES : MUTE); g.restore();
+        tx += ico + 8 * s;
+      }
+      g.fillStyle = ink; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(b.label, tx, y + bh / 2 + s);
+      g.restore();
+      // the invisible real button, over where the tube shows this one
+      const pts = [[b.x, y], [b.x + b.w, y], [b.x, y + bh], [b.x + b.w, y + bh]].map(([px, py]) => unbarrel(px / W * 2 - 1, py / H * 2 - 1, k));
+      const xs = pts.map((p) => (p[0] + 1) / 2 * tube.width + tube.left - box.left), ys = pts.map((p) => (p[1] + 1) / 2 * tube.height + tube.top - box.top);
+      const l = Math.min(...xs), t = Math.min(...ys);
+      b.el.style.cssText = `left:${l}px;top:${t}px;width:${Math.max(...xs) - l}px;height:${Math.max(...ys) - t}px`;
+    }
+  };
   const onKey = (e) => { if (e.key === 'Escape') { skipped = true; onSkip(); } };
   addEventListener('keydown', onKey);
 
@@ -53,6 +96,8 @@ export async function runBoot({ crt, root, persona, reduced, installer = true })
     if (!running) return;
     g.setTransform(1, 0, 0, 1, 0, 0);
     scene((performance.now() - t0) / 1000);
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    drawChrome();
     crt.dirty = true;
     requestAnimationFrame(frame);
   };

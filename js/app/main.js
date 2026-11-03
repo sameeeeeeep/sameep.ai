@@ -12,6 +12,7 @@ import { stylisePhoto } from './cast.js';
 import { jukebox, installer, installed, splash, login, FOLDERS, openFolder, openGames } from './era.js';
 import { fillUrl } from './demos.js';
 import { installCards } from './infocard.js';
+import { startTour } from './tour.js';
 import { loadWork } from './work.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
@@ -87,9 +88,12 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   const pick = (ids) => ids.map((id) => apps.find((a) => a.id === id)).filter(Boolean);
   // left: all the work, in five folders (Growth OS adds itself above them). right: the system, HD up top and
   // Trash at the bottom, plus the 1999 toys, which aren't projects
-  desk.renderProjects([...FOLDERS.map((f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) })), ...pick(['work'])], []);
-  desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
-    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }, ...pick(['trash'])]);
+  const folderApp = (f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) });
+  // projects on the left; the Fun folder sits on the right with the games and the toys
+  desk.renderProjects([...FOLDERS.filter((f) => f.id !== 'fun').map(folderApp), ...pick(['work']),
+    { id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }], []);
+  desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
+    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, folderApp(FOLDERS.find((f) => f.id === 'fun')), { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }, ...pick(['trash'])]);
   desk.renderMenus(ctx, apps);
   // hover (or first tap) on a project or folder: what it is, my part, one proof point, where it opens
   installCards({ area: desk.area, folders: FOLDERS, loadList: () => loadWork(persona).then((r) => r.list),
@@ -100,20 +104,25 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
   if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
+  let tour = null;
 
   if (episode && episode.nodes) {
     pod = new Podcast({ wm, layer: desk.area, persona, episode, onEnd: () => ctx.endCard() });
     if (era) {
       ctx.installing = true;
       desk.setInstalling(true);
-      if (isNarrow()) desk.notice('OFF THE CV is installing. Have a play while you wait.');
-      await installer(wm, { reduced, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
+      if (isNarrow()) desk.notice('OFF THE CV is installing. It only takes a moment.');
+      // first visit: a ghost-cursor tour plays while it installs, and the install takes as long as the tour
+      tour = startTour({ area: desk.area });
+      tour?.finished.then(() => { if (!tour.active) ctx.skipInstall?.(); });  // skipped: no need to wait out the tour's pace
+      await installer(wm, { reduced, minMs: tour ? (isNarrow() ? 14000 : 18000) : 3000, ready: tour?.finished, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
       ctx.skipInstall = null;
       ctx.installing = false;
       desk.setInstalling(false);  // the icon lands on the desktop
-      const ready = installed(wm, { reduced, onCount: desk.setBadge });
+      const ready = installed(wm, { onCount: desk.setBadge, hold: () => !!tour?.active, layer: desk.area });
       ctx.launch = ready.open;
       await ready.done;
+      tour?.end();
       ctx.launch = null;
       await Promise.all([juke.fadeOut(), splash(desk.area, persona, { reduced })]);
       juke.win.close();

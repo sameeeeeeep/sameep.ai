@@ -94,6 +94,10 @@ html.is-gated .gate { touch-action: none; }
 .boot-chrome { position: absolute; z-index: 70; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); display: flex; gap: 8px; }
 .boot-chrome button { min-height: var(--tap); padding: 0 16px; border: 1px solid rgba(184,255,233,.35); background: rgba(4,35,43,.6); color: var(--crt-glow); font: 22px/1 var(--f-term); letter-spacing: .04em; border-radius: 4px; cursor: pointer; text-shadow: 0 0 8px rgba(184,255,233,.6); }
 .boot-chrome button:hover { background: var(--crt-glow); color: #04232b; text-shadow: none; }
+/* drawn on the glass by js/app/bootseq.js (so they bend with the tube); these are the real
+   buttons, invisible, laid over where they're drawn */
+.boot-chrome.is-glass { inset: 0; pointer-events: none; }
+.boot-chrome.is-glass button { position: absolute; min-height: 0; padding: 0; opacity: 0; pointer-events: auto; }
 
 /* ---------------------------------------------------------------- desktop */
 .desk { position: absolute; inset: 0; overflow: hidden; overflow: clip; isolation: isolate; } /* clip: a focus() off-screen can't scroll the desk sideways */
@@ -1021,6 +1025,16 @@ p.chooser__or { margin: 2px 0 -4px; }
 .mon[data-size="pip"][data-corner="tl"] { right: auto; left: 2%; }
 .mon[data-size="pip"][data-corner="br"] { top: auto; bottom: 3.2%; }
 .mon[data-size="pip"][data-corner="bl"] { top: auto; right: auto; bottom: 3.2%; left: 2%; }
+/* side (monitor.js rule 1): a panel at the stage's edge, beside the hosts, on the side the corner picker chose */
+.mon[data-size="side"] { top: 3.2%; right: 2%; width: 36%; max-height: 93.6%; z-index: 7; cursor: default; }
+.mon[data-size="side"][data-corner$="l"] { right: auto; left: 2%; }
+.mon[data-size="side"][data-corner^="b"] { top: auto; bottom: 3.2%; }
+/* stats and the menu: a full-height column that scrolls inside */
+.mon[data-size="side"]:is([data-type="stats"], [data-type="cards"]) { top: 3.2%; bottom: 3.2%; width: clamp(240px, 38%, 460px); }
+.mon[data-size="side"]:is([data-type="stats"], [data-type="cards"]) .mon__screen { flex: 1; min-height: 0; aspect-ratio: auto; overflow: auto; }
+.mon[data-size="side"] .mon__open { display: block; }
+/* at side size the actions get their own row under the screen, so they never sit on a dashboard that scrolls */
+.mon[data-size="side"]:is([data-type="stats"], [data-type="cards"]) .mon__acts:not(:empty) { position: static; flex: none; justify-content: flex-end; padding: 6px 8px; border-top: 1px solid rgba(243,238,226,.12); }
 .mon[data-size="pip"]:hover { box-shadow: 0 0 0 2px var(--flame), 0 8px 22px rgba(0,0,0,.5); }
 .mon__acts { position: absolute; left: 10px; bottom: 10px; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; }
 .mon__acts:empty, .mon[data-size="pip"] .mon__acts, .mon[data-size="strip"] .mon__acts { display: none; }
@@ -1228,21 +1242,27 @@ p.chooser__or { margin: 2px 0 -4px; }
 .mon[data-size="pip"] .stats__main { display: none; }
 .mon[data-size="pip"] .stats__kpi:not(:first-child) { display: none; }
 .mon[data-size="pip"] .stats__kpi:first-child .stats__v { font-size: 13cqw; }
-/* rule 1 (monitor.js): a dashboard has no small version, so no shrink button and no zoom cursor */
-.mon[data-type="stats"] .mon__btn:first-of-type { display: none !important; }
+/* rule 3 (monitor.js): a dashboard has no small version, so on phones (panel ⇄ strip) it has no shrink button */
+.mon[data-type="stats"][data-size="panel"] .mon__btn:first-of-type, .mon[data-type="cards"][data-size="panel"] .mon__btn:first-of-type { display: none; }
 .mon[data-type="stats"] { cursor: default; }
 /* a dense dashboard (4+ numbers): the numbers run in a row across the top, the charts side by side under them */
 .mon[data-size="full"] .stats:has(.stats__kpi:nth-child(4)) { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 16px; }
-.stats:has(.stats__kpi:nth-child(4)) .stats__kpis { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px 18px; }
+.stats:has(.stats__kpi:nth-child(4)) .stats__kpis { grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: 10px 14px; }
 .stats:has(.stats__kpi:nth-child(4)) .stats__kpi { border-top: 0; padding: 0; }
 .stats:has(.stats__kpi:nth-child(4)) .stats__kpi:first-child .stats__v { font-size: clamp(30px, 5.4cqw, 60px); }
 .stats:has(.stats__kpi:nth-child(4)) .stats__v { font-size: clamp(22px, 3.6cqw, 40px); }
 .mon[data-size="full"] .stats:has(.stats__kpi:nth-child(4)) .stats__main { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 28px; }
+.stats:has(.stats__kpi:nth-child(4)) .stats__rows { gap: 6px; }
+.stats:has(.stats__kpi:nth-child(4)) .stats__ct { margin-bottom: 6px; }
 /* the inline "Open it" sits bottom right on a dashboard, clear of the numbers */
 .mon[data-type="stats"] .mon__acts { left: auto; right: 10px; }
 .mon[data-type="stats"]:has(.mon__acts:not(:empty)) .stats { padding-bottom: 52px; }
 /* phones: a long dashboard scrolls inside the panel instead of pushing the say field off screen */
 .mon[data-size="panel"][data-type="stats"] .mon__screen { max-height: 58vh; }
+/* photo sets: stacked, cross-fading */
+.stats__photo.is-set .stats__pics { display: grid; }
+.stats__photo.is-set .stats__pics img { grid-area: 1 / 1; opacity: 0; transition: opacity .6s; aspect-ratio: 4 / 3; }
+.stats__photo.is-set .stats__pics img.is-on { opacity: 1; }
 /* qr: scan to open, beside its address */
 .stats__qr { margin: 0; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .stats__qrcode { flex: none; display: block; width: clamp(140px, 26cqw, 260px); padding: 10px; border-radius: 6px; background: #fff; }
@@ -1299,8 +1319,11 @@ a.icon { text-decoration: none; }
 .win--juke.is-playing .juke__bars i { animation: juke-eq .9s ease-in-out infinite alternate; }
 @keyframes juke-eq { 0% { height: 12%; } 30% { height: 85%; } 60% { height: 35%; } 100% { height: 70%; } }
 /* audio only: the player has to be on screen for YouTube to play it, so it sits behind everything, invisible */
-.juke__host { position: absolute; left: 0; bottom: 0; width: 200px; height: 200px; opacity: .001; pointer-events: none; z-index: -1; overflow: hidden; }
-.juke__vid { display: block; width: 100%; height: 100%; border: 0; }
+/* as the Diwali invite does it: the wrapper is zero pixels tall and clips, so no browser can paint the
+   video (Safari composites a cross-origin video layer without its parent's opacity); the player inside
+   keeps its 200x200 size, which is what YouTube needs to keep playing */
+.juke__host { position: absolute !important; left: 0; bottom: 0; width: 300px !important; height: 0 !important; overflow: hidden !important; opacity: 0 !important; pointer-events: none !important; z-index: -1; }
+.juke__vid { display: block; width: 200px; height: 200px; border: 0; }
 .juke__toggle { display: none; place-items: center; flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #2a2c31; color: #9bff5e; font: 700 12px var(--f-ui); cursor: pointer; }
 .juke__toggle:active { background: #3a3d44; }
 .juke__ctrl { display: flex; gap: 4px; padding: 6px 8px 2px; }
@@ -1319,7 +1342,36 @@ a.icon { text-decoration: none; }
 .inst__bar i { display: block; height: 100%; transform-origin: left; transform: scaleX(0); background: repeating-linear-gradient(-45deg, #6b6bd8 0 6px, #8d8dee 6px 12px); background-size: 17px 100%; animation: inst-stripes .8s linear infinite; }
 @keyframes inst-stripes { to { background-position: 17px 0; } }
 .inst__row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.inst__row--end { justify-content: flex-end; gap: 8px; }
 .inst__note { flex: 1; font: 400 12px var(--f-ui); color: #555; }
+/* phone: the "opens in 15 s" bar under the grid (no installer window on a phone) */
+.inst-bar { position: absolute; left: 10px; right: 10px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 9000; display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 10px; background: var(--plat-2); color: #111; border: 1px solid #111; border-radius: 10px; box-shadow: inset 1px 1px 0 #fff, 0 10px 30px rgba(0,0,0,.45); font: 400 13px/1.3 var(--f-ui); animation: icon-land .5s var(--ease-out) both; }
+.inst-bar img { image-rendering: pixelated; flex: none; }
+.inst-bar p { flex: 1; margin: 0; min-width: 0; }
+.inst-bar.is-held p::after { content: ", after the tour"; color: #555; }
+.inst-bar .btn { min-height: 38px; padding: 0 12px; }
+
+/* the first-visit tour (js/app/tour.js): a ghost Mac arrow and a caption in Wispr Flow's look
+   (Lumen card, Figtree, a Vast border-button), plus a soft ring on whatever it is pointing at */
+.gtour__cursor { position: absolute; left: 0; top: 0; z-index: 99996; width: 18px; height: 28px; pointer-events: none; opacity: 0; transition-property: transform, opacity; transition-timing-function: cubic-bezier(.45, .05, .25, 1); filter: drop-shadow(1px 2px 1px rgba(0,0,0,.35)); }
+.gtour__cursor.is-on { opacity: 1; }
+.gtour__cursor svg { display: block; transform-origin: 2px 2px; transition: transform .12s; }
+.gtour__cursor.is-press svg { transform: scale(.82); }
+.gtour__cap { --lumen: #ffffeb; --vast: #1a1a1a; position: absolute; z-index: 99995; width: min(270px, calc(100% - 20px)); padding: 10px 12px 9px; background: var(--lumen); color: var(--vast); border: 1px solid rgba(26,26,26,.18); border-radius: 14px; box-shadow: 0 12px 30px rgba(26,26,26,.25), 0 2px 6px rgba(26,26,26,.1); font: 500 13.5px/1.4 Figtree, var(--f-ui); opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .25s, left .5s cubic-bezier(.45,.05,.25,1), top .5s cubic-bezier(.45,.05,.25,1); }
+.gtour__cap.is-on { opacity: 1; transform: none; }
+.gtour__cap p { margin: 0; }
+.gtour__row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.gtour__brand { font: 600 10.5px/1 Figtree, var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: rgba(26,26,26,.5); }
+.gtour__skip { min-height: 28px; padding: 0 10px; border: 2px solid var(--vast); border-radius: 8px; background: var(--lumen); color: var(--vast); font: 600 12px/1 Figtree, var(--f-ui); cursor: pointer; }
+.gtour__skip:hover { background: #f0d7ff; box-shadow: 2px 2px 0 0 var(--vast); }
+.gtour__extra:empty { display: none; }
+.gtour__pill { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 12px 6px 8px; border-radius: 999px; background: #1a1a1a; color: #ffffeb; font: 600 11.5px/1.2 Figtree, var(--f-ui); width: max-content; max-width: 100%; }
+.gtour__wave { display: flex; align-items: center; gap: 2px; height: 16px; padding: 0 4px; }
+.gtour__wave i { width: 2px; height: 30%; border-radius: 2px; background: #ffffeb; animation: gtour-wave .6s ease-in-out infinite alternate; }
+@keyframes gtour-wave { to { height: 100%; } }
+.is-tour-lit { outline: 2px solid rgba(240,215,255,.95); outline-offset: 3px; border-radius: 8px; box-shadow: 0 0 0 6px rgba(240,215,255,.28); transition: outline-color .3s, box-shadow .3s; }
+.win.is-tour-lit { border-radius: 2px; }
+@media (prefers-reduced-motion: reduce) { .gtour__cap { transition: opacity .01s; transform: none; } .gtour__wave i { animation: none; height: 60%; } }
 
 .splash { position: absolute; inset: 0; z-index: 9000; display: grid; place-items: center; background: rgba(10,9,8,.0); pointer-events: none; transition: background .35s; }
 .splash.is-on { background: rgba(10,9,8,.55); }
@@ -1341,6 +1393,27 @@ a.icon { text-decoration: none; }
 .folder__grid .icon { width: 100%; height: auto; min-height: 88px; padding-bottom: 6px; }
 .folder__grid .icon__label { background: none; max-width: 100%; -webkit-line-clamp: 3; }
 .win--folder .win__body { overflow-y: auto; }
+
+/* Built with (js/app/apps.js): the real build numbers, data/build-stats.json */
+.win--built .win__body { padding: 0; }
+.built { display: grid; gap: 12px; padding: 14px 16px 14px; font: 400 13px/1.4 var(--f-ui); }
+.built p { margin: 0; }
+.built__t { font: 700 15px/1.25 var(--f-ui); }
+.built__s, .built__note { font-size: 12px; color: #555; }
+.built__load { padding: 18px 16px; margin: 0; }
+.built__tiles { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 6px; }
+.built__tiles li { display: grid; align-content: start; gap: 2px; padding: 8px 10px 9px; background: #fff; border: 1px solid #111; box-shadow: inset -1px -1px 0 var(--plat-3), 1px 1px 0 rgba(0,0,0,.25); }
+.built__tiles b { font: 400 30px/1 'VT323', var(--f-ui); color: #111; }
+.built__tiles span { font-weight: 600; font-size: 12px; }
+.built__tiles em { font-style: normal; font-size: 11px; color: #666; }
+.built__chart { padding: 8px 10px 6px; background: #fff; border: 1px solid #111; }
+.built__ch { font-weight: 600; font-size: 12px; margin-bottom: 6px !important; }
+.built__chart ol { margin: 0; padding: 0; list-style: none; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; height: 96px; align-items: end; }
+.built__chart li { display: grid; grid-template-rows: auto 1fr auto; height: 100%; justify-items: center; }
+.built__chart li i { order: 1; align-self: end; width: 100%; max-width: 30px; background: repeating-linear-gradient(-45deg, #6b6bd8 0 4px, #8d8dee 4px 8px); border: 1px solid #111; }
+.built__chart li b { order: 0; font-size: 10px; font-weight: 600; }
+.built__chart li span { order: 2; font-size: 10px; color: #555; padding-top: 3px; }
+@media (max-width: 760px) { .built__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .built__tiles b { font-size: 26px; } }
 
 /* the project info card (js/app/infocard.js): Platinum, beside the icon, never on it */
 .icard { position: absolute; z-index: 99990; width: min(300px, calc(100% - 16px)); display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px 10px; padding: 9px 10px 8px; background: var(--plat-1); color: #111; border: 1px solid #111; box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 var(--plat-4), 2px 3px 0 rgba(0,0,0,.35); font: 400 12px/1.4 var(--f-ui); pointer-events: none; opacity: 0; transform: translateY(3px); transition: opacity .14s var(--ease-out), transform .18s var(--ease-out); }
@@ -1378,18 +1451,29 @@ a.icon { text-decoration: none; }
 .lock__mid { width: 100%; max-width: 1100px; min-height: 0; display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 12px; }
 .lock__field { position: relative; width: 100%; height: 100%; min-height: 240px; }
 .lock__field[hidden], .lock__picked[hidden], .lock__add[hidden], .lock__bottom[hidden] { display: none; }
-.lock__user { position: absolute; left: 0; top: 0; width: 108px; display: grid; justify-items: center; gap: 4px; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; will-change: transform; font-family: inherit; }
+.lock__user { position: absolute; left: 0; top: 0; width: calc(var(--bub, 54px) * 2); display: grid; justify-items: center; gap: 4px; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; will-change: transform; font-family: inherit; }
 .lock__user > * { transition: transform .25s var(--ease-out), opacity .3s; }
 .lock__user:hover .lock__face { transform: scale(1.08); box-shadow: 0 6px 22px rgba(0,0,0,.35), 0 0 0 3px #fff; }
 .lock__user.is-gone > * { opacity: 0; transform: scale(.3); }
 .lock__user.is-gone { pointer-events: none; }
-.lock__face { width: 76px; height: 76px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: rgba(255,255,255,.22); box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 2px rgba(255,255,255,.4); }
+.lock__face { width: calc(var(--bub, 54px) * 1.41); height: calc(var(--bub, 54px) * 1.41); border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: rgba(255,255,255,.22); box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 2px rgba(255,255,255,.4); }
 .lock__face img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .lock__glyph { font: 300 38px/1 'Bricolage Grotesque', sans-serif; color: #fff; }
 .lock__user.is-guest .lock__face { background: radial-gradient(circle at 50% 38%, #fff 0 17%, transparent 18%), radial-gradient(ellipse at 50% 100%, #fff 0 36%, transparent 37%), linear-gradient(#9aa3ad, #6d7783); }
 .lock__user.is-add .lock__face { background: rgba(255,255,255,.1); box-shadow: 0 0 0 2px rgba(255,255,255,.7) inset; border: 0; }
 .lock__name { font-weight: 600; font-size: 14px; line-height: 1.15; }
-.lock__role { font-weight: 500; font-size: 11px; line-height: 1.2; opacity: .8; text-align: center; max-width: 108px; }
+.lock__role { font-weight: 500; font-size: 11px; line-height: 1.2; opacity: .8; text-align: center; max-width: calc(var(--bub, 54px) * 2); }
+/* a big lobby (the whole Wispr team): smaller type so names still fit under smaller bubbles */
+.lock__field.is-crowd .lock__name { font-size: 12px; }
+.lock__field.is-crowd .lock__role { font-size: 9.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.lock__field.is-tight .lock__role { display: none; }
+.lock__field.is-tight .lock__name { font-size: 10.5px; }
+.lock__field.is-tight .lock__user { gap: 2px; }
+/* picked: your bubble goes green and you're in */
+.lock__user.is-picked .lock__face { box-shadow: 0 0 0 4px #3ddc84, 0 0 28px rgba(61,220,132,.75); transform: scale(1.12); }
+.lock__user.is-picked .lock__name { color: #3ddc84; }
+.lock__field.has-pick .lock__user:not(.is-picked) > * { opacity: .25; }
+@media (prefers-reduced-motion: reduce) { .lock__user.is-picked .lock__face { transform: none; } }
 .lock__bottom { display: grid; justify-items: center; gap: 8px; width: min(320px, 100%); }
 .lock__search, .lock__pw { width: 100%; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); color: #fff; font: 500 14px 'Bricolage Grotesque', var(--f-ui); outline: none; text-align: center; }
 .lock__search::placeholder, .lock__pw::placeholder { color: rgba(255,255,255,.78); }

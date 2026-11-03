@@ -1,16 +1,28 @@
 /* the studio monitor's menu: topic cards that light up as the host names them (monitor.js #cards) */
 .mon[data-type="cards"] .mon__screen { background: radial-gradient(120% 90% at 0% 0%, #1b2a2b, #0b0a09 70%); overflow: auto; scrollbar-width: thin; }
-.mon[data-type="cards"]:not([data-size="full"]) .mon__screen { aspect-ratio: auto; max-height: 60cqw; }
-.mcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 12px; }
+.mon[data-type="cards"]:not([data-size="full"]):not([data-size="side"]) .mon__screen { aspect-ratio: auto; max-height: 60cqw; }
+.mcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: 10px; padding: 12px; }
 .mcard { display: grid; grid-template-rows: auto auto 1fr; gap: 4px; min-width: 0; padding: 6px 6px 8px; border: 1px solid rgba(243,238,226,.22); border-radius: 5px; background: rgba(243,238,226,.04); color: var(--paper); text-align: left; cursor: pointer; opacity: .62; transition: opacity .3s, border-color .3s, box-shadow .3s, transform .3s var(--ease-out, ease-out); }
 .mcard.is-seen { opacity: .86; }
 .mcard.is-lit { opacity: 1; border-color: var(--flame); box-shadow: 0 0 0 1px var(--flame), 0 0 18px rgba(255,169,70,.45); transform: translateY(-2px) scale(1.03); }
-.mcard:hover, .mcard:focus-visible { opacity: 1; border-color: var(--paper); outline: none; }
+/* hover and focus stay dark and readable: a lift and a light rim, never a white box */
+.mon .mcard:hover, .mon .mcard:focus-visible { opacity: 1; border-color: rgba(243,238,226,.7); background: rgba(243,238,226,.1); color: var(--paper); }
+.mon .mcard:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+.mon .mcard.is-lit:hover { border-color: var(--flame); }
 .mcard__pic { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 3px; background: #000; }
 .mcard__pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mcard__t { font: 700 13px/1.2 var(--f-ui); }
 .mcard.is-lit .mcard__t { color: var(--flame); }
 .mcard__b { font: 400 11px/1.35 var(--f-ui); color: #c9c0ae; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* side (monitor.js rule 5): a list, thumbnail + the whole title on one or two lines, so nothing wraps into a skinny column */
+.mon:is([data-size="side"], [data-size="panel"]) .mcards { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 6px; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard { grid-template-columns: 56px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 10px; row-gap: 1px; align-items: center; padding: 4px 8px 4px 4px; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard__pic { grid-row: 1 / 3; aspect-ratio: 16 / 10; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard__t { align-self: end; font-size: 13px; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard__b { align-self: start; -webkit-line-clamp: 1; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard.is-lit { transform: translateX(-2px); }
+/* phones: the menu panel is the same list, as tall as it needs (it scrolls past 58vh) */
+.mon[data-size="panel"][data-type="cards"] .mon__screen { aspect-ratio: auto; max-height: 58vh; }
 /* small monitor: titles only, the lit card stays readable */
 .mon[data-size="pip"] .mcards, .mon[data-size="strip"] .mcards { grid-template-columns: 1fr 1fr; gap: 4px; padding: 6px; }
 .mon[data-size="pip"] .mcard__pic, .mon[data-size="pip"] .mcard__b { display: none; }
@@ -23,9 +35,9 @@
 
 /* layout:'side' — a tall 9:16 phone recording beside the studio, not letterboxed into the 16:9 monitor */
 .mon[data-layout="side"] { width: auto; aspect-ratio: 9 / 17; }
-.mon[data-layout="side"][data-size="full"] { inset: 3% 2% 3% auto; height: 94%; }
+.mon[data-layout="side"]:is([data-size="full"], [data-size="side"]) { inset: 3% 2% 3% auto; width: auto; height: 94%; max-height: none; }
 .mon[data-layout="side"][data-size="pip"] { top: 3.2%; right: 2%; height: 56%; }
-.mon[data-layout="side"][data-size="full"][data-corner="tl"], .mon[data-layout="side"][data-size="full"][data-corner="bl"] { right: auto; left: 2%; }
+.mon[data-layout="side"]:is([data-size="full"], [data-size="side"]):is([data-corner="tl"], [data-corner="bl"]) { right: auto; left: 2%; }
 .mon[data-layout="side"][data-size="pip"][data-corner="tl"] { right: auto; left: 2%; }
 .mon[data-layout="side"][data-size="pip"][data-corner="br"] { top: auto; bottom: 3.2%; }
 .mon[data-layout="side"][data-size="pip"][data-corner="bl"] { top: auto; right: auto; bottom: 3.2%; left: 2%; }

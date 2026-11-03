@@ -2,48 +2,47 @@
 // about (screenshots, a screen recording, the live site) or a small stats
 // dashboard when a line has numbers.
 //
-// FULL OR SMALL: the rules
-//   Sizes. Desktop: 'full' fills the stage (covers the faces), 'pip' is a corner
-//   picture-in-picture (27% wide) in whichever corner keeps the faces clear (the
-//   owner passes pickCorner() and calls place() when the shot changes). Phones:
-//   'panel' sits full-width under the picture, 'strip' is a slim thumbnail + title
-//   bar ("tap to open"). Same rules, mapped full→panel, pip→strip.
-//   A visual is "spoken about" while the lines carrying it play: its own line, and
-//   any later line with the same visual.key. podcast.js calls place() at the start
-//   of every line, so place() is the line tick: a line that starts without claiming
-//   the visual on screen means the speaker has moved on.
-//   1. Stats and numbers stay full while they're spoken about, and never go small:
-//      a corner can only hold one cropped KPI, which says nothing. When the speaker
-//      moves on, the dashboard goes away (the × and nothing else on its bar).
-//   2. Videos, screenshots and the live site open full and stay full while spoken
-//      about, then go small once the speaker moves on (a screen still reads at pip
-//      size, so it stays as a reminder with "Open in Work"). `hold` (ms) caps the
-//      full time for a long line where the product is only the opener; shots and
-//      cards with a `cue` stay full until their last cue + 3s.
-//   3. Small only where the small version is legible: screens (video, shots,
-//      embed) and the menu cards (titles only). Stats are never small.
-//   4. Some visuals never need to be big: the node's project shown as a fallback on
-//      a guest line with no visual of its own (key 'work:…') opens small, and so
-//      does any visual with size:'pip'.
-//   5. A visitor who expands it keeps it big until they shrink it; hovering holds a
-//      pending shrink.
-//   Per-visual overrides: size:'pip' (open small), size:'full' (no hold cap: stay
-//   full until the speaker moves on), hold:<ms>.
+// SIDE, FULL OR SMALL: the rules
+//   Sizes. Desktop: 'side' is a panel at the edge of the stage, beside the hosts
+//   (36% wide for a screen, a full-height column for stats and the menu), on the
+//   side that keeps the speaker's face clear. 'full' fills the stage and covers the
+//   faces. 'pip' is a small corner picture-in-picture. Phones: 'panel' sits
+//   full-width under the picture (it never covers anyone, so it stands in for side
+//   and full), 'strip' is a slim thumbnail + title bar ("tap to open").
+//   The owner passes pickCorner() (the corner that covers the least face; its
+//   column picks the side) and calls place() at the start of every line. place() is
+//   also the line tick: a line that starts without claiming the visual on screen
+//   (its own visual, or the same visual.key) means the speaker has moved on.
+//   1. Mostly side. Screens (video, shots, embed), stats and the menu cards open
+//      'side' and stay there while they're spoken about. Nothing covers the hosts
+//      unless the script says so.
+//   2. Full is rare: only visuals marked size:'full' in episode.json, the handful of
+//      big numbers reveals Sameep talks through. They stay full while spoken about.
+//   3. When the speaker moves on, a screen tucks into the corner ('pip', a reminder
+//      with "Open in Work"); stats and the menu go away, because their small
+//      versions say nothing (one cropped KPI; four clipped card titles).
+//   4. Never big: the node's project shown as a fallback on a guest line with no
+//      visual of its own (key 'work:…') opens small, and so does size:'pip'.
+//   5. Stats at side size are one column and scroll inside if they're long. The
+//      menu at side size is a list (thumbnail + full title), not a grid.
+//   6. The visitor can always expand (side → full) or shrink back; an expanded
+//      visual stays expanded until they shrink it.
+//   Per-visual overrides: size:'full' | 'pip'.
 //
 // line.visual: {type:'shots', work, shots?} | {type:'video', src, poster?, work?}
 //              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]],log?,unit?}, funnel:{title,rows}}
 //                stats extras, any mix: grid:{n, icon:'cv'|'phone'|'glass'|'dot', hl:{n,label}, label} (a pictogram),
 //                steps:{rows:[{when,t,sub}]} (a timeline), flow:{rows:[{t,sub,hot}], loop} (a pipeline), tags:{rows},
-//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src,cap}, qr:{url,cap}, source
+//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src|[src…],cap}, qr:{url,cap}, source
 //              | {type:'work', work}   (shots or recording, whichever the project has)
 //              video extras: layout:'side' (a tall 9:16 panel beside the studio), sound:true (its own audio, ducked
 //              under the voice; follows the mute switch and the podcast's play/pause)
 //              | {type:'embed', work}  (the live product in a sandboxed iframe, inert until tapped; phones and low power get
 //                the project's shots instead)
-//              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}}
+//              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}} (one cue list per host's clip)
 //                (the menu: each card lights up as the line's audio reaches its cue; click one to go there)
 //              | 'none'
-//              any visual: key (lines sharing a key keep one visual running), size, hold
+//              any visual: key (lines sharing a key keep one visual running), size
 import { h, safeUrl } from './util.js';
 import { sound } from './audio.js';
 import { qrSVG } from './demos.js';
@@ -65,8 +64,6 @@ export class Monitor {
       h('div.mon__bar', h('i.mon__led', { 'aria-hidden': 'true' }), this.title, this.btnBig, this.btnX),
       this.screen, this.acts);
     this.el.addEventListener('click', (e) => { if (this.small && !e.target.closest('button')) this.toggleSize(); });
-    this.el.addEventListener('pointerenter', () => { this.hover = true; });
-    this.el.addEventListener('pointerleave', () => { this.hover = false; });
     stage.append(this.el);
     this.stage = stage;
     this.panelHost = null; // phones: the monitor sits under the picture, full width
@@ -82,12 +79,14 @@ export class Monitor {
   get on() { return !this.el.hidden; }
   get small() { return this.size === 'pip' || this.size === 'strip'; }
 
-  // big ⇄ small. A visitor who re-opens it keeps it big until they shrink it.
-  toggleSize(force) {
-    if (!force && !this.smallOK && !this.small) return; // rule 3: a dashboard has no small version
-    const next = force || (this.small ? (this.narrow ? 'panel' : 'full') : (this.narrow ? 'strip' : 'pip'));
-    if (!force) { this.pinned = next === 'full' || next === 'panel'; clearTimeout(this.shrinkT); }
-    if (next === 'pip') this.corner = this.pickCorner?.() || this.corner;
+  // the button and a click on the small one (rule 6): pip → side, side ⇄ full; phones: strip ⇄ panel
+  toggleSize() {
+    let next;
+    if (this.narrow) next = this.size === 'strip' ? 'panel' : (this.smallOK ? 'strip' : null);
+    else next = this.size === 'side' ? 'full' : this.size === 'full' ? 'side' : (this.home || 'side');
+    if (!next) return;
+    this.pinned = next === 'full' || next === 'panel';
+    this.corner = this.pickCorner?.() || this.corner;
     this.#flip(() => this.#setSize(next));
   }
 
@@ -95,10 +94,10 @@ export class Monitor {
     this.size = size;
     this.el.dataset.size = size;
     this.el.dataset.corner = this.corner;
-    const big = !this.small;
-    this.btnBig.setAttribute('aria-label', big ? 'Shrink' : 'Expand');
-    this.btnBig.title = big ? 'Shrink to the corner' : 'Expand';
-    this.btnBig.querySelector('.mon__ico').classList.toggle('mon__ico--small', big);
+    const shrink = size === 'full' || (size === 'panel' && this.smallOK);
+    this.btnBig.setAttribute('aria-label', shrink ? 'Shrink' : 'Expand');
+    this.btnBig.title = shrink ? 'Shrink' : 'Expand';
+    this.btnBig.querySelector('.mon__ico').classList.toggle('mon__ico--small', shrink);
   }
 
   // the small monitor moves to keep the speaker's face clear. podcast.js calls this
@@ -109,7 +108,7 @@ export class Monitor {
     queueMicrotask(() => { if (t === this.tick && this.claim !== t) this.#movedOn(); });
     if (!CORNERS.includes(corner) || corner === this.corner) return;
     this.corner = corner;
-    if (this.on && this.size === 'pip') this.#flip(() => { this.el.dataset.corner = corner; });
+    if (this.on && (this.size === 'pip' || this.size === 'side')) this.#flip(() => { this.el.dataset.corner = corner; });
     else this.el.dataset.corner = corner;
   }
 
@@ -132,9 +131,9 @@ export class Monitor {
     this.acts.replaceChildren(...list.map((a) => h('button.mon__act' + (a.link ? '.mon__act--link' : ''), { type: 'button', onclick: (e) => { e.stopPropagation(); a.run(); } }, a.label)));
   }
 
+  // rule 3
   #movedOn() {
     if (this.el.hidden || this.pinned) return;
-    clearTimeout(this.shrinkT);
     if (!this.smallOK) return this.hide();
     if (this.small) return;
     this.corner = this.pickCorner?.() || this.corner;
@@ -142,7 +141,6 @@ export class Monitor {
   }
 
   hide() {
-    clearTimeout(this.shrinkT);
     if (this.el.hidden) return;
     this.el.hidden = true;
     this.key = null;
@@ -162,20 +160,15 @@ export class Monitor {
     clearInterval(this.slideT);
     clearInterval(this.cueT);
     this.#unsound();
-    clearTimeout(this.shrinkT);
     this.key = key;
     this.pinned = false;
     this.el.dataset.type = v.type;
     this.el.dataset.layout = v.layout || '';
     this.title.textContent = v.title || '';
-    const lastCue = (cue) => Math.max(0, ...Object.values(cue || {}).flat().map((c) => c[0]));
-    // rules 1–3: stats never go small; screens and cards may
-    this.smallOK = v.type !== 'stats';
-    // how long a screen stays full before it tucks away even mid-line (null: until the speaker moves on)
-    let hold = v.size === 'full' ? null : v.hold ?? null;
+    // rule 3: screens have a legible small version; stats and the menu don't
+    this.smallOK = v.type !== 'stats' && v.type !== 'cards';
     if (v.type === 'stats') {
       this.screen.replaceChildren(this.#stats(v));
-      hold = null;
     } else if (v.type === 'video') {
       const vid = h('video.mon__video', { muted: true, playsInline: true, loop: true, autoplay: true, preload: 'auto', poster: v.poster || null, src: v.src, 'aria-label': (v.title || 'Screen recording') + ', muted' });
       vid.muted = true;
@@ -185,33 +178,21 @@ export class Monitor {
       if (v.sound) this.#sounded(vid, v.volume ?? 0.22);
     } else if (v.type === 'shots') {
       this.screen.replaceChildren(this.#slides(v));
-      if (v.cue && hold == null && v.size !== 'full') hold = (lastCue(v.cue) + 3) * 1000;
     } else if (v.type === 'embed') {
       this.screen.replaceChildren(this.#embed(v));
     } else if (v.type === 'cards') {
       this.screen.replaceChildren(this.#cards(v));
-      if (hold == null) hold = lastCue(v.cue) ? (lastCue(v.cue) + 3) * 1000 : 6000;
     } else return this.hide();
     const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
     if (this.el.parentElement !== host) host.append(this.el);
     if (v.work && this.onOpenWork) this.screen.append(h('button.mon__open', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onOpenWork(v.work); } }, 'Open in Work ↗'));
     this.corner = this.pickCorner?.() || this.corner;
-    // rule 4: the node's project as a fallback, or size:'pip', never needs to be big
+    // rules 1, 2, 4
+    this.home = v.size === 'full' ? 'full' : 'side';
     const startSmall = this.smallOK && (v.size === 'pip' || String(key || '').startsWith('work:'));
-    this.#setSize(startSmall ? (this.narrow ? 'strip' : 'pip') : (this.narrow ? 'panel' : 'full'));
+    this.#setSize(this.narrow ? (startSmall ? 'strip' : 'panel') : (startSmall ? 'pip' : this.home));
     this.el.hidden = false;
     this.el.classList.remove('is-in'); void this.el.offsetWidth; this.el.classList.add('is-in');
-    if (!this.small && hold != null) this.#scheduleShrink(hold);
-  }
-
-  #scheduleShrink(ms) {
-    clearTimeout(this.shrinkT);
-    this.shrinkT = setTimeout(() => {
-      if (this.el.hidden || this.pinned || this.small) return;
-      if (this.hover) return this.#scheduleShrink(1500); // they're looking at it
-      this.corner = this.pickCorner?.() || this.corner;
-      this.#flip(() => this.#setSize(this.narrow ? 'strip' : 'pip'));
-    }, ms);
   }
 
   // layout changed (phone ⇄ desktop): re-home without losing the visual
@@ -219,7 +200,7 @@ export class Monitor {
     if (this.el.hidden) return;
     const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
     if (this.el.parentElement !== host) host.append(this.el);
-    const map = this.narrow ? { full: 'panel', pip: 'strip' } : { panel: 'full', strip: 'pip' };
+    const map = this.narrow ? { full: 'panel', side: 'panel', pip: 'strip' } : { panel: this.pinned ? 'full' : (this.home || 'side'), strip: 'pip' };
     if (map[this.size]) this.#setSize(map[this.size]);
   }
 
@@ -244,7 +225,7 @@ export class Monitor {
     const frame = h('iframe.mon__frame', { src: v.src, title: v.title || 'Live product', loading: 'lazy', referrerpolicy: 'no-referrer',
       sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups', allow: 'autoplay; fullscreen', tabindex: '-1' });
     frame.inert = true;
-    const tap = h('button.mon__tap', { type: 'button', onclick: (e) => { e.stopPropagation(); frame.inert = false; frame.removeAttribute('tabindex'); tap.remove(); this.pinned = true; clearTimeout(this.shrinkT); frame.focus?.(); } }, 'Tap to try it live');
+    const tap = h('button.mon__tap', { type: 'button', onclick: (e) => { e.stopPropagation(); frame.inert = false; frame.removeAttribute('tabindex'); tap.remove(); this.pinned = true; frame.focus?.(); } }, 'Tap to try it live');
     const wrap = h('div.mon__embed', frame, tap);
     const t = setTimeout(() => { if (wrap.isConnected && !loaded && v.shots?.length) wrap.replaceWith(this.#slides(v)); }, 8000);
     let loaded = false;
@@ -328,7 +309,7 @@ export class Monitor {
           const fill = h('i.stats__fill', { style: { transitionDelay: (0.15 + i * 0.09) + 's' } });
           fill.style.setProperty('--f', String(Math.max(0.012, sc(n) / max)));
           const num = h('span.stats__rv');
-          counters.push([num, n, spec.unit?.[i] ?? spec.unit]);
+          counters.push([num, n, Array.isArray(spec.unit) ? spec.unit[i] : spec.unit]); // unit: one suffix for every row, or one per row
           return h('div.stats__row', h('span.stats__rl', label), h('span.stats__track', fill), num,
             cls === 'stats--funnel' && i > 0 ? h('span.stats__pct', Math.round((n / first) * 100) + '%') : null);
         })));
@@ -336,7 +317,13 @@ export class Monitor {
     if (v.funnel) main.append(rowsOf(v.funnel, 'stats--funnel'));
     if (v.bars) main.append(rowsOf(v.bars, 'stats--bars'));
     if (v.qr) main.append(h('figure.stats__qr', h('span.stats__qrcode', qrSVG(v.qr.url)), h('figcaption', h('b', v.qr.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')), v.qr.cap && h('span', v.qr.cap))));
-    if (v.photo) main.append(h('figure.stats__photo', h('img', { src: safeUrl(v.photo.src, this.base), alt: v.photo.cap || '', draggable: 'false' }), v.photo.cap && h('figcaption', v.photo.cap)));
+    // photo.src may be a list: the photos cross-fade, one every 2.6s
+    if (v.photo) {
+      const srcs = [].concat(v.photo.src);
+      const imgs = srcs.map((u, i) => h('img', { src: safeUrl(u, this.base), alt: i ? '' : v.photo.cap || '', draggable: 'false', loading: i ? 'lazy' : 'eager', class: i ? '' : 'is-on' }));
+      main.append(h('figure.stats__photo' + (imgs.length > 1 ? '.is-set' : ''), h('div.stats__pics', imgs), v.photo.cap && h('figcaption', v.photo.cap)));
+      if (imgs.length > 1 && !this.reduced) { let i = 0; this.slideT = setInterval(() => { imgs[i].classList.remove('is-on'); i = (i + 1) % imgs.length; imgs[i].classList.add('is-on'); }, 2600); }
+    }
     // a pictogram: n little icons filling in, the first hl.n of them lit
     if (v.grid) {
       const g = v.grid, lit = g.hl?.n ?? 0;
@@ -392,18 +379,18 @@ export function resolveVisual(raw, work, base) {
   const title = raw.title || it?.title || '';
   const shots = (raw.shots || it?.shots || []).map(abs).filter(Boolean);
   if (raw.type === 'stats') return raw;
-  // (resolved visuals keep key, size and hold; the owner reads key, Monitor reads size and hold)
+  // (resolved visuals keep key and size; the owner reads key, Monitor reads size)
   if (raw.type === 'embed' && it) {
     const live = it.embed && !document.documentElement.classList.contains('power-low') && !matchMedia('(max-width: 760px)').matches;
-    if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, hold: raw.hold, size: raw.size, work: it.id };
+    if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, size: raw.size, work: it.id };
     return resolveVisual({ ...raw, type: 'work' }, work, base);
   }
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
-  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
-  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, size: raw.size, work: it?.id, cue: raw.cue } : null;
+  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
+  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, size: raw.size, work: it?.id, cue: raw.cue } : null;
   if (raw.type === 'work' && it) {
-    if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, hold: raw.hold, size: raw.size, work: it.id };
-    if (shots.length) return { type: 'shots', shots, title, hold: raw.hold, size: raw.size, work: it.id };
+    if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, size: raw.size, work: it.id };
+    if (shots.length) return { type: 'shots', shots, title, size: raw.size, work: it.id };
   }
   return null;
 }

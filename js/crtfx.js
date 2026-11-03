@@ -1,6 +1,7 @@
 // crtfx.js — the CRT look after boot, and the switch for it. Three modes:
-//   Curved: the flat look plus the whole live page bent like convex tube glass. It fills
-//           the screen and crops nothing (every edge maps onto itself, the middle swells).
+//   Curved: the flat look plus the whole live page bent through the boot screen's own tube
+//           barrel (js/app/crt.js barrel()): a soft bulge, rounded dark corners, the
+//           vignette. Scaled so the page's edges just reach the screen's: nothing is cropped.
 //   Flat:   the glass shader (js/app/crt.js: scanlines, triads, glow, vignette) plus a hint
 //           of RGB convergence fringe on text (css/crt.css). The default.
 //   Off:    clean pixels, no CRT at all.
@@ -15,6 +16,8 @@
 // (drags). CSS :hover can't be replayed, so hovers show through cursor changes only;
 // iframes get the real pointer (a few px off mid-screen) since they can't be reached.
 // Curved is desktop-only (fine pointer, ≥900px) and opt-in: the filter costs frames.
+
+import { barrel, curveK } from './app/crt.js';
 
 const KEY = 'otcv-crt-mode';
 const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -51,7 +54,7 @@ function apply() {
   root.classList.toggle('crt-full', m !== 'off');
   root.classList.toggle('crt-plain', m === 'off');
   window.__otcvCrt?.setStrength(m === 'off' ? -1 : 1);
-  window.__otcvCrt?.setBend?.(m === 'curved' ? K : 0);
+  window.__otcvCrt?.setBend?.(m === 'curved' ? curveK(screenEl()?.getBoundingClientRect().width || innerWidth) : 0);
   bend(m === 'curved');
   hit.toggle(m === 'curved');
   const n = next();
@@ -63,13 +66,18 @@ function apply() {
   }
 }
 function cycle() { mode = next(); set(KEY, mode); apply(); }
+// for the desktop tour (js/app/tour.js): show a mode for a moment without saving it, then put the
+// visitor's own back. Only cycle() remembers a choice.
+window.otcvCrt = {
+  get mode() { return shown(); },
+  preview(m) { if (MODES.includes(m) && can(m)) { mode = m; apply(); } },
+  restore(m) { if (MODES.includes(m)) { mode = m; apply(); } },
+};
 
 // ---- curved glass: the barrel map
-// For each output point, where on the page it samples from. A bulge that pins the frame:
-// every edge maps onto itself (nothing is cropped), the middle swells, and lines bow more
-// toward the centre than near the corners, so the page looks like it sits behind convex glass.
-const K = 0.1, A = 0.6;
-const warp = (cx, cy) => [cx * (1 - K * (1 - cx * cx) * (1 - A * cy * cy)), cy * (1 - K * (1 - cy * cy) * (1 - A * cx * cx))];
+// For each output point, where on the page it samples from: the boot's barrel, fitted so
+// the page's mid-edges sit on the screen's and its corners pull in (dark, rounded).
+const warp = (cx, cy, W) => barrel(cx, cy, curveK(W), true);
 const screenEl = () => document.querySelector('.crt__screen');
 // client point you see → client point of the page drawn there
 function src(x, y) {
@@ -77,7 +85,7 @@ function src(x, y) {
   if (!r || !r.width) return [x, y];
   const cx = (x - r.left) / r.width * 2 - 1, cy = (y - r.top) / r.height * 2 - 1;
   if (Math.abs(cx) > 1 || Math.abs(cy) > 1) return [x, y];
-  const [sx, sy] = warp(cx, cy);
+  const [sx, sy] = warp(cx, cy, r.width).map((v) => Math.max(-0.999, Math.min(0.999, v))); // a dark corner: the nearest edge of the page
   return [r.left + (sx + 1) / 2 * r.width, r.top + (sy + 1) / 2 * r.height];
 }
 
@@ -95,7 +103,7 @@ function bend(want) {
   const off = new Float32Array(mw * mh * 2); let max = 0;
   for (let y = 0; y < mh; y++) for (let x = 0; x < mw; x++) {
     const cx = (x + 0.5) / mw * 2 - 1, cy = (y + 0.5) / mh * 2 - 1;
-    const [sx, sy] = warp(cx, cy);
+    const [sx, sy] = warp(cx, cy, W);
     const i = (y * mw + x) * 2, ox = (sx - cx) * W / 2, oy = (sy - cy) * H / 2;
     off[i] = ox; off[i + 1] = oy; max = Math.max(max, Math.abs(ox), Math.abs(oy));
   }

@@ -8,9 +8,28 @@
 //    `strength` (0..1) takes glass from a faint film (0) to the boot's weight (1):
 //    deep scanlines, triads, tube falloff, phosphor haze, flicker. Off = hidden.
 //    `bend` > 0 (Curved, js/crtfx.js) lays the scanlines and triads along the same
-//    barrel the page is bent through, so they bow with it.
+//    barrel the page is bent through, so they bow with it, and darkens the rounded
+//    corners the bent page pulls away from.
 
 import { isLow } from '../power.js';
+
+// The tube's barrel, one curve for everything: the boot pass (FS barrel()), Curved
+// (js/crtfx.js) and the boot's buttons (js/app/bootseq.js). (cx, cy): centred coords
+// (-1..1) of a point you see → the point of the picture drawn there. `fit` scales each
+// axis so the picture's edges just touch the screen's mid-edges (all of it stays in view,
+// the corners go dark); without it, the boot's own scale (a hair past the edges).
+export const curveK = (w) => (w < 600 ? 0.035 : 0.06);
+export function barrel(cx, cy, k, fit = false) {
+  const r = k * (cx * cx + cy * cy);
+  const nx = fit ? 1 + 0.9 * k : 1 + 1.05 * k, ny = fit ? 1 + 1.15 * k : 1 + 1.05 * k;
+  return [cx * (1 + 0.9 * r) / nx, cy * (1 + 1.15 * r) / ny];
+}
+// the inverse: a point of the picture → where you see it
+export function unbarrel(sx, sy, k, fit = false) {
+  let x = sx, y = sy;
+  for (let i = 0; i < 8; i++) { const [bx, by] = barrel(x, y, k, fit); x += sx - bx; y += sy - by; }
+  return [x, y];
+}
 
 const VS = `attribute vec2 p; varying vec2 v; void main(){ v = p*0.5+0.5; gl_Position = vec4(p,0.,1.); }`;
 
@@ -89,7 +108,9 @@ void main(){
     // glass over DOM: output premultiplied rgba
     vec2 c = uv0*2.-1.;
     if (bend > 0.) {
-      vec2 w = vec2(c.x*(1.-bend*(1.-c.x*c.x)*(1.-.6*c.y*c.y)), c.y*(1.-bend*(1.-c.y*c.y)*(1.-.6*c.x*c.x)));
+      // barrel() in JS with fit: the picture's point under this pixel
+      vec2 w = c * (1. + bend*dot(c,c)*vec2(0.9, 1.15)) / (1. + bend*vec2(0.9, 1.15));
+      if (abs(w.x) > 1. || abs(w.y) > 1.) { gl_FragColor = vec4(0.,0.,0.,1.); return; } // past the picture: the tube's dark corner
       vec2 g = (w*0.5+0.5) * res;
       scan = 0.5 + 0.5*sin(g.y * 3.14159 / 1.5);
       tri = mod(floor(g.x), 3.);
@@ -111,7 +132,7 @@ void main(){
     float a = dark + fl;
     float haze = 0.022 * strength * (1. - edge);   // the phosphor's faint green-white glow over everything
     vec3 rgb = tint * (sheen + rim + haze);
-    float cm = cornerMask(uv0, 0.035);
+    float cm = cornerMask(uv0, bend > 0. ? 0.06 : 0.035); // Curved rounds like the boot
     gl_FragColor = vec4(rgb, clamp(a + sheen + rim, 0., 1.)) * cm + vec4(0.,0.,0.,1.-cm);
   }
 }`;
@@ -220,7 +241,7 @@ export class CRT {
     gl.uniform1f(this.u.time, this.reduced ? 0 : (now - this.t0) / 1000);
     gl.uniform1f(this.u.mode, this.mode);
     gl.uniform1f(this.u.power, this.power);
-    gl.uniform1f(this.u.k, this.size.w < 600 ? 0.035 : 0.06);
+    gl.uniform1f(this.u.k, curveK(this.size.w));
     gl.uniform1f(this.u.flick, this.reduced ? 0 : 1);
     gl.uniform1f(this.u.strength, Math.max(0, this.strength ?? 1));
     gl.uniform1f(this.u.bend, this.mode === 1 ? this.bend || 0 : 0);

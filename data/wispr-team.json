@@ -1,0 +1,239 @@
+{
+ "_about": "The Wispr Flow team on the ?version=wispr lock screen. One entry per person: first name, role, a public profile photo (stylised) and where it came from. Edit freely; ids starting w- unlock Wispr Growth OS. Entries with a persona.json wisprTeam match also sit in the audience as their illustrated character.",
+ "updated": "2026-11-04",
+ "team": [
+  {
+   "id": "w-tanay",
+   "name": "Tanay",
+   "role": "Co-founder, CEO",
+   "photo": "img/characters/w-tanay-thumb.webp",
+   "source": "https://www.linkedin.com/in/tankots/"
+  },
+  {
+   "id": "w-sahaj",
+   "name": "Sahaj",
+   "role": "Co-founder, CTO",
+   "photo": "img/characters/w-sahaj-thumb.webp",
+   "source": "https://www.linkedin.com/in/sahajgarg/"
+  },
+  {
+   "id": "w-nimisha",
+   "name": "Nimisha",
+   "role": "Leads India",
+   "photo": "img/characters/w-nimisha-thumb.webp",
+   "source": "https://techcrunch.com/2026/05/09/voice-ai-in-india-is-hard-wispr-flow-is-betting-on-it-anyway/"
+  },
+  {
+   "id": "w-rohan",
+   "name": "Rohan",
+   "role": "Leads India growth",
+   "photo": "img/characters/w-rohan-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-shivam",
+   "name": "Shivam",
+   "role": "India growth",
+   "photo": "img/characters/w-shivam-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-vasundhara",
+   "name": "Vasundhara",
+   "role": "Growth",
+   "photo": "img/characters/w-vasundhara-thumb.webp",
+   "source": "https://www.linkedin.com/in/vasundhara-bhagat-01/"
+  },
+  {
+   "id": "w-vishal",
+   "name": "Vishal",
+   "role": "Customer success",
+   "photo": "img/characters/w-vishal-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-meghna",
+   "name": "Meghna",
+   "role": "Customer success",
+   "photo": "img/characters/w-meghna-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-deepansh",
+   "name": "Deepansh",
+   "role": "Webflow developer",
+   "photo": "img/characters/w-deepansh-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-sitansu",
+   "name": "Sitansu",
+   "role": "QA",
+   "photo": "img/characters/w-sitansu-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-suraj",
+   "name": "Suraj",
+   "role": "AI engineer",
+   "photo": "img/characters/w-suraj-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-raushan",
+   "name": "Raushan",
+   "role": "Wispr India",
+   "photo": "img/characters/w-raushan-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-adarsh",
+   "name": "Adarsh",
+   "role": "Writer",
+   "photo": "img/characters/w-adarsh-thumb.webp",
+   "source": null,
+   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+  },
+  {
+   "id": "w-daniel-mccallum",
+   "name": "Daniel",
+   "role": "Chief Marketing Officer",
+   "photo": "img/team/daniel-mccallum.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/daniel-mccallum"
+  },
+  {
+   "id": "w-edrea-chen",
+   "name": "Edrea",
+   "role": "Founding BizOps",
+   "photo": "img/team/edrea-chen.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/edrea-chen"
+  },
+  {
+   "id": "w-victoria-liang",
+   "name": "Victoria",
+   "role": "Product Marketing Lead",
+   "photo": "img/team/victoria-liang.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/victoria-liang"
+  },
+  {
+   "id": "w-ethan-carlson",
+   "name": "Ethan",
+   "role": "Product Engineering Lead",
+   "photo": "img/team/ethan-carlson.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/ethan-carlson"
+  },
+  {
+   "id": "w-malhar-s",
+   "name": "Malhar",
+   "role": "Head of Growth Product",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/malhar-s"
+  },
+  {
+   "id": "w-ayushi-raj-bhatt",
+   "name": "Ayushi",
+   "role": "Growth Product Manager",
+   "photo": "img/team/ayushi-raj-bhatt.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/ayushi-raj-bhatt"
+  },
+  {
+   "id": "w-hector-serrano-martin",
+   "name": "Hector",
+   "role": "Growth",
+   "photo": "img/team/hector-serrano-martin.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/hector-serrano-martin"
+  },
+  {
+   "id": "w-gavin-jimerson",
+   "name": "Gavin",
+   "role": "Member of Technical Staff",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/gavin-jimerson"
+  },
+  {
+   "id": "w-alice-shen",
+   "name": "Alice",
+   "role": "Member of Technical Staff",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/alice-shen"
+  },
+  {
+   "id": "w-hari-rajaraman",
+   "name": "Hari",
+   "role": "Member of Technical Staff",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/hari-rajaraman"
+  },
+  {
+   "id": "w-sam-alptekin",
+   "name": "Sam",
+   "role": "Member of Technical Staff",
+   "photo": "img/team/sam-alptekin.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/sam-alptekin"
+  },
+  {
+   "id": "w-duncan-mcisaac",
+   "name": "Duncan",
+   "role": "Senior Software Engineer",
+   "photo": "img/team/duncan-mcisaac.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/duncan-mcisaac"
+  },
+  {
+   "id": "w-josh-benson",
+   "name": "Josh",
+   "role": "Software Engineer",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/josh-benson"
+  },
+  {
+   "id": "w-saujas-nandi",
+   "name": "Saujas",
+   "role": "Software Engineer",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/saujas-nandi"
+  },
+  {
+   "id": "w-dillon-cutaiar",
+   "name": "Dillon",
+   "role": "Software Engineer",
+   "photo": "img/team/dillon-cutaiar.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/dillon-cutaiar"
+  },
+  {
+   "id": "w-brandon-wong",
+   "name": "Brandon",
+   "role": "Technical Support Engineer",
+   "photo": "img/team/brandon-wong.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/brandon-wong"
+  },
+  {
+   "id": "w-calvin-carpenter",
+   "name": "Calvin",
+   "role": "Technical Support Engineer",
+   "photo": null,
+   "source": "https://theorg.com/org/wispr-flow/org-chart/calvin-carpenter"
+  },
+  {
+   "id": "w-joshua-chiquillo",
+   "name": "Joshua",
+   "role": "Technical Support Engineer",
+   "photo": "img/team/joshua-chiquillo.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/joshua-chiquillo"
+  },
+  {
+   "id": "w-jason-scot",
+   "name": "Jason",
+   "role": "Technical Support Engineer",
+   "photo": "img/team/jason-scot.webp",
+   "source": "https://theorg.com/org/wispr-flow/org-chart/jason-scot"
+  }
+ ]
+}

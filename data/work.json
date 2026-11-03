@@ -447,6 +447,36 @@
   }
  },
  {
+  "id": "trippy",
+  "title": "Trippy",
+  "oneLiner": "Often’s AI travel-hacking app: a pre-booking cheatsheet, then agentic rebooking when the price drops.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open gotrippy.ai",
+    "url": "https://www.gotrippy.ai/"
+   }
+  ],
+  "shots": [
+   "img/work/trippy/hero.webp",
+   "img/work/trippy/deals.webp",
+   "img/work/trippy/rebook-track.webp",
+   "img/work/trippy/cheatsheet.webp",
+   "img/work/often/mobile.webp"
+  ],
+  "video": "video/often.mp4",
+  "poster": "video/often-poster.webp",
+  "embed": null,
+  "explainer": null,
+  "card": {
+   "what": "Checks thousands of date and room combos before you book, then rebooks you when the price drops",
+   "role": "Co-founder: product, tech, customers",
+   "proof": "₹3.2 crore saved by travellers (gotrippy.ai)",
+   "thumb": "img/work/trippy/hero.webp",
+   "node": "often-intro"
+  }
+ },
+ {
   "id": "nia",
   "title": "Nia",
   "oneLiner": "An internal company OS that runs a D2C brand from one dashboard, with agents that draft and wait for approval.",
@@ -1079,6 +1109,52 @@
    "proof": "Keeps the beats in time across your own library",
    "thumb": "video/vibedj-explainer-poster.webp",
    "node": "f-vibedj"
+  }
+ },
+ {
+  "id": "brewbot",
+  "title": "Brew-bot",
+  "oneLiner": "A pour-over machine you run by voice: say one sentence to Wispr Flow and Claude brews the cup.",
+  "status": "wip",
+  "links": [
+   {
+    "label": "Open Brew-bot",
+    "url": "brewbot/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "index": false,
+  "card": {
+   "what": "A pour-over you run by voice: Wispr to Claude to a Raspberry Pi",
+   "role": "Designed it; a concept, not built yet",
+   "proof": "A live simulation of the rig, plus every part and what it costs"
+  }
+ },
+ {
+  "id": "recording",
+  "title": "Recording",
+  "oneLiner": "My application for Wispr Flow’s growth team: the 3-minute video and the links.",
+  "status": "live",
+  "links": [
+   {
+    "label": "Open the recording page",
+    "url": "recording/"
+   }
+  ],
+  "shots": [],
+  "video": null,
+  "poster": null,
+  "embed": null,
+  "explainer": null,
+  "index": false,
+  "card": {
+   "what": "My application for Wispr Flow’s growth team: the 3-minute video",
+   "role": "Made it",
+   "proof": "Built by voice, across a lot of parallel Claude sessions"
   }
  }
 ]
