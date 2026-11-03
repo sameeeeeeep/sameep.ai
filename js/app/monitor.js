@@ -1,28 +1,52 @@
-// monitor.js — the studio's picture-in-picture monitor. Shows the product
-// while it's being talked about (screenshots, a screen recording) or a small
-// stats dashboard when a line has numbers.
+// monitor.js — the studio's monitor. Shows the product while it's being talked
+// about (screenshots, a screen recording, the live site) or a small stats
+// dashboard when a line has numbers.
 //
-// A new visual opens BIG (filling the stage) for a beat, then glides (FLIP) down
-// to a small picture-in-picture in whichever corner keeps the faces clear: the
-// owner passes pickCorner(), which knows the shot and who's talking, and calls
-// place() when that changes. Click the small one to re-open it big. On phones
-// it opens full-width under the picture and collapses to a slim strip.
+// FULL OR SMALL: the rules
+//   Sizes. Desktop: 'full' fills the stage (covers the faces), 'pip' is a corner
+//   picture-in-picture (27% wide) in whichever corner keeps the faces clear (the
+//   owner passes pickCorner() and calls place() when the shot changes). Phones:
+//   'panel' sits full-width under the picture, 'strip' is a slim thumbnail + title
+//   bar ("tap to open"). Same rules, mapped full→panel, pip→strip.
+//   A visual is "spoken about" while the lines carrying it play: its own line, and
+//   any later line with the same visual.key. podcast.js calls place() at the start
+//   of every line, so place() is the line tick: a line that starts without claiming
+//   the visual on screen means the speaker has moved on.
+//   1. Stats and numbers stay full while they're spoken about, and never go small:
+//      a corner can only hold one cropped KPI, which says nothing. When the speaker
+//      moves on, the dashboard goes away (the × and nothing else on its bar).
+//   2. Videos, screenshots and the live site open full and stay full while spoken
+//      about, then go small once the speaker moves on (a screen still reads at pip
+//      size, so it stays as a reminder with "Open in Work"). `hold` (ms) caps the
+//      full time for a long line where the product is only the opener; shots and
+//      cards with a `cue` stay full until their last cue + 3s.
+//   3. Small only where the small version is legible: screens (video, shots,
+//      embed) and the menu cards (titles only). Stats are never small.
+//   4. Some visuals never need to be big: the node's project shown as a fallback on
+//      a guest line with no visual of its own (key 'work:…') opens small, and so
+//      does any visual with size:'pip'.
+//   5. A visitor who expands it keeps it big until they shrink it; hovering holds a
+//      pending shrink.
+//   Per-visual overrides: size:'pip' (open small), size:'full' (no hold cap: stay
+//   full until the speaker moves on), hold:<ms>.
 //
 // line.visual: {type:'shots', work, shots?} | {type:'video', src, poster?, work?}
-//              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]],log?,unit?}, funnel:{title,rows}, hold?}
+//              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]],log?,unit?}, funnel:{title,rows}}
 //                stats extras, any mix: grid:{n, icon:'cv'|'phone'|'glass'|'dot', hl:{n,label}, label} (a pictogram),
 //                steps:{rows:[{when,t,sub}]} (a timeline), flow:{rows:[{t,sub,hot}], loop} (a pipeline), tags:{rows},
-//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src,cap}, source
+//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src,cap}, qr:{url,cap}, source
 //              | {type:'work', work}   (shots or recording, whichever the project has)
 //              video extras: layout:'side' (a tall 9:16 panel beside the studio), sound:true (its own audio, ducked
-//              under the voice; follows the mute switch and the podcast's play/pause), key (keep it running across lines)
+//              under the voice; follows the mute switch and the podcast's play/pause)
 //              | {type:'embed', work}  (the live product in a sandboxed iframe, inert until tapped; phones and low power get
 //                the project's shots instead)
-//              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}, hold?}
+//              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}}
 //                (the menu: each card lights up as the line's audio reaches its cue; click one to go there)
 //              | 'none'
+//              any visual: key (lines sharing a key keep one visual running), size, hold
 import { h, safeUrl } from './util.js';
 import { sound } from './audio.js';
+import { qrSVG } from './demos.js';
 
 const fmtNum = (v) => Math.round(v).toLocaleString('en-US');
 const CORNERS = ['tr', 'tl', 'br', 'bl'];
@@ -51,6 +75,8 @@ export class Monitor {
     this.size = 'pip';
     this.corner = 'tr';
     this.pickCorner = null;
+    this.tick = 0;   // lines started (see place())
+    this.claim = 0;  // the last line that showed, or kept, the visual on screen
   }
 
   get on() { return !this.el.hidden; }
@@ -58,6 +84,7 @@ export class Monitor {
 
   // big ⇄ small. A visitor who re-opens it keeps it big until they shrink it.
   toggleSize(force) {
+    if (!force && !this.smallOK && !this.small) return; // rule 3: a dashboard has no small version
     const next = force || (this.small ? (this.narrow ? 'panel' : 'full') : (this.narrow ? 'strip' : 'pip'));
     if (!force) { this.pinned = next === 'full' || next === 'panel'; clearTimeout(this.shrinkT); }
     if (next === 'pip') this.corner = this.pickCorner?.() || this.corner;
@@ -74,8 +101,12 @@ export class Monitor {
     this.btnBig.querySelector('.mon__ico').classList.toggle('mon__ico--small', big);
   }
 
-  // the small monitor moves to keep the speaker's face clear
+  // the small monitor moves to keep the speaker's face clear. podcast.js calls this
+  // at the start of every line, so it's also the line tick: once the line has run
+  // its #visual, a visual nobody claimed means the speaker has moved on (rules 1, 2)
   place(corner) {
+    const t = ++this.tick;
+    queueMicrotask(() => { if (t === this.tick && this.claim !== t) this.#movedOn(); });
     if (!CORNERS.includes(corner) || corner === this.corner) return;
     this.corner = corner;
     if (this.on && this.size === 'pip') this.#flip(() => { this.el.dataset.corner = corner; });
@@ -101,6 +132,15 @@ export class Monitor {
     this.acts.replaceChildren(...list.map((a) => h('button.mon__act' + (a.link ? '.mon__act--link' : ''), { type: 'button', onclick: (e) => { e.stopPropagation(); a.run(); } }, a.label)));
   }
 
+  #movedOn() {
+    if (this.el.hidden || this.pinned) return;
+    clearTimeout(this.shrinkT);
+    if (!this.smallOK) return this.hide();
+    if (this.small) return;
+    this.corner = this.pickCorner?.() || this.corner;
+    this.#flip(() => this.#setSize(this.narrow ? 'strip' : 'pip'));
+  }
+
   hide() {
     clearTimeout(this.shrinkT);
     if (this.el.hidden) return;
@@ -117,7 +157,8 @@ export class Monitor {
   // v is resolved already (work media filled in); key keeps media running across lines
   show(v, key) {
     if (!v) return this.hide();
-    if (key && key === this.key && this.on) return;
+    this.claim = this.tick;
+    if (key && key === this.key && this.on) return; // still spoken about: carry on at whatever size it is
     clearInterval(this.slideT);
     clearInterval(this.cueT);
     this.#unsound();
@@ -127,12 +168,14 @@ export class Monitor {
     this.el.dataset.type = v.type;
     this.el.dataset.layout = v.layout || '';
     this.title.textContent = v.title || '';
-    // how long it stays big before it tucks into the corner
-    let hold = 3400;
+    const lastCue = (cue) => Math.max(0, ...Object.values(cue || {}).flat().map((c) => c[0]));
+    // rules 1–3: stats never go small; screens and cards may
+    this.smallOK = v.type !== 'stats';
+    // how long a screen stays full before it tucks away even mid-line (null: until the speaker moves on)
+    let hold = v.size === 'full' ? null : v.hold ?? null;
     if (v.type === 'stats') {
       this.screen.replaceChildren(this.#stats(v));
-      const big = (v.kpis?.length || 0) > 2 || v.funnel || (v.bars?.rows?.length || 0) > 2 || v.news || v.steps || v.flow || v.grid || v.tags || v.checks || v.photo;
-      hold = v.hold || (big ? 7000 : 4200);
+      hold = null;
     } else if (v.type === 'video') {
       const vid = h('video.mon__video', { muted: true, playsInline: true, loop: true, autoplay: true, preload: 'auto', poster: v.poster || null, src: v.src, 'aria-label': (v.title || 'Screen recording') + ', muted' });
       vid.muted = true;
@@ -140,26 +183,25 @@ export class Monitor {
       this.screen.replaceChildren(vid);
       vid.play?.().catch(() => {});
       if (v.sound) this.#sounded(vid, v.volume ?? 0.22);
-      hold = v.hold || 3800;
     } else if (v.type === 'shots') {
       this.screen.replaceChildren(this.#slides(v));
-      hold = v.hold || 3400;
+      if (v.cue && hold == null && v.size !== 'full') hold = (lastCue(v.cue) + 3) * 1000;
     } else if (v.type === 'embed') {
       this.screen.replaceChildren(this.#embed(v));
-      hold = v.hold || 9000;
     } else if (v.type === 'cards') {
       this.screen.replaceChildren(this.#cards(v));
-      const last = Math.max(0, ...Object.values(v.cue || {}).flat().map((c) => c[0]));
-      hold = v.hold || (last ? (last + 3) * 1000 : 6000);
+      if (hold == null) hold = lastCue(v.cue) ? (lastCue(v.cue) + 3) * 1000 : 6000;
     } else return this.hide();
     const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
     if (this.el.parentElement !== host) host.append(this.el);
     if (v.work && this.onOpenWork) this.screen.append(h('button.mon__open', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onOpenWork(v.work); } }, 'Open in Work ↗'));
     this.corner = this.pickCorner?.() || this.corner;
-    this.#setSize(this.narrow ? 'panel' : (v.size === 'pip' ? 'pip' : 'full'));
+    // rule 4: the node's project as a fallback, or size:'pip', never needs to be big
+    const startSmall = this.smallOK && (v.size === 'pip' || String(key || '').startsWith('work:'));
+    this.#setSize(startSmall ? (this.narrow ? 'strip' : 'pip') : (this.narrow ? 'panel' : 'full'));
     this.el.hidden = false;
     this.el.classList.remove('is-in'); void this.el.offsetWidth; this.el.classList.add('is-in');
-    if (!this.small) this.#scheduleShrink(hold);
+    if (!this.small && hold != null) this.#scheduleShrink(hold);
   }
 
   #scheduleShrink(ms) {
@@ -293,6 +335,7 @@ export class Monitor {
     };
     if (v.funnel) main.append(rowsOf(v.funnel, 'stats--funnel'));
     if (v.bars) main.append(rowsOf(v.bars, 'stats--bars'));
+    if (v.qr) main.append(h('figure.stats__qr', h('span.stats__qrcode', qrSVG(v.qr.url)), h('figcaption', h('b', v.qr.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')), v.qr.cap && h('span', v.qr.cap))));
     if (v.photo) main.append(h('figure.stats__photo', h('img', { src: safeUrl(v.photo.src, this.base), alt: v.photo.cap || '', draggable: 'false' }), v.photo.cap && h('figcaption', v.photo.cap)));
     // a pictogram: n little icons filling in, the first hl.n of them lit
     if (v.grid) {
@@ -349,17 +392,18 @@ export function resolveVisual(raw, work, base) {
   const title = raw.title || it?.title || '';
   const shots = (raw.shots || it?.shots || []).map(abs).filter(Boolean);
   if (raw.type === 'stats') return raw;
+  // (resolved visuals keep key, size and hold; the owner reads key, Monitor reads size and hold)
   if (raw.type === 'embed' && it) {
     const live = it.embed && !document.documentElement.classList.contains('power-low') && !matchMedia('(max-width: 760px)').matches;
-    if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, hold: raw.hold, work: it.id };
+    if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, hold: raw.hold, size: raw.size, work: it.id };
     return resolveVisual({ ...raw, type: 'work' }, work, base);
   }
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
-  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
-  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, work: it?.id, cue: raw.cue } : null;
+  if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, hold: raw.hold, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
+  if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, hold: raw.hold, size: raw.size, work: it?.id, cue: raw.cue } : null;
   if (raw.type === 'work' && it) {
-    if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, work: it.id };
-    if (shots.length) return { type: 'shots', shots, title, work: it.id };
+    if (it.video) return { type: 'video', src: abs(it.video), poster: abs(it.poster), title, shots, hold: raw.hold, size: raw.size, work: it.id };
+    if (shots.length) return { type: 'shots', shots, title, hold: raw.hold, size: raw.size, work: it.id };
   }
   return null;
 }
