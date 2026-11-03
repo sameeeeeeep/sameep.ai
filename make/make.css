@@ -184,11 +184,30 @@ ol.check li { margin: 4px 0; }
 footer { padding: 30px 0 50px; font-size: 12px; color: var(--muted); }
 footer a { color: inherit; }
 
+/* ---------- the one sentence ---------- */
+.kick { font: 700 13px/1.3 var(--f-ui); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 10px; color: var(--muted); }
+.say {
+  font: 800 clamp(26px, 4.6vw, 44px)/1.08 var(--f-head); letter-spacing: -.02em; margin: 0;
+  background: #fff; border: 1.5px solid var(--line); box-shadow: inset 2px 2px 0 var(--win-3); padding: 16px 18px;
+}
+.say::before { content: "“"; color: var(--strawberry); }
+.say::after { content: "”"; color: var(--strawberry); }
+ol.how, ul.how { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
+ol.how li::marker { font: 800 16px var(--f-dot); color: var(--bondi); }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.cards .win { display: flex; flex-direction: column; }
+.cards .body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex: 1; }
+.cards h3 { font: 700 18px/1.2 var(--f-head); margin: 0; }
+.cards p { margin: 0; color: var(--muted); flex: 1; }
+.divider { font: 800 28px/1.1 var(--f-head); letter-spacing: -.01em; margin: 44px 0 12px; padding-top: 20px; border-top: 1.5px dashed var(--line); }
+
 [hidden] { display: none !important; }
 
 @media (max-width: 760px) {
   .hero { grid-template-columns: 1fr; padding-top: 28px; gap: 18px; }
-  .grid2, .what { grid-template-columns: 1fr; }
+  .grid2, .what, .cards { grid-template-columns: 1fr; }
+  .cards { gap: 0; }
+  .say { padding: 12px 14px; }
   .frames { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .win > .body { padding: 14px; }
   .step-num { font-size: 34px; }

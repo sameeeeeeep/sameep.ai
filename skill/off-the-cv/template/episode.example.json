@@ -1,0 +1,569 @@
+{
+ "title": "Off the CV",
+ "speakers": {
+  "host": {
+   "name": "Foyra Gold",
+   "sprite": "img/sprites/host"
+  },
+  "guest": {
+   "name": "Ada (AI)",
+   "sprite": "img/sprites/guest"
+  }
+ },
+ "start": "cold-open",
+ "hosts": [
+  {
+   "id": "foyra",
+   "name": "Foyra Gold",
+   "kind": "A sitcom character",
+   "blurb": "From an alternate, very futuristic 90s.",
+   "thumb": "img/sprites/hosts/foyra-thumb.webp",
+   "recommended": true,
+   "style": "Theatrical, warm, a little dramatic.",
+   "wpm": 138
+  },
+  {
+   "id": "gus",
+   "name": "Gus Halloran",
+   "kind": "A sports commentator",
+   "blurb": "Thirty years in the commentary box.",
+   "sprite": "img/sprites/hosts/gus",
+   "thumb": "img/sprites/hosts/gus-thumb.webp",
+   "style": "Loud, fast, everything’s a cup final.",
+   "wpm": 161
+  },
+  {
+   "id": "k56",
+   "name": "K-56",
+   "kind": "A robot",
+   "blurb": "Booted from the disc in 1999.",
+   "sprite": "img/sprites/hosts/k56",
+   "thumb": "img/sprites/hosts/k56-thumb.webp",
+   "style": "Polite, anxious, very literal.",
+   "wpm": 141
+  }
+ ],
+ "chapters": [
+  {
+   "label": "Cold open",
+   "to": "cold-open"
+  },
+  {
+   "label": "Menu",
+   "to": "hub"
+  },
+  {
+   "label": "tidy-csv",
+   "to": "p-tidy-csv"
+  },
+  {
+   "label": "Pocket Planner",
+   "to": "p-pocket-planner"
+  },
+  {
+   "label": "Make your own",
+   "to": "outro-make"
+  }
+ ],
+ "route": {
+  "label": "Recommended route",
+  "blurb": "Every thread, then make your own.",
+  "stops": [
+   "p-tidy-csv",
+   "p-pocket-planner",
+   "outro-make"
+  ]
+ },
+ "routes": {
+  "short": {
+   "label": "Short",
+   "blurb": "One highlight.",
+   "stops": [
+    "p-tidy-csv",
+    "outro-make"
+   ],
+   "skip": [
+    "about"
+   ]
+  },
+  "standard": {
+   "label": "Standard",
+   "blurb": "The main threads.",
+   "stops": [
+    "p-tidy-csv",
+    "p-pocket-planner",
+    "outro-make"
+   ]
+  },
+  "full": {
+   "label": "Full",
+   "blurb": "Everything.",
+   "stops": [
+    "p-tidy-csv",
+    "p-pocket-planner",
+    "outro-make"
+   ]
+  }
+ },
+ "nodes": {
+  "cold-open": {
+   "chapter": "Cold open",
+   "title": "Cold open",
+   "blurb": "The CV burns. The show starts.",
+   "lines": [
+    {
+     "id": "cold-open-01",
+     "who": "host",
+     "text": "Good evening. You have just watched a perfectly good CV get shredded and burned into a compact disc. It belonged to Ada. Let's find out why.",
+     "audio": "audio/clips/cold-open-01.mp3",
+     "look": "front",
+     "h": {
+      "gus": {
+       "text": "Good evening. You have just watched a perfectly good CV get shredded and burned into a compact disc. It belonged to Ada. Let's find out why.",
+       "audio": "audio/clips/cold-open-01-gus.mp3"
+      },
+      "k56": {
+       "text": "Good evening. You have just watched a perfectly good CV get shredded and burned into a compact disc. It belonged to Ada. Let's find out why.",
+       "audio": "audio/clips/cold-open-01-k56.mp3"
+      }
+     }
+    }
+   ],
+   "choices": [],
+   "next": "intro"
+  },
+  "intro": {
+   "chapter": "Intro",
+   "title": "Intro",
+   "blurb": "Foyra Gold meets the guest.",
+   "lines": [
+    {
+     "id": "intro-01",
+     "who": "host",
+     "text": "This is Off the CV. I am Foyra Gold, and my guest tonight is the artificial, but sincere, Ada. Say hello.",
+     "audio": "audio/clips/intro-01.mp3",
+     "look": "front",
+     "sting": "audio/music/sting-intro.mp3",
+     "h": {
+      "gus": {
+       "text": "This is Off the CV. I am Foyra Gold, and my guest tonight is the artificial, but sincere, Ada. Say hello.",
+       "audio": "audio/clips/intro-01-gus.mp3"
+      },
+      "k56": {
+       "text": "This is Off the CV. I am Foyra Gold, and my guest tonight is the artificial, but sincere, Ada. Say hello.",
+       "audio": "audio/clips/intro-01-k56.mp3"
+      }
+     }
+    },
+    {
+     "id": "intro-02",
+     "who": "guest",
+     "text": "Hi. I'm Ada. Builds small tools that make big teams faster.",
+     "audio": "audio/clips/intro-02.mp3"
+    }
+   ],
+   "choices": [],
+   "next": "about"
+  },
+  "about": {
+   "chapter": "Intro",
+   "title": "About Ada",
+   "blurb": "Who they are.",
+   "lines": [
+    {
+     "id": "about-01",
+     "who": "host",
+     "text": "Before we open any doors: who are you, Ada, when you're not a compact disc?",
+     "audio": "audio/clips/about-01.mp3",
+     "look": "side",
+     "h": {
+      "gus": {
+       "text": "Before we open any doors: who are you, Ada, when you're not a compact disc?",
+       "audio": "audio/clips/about-01-gus.mp3"
+      },
+      "k56": {
+       "text": "Before we open any doors: who are you, Ada, when you're not a compact disc?",
+       "audio": "audio/clips/about-01-k56.mp3"
+      }
+     }
+    },
+    {
+     "id": "about-02",
+     "who": "guest",
+     "text": "Right now I'm Senior Engineer at Acme Tools. Before that, Northwind, State University.",
+     "audio": "audio/clips/about-02.mp3",
+     "look": "side",
+     "visual": {
+      "type": "stats",
+      "title": "So far",
+      "steps": {
+       "rows": [
+        {
+         "when": "2023–",
+         "t": "Acme Tools",
+         "sub": "Senior Engineer"
+        },
+        {
+         "when": "2020–23",
+         "t": "Northwind",
+         "sub": "Engineer"
+        },
+        {
+         "when": "2016–20",
+         "t": "State University",
+         "sub": "BSc Computer Science"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "choices": [],
+   "next": "hub-first"
+  },
+  "p-tidy-csv": {
+   "chapter": "tidy-csv",
+   "title": "tidy-csv",
+   "blurb": "A command-line tool that cleans messy CSV exports.",
+   "lines": [
+    {
+     "id": "p-tidy-csv-01",
+     "who": "host",
+     "text": "Tell me about tidy-csv.",
+     "audio": "audio/clips/p-tidy-csv-01.mp3",
+     "h": {
+      "gus": {
+       "text": "Tell me about tidy-csv.",
+       "audio": "audio/clips/p-tidy-csv-01-gus.mp3"
+      },
+      "k56": {
+       "text": "Tell me about tidy-csv.",
+       "audio": "audio/clips/p-tidy-csv-01-k56.mp3"
+      }
+     }
+    },
+    {
+     "id": "p-tidy-csv-02",
+     "who": "guest",
+     "text": "A command-line tool that cleans messy CSV exports.",
+     "audio": "audio/clips/p-tidy-csv-02.mp3"
+    },
+    {
+     "id": "p-tidy-csv-03",
+     "who": "guest",
+     "text": "I wrote it after losing a weekend to one spreadsheet.",
+     "audio": "audio/clips/p-tidy-csv-03.mp3",
+     "demo": {
+      "type": "link",
+      "url": "https://github.com/ada-example/tidy-csv",
+      "title": "tidy-csv"
+     }
+    }
+   ],
+   "choices": [],
+   "next": "hub"
+  },
+  "p-pocket-planner": {
+   "chapter": "Pocket Planner",
+   "title": "Pocket Planner",
+   "blurb": "A one-screen planner for the week.",
+   "lines": [
+    {
+     "id": "p-pocket-planner-01",
+     "who": "host",
+     "text": "Tell me about Pocket Planner.",
+     "audio": "audio/clips/p-pocket-planner-01.mp3",
+     "h": {
+      "gus": {
+       "text": "Tell me about Pocket Planner.",
+       "audio": "audio/clips/p-pocket-planner-01-gus.mp3"
+      },
+      "k56": {
+       "text": "Tell me about Pocket Planner.",
+       "audio": "audio/clips/p-pocket-planner-01-k56.mp3"
+      }
+     }
+    },
+    {
+     "id": "p-pocket-planner-02",
+     "who": "guest",
+     "text": "A one-screen planner for the week.",
+     "audio": "audio/clips/p-pocket-planner-02.mp3",
+     "demo": {
+      "type": "link",
+      "url": "https://planner.example.com",
+      "title": "Pocket Planner"
+     }
+    }
+   ],
+   "choices": [],
+   "next": "hub"
+  },
+  "hub-first": {
+   "chapter": "Menu",
+   "title": "Menu",
+   "blurb": "Pick a thread.",
+   "lines": [
+    {
+     "id": "hub-first-01",
+     "who": "host",
+     "text": "So. Tonight's menu: tidy-csv, Pocket Planner. Where shall we begin?",
+     "audio": "audio/clips/hub-first-01.mp3",
+     "look": "front",
+     "visual": {
+      "type": "cards",
+      "title": "The menu · tap one",
+      "items": [
+       {
+        "to": "p-tidy-csv",
+        "title": "tidy-csv",
+        "blurb": "A command-line tool that cleans messy CSV exports."
+       },
+       {
+        "to": "p-pocket-planner",
+        "title": "Pocket Planner",
+        "blurb": "A one-screen planner for the week."
+       }
+      ]
+     },
+     "h": {
+      "gus": {
+       "text": "So. Tonight's menu: tidy-csv, Pocket Planner. Where shall we begin?",
+       "audio": "audio/clips/hub-first-01-gus.mp3"
+      },
+      "k56": {
+       "text": "So. Tonight's menu: tidy-csv, Pocket Planner. Where shall we begin?",
+       "audio": "audio/clips/hub-first-01-k56.mp3"
+      }
+     }
+    }
+   ],
+   "choices": [
+    {
+     "label": "tidy-csv",
+     "say": [
+      "tidy-csv",
+      "tidy",
+      "csv",
+      "command",
+      "line"
+     ],
+     "to": "p-tidy-csv",
+     "recommended": true
+    },
+    {
+     "label": "Pocket Planner",
+     "say": [
+      "pocket planner",
+      "pocket",
+      "planner",
+      "one",
+      "screen"
+     ],
+     "to": "p-pocket-planner",
+     "recommended": false
+    },
+    {
+     "label": "Make your own",
+     "say": [
+      "make your own",
+      "make",
+      "mine",
+      "build one"
+     ],
+     "to": "outro-make",
+     "recommended": false
+    },
+    {
+     "label": "Wrap it up",
+     "say": [
+      "wrap",
+      "end",
+      "outro",
+      "bye"
+     ],
+     "to": "outro",
+     "recommended": false
+    }
+   ]
+  },
+  "hub": {
+   "chapter": "Menu",
+   "title": "Menu",
+   "blurb": "Pick a thread.",
+   "lines": [
+    {
+     "id": "hub-01",
+     "who": "host",
+     "text": "Right. Back to the menu. Where to next?",
+     "audio": "audio/clips/hub-01.mp3",
+     "look": "front",
+     "visual": {
+      "type": "cards",
+      "title": "The menu · tap one",
+      "items": [
+       {
+        "to": "p-tidy-csv",
+        "title": "tidy-csv",
+        "blurb": "A command-line tool that cleans messy CSV exports."
+       },
+       {
+        "to": "p-pocket-planner",
+        "title": "Pocket Planner",
+        "blurb": "A one-screen planner for the week."
+       }
+      ]
+     },
+     "h": {
+      "gus": {
+       "text": "Right. Back to the menu. Where to next?",
+       "audio": "audio/clips/hub-01-gus.mp3"
+      },
+      "k56": {
+       "text": "Right. Back to the menu. Where to next?",
+       "audio": "audio/clips/hub-01-k56.mp3"
+      }
+     }
+    }
+   ],
+   "choices": [
+    {
+     "label": "tidy-csv",
+     "say": [
+      "tidy-csv",
+      "tidy",
+      "csv",
+      "command",
+      "line"
+     ],
+     "to": "p-tidy-csv",
+     "recommended": false
+    },
+    {
+     "label": "Pocket Planner",
+     "say": [
+      "pocket planner",
+      "pocket",
+      "planner",
+      "one",
+      "screen"
+     ],
+     "to": "p-pocket-planner",
+     "recommended": false
+    },
+    {
+     "label": "Make your own",
+     "say": [
+      "make your own",
+      "make",
+      "mine",
+      "build one"
+     ],
+     "to": "outro-make",
+     "recommended": true
+    },
+    {
+     "label": "Wrap it up",
+     "say": [
+      "wrap",
+      "end",
+      "outro",
+      "bye"
+     ],
+     "to": "outro",
+     "recommended": false
+    }
+   ]
+  },
+  "outro-make": {
+   "chapter": "Make your own",
+   "title": "Make your own",
+   "blurb": "One sentence to your own Claude.",
+   "lines": [
+    {
+     "id": "outro-make-01",
+     "who": "host",
+     "text": "And now, the big question. Could anyone make one of these?",
+     "audio": "audio/clips/outro-make-01.mp3",
+     "h": {
+      "gus": {
+       "text": "And now, the big question. Could anyone make one of these?",
+       "audio": "audio/clips/outro-make-01-gus.mp3"
+      },
+      "k56": {
+       "text": "And now, the big question. Could anyone make one of these?",
+       "audio": "audio/clips/outro-make-01-k56.mp3"
+      }
+     }
+    },
+    {
+     "id": "outro-make-02",
+     "who": "guest",
+     "text": "Anyone. Open Wispr and tell your own Claude: make your own sameep.ai using your GitHub profile. The steps are at sameep.ai slash make.",
+     "audio": "audio/clips/outro-make-02.mp3",
+     "demo": {
+      "type": "link",
+      "url": "https://sameep.ai/make",
+      "title": "Make your own sameep.ai"
+     }
+    }
+   ],
+   "choices": [],
+   "next": "outro"
+  },
+  "outro": {
+   "chapter": "Outro",
+   "title": "Outro",
+   "blurb": "Credits.",
+   "lines": [
+    {
+     "id": "outro-01",
+     "who": "host",
+     "text": "That is our show. Thank you to our guest, the artificial but sincere Ada.",
+     "audio": "audio/clips/outro-01.mp3",
+     "look": "front",
+     "sting": "audio/music/sting-2.mp3",
+     "h": {
+      "gus": {
+       "text": "That is our show. Thank you to our guest, the artificial but sincere Ada.",
+       "audio": "audio/clips/outro-01-gus.mp3"
+      },
+      "k56": {
+       "text": "That is our show. Thank you to our guest, the artificial but sincere Ada.",
+       "audio": "audio/clips/outro-01-k56.mp3"
+      }
+     }
+    },
+    {
+     "id": "outro-02",
+     "who": "guest",
+     "text": "Thanks for steering. Everything I make is on GitHub, at ada-example.",
+     "audio": "audio/clips/outro-02.mp3",
+     "look": "front"
+    }
+   ],
+   "choices": [
+    {
+     "label": "Back to the menu",
+     "say": [
+      "menu",
+      "back",
+      "more"
+     ],
+     "to": "hub",
+     "recommended": true
+    },
+    {
+     "label": "Start over",
+     "say": [
+      "start over",
+      "again",
+      "restart"
+     ],
+     "to": "cold-open"
+    }
+   ],
+   "next": "hub"
+  }
+ }
+}

@@ -1,0 +1,10 @@
+# sameep.ai/make
+
+> Make your own sameep.ai: a portfolio where your CV burns onto a CD and an iMac plays a podcast about
+> your work, in your voice. Say one sentence to your Claude (with Wispr): "make your own sameep.ai using
+> your GitHub profile".
+
+The full agent guide is https://sameep.ai/llms.txt . The Claude Code skill (instructions + scripts) is
+https://sameep.ai/skill/off-the-cv/SKILL.md ; install it with:
+
+    curl -fsSL https://sameep.ai/skill/off-the-cv/install.sh | sh

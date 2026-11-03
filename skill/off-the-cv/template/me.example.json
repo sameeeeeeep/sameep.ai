@@ -1,0 +1,30 @@
+{
+  "_": "The one config file. Everything person-specific lives here (plus the episode script, the sprite and the clips). scaffold.py reads it.",
+  "name": "Ada Example",
+  "shortName": "Ada",
+  "tagline": "Builds small tools that make big teams faster.",
+  "github": "ada-example",
+  "domain": null,
+  "showName": "Off the CV",
+  "hostName": "Foyra Gold",
+  "links": [
+    { "label": "github.com/ada-example", "url": "https://github.com/ada-example", "kind": "github" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/ada-example", "kind": "linkedin" },
+    { "label": "ada.example.com", "url": "https://ada.example.com", "kind": "link" }
+  ],
+  "photo": "photo.jpg",
+  "cv": {
+    "headline": "Product engineer. Tools, data, and the occasional game.",
+    "roles": [
+      { "company": "Acme Tools", "role": "Senior Engineer", "when": "2023–" },
+      { "company": "Northwind", "role": "Engineer", "when": "2020–23" },
+      { "company": "State University", "role": "BSc Computer Science", "when": "2016–20" }
+    ]
+  },
+  "folderLabels": { "products": "Projects", "tools": "Tools", "fun": "Fun" },
+  "projects": [
+    { "title": "tidy-csv", "blurb": "A command-line tool that cleans messy CSV exports.", "story": "I wrote it after losing a weekend to one spreadsheet.", "url": "https://github.com/ada-example/tidy-csv", "repo": "https://github.com/ada-example/tidy-csv", "folder": "tools" },
+    { "title": "Pocket Planner", "blurb": "A one-screen planner for the week.", "url": "https://planner.example.com", "repo": "https://github.com/ada-example/pocket-planner", "folder": "products" }
+  ],
+  "voice": { "guest": "me", "host": "moira" }
+}

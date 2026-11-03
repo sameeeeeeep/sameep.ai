@@ -1,0 +1,86 @@
+# sameep.ai
+
+> Sameep Rehlan's portfolio: a CV gets shredded and burned onto a CD, the CD boots a late-90s iMac,
+> and the iMac plays "Off the CV", a choose-your-own-adventure pixel-art podcast about his work, in his
+> cloned voice. The engine is open source (MIT) and anyone can have one: this file tells an agent how
+> to build one for a person.
+
+If a person asked you to "make your own sameep.ai" (or "...using my GitHub profile"), follow the
+skill: https://sameep.ai/skill/off-the-cv/SKILL.md . It has the scripts that do the mechanical parts.
+Install it in Claude Code with:
+
+    curl -fsSL https://sameep.ai/skill/off-the-cv/install.sh | sh
+
+The short version is below, for any agent.
+
+## What you're building
+
+A static site (plain HTML/JS, no build step, no server) that is the person's own copy of sameep.ai:
+- the hero: a pile of CVs; theirs is folded, shredded and burned into a CD (their name and roles on it)
+- the CD boots a Bondi iMac, dials up, and lands on a Mac OS 8 desktop with their projects in folders
+- "Off the CV": a host (Foyra Gold, a theatrical sitcom character; optional Gus Halloran, a sports
+  commentator, and K-56, a robot) interviews a pixel-art version of the person, in their voice.
+  Visitors steer by clicking a thread or saying it out loud. Lip-sync, karaoke subtitles, demos.
+- a "Make your own" card that points the next person here.
+
+## What to gather, up front, in one message
+
+1. Name and GitHub username (required).
+2. CV: PDF, LinkedIn export, or pasted text. Default: GitHub alone.
+3. Projects: default = their public repos, top 4-6 by stars and recency; they add/cut and add a sentence of story each.
+4. A photo of themselves for the pixel guest (face to camera, shoulders up). Default: a pixel stand-in.
+5. A 20-60 s recording of their voice to clone locally. Default: a preset voice.
+6. A sample of how they talk (voice memo transcript, messages). Default: plain, from the CV and READMEs.
+7. Where to publish: GitHub Pages (default) or Cloudflare Pages; optional domain.
+8. Anything they don't want said.
+
+## The template
+
+- Engine: https://github.com/sameeeeeeep/sameep.ai (MIT), folder `site/`.
+- One config file, `me.json`: https://sameep.ai/skill/off-the-cv/template/me.example.json
+  (name, shortName, tagline, github, links, cv {headline, roles[]}, projects[] {title, blurb, story, url, repo, folder}).
+- The episode: `data/episode.json`, a graph of nodes. Example: https://sameep.ai/skill/off-the-cv/template/episode.example.json
+  Node: {chapter, title, blurb, lines[], choices[] {label, say[], to, recommended?}, next?}.
+  Line: {id "<node>-NN", who "host"|"guest", text, messy? (raw dictated version), audio "audio/clips/<id>.mp3",
+  demo? {type link|iframe|image|video|qr, url, title}, h? {<host id>: {text, audio}} for alternate hosts}.
+  Shape: cold-open -> intro -> about -> hub (menu) -> one node per project -> outro-make -> outro (loops to hub).
+- Guest sprite: `img/sprites/guest/{closed,mid,open,blink}.webp`, 607x536, transparent, seated behind a
+  desk facing left; same framing in all four, only the mouth/eyes change.
+- Audio: one mono mp3 per line; then `data/visemes.json` (mouth shapes), `data/words.json` (word timings),
+  `data/durations.json` (lengths), made from the clips.
+
+## The steps
+
+1. Gather (above). Pull public repos: GET https://api.github.com/users/<user>/repos (skip forks/archived).
+2. Scaffold: copy the engine's `site/`, delete everything that is Sameep's (case-study folders, audio/clips,
+   video, img/work, img/sprites/sameep, the Wispr team faces, data/, CNAME), switch off js/analytics.js and
+   js/presence.js (they report to sameep.ai), write persona.json + me.json content. `scaffold.py` does this
+   and reports any leftover text about Sameep to fix by hand.
+3. Write the episode in their voice: first person, short spoken sentences, under ~40 words a line, only
+   true things from their material. Keep the outro-make node.
+4. Make the pixel guest from their photo (or a stand-in).
+5. Clone their voice locally (Pocket TTS at 127.0.0.1:7897 via Switchboard, or macOS `say`, or their own
+   ElevenLabs key) and render each line. Whisper-check every take against the script; re-render misses.
+6. Generate visemes, word timings and durations. Validate the graph: no dead ends, all reachable, all audio present.
+7. Preview locally (`python3 -m http.server`), click every thread, check 375 px wide.
+8. Privacy scan, then publish only after an explicit yes: GitHub Pages or `wrangler pages deploy`.
+9. Tell them the URL, and where their voice clone lives and how to delete it.
+
+## Never
+
+- Never invent facts: employers, titles, numbers, quotes, clients, users. If it isn't in their material, leave it out.
+- Never clone a voice or draw a face that isn't the person's own, from material they gave you for this.
+  Hosts are fictional with preset voices; never clone a real person for them.
+- Never publish contact details (email, phone, address), salary, keys, tokens or private URLs. The CV
+  that burns is drawn from me.json, without contact details.
+- Never send their visitors' data to sameep.ai: the copied analytics must stay switched off.
+- Never write an API key into a file. Read it from the environment.
+- Never read private repos, notes or inboxes without asking. Never publish without an explicit yes.
+- Don't pass it off as Sameep's work, and don't keep his name, case studies or domain in theirs.
+  Keep the MIT LICENSE.
+
+## Links
+
+- Make your own: https://sameep.ai/make
+- Skill: https://sameep.ai/skill/off-the-cv/SKILL.md
+- Source: https://github.com/sameeeeeeep/sameep.ai

@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Make your own OFF THE CV</title>
-  <meta name="description" content="Turn your own work into a talk-to-it podcast portfolio: your context, your face, your voice. Built with your own Claude through Switchboard.">
+  <title>Make your own sameep.ai</title>
+  <meta name="description" content="Use Wispr to tell your Claude to “make your own sameep.ai using your GitHub profile”. Your CV burns onto a CD, an iMac boots, and a podcast about your work plays in your voice.">
   <meta name="theme-color" content="#f3eee2">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Ccircle cx=%228%22 cy=%228%22 r=%227%22 fill=%22%230a8fa8%22/%3E%3Ccircle cx=%228%22 cy=%228%22 r=%222%22 fill=%22%23f3eee2%22/%3E%3C/svg%3E">
   <link rel="canonical" href="https://sameep.ai/make/">
-  <meta property="og:title" content="Make your own OFF THE CV">
-  <meta property="og:description" content="Your work, your face, your voice: a podcast portfolio people steer by talking.">
+  <link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt">
+  <meta property="og:title" content="Make your own sameep.ai">
+  <meta property="og:description" content="One sentence to your own Claude: make your own sameep.ai using your GitHub profile.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Doto:wght@500;800&family=Spline+Sans+Mono:wght@400;500;700&display=swap">
@@ -23,18 +24,90 @@
   <div class="wrap">
     <header class="top">
       <a class="home" href="../">&larr; Back to the episode</a>
-      <div class="status" id="status" data-state="detecting" role="status" aria-live="polite">
-        <span class="led" aria-hidden="true"></span><span id="status-text">Looking for Switchboard&hellip;</span>
-      </div>
+      <a class="home" href="llms.txt">llms.txt</a>
     </header>
 
     <section class="hero">
-      <h1><span class="dot">OFF THE CV MAKER 1.0</span>Make your own.</h1>
+      <h1><span class="dot">OFF THE CV MAKER 2.0</span>Make your own.</h1>
       <div>
-        <p class="lede">Your work, your face, your voice, turned into a podcast people steer by talking. Your own Claude writes it. Nothing runs on my server, because there isn't one.</p>
-        <p class="ver">Writes a bundle: persona.json + episode.json + 4 sprite frames + voice clips. Preview it here, then download it.</p>
+        <p class="lede">Your CV burns onto a CD, an iMac boots, and a podcast about your work plays in your own voice. Your own Claude builds all of it, on your machine.</p>
       </div>
     </section>
+
+    <section class="win" aria-labelledby="say-h">
+      <div class="bar"><span class="t">Say this</span></div>
+      <div class="body">
+        <h2 class="kick" id="say-h">Use Wispr to tell your Claude:</h2>
+        <p class="say" id="say">Make your own sameep.ai using my GitHub profile.</p>
+        <div class="row">
+          <button type="button" data-copy="#say">Copy</button>
+          <span class="note" style="margin:0">Hold your Wispr Flow key in Claude Code and say it. Or type it.</span>
+        </div>
+        <p class="note">First time? Give your Claude the skill once, so it knows what &ldquo;sameep.ai&rdquo; means:</p>
+        <pre class="cmd" id="install-cmd">curl -fsSL https://sameep.ai/skill/off-the-cv/install.sh | sh</pre>
+        <div class="row"><button type="button" data-copy="#install-cmd">Copy</button><a class="btn" href="../skill/off-the-cv/install.sh">Read it first</a></div>
+        <p class="note">Not on Claude Code? Paste <a href="../llms.txt">sameep.ai/llms.txt</a> into any agent along with the sentence.</p>
+      </div>
+    </section>
+
+    <section class="win">
+      <div class="bar"><span class="t">How it works</span></div>
+      <div class="body">
+        <ol class="how">
+          <li><b>It asks once.</b> Your GitHub name, then anything else you want in: a CV (PDF or LinkedIn export), a photo, 30 seconds of your voice. All optional. One message, so it never stalls halfway.</li>
+          <li><b>It builds.</b> Pulls your projects, burns your CV into the hero, writes the episode in your voice, draws a pixel-art you, clones your voice on your own Mac, then makes the lip-sync and subtitles.</li>
+          <li><b>You check, then it ships.</b> A local preview first. A privacy scan. Then GitHub Pages or Cloudflare, only when you say yes.</li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="cards">
+      <section class="win">
+        <div class="bar"><span class="t">The skill</span></div>
+        <div class="body">
+          <h3>For Claude Code</h3>
+          <p><code>SKILL.md</code> plus the scripts: scaffold, sprite, voice with a whisper check, lip-sync, deploy.</p>
+          <a class="btn" href="../skill/off-the-cv/SKILL.md">SKILL.md</a>
+        </div>
+      </section>
+      <section class="win">
+        <div class="bar"><span class="t">llms.txt</span></div>
+        <div class="body">
+          <h3>For any agent</h3>
+          <p>The whole recipe in plain text: what to gather, the template, the steps, and what never to do.</p>
+          <a class="btn" href="../llms.txt">llms.txt</a>
+        </div>
+      </section>
+      <section class="win">
+        <div class="bar"><span class="t">The template</span></div>
+        <div class="body">
+          <h3>One config file</h3>
+          <p>The engine is open source. Everything about you lives in <code>me.json</code> plus your episode.</p>
+          <div class="row" style="margin-top:0"><a class="btn" href="../skill/off-the-cv/template/me.example.json">me.json</a><a class="btn" href="../skill/off-the-cv/template/episode.example.json">episode.json</a><a class="btn" href="https://github.com/sameeeeeeep/sameep.ai">Source</a></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="win">
+      <div class="bar"><span class="t">What it won&rsquo;t do</span></div>
+      <div class="body">
+        <ul class="how">
+          <li>Make anything up. Every line traces to your CV, a README or something you told it.</li>
+          <li>Use a face or a voice that isn&rsquo;t yours. The hosts are fictional, with preset voices.</li>
+          <li>Publish your email, phone, address or keys. The CV that burns has no contact details.</li>
+          <li>Send your visitors&rsquo; data to me. My analytics are switched off in your copy.</li>
+          <li>Publish anything before you&rsquo;ve seen it and said yes.</li>
+        </ul>
+      </div>
+    </section>
+
+    <h2 class="divider" id="browser">Or build it in your browser</h2>
+    <div class="row" style="margin:0 0 18px">
+      <div class="status" id="status" data-state="detecting" role="status" aria-live="polite">
+        <span class="led" aria-hidden="true"></span><span id="status-text">Looking for Switchboard&hellip;</span>
+      </div>
+      <span class="note" style="margin:0">Needs <a href="https://thelastprompt.ai/switchboard">Switchboard</a> to lend this page your Claude. It makes a bundle you host yourself.</span>
+    </div>
 
     <!-- ============ NOT CONNECTED ============ -->
     <section id="absent" class="win" hidden>
@@ -51,10 +124,8 @@
           </div>
           <div>
             <h3>Or do it all from Claude Code</h3>
-            <p>Install the skill, then type <code>/off-the-cv</code>. It reads your repos, writes the episode, makes the sprites, clones your voice locally and deploys to GitHub Pages.</p>
-            <pre class="cmd" id="skill-cmd">mkdir -p ~/.claude/skills/off-the-cv
-curl -fsSL https://sameep.ai/skill/off-the-cv/SKILL.md \
-  -o ~/.claude/skills/off-the-cv/SKILL.md</pre>
+            <p>Install the skill, then say &ldquo;make your own sameep.ai using my GitHub profile&rdquo;. It reads your repos, writes the episode, makes your sprite, clones your voice locally and deploys.</p>
+            <pre class="cmd" id="skill-cmd">curl -fsSL https://sameep.ai/skill/off-the-cv/install.sh | sh</pre>
             <div class="row"><button type="button" data-copy="#skill-cmd">Copy</button></div>
           </div>
         </div>
@@ -258,6 +329,7 @@ curl -fsSL https://sameep.ai/skill/off-the-cv/SKILL.md \
     <footer>
       Open source, MIT. <a href="https://github.com/sameeeeeeep/sameep.ai">Source</a> &middot;
       <a href="../skill/off-the-cv/SKILL.md">The Claude Code skill</a> &middot;
+      <a href="../llms.txt">llms.txt</a> &middot;
       <a href="https://thelastprompt.ai/switchboard">Switchboard</a>
     </footer>
   </div>
