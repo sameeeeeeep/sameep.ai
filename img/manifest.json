@@ -332,6 +332,36 @@
     "cu-front-oo"
    ],
    "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet"
+  },
+  "host-kimmy": {
+   "dir": "img/sprites/hosts/kimmy",
+   "frames": [
+    "closed",
+    "mid",
+    "open",
+    "wide",
+    "oo",
+    "blink",
+    "front-closed",
+    "front-mid",
+    "front-open",
+    "front-wide",
+    "front-oo",
+    "front-blink"
+   ],
+   "closeup": [
+    "cu-front-closed",
+    "cu-front-mid",
+    "cu-front-open",
+    "cu-front-wide",
+    "cu-front-oo",
+    "cu-front-blink"
+   ],
+   "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet",
+   "studio": {
+    "bg": "img/sprites/hosts/kimmy/studio-bg.webp",
+    "_": "his own late-night set: same canvas, desk line, iMac and seats as img/studio/studio-bg.webp; stage.js swaps it in when he hosts"
+   }
   }
  },
  "characters": {

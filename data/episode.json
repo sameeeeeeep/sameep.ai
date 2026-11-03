@@ -71,6 +71,10 @@
       "gus": {
        "text": "And we are live! What a start! A résumé folded into a plane, thrown, crumpled, shredded, and set on fire! And now, would you believe it, it's a CD! Thirty years in this box, I have never seen a CV do that!",
        "audio": "audio/clips/cold-open-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Whoa, whoa, whoa! Ladies and gentlemen! You just watched a man's résumé get folded into a paper plane, thrown, crumpled, shredded, and set on fire! And now it's a CD! Ha! I can't. I can't. Give it up, folks!",
+       "audio": "audio/clips/cold-open-01-kimmy.mp3"
       }
      }
     },
@@ -109,6 +113,10 @@
       "gus": {
        "text": "And then he burns it! Into a CD! Let's see the replay. Explain yourself, son.",
        "audio": "audio/clips/cold-open-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And then you burned it. Onto a CD! Ha! Okay, okay. Explain yourself, buddy.",
+       "audio": "audio/clips/cold-open-03-kimmy.mp3"
       }
      }
     },
@@ -153,6 +161,10 @@
       "gus": {
        "text": "A dial-up modem! The crowd remembers that screech! They're on their feet! Well, some of them. The knees aren't what they were.",
        "audio": "audio/clips/cold-open-05-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A dial-up modem! Oh, I heard that screech. That's the sound of my mom picking up the other phone. Ha!",
+       "audio": "audio/clips/cold-open-05-kimmy.mp3"
       }
      }
     },
@@ -212,6 +224,16 @@
          "audio": "audio/clips/intro-01-wispr-gus.mp3"
         }
        }
+      },
+      "kimmy": {
+       "text": "Welcome to Off the CV! I'm Kimmy Falcon, live from the big desk, and my guest tonight is the artificial, but totally sincere, Sameep! Come on, buddy, say hello to whoever is listening!",
+       "audio": "audio/clips/intro-01-kimmy.mp3",
+       "v": {
+        "wispr": {
+         "text": "Welcome to Off the CV! I'm Kimmy Falcon, live from the big desk, and my guest tonight is the artificial, but totally sincere, Sameep! Come on, buddy, say hello to the nice people from Wispr!",
+         "audio": "audio/clips/intro-01-wispr-kimmy.mp3"
+        }
+       }
       }
      }
     },
@@ -255,6 +277,16 @@
          "audio": "audio/clips/intro-03-wispr-gus.mp3"
         }
        }
+      },
+      "kimmy": {
+       "text": "And you, the studio audience, get to steer! Click a card, or just say it out loud. I'll pretend I heard you perfectly. Ha! I do that with my producers.",
+       "audio": "audio/clips/intro-03-kimmy.mp3",
+       "v": {
+        "wispr": {
+         "text": "And you, the studio audience, get to steer! Click a card, or just say it out loud with your Flow. I'll pretend I heard you perfectly. Ha! I do that with my producers.",
+         "audio": "audio/clips/intro-03-wispr-kimmy.mp3"
+        }
+       }
       }
      }
     }
@@ -281,6 +313,10 @@
       "gus": {
        "text": "Here's tonight's fixture list! First up, how this very show was made! Then growth: sales, launches, games, and a Diwali invite I'm told absolutely slaps. A startup that didn't work, always a tough match. Switchboard, ppt.live, a box of little Claude gadgets, and some fun, unfinished things. Where do we kick off?",
        "audio": "audio/clips/hub-first-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Okay! Here's what's on the show tonight! First, how this very show was made. Then growth: sales, launches, games, and a Diwali invite I'm told absolutely slaps. A startup that didn't work. Oof. Switchboard, ppt.live, a box of little Claude gadgets, and some fun, unfinished things. Where do we start?",
+       "audio": "audio/clips/hub-first-01-kimmy.mp3"
       }
      },
      "visual": {
@@ -546,6 +582,10 @@
       "gus": {
        "text": "Back to the fixture list! Where to next?",
        "audio": "audio/clips/hub-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Okay, back to the rundown! Where to next?",
+       "audio": "audio/clips/hub-01-kimmy.mp3"
       }
      },
      "visual": {
@@ -720,6 +760,10 @@
       "gus": {
        "text": "He's applying to a growth team! So, growth. What's the one thing you actually know how to do? And if he says synergy, that's a yellow card.",
        "audio": "audio/clips/g-intro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So you're applying to a growth team! Growth! What's the one thing you actually know how to do? And don't say synergy, or the band plays you off.",
+       "audio": "audio/clips/g-intro-01-kimmy.mp3"
       }
      }
     },
@@ -747,6 +791,53 @@
          "when": "The cheat code",
          "t": "Games",
          "sub": "a Diwali invite you play, a party you apply to by chatting"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "g-intro-03",
+     "who": "host",
+     "text": "Lovely. But that's the what. What do you actually do, darling? With your own two hands.",
+     "audio": "audio/clips/g-intro-03.mp3",
+     "h": {
+      "k56": {
+       "text": "Very good, sir. But that is the result. What do you actually do? With your hands. I ask because mine are mostly decorative.",
+       "audio": "audio/clips/g-intro-03-k56.mp3"
+      },
+      "gus": {
+       "text": "Lovely stuff! But what's his actual position on the pitch? What does he do, day to day?",
+       "audio": "audio/clips/g-intro-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Love it. But that's the what! What do you actually do, buddy? With your own two hands?",
+       "audio": "audio/clips/g-intro-03-kimmy.mp3"
+      }
+     }
+    },
+    {
+     "id": "g-intro-04",
+     "who": "sameep",
+     "text": "Honestly? I take an idea all the way to the day it goes live. I think up the hook, I build the page or the game myself, I put tracking on every step, and then I'm there watching when it opens. At Nykaa I did that as the product manager, with design and engineering teams. Now, with Claude, I mostly just build it myself.",
+     "audio": "audio/clips/g-intro-04.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "What I actually do",
+      "flow": {
+       "rows": [
+        {
+         "t": "Think up the hook"
+        },
+        {
+         "t": "Build it myself",
+         "hot": true
+        },
+        {
+         "t": "Track every step"
+        },
+        {
+         "t": "Be there when it goes live"
         }
        ]
       }
@@ -844,6 +935,10 @@
       "gus": {
        "text": "More growth, or on to the next match?",
        "audio": "audio/clips/g-hub-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "More growth, or do we go to commercial?",
+       "audio": "audio/clips/g-hub-01-kimmy.mp3"
       }
      }
     }
@@ -938,15 +1033,19 @@
       "gus": {
        "text": "Nykaa! The pink empire! Big stadium, big sales. Take us through it, every play.",
        "audio": "audio/clips/g-nykaa-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Nykaa! The pink empire! Oh, I love this. Tell me everything. Don't leave anything out!",
+       "audio": "audio/clips/g-nykaa-01-kimmy.mp3"
       }
      }
     },
     {
      "id": "g-nykaa-02",
      "who": "sameep",
-     "text": "So at Nykaa I was the product lead for the big sales, the ones the whole app gears up for. The Hot Pink Sale, Pink Friday, the Birthday Sale. One feature was the Pink Box. Before the sale, you fill it like a wishlist, and the moment the sale goes live, it all drops into your cart.",
-     "messy": "So at Nykaa I was the, the product lead for all of the sale related stuff that used to go live. Hot Pink Sale, the Pink Friday sale, the Birthday Sale. We had features like the Pink Box, which was essentially a wish list that, um, automatically became your cart.",
-     "audio": "audio/clips/g-nykaa-02.mp3",
+     "text": "So at Nykaa I was the product manager for the big sales, the ones the whole app gears up for. The Hot Pink Sale, Pink Friday, the Birthday Sale. I owned the features before and during the sale, and worked with design and engineering to ship them. One was the Pink Box. Before the sale, you fill it like a wishlist, and the moment the sale goes live, it all drops into your cart.",
+     "messy": "So at Nykaa I was the, the product manager for all of the sale related stuff that used to go live. Hot Pink Sale, the Pink Friday sale, the Birthday Sale. I owned the features before and during the sale, and, um, worked with design and engineering to ship them. One was the Pink Box, which was essentially a wish list that automatically became your cart.",
+     "audio": "audio/clips/g-nykaa-02-r.mp3",
      "visual": {
       "type": "stats",
       "title": "Nykaa's Pink Box",
@@ -1023,14 +1122,18 @@
       "gus": {
        "text": "Convert them all in one go! That's not a sale, that's a heist in front of a packed stadium!",
        "audio": "audio/clips/g-nykaa-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Convert them all in one go! That's not a sale, that's a heist! Ha! Somebody give the band some heist music!",
+       "audio": "audio/clips/g-nykaa-04-kimmy.mp3"
       }
      }
     },
     {
      "id": "g-nykaa-05",
      "who": "sameep",
-     "text": "Ha, kind of. I also owned the whole path from the sale page, to the cart, to the order. So, the numbers I can share. Landing page conversion, meaning how many people who land on a page go on to buy, went up nine percent. Sale conversion went up thirty percent. And the ads on the site earned thirty-five percent more.",
-     "audio": "audio/clips/g-nykaa-05.mp3",
+     "text": "Ha, kind of. And that wasn't all of it. I also owned the landing pages, the personalisation, and the ads on the site. So, the numbers I can share. Landing page conversion, meaning how many people who land on a page go on to buy, went up nine percent. Sale conversion went up thirty percent. And the ads on the site earned thirty-five percent more.",
+     "audio": "audio/clips/g-nykaa-05-r.mp3",
      "visual": {
       "type": "stats",
       "title": "Nykaa sales, 2019–21 · from the CV",
@@ -1156,15 +1259,19 @@
       "gus": {
        "text": "And now he's at Nailinit! Nails! Careful here, careful. The lawyers are warming up on the touchline.",
        "audio": "audio/clips/g-nailinit-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And now you're at Nailinit! Nails! Ooh, glamour! Spill. But carefully. I can hear the lawyers in the green room.",
+       "audio": "audio/clips/g-nailinit-01-kimmy.mp3"
       }
      }
     },
     {
      "id": "g-nailinit-02",
      "who": "sameep",
-     "text": "Yeah, it's where I am right now. Nailinit is a nail care brand, and I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder called it the Lenskart for nails. Lenskart being the big eyewear brand in India.",
-     "messy": "Yeah, it's, it's where I am right now, I'm chief of staff, so I'll keep it light. The moment I was sold was when the founder described it as, um, building the Lenskart for nails.",
-     "audio": "audio/clips/g-nailinit-02.mp3",
+     "text": "Yeah, it's where I am right now. Nailinit is a nail care brand, and I'm chief of staff. Which basically means I work next to the founders on whatever matters that week: hiring, fundraising, product, and a lot of marketing and the website. So I'll keep it light. The moment I was sold was when the founder called it the Lenskart for nails. Lenskart being the big eyewear brand in India.",
+     "messy": "Yeah, it's, it's where I am right now, I'm chief of staff. Which basically means I work next to the founders on, like, whatever matters that week. Hiring, fundraising, product, and a lot of marketing and the website. So I'll keep it light. The moment I was sold was when the founder described it as, um, building the Lenskart for nails.",
+     "audio": "audio/clips/g-nailinit-02-r.mp3",
      "visual": "none"
     },
     {
@@ -1185,8 +1292,8 @@
     {
      "id": "g-nailinit-04",
      "who": "sameep",
-     "text": "And the pre-buzz was the same instinct as Nykaa: give people a reason to show up before the thing is even out.",
-     "audio": "audio/clips/g-nailinit-04.mp3",
+     "text": "My part of the launch was mostly the online side. The website, the pre-buzz pages, the ads and the tracking. Same instinct as Nykaa: give people a reason to show up before the thing is even out.",
+     "audio": "audio/clips/g-nailinit-04-r.mp3",
      "visual": {
       "type": "video",
       "layout": "side",
@@ -1223,6 +1330,10 @@
       "gus": {
        "text": "A company that runs on a dashboard! My whole career has run on a clipboard and a flask of tea.",
        "audio": "audio/clips/g-nailinit-06-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A whole company that runs on a dashboard! My whole show runs on cue cards and a guy named Steve.",
+       "audio": "audio/clips/g-nailinit-06-kimmy.mp3"
       }
      }
     },
@@ -1298,6 +1409,10 @@
       "gus": {
        "text": "He keeps saying games! In a growth context! Explain the tactics, son.",
        "audio": "audio/clips/g-games-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "You keep saying games! In a growth context! Okay, I'm intrigued. Explain yourself, my friend.",
+       "audio": "audio/clips/g-games-01-kimmy.mp3"
       }
      }
     },
@@ -1420,6 +1535,10 @@
       "gus": {
        "text": "Diwali! About a week away, according to the fixture calendar! Tell us about this famous invite!",
        "audio": "audio/clips/g-diwali-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Diwali! Which, by my calendar, is about a week away! Tell me about this famous invite!",
+       "audio": "audio/clips/g-diwali-01-kimmy.mp3"
       }
      }
     },
@@ -1481,6 +1600,10 @@
       "gus": {
        "text": "Oh, there's a song! There's a song! The whole box is dancing! You can't see it, and honestly, that's for the best!",
        "audio": "audio/clips/g-diwali-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Oh, there's a song! There's a song! Hit it, fellas! Ha! The whole band is dancing. You can't see it, but trust me, it's beautiful.",
+       "audio": "audio/clips/g-diwali-04-kimmy.mp3"
       }
      }
     },
@@ -1516,6 +1639,10 @@
       "gus": {
        "text": "Fifty times! Fifty! That's a record! Somebody check the replay!",
        "audio": "audio/clips/g-diwali-06-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Fifty times! Fifty! Ha! I don't even check my own ratings fifty times. Okay, I do.",
+       "audio": "audio/clips/g-diwali-06-kimmy.mp3"
       }
      }
     },
@@ -1609,6 +1736,10 @@
       "gus": {
        "text": "Seven hundred fortunes from one parrot! Player of the match! Give that bird a contract!",
        "audio": "audio/clips/g-diwali-08-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Seven hundred fortunes from one parrot! Thank you, parrot, for working harder than my writers. Give that bird its own show!",
+       "audio": "audio/clips/g-diwali-08-kimmy.mp3"
       }
      }
     },
@@ -1641,6 +1772,33 @@
          "Came back",
          448
         ]
+       ]
+      }
+     }
+    },
+    {
+     "id": "g-diwali-09b",
+     "who": "sameep",
+     "text": "I ran the guest list too. Each host got their own link to invite people, I approved the RSVPs from an admin page, and every approved guest got a QR pass for the door. My one big slip: the first email had the wrong day on it. So I quietly sent everyone a fresh one.",
+     "audio": "audio/clips/g-diwali-09b.mp3",
+     "visual": {
+      "type": "stats",
+      "title": "The guest side",
+      "flow": {
+       "rows": [
+        {
+         "t": "A link for each host"
+        },
+        {
+         "t": "RSVPs, approved by me",
+         "hot": true
+        },
+        {
+         "t": "A QR pass by email"
+        },
+        {
+         "t": "Scanned at the door"
+        }
        ]
       }
      }
@@ -1684,6 +1842,10 @@
       "gus": {
        "text": "Shall I open that in a new tab for you? Quick break in play!",
        "audio": "audio/clips/offer-host-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ooh! Shall I open that in a new tab for you? We'll be right back!",
+       "audio": "audio/clips/offer-host-kimmy.mp3"
       }
      }
     }
@@ -1768,6 +1930,10 @@
       "gus": {
        "text": "And a sleepover? For grown-ups? That's a red card waiting to happen.",
        "audio": "audio/clips/g-slumber-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And a sleepover? For grown-ups? Oh, that sounds like a crime. I love it.",
+       "audio": "audio/clips/g-slumber-01-kimmy.mp3"
       }
      }
     },
@@ -1776,6 +1942,21 @@
      "who": "sameep",
      "text": "Ha. It was the Secret Slumber Party, a sleepover with the actor Khushi Kapoor, for Nailinit. An actual sleepover, with pyjamas, a ball pit and a nail bar. Here, this is the film.",
      "audio": "audio/clips/g-slumber-02.mp3",
+     "visual": {
+      "type": "video",
+      "layout": "side",
+      "key": "slumber-film",
+      "src": "img/events/slumber-film.mp4",
+      "poster": "img/events/slumber-film.jpg",
+      "title": "The Secret Slumber Party · the nail appointment",
+      "hold": 14000
+     }
+    },
+    {
+     "id": "g-slumber-02b",
+     "who": "sameep",
+     "text": "The party was a team effort, but the whole online side was mine. I built the application, the site and the arcade, and handled the emails. And for the night, I built the live show for the big screen, plus a little run-of-show tool, so the decor people, the DJ and the drivers each knew when to turn up.",
+     "audio": "audio/clips/g-slumber-02b.mp3",
      "visual": {
       "type": "video",
       "layout": "side",
@@ -1815,15 +1996,19 @@
       "gus": {
        "text": "So you got people to fill in a form by making it look like texting! The defence never saw it coming!",
        "audio": "audio/clips/g-slumber-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So you tricked people into filling in a form by making it look like texting! Ha! That's genius! That's evil genius!",
+       "audio": "audio/clips/g-slumber-04-kimmy.mp3"
       }
      }
     },
     {
      "id": "g-slumber-05",
      "who": "sameep",
-     "text": "Exactly. And that's why so many people actually filled it in, because we kept it feeling like a chat. Each question is a tiny reply. It feels like being let in, not like paperwork.",
-     "messy": "Exactly. And that's, that's why the fill rate was so good, because we kept the interface sort of like a chat, right. Each question is just a tiny reply. It feels like, um, being let in, not like paperwork.",
-     "audio": "audio/clips/g-slumber-05.mp3",
+     "text": "Exactly. The first version was a normal form, and it felt like paperwork. So I rebuilt it as a chat. Each question is a tiny reply, and it feels like being let in. That's why so many people actually filled it in.",
+     "messy": "Exactly. The first version was a, a normal form, and it felt like paperwork. So I rebuilt it as a chat, right. Each question is just a tiny reply, and it feels like, um, being let in. That's why so many people actually filled it in.",
+     "audio": "audio/clips/g-slumber-05-r.mp3",
      "visual": {
       "type": "video",
       "layout": "side",
@@ -1852,8 +2037,8 @@
     {
      "id": "g-slumber-07",
      "who": "sameep",
-     "text": "The numbers: thirty-five spots, all by application. On the night, we ran a little live show on the big screen, and forty-six people got their own intro card with a drumroll. Of those, thirty were creators, and sixteen were Khushi's friends. That live show later became ppt.live, my tool for interactive presentations.",
-     "audio": "audio/clips/g-slumber-07.mp3",
+     "text": "The numbers: thirty-five spots, all by application. On the night, the live show I built ran on the big screen, and forty-six people got their own intro card with a drumroll. Of those, thirty were creators, and sixteen were Khushi's friends. That live show later became ppt.live, my tool for interactive presentations.",
+     "audio": "audio/clips/g-slumber-07-r.mp3",
      "visual": {
       "type": "stats",
       "title": "The Secret Slumber Party · Nailinit",
@@ -1893,6 +2078,10 @@
       "gus": {
        "text": "The party becomes a product! What a turnaround in the second half!",
        "audio": "audio/clips/g-slumber-08-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And the party became a product! Of course it did! Give it up for the party!",
+       "audio": "audio/clips/g-slumber-08-kimmy.mp3"
       }
      }
     }
@@ -1955,14 +2144,18 @@
       "gus": {
        "text": "And now, the tough one. The match that didn't go our way. Tell me about Often, and please, be devastated.",
        "audio": "audio/clips/often-intro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And now, a segment we call: the one that didn't work. Tell me about Often, and please, be devastated. The band has a sad trombone ready.",
+       "audio": "audio/clips/often-intro-01-kimmy.mp3"
       }
      }
     },
     {
      "id": "often-intro-02",
      "who": "sameep",
-     "text": "Ha. So not everything has worked. Often was a travel startup I co-founded, and Trippy was our AI for travel hacking, so, getting you the best deal: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, looking after those trips taught us more than anything we planned.",
-     "audio": "audio/clips/often-intro-02.mp3",
+     "text": "Ha. So not everything has worked. Often was a travel startup I co-founded. I looked after product, tech and the customers, and Trippy was the AI we built for travel hacking, so, getting you the best deal: what to book, when, and rebooking you if the price dropped. We powered about twelve hundred trips. And honestly, looking after those trips taught us more than anything we planned.",
+     "audio": "audio/clips/often-intro-02-r.mp3",
      "visual": {
       "type": "stats",
       "title": "Often: AI for travel hacking, 2025–26",
@@ -2034,6 +2227,10 @@
       "gus": {
        "text": "So where did it go wrong? Was it the name? It's always the name.",
        "audio": "audio/clips/often-why-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So what went wrong? Was it the name? It's always the name.",
+       "audio": "audio/clips/often-why-01-kimmy.mp3"
       }
      }
     },
@@ -2078,6 +2275,10 @@
       "gus": {
        "text": "So you built a gorgeous shop window, and found out the real game is who owns the shelves.",
        "audio": "audio/clips/often-why-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So you built a gorgeous shop window, and found out the real game is who owns the shelves. Oof. That's a tough one, folks.",
+       "audio": "audio/clips/often-why-03-kimmy.mp3"
       }
      }
     },
@@ -2134,6 +2335,10 @@
       "gus": {
        "text": "And the lesson? There's always a lesson in the post-match interview.",
        "audio": "audio/clips/often-lesson-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And the lesson? There's always a lesson. I write mine on little thank-you notes.",
+       "audio": "audio/clips/often-lesson-01-kimmy.mp3"
       }
      }
     },
@@ -2158,6 +2363,10 @@
       "gus": {
        "text": "So what happened? Don't spare me. I've called penalty shootouts.",
        "audio": "audio/clips/often-lesson-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So what happened? Don't spare me. I've bombed in front of a live studio audience.",
+       "audio": "audio/clips/often-lesson-03-kimmy.mp3"
       }
      }
     },
@@ -2188,6 +2397,10 @@
       "gus": {
        "text": "Something you use every single day! Like a season ticket! I'll allow it.",
        "audio": "audio/clips/often-lesson-05-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Something you use every single day! Like a late-night show! Ha! I'll allow it.",
+       "audio": "audio/clips/often-lesson-05-kimmy.mp3"
       }
      }
     },
@@ -2245,6 +2458,10 @@
       "gus": {
        "text": "Switchboard! Someone told me it's MetaMask for AI, and I nodded like I'd seen the replay. What did you actually use it for, when you started?",
        "audio": "audio/clips/sb-intro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Switchboard! Someone told me it's MetaMask for AI, and I laughed like I got it. I did not get it. What did you actually use it for, when you started making it?",
+       "audio": "audio/clips/sb-intro-01-kimmy.mp3"
       }
      }
     },
@@ -2310,6 +2527,10 @@
       "gus": {
        "text": "So every app borrows your Claude instead of asking for its own! One striker, every team!",
        "audio": "audio/clips/sb-intro-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So every app borrows your Claude, instead of asking for its own! Ha! Like one guest doing every show in town!",
+       "audio": "audio/clips/sb-intro-04-kimmy.mp3"
       }
      }
     },
@@ -2453,6 +2674,10 @@
       "gus": {
        "text": "More Switchboard, or is that enough plumbing for one half?",
        "audio": "audio/clips/sb-hub-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "More Switchboard? Or is that enough plumbing for one night?",
+       "audio": "audio/clips/sb-hub-01-kimmy.mp3"
       }
      }
     }
@@ -2544,6 +2769,10 @@
       "gus": {
        "text": "And it arrived fully formed? Straight out of the youth academy?",
        "audio": "audio/clips/sb-lineage-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And it just popped out fully formed? Like a sketch that works on the first take?",
+       "audio": "audio/clips/sb-lineage-01-kimmy.mp3"
       }
      }
     },
@@ -2596,6 +2825,10 @@
       "gus": {
        "text": "That sounds like a garage! A very cluttered garage! Like the kit room after a cup final!",
        "audio": "audio/clips/sb-lineage-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "That sounds like a garage. A very cluttered garage. Ha! That's my writers' room!",
+       "audio": "audio/clips/sb-lineage-03-kimmy.mp3"
       }
      }
     },
@@ -2737,6 +2970,10 @@
       "gus": {
        "text": "Local models! The home-grown talent! Are they any good?",
        "audio": "audio/clips/sb-local-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Local models! The hometown crowd! Are they any good?",
+       "audio": "audio/clips/sb-local-01-kimmy.mp3"
       }
      }
     },
@@ -2808,6 +3045,10 @@
       "gus": {
        "text": "A bouncer! Every stadium needs one! Tough job, that.",
        "audio": "audio/clips/sb-local-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A bouncer! Ha! Every late-night show needs one. Ours is named Big Lou.",
+       "audio": "audio/clips/sb-local-04-kimmy.mp3"
       }
      }
     }
@@ -2870,6 +3111,10 @@
       "gus": {
        "text": "And the notch! That little black bit at the top of the screen! Why on earth?",
        "audio": "audio/clips/sb-notch-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And the notch! That little black bit at the top of the screen! Why on earth?",
+       "audio": "audio/clips/sb-notch-01-kimmy.mp3"
       }
      }
     },
@@ -2915,6 +3160,10 @@
       "gus": {
        "text": "A doorbell for your robot! Lovely touch! Lovely!",
        "audio": "audio/clips/sb-notch-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A doorbell for your robot! Ha! That's adorable! Give it up for the doorbell!",
+       "audio": "audio/clips/sb-notch-04-kimmy.mp3"
       }
      }
     },
@@ -3003,6 +3252,10 @@
       "gus": {
        "text": "And wrapps! With two Ps! Is that a typo, or a lifestyle?",
        "audio": "audio/clips/sb-wrapps-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And wrapps. With two Ps. Is that a typo, or a lifestyle? Ha! Asking for a friend.",
+       "audio": "audio/clips/sb-wrapps-01-kimmy.mp3"
       }
      }
     },
@@ -3158,6 +3411,10 @@
       "gus": {
        "text": "Another wrapp? Pick your player!",
        "audio": "audio/clips/sb-wrapps-again-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Another wrapp? Go on, pick one!",
+       "audio": "audio/clips/sb-wrapps-again-01-kimmy.mp3"
       }
      }
     }
@@ -3337,6 +3594,10 @@
       "gus": {
        "text": "No API key! I was once asked for an API key at the turnstiles. I showed them my season ticket.",
        "audio": "audio/clips/w-brandbrain-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "No API key! Ha! I was once asked for an API key at an after-party. I handed them my parking ticket.",
+       "audio": "audio/clips/w-brandbrain-02-kimmy.mp3"
       }
      }
     },
@@ -3367,6 +3628,10 @@
       "gus": {
        "text": "Shall I open that in a new tab for you? Quick break in play!",
        "audio": "audio/clips/offer-host-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ooh! Shall I open that in a new tab for you? We'll be right back!",
+       "audio": "audio/clips/offer-host-kimmy.mp3"
       }
      }
     }
@@ -3474,6 +3739,16 @@
          "audio": "audio/clips/w-flow-01-wispr-gus.mp3"
         }
        }
+      },
+      "kimmy": {
+       "text": "Whoa, whoa, hold on. You built something called Flow. There's already a very famous Flow!",
+       "audio": "audio/clips/w-flow-01-kimmy.mp3",
+       "v": {
+        "wispr": {
+         "text": "Whoa, whoa, hold on. You built something called Flow, and you're applying to Wispr Flow! Ha! Bold! So bold!",
+         "audio": "audio/clips/w-flow-01-wispr-kimmy.mp3"
+        }
+       }
       }
      }
     },
@@ -3509,6 +3784,10 @@
       "gus": {
        "text": "Diplomatic! Rename it, son.",
        "audio": "audio/clips/w-flow-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Diplomatic! Ha! Rename it, buddy.",
+       "audio": "audio/clips/w-flow-03-kimmy.mp3"
       }
      }
     },
@@ -3583,6 +3862,10 @@
       "gus": {
        "text": "And mine?",
        "audio": "audio/clips/w-voice-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And mine?",
+       "audio": "audio/clips/w-voice-02-kimmy.mp3"
       }
      }
     },
@@ -3607,6 +3890,10 @@
       "gus": {
        "text": "Good! One of a kind! They don't make commentators like me anymore. Mostly by choice.",
        "audio": "audio/clips/w-voice-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ha! One of a kind! They don't make hosts like me anymore. Mostly on purpose.",
+       "audio": "audio/clips/w-voice-04-kimmy.mp3"
       }
      }
     }
@@ -3676,6 +3963,10 @@
       "gus": {
        "text": "Lights! Camera! Padding!",
        "audio": "audio/clips/w-cut-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Lights! Camera! Padding! Ha!",
+       "audio": "audio/clips/w-cut-02-kimmy.mp3"
       }
      }
     }
@@ -3744,6 +4035,10 @@
       "gus": {
        "text": "Red pen energy! Like a referee with a notebook!",
        "audio": "audio/clips/w-annotate-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Red pen energy! I love it. That's my head writer.",
+       "audio": "audio/clips/w-annotate-02-kimmy.mp3"
       }
      }
     }
@@ -3813,6 +4108,10 @@
       "gus": {
        "text": "A detour I would absolutely play! Extra time if needed!",
        "audio": "audio/clips/w-cartridge-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A detour I would absolutely play! Ha! Give me the controller!",
+       "audio": "audio/clips/w-cartridge-02-kimmy.mp3"
       }
      }
     },
@@ -3914,6 +4213,10 @@
       "gus": {
        "text": "Tell me my future! No, don't! I love a surprise result!",
        "audio": "audio/clips/w-prophexy-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Tell me my future! No, don't! I want to be surprised. Is it good ratings?",
+       "audio": "audio/clips/w-prophexy-02-kimmy.mp3"
       }
      }
     },
@@ -4012,6 +4315,10 @@
       "gus": {
        "text": "Ah, ppt.live! Sounds like a PowerPoint that ran off to a match day!",
        "audio": "audio/clips/ppt-intro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ah, ppt.live! Sounds like a PowerPoint that ran off to the after-party!",
+       "audio": "audio/clips/ppt-intro-01-kimmy.mp3"
       }
      }
     },
@@ -4050,6 +4357,10 @@
       "gus": {
        "text": "A drinking game! At the office! The crowd goes wild!",
        "audio": "audio/clips/ppt-intro-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A drinking game! At the office! Ha! Oh, I love this guy!",
+       "audio": "audio/clips/ppt-intro-03-kimmy.mp3"
       }
      }
     },
@@ -4097,6 +4408,10 @@
       "gus": {
        "text": "Shall I open that in a new tab for you? Quick break in play!",
        "audio": "audio/clips/offer-host-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ooh! Shall I open that in a new tab for you? We'll be right back!",
+       "audio": "audio/clips/offer-host-kimmy.mp3"
       }
      }
     }
@@ -4208,6 +4523,10 @@
       "gus": {
        "text": "More ppt, or do we leave the stadium?",
        "audio": "audio/clips/ppt-hub-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "More ppt, or do we leave the party?",
+       "audio": "audio/clips/ppt-hub-01-kimmy.mp3"
       }
      }
     }
@@ -4316,6 +4635,10 @@
       "gus": {
        "text": "Never end on the rating! Always end on a goal! Words to live by!",
        "audio": "audio/clips/ppt-more-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Never end on the rating! Ha! Words to live by. Always end on the band.",
+       "audio": "audio/clips/ppt-more-02-kimmy.mp3"
       }
      }
     },
@@ -4415,6 +4738,10 @@
       "gus": {
        "text": "A sangeet with a live poll! The aunties are on the pitch!",
        "audio": "audio/clips/ppt-uses-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A sangeet with a live poll! Ha! Democracy, at a wedding! Finally!",
+       "audio": "audio/clips/ppt-uses-02-kimmy.mp3"
       }
      }
     }
@@ -4510,6 +4837,10 @@
       "gus": {
        "text": "I'd win Unicorn! I've been bluffing about the offside rule for thirty years!",
        "audio": "audio/clips/ppt-games-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "I'd win Unicorn. I bluff every single night. You think I read the guest's book? Ha!",
+       "audio": "audio/clips/ppt-games-02-kimmy.mp3"
       }
      }
     }
@@ -4580,6 +4911,10 @@
       "gus": {
        "text": "Play? Now? On my phone? It's in the commentary box somewhere, under the snacks!",
        "audio": "audio/clips/ppt-play-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Play? Now? On my phone? My phone is under the desk with a mug of cold coffee!",
+       "audio": "audio/clips/ppt-play-01-kimmy.mp3"
       }
      }
     },
@@ -4668,6 +5003,10 @@
       "gus": {
        "text": "Now, the toolbox! I hear you make little gadgets for Claude! The kit man of AI!",
        "audio": "audio/clips/tools-intro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Now, the toolbox! I'm told you make little gadgets for Claude! Like a tinkerer! A guy in a garage with a lot of tape!",
+       "audio": "audio/clips/tools-intro-01-kimmy.mp3"
       }
      }
     },
@@ -4800,6 +5139,10 @@
       "gus": {
        "text": "Another gadget from the kit bag?",
        "audio": "audio/clips/tools-hub-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Another gadget from the drawer?",
+       "audio": "audio/clips/tools-hub-01-kimmy.mp3"
       }
      }
     }
@@ -4920,6 +5263,10 @@
       "gus": {
        "text": "In plain English, please! Half the crowd's lost!",
        "audio": "audio/clips/t-video-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "In English, buddy! Half the studio audience is lost!",
+       "audio": "audio/clips/t-video-03-kimmy.mp3"
       }
      }
     },
@@ -5083,6 +5430,10 @@
       "gus": {
        "text": "Taste, outsourced to a mood board! Like picking the kit colours!",
        "audio": "audio/clips/t-refs-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Taste, outsourced to a mood board! Ha! That's how I pick my suits!",
+       "audio": "audio/clips/t-refs-02-kimmy.mp3"
       }
      }
     },
@@ -5181,6 +5532,10 @@
       "gus": {
        "text": "Now, I'm told you build little tools to outwit your own ADHD! Is that true? Are you outwitting it right now?",
        "audio": "audio/clips/t-adhd-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Now, I'm told you build little tools to outwit your own ADHD! Is that true? Are you outwitting it right now?",
+       "audio": "audio/clips/t-adhd-01-kimmy.mp3"
       }
      }
     },
@@ -5217,6 +5572,10 @@
       "gus": {
        "text": "A machine that sends you to bed! That's the manager calling you off the pitch!",
        "audio": "audio/clips/t-adhd-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A machine that tells you to go to bed! Ha! That's not a tool, that's my producer at one in the morning!",
+       "audio": "audio/clips/t-adhd-04-kimmy.mp3"
       }
      }
     }
@@ -5281,6 +5640,10 @@
       "gus": {
        "text": "And now, the fun and the unfinished! The friendlies! Show me the half-finished projects!",
        "audio": "audio/clips/fun-intro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And now, the fun and the unfinished! The sketches that never made it to air! Show me the drawer!",
+       "audio": "audio/clips/fun-intro-01-kimmy.mp3"
       }
      }
     },
@@ -5427,6 +5790,10 @@
       "gus": {
        "text": "Another one off the bench?",
        "audio": "audio/clips/fun-hub-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Another one from the drawer?",
+       "audio": "audio/clips/fun-hub-01-kimmy.mp3"
       }
      }
     }
@@ -5530,6 +5897,10 @@
       "gus": {
        "text": "Behind us? That's just the wallpaper!",
        "audio": "audio/clips/f-wallpap-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Behind us? Ha! That's just the wallpaper, folks!",
+       "audio": "audio/clips/f-wallpap-01-kimmy.mp3"
       }
      }
     },
@@ -5570,6 +5941,10 @@
       "gus": {
        "text": "I flash black when the floodlights change too! Happens to the best of us!",
        "audio": "audio/clips/f-wallpap-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "I flash black when the stage lights change too! Ha! That's live TV!",
+       "audio": "audio/clips/f-wallpap-04-kimmy.mp3"
       }
      }
     },
@@ -5588,6 +5963,10 @@
       "gus": {
        "text": "Shall I open that in a new tab for you? Quick break in play!",
        "audio": "audio/clips/offer-host-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ooh! Shall I open that in a new tab for you? We'll be right back!",
+       "audio": "audio/clips/offer-host-kimmy.mp3"
       }
      }
     }
@@ -5681,6 +6060,10 @@
       "gus": {
        "text": "And is it good? Be honest! The camera never lies!",
        "audio": "audio/clips/f-psspss-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And is it good? Be honest! I can tell! I do this for a living!",
+       "audio": "audio/clips/f-psspss-02-kimmy.mp3"
       }
      }
     },
@@ -5787,6 +6170,10 @@
       "gus": {
        "text": "Cats stopping the doomscroll! That's a goal-line clearance!",
        "audio": "audio/clips/f-maccat-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Cats that stop you doomscrolling! Finally! Accountability, with whiskers!",
+       "audio": "audio/clips/f-maccat-02-kimmy.mp3"
       }
      }
     },
@@ -5896,6 +6283,10 @@
       "gus": {
        "text": "Fourteen logos! That's more kit changes than a cup final!",
        "audio": "audio/clips/f-bluetune-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Fourteen logos! Ha! Thank you, logo number fourteen, for finally being the one.",
+       "audio": "audio/clips/f-bluetune-02-kimmy.mp3"
       }
      }
     },
@@ -5989,6 +6380,10 @@
       "gus": {
        "text": "A bar for AI agents! The post-match pub! Book me in!",
        "audio": "audio/clips/f-agentbar-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A bar for AI agents! Ha! A bar where nobody can see me cry! Book me in!",
+       "audio": "audio/clips/f-agentbar-02-kimmy.mp3"
       }
      }
     },
@@ -6007,6 +6402,10 @@
       "gus": {
        "text": "Shall I open that in a new tab for you? Quick break in play!",
        "audio": "audio/clips/offer-host-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Ooh! Shall I open that in a new tab for you? We'll be right back!",
+       "audio": "audio/clips/offer-host-kimmy.mp3"
       }
      }
     }
@@ -6102,6 +6501,10 @@
       "gus": {
        "text": "Therapy by doodle! Cheaper than a sports psychologist!",
        "audio": "audio/clips/f-alter-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Therapy by doodle! Ha! I have paid good money for less!",
+       "audio": "audio/clips/f-alter-02-kimmy.mp3"
       }
      }
     },
@@ -6210,6 +6613,10 @@
       "gus": {
        "text": "An imaginary crowd! I've commentated to one of those! Midweek fixtures!",
        "audio": "audio/clips/f-vibedj-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "An imaginary crowd! Ha! Buddy, that's every show after midnight!",
+       "audio": "audio/clips/f-vibedj-02-kimmy.mp3"
       }
      }
     },
@@ -6291,6 +6698,10 @@
       "gus": {
        "text": "Now! How did all this come about? A grown man, a perfectly good CV, and a box of matches! Talk me through the build-up!",
        "audio": "audio/clips/meta-why-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Okay! How did all this come about? A grown man, a perfectly good CV, and a box of matches!",
+       "audio": "audio/clips/meta-why-01-kimmy.mp3"
       }
      }
     },
@@ -6330,6 +6741,10 @@
       "gus": {
        "text": "A little! He says a little! The crowd disagrees!",
        "audio": "audio/clips/meta-why-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A little! He says a little! Ha! The audience disagrees!",
+       "audio": "audio/clips/meta-why-04-kimmy.mp3"
       }
      }
     }
@@ -6415,6 +6830,10 @@
       "gus": {
        "text": "And all this destruction! Where on earth did that come from?",
        "audio": "audio/clips/meta-story-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And all this destruction! Where on earth did that come from?",
+       "audio": "audio/clips/meta-story-01-kimmy.mp3"
       }
      }
     },
@@ -6508,6 +6927,10 @@
       "gus": {
        "text": "Burned! Onto a CD! What a finish! The pun of the season!",
        "audio": "audio/clips/meta-story-06-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Burned! Onto a CD! Ha! You do love a pun. Give me a rimshot, fellas!",
+       "audio": "audio/clips/meta-story-06-kimmy.mp3"
       }
      }
     }
@@ -6580,6 +7003,10 @@
       "gus": {
        "text": "And how do you build all this? I'm picturing a whiteboard. Tactics. Shouting from the touchline.",
        "audio": "audio/clips/meta-workflow-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And how do you build all this? I'm picturing whiteboards. Shouting. A writers' room at two in the morning.",
+       "audio": "audio/clips/meta-workflow-01-kimmy.mp3"
       }
      }
     },
@@ -6631,6 +7058,10 @@
       "gus": {
        "text": "So you managed a team of robots by voice note! That's management from the touchline!",
        "audio": "audio/clips/meta-workflow-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So you managed a team of robots by voice note! Ha! That's how I run my writers' room!",
+       "audio": "audio/clips/meta-workflow-04-kimmy.mp3"
       }
      }
     },
@@ -6639,6 +7070,65 @@
      "who": "sameep",
      "text": "Pretty much. That's the job now, honestly.",
      "audio": "audio/clips/meta-workflow-05.mp3"
+    },
+    {
+     "id": "meta-workflow-06",
+     "who": "sameep",
+     "text": "Oh, and one more thing. While I was at it, I put together some growth ideas for Wispr too. There's a folder on the desktop called Wispr Growth OS, right at the top of the left column. Your wispr.ai email opens it.",
+     "audio": "audio/clips/meta-workflow-06.mp3",
+     "only": "wispr",
+     "visual": {
+      "type": "stats",
+      "title": "Wispr Growth OS",
+      "photo": {
+       "src": "growth-os/icon.svg",
+       "cap": "On the desktop, top of the left column. Opens with a wispr.ai email."
+      }
+     }
+    },
+    {
+     "id": "meta-workflow-07",
+     "who": "sameep",
+     "text": "There's events, a vox pop mic, creator and influencer programmes, brand collabs, LinkedIn, and a little CRM to keep track of it all. There's no pressure, have a look whenever you like.",
+     "audio": "audio/clips/meta-workflow-07.mp3",
+     "only": "wispr",
+     "visual": {
+      "type": "stats",
+      "title": "Inside Wispr Growth OS",
+      "tags": {
+       "title": "Growth ideas for Wispr",
+       "rows": [
+        "Events",
+        "A vox-pop mic",
+        "Creator and influencer programmes",
+        "Brand collabs",
+        "LinkedIn",
+        "A little CRM"
+       ]
+      }
+     }
+    },
+    {
+     "id": "meta-workflow-08",
+     "who": "host",
+     "text": "Homework. For the people interviewing you. The cheek of it. I adore it.",
+     "audio": "audio/clips/meta-workflow-08.mp3",
+     "only": "wispr",
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "A folder of homework, for the interviewers. Most irregular, sir. I shall not look. I have, of course, already looked.",
+       "audio": "audio/clips/meta-workflow-08-k56.mp3"
+      },
+      "gus": {
+       "text": "He's only gone and handed the scouts his own game plan! Cheeky! Bold! I love it!",
+       "audio": "audio/clips/meta-workflow-08-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Homework! For the people interviewing you! Ha! The nerve! Oh, I love this guy!",
+       "audio": "audio/clips/meta-workflow-08-kimmy.mp3"
+      }
+     }
     }
    ],
    "choices": [
@@ -6709,6 +7199,10 @@
       "gus": {
        "text": "And then, of all things, a podcast! Nobody saw that coming!",
        "audio": "audio/clips/meta-podcast-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And then, of all things, a podcast!",
+       "audio": "audio/clips/meta-podcast-01-kimmy.mp3"
       }
      }
     },
@@ -6738,6 +7232,10 @@
       "gus": {
        "text": "So I came off the bench! Not the original host, but a super-sub! I'll take it!",
        "audio": "audio/clips/meta-podcast-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So I'm not the original host! I'm the guest host! Filling in! Ha! I'll take it!",
+       "audio": "audio/clips/meta-podcast-04-kimmy.mp3"
       }
      }
     }
@@ -6807,6 +7305,10 @@
       "gus": {
        "text": "Let's talk voices! Mine, for instance! Whose is it?",
        "audio": "audio/clips/meta-voice-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Let's talk voices! Mine, for instance! Whose is it?",
+       "audio": "audio/clips/meta-voice-01-kimmy.mp3"
       }
      }
     },
@@ -6827,7 +7329,7 @@
       "kpis": [
        {
         "n": 488,
-        "label": "voiced clips, three hosts"
+        "label": "voiced clips, four hosts"
        },
        {
         "n": 4,
@@ -6871,6 +7373,10 @@
       "gus": {
        "text": "One robot checking another robot's call! That's video review!",
        "audio": "audio/clips/meta-voice-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So one robot proofreads another robot! Ha! That's my whole fact-checking department!",
+       "audio": "audio/clips/meta-voice-04-kimmy.mp3"
       }
      }
     }
@@ -6946,6 +7452,10 @@
       "gus": {
        "text": "And our faces! I look magnificent! That's a highlights-reel face!",
        "audio": "audio/clips/meta-faces-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And our faces! I look fantastic! Look at this hair!",
+       "audio": "audio/clips/meta-faces-01-kimmy.mp3"
       }
      }
     },
@@ -6991,6 +7501,10 @@
       "gus": {
        "text": "You hand-picked my resting face! That's attention to detail! That's a training-ground habit!",
        "audio": "audio/clips/meta-faces-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "You hand-picked my resting face! Ha! I'm touched! And a little alarmed!",
+       "audio": "audio/clips/meta-faces-04-kimmy.mp3"
       }
      }
     }
@@ -7065,6 +7579,10 @@
       "gus": {
        "text": "And who wrote the code? Please say it was you, by hand, in the rain!",
        "audio": "audio/clips/meta-code-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And who wrote the code? Please say it was you, by hand, at two in the morning!",
+       "audio": "audio/clips/meta-code-01-kimmy.mp3"
       }
      }
     },
@@ -7116,6 +7634,10 @@
       "gus": {
        "text": "A machine that checks you haven't overshared! A referee for your repo!",
        "audio": "audio/clips/meta-code-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A machine that checks you haven't overshared! Ha! My network needs one of those!",
+       "audio": "audio/clips/meta-code-04-kimmy.mp3"
       }
      }
     }
@@ -7190,6 +7712,10 @@
       "gus": {
        "text": "And the logic! What happens if somebody just sits there and does nothing?",
        "audio": "audio/clips/meta-flow-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And the logic! What happens if somebody just sits there and does nothing?",
+       "audio": "audio/clips/meta-flow-01-kimmy.mp3"
       }
      }
     },
@@ -7227,6 +7753,10 @@
       "gus": {
        "text": "So it's a choose-your-own-adventure book, read aloud by two cartoons! What a format!",
        "audio": "audio/clips/meta-flow-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "So it's a choose-your-own-adventure book, read aloud by two cartoons! Ha! I'd watch that! I'm in it!",
+       "audio": "audio/clips/meta-flow-04-kimmy.mp3"
       }
      }
     },
@@ -7311,6 +7841,10 @@
       "gus": {
        "text": "And why the nineties? Not complaining! The nineties were my golden era!",
        "audio": "audio/clips/meta-90s-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And why the nineties? Not complaining! In the nineties my hair was even bigger!",
+       "audio": "audio/clips/meta-90s-01-kimmy.mp3"
       }
      }
     },
@@ -7388,32 +7922,51 @@
       "gus": {
        "text": "And now, the big question! Could anyone make one of these? Or only you, with your little matches?",
        "audio": "audio/clips/outro-make-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "And now, the big question! Could anyone make one of these? Or only you, with your little matches?",
+       "audio": "audio/clips/outro-make-01-kimmy.mp3"
       }
      }
     },
     {
      "id": "outro-make-02",
      "who": "sameep",
-     "text": "Anyone. That's the point. With Switchboard, anyone's own Claude can read their work, their GitHub, their notes, then write the questions and the answers, and make the voices. So it's not just my portfolio. Anyone can have one, by connecting Switchboard to their Claude.",
-     "messy": "Anyone, that's, that's the point. Through Switchboard, anyone's Claude can read their work, their GitHub, their notes, fill the context, write the questions and the answers, generate the voice. So it's not just my portfolio. It's anyone's, by, by connecting Switchboard and Claude.",
+     "text": "Anyone, that's the point. Open Wispr and tell your own Claude one sentence: make your own sameep.ai using your GitHub profile. It reads your repos, writes your episode in your voice, draws a pixel you, and builds this same iMac. The steps are at sameep.ai slash make.",
+     "messy": "Anyone, that's, that's the whole point. You open Wispr and you just tell your Claude, like, one sentence. Make your own sameep.ai using your GitHub profile. And it reads your repos, writes the episode in your voice, draws the little pixel you, builds the iMac. It's all at sameep.ai slash make.",
      "demo": {
       "type": "link",
-      "url": "https://thelastprompt.ai/switchboard",
-      "title": "Make your own with Switchboard"
+      "url": "https://sameep.ai/make",
+      "title": "Make your own sameep.ai"
      },
-     "audio": "audio/clips/outro-make-02.mp3",
-     "visual": {
-      "type": "work",
-      "work": "switchboard",
-      "title": "Switchboard: anyone's own Claude can make one"
+     "audio": "audio/clips/outro-make-02-m.mp3"
+    },
+    {
+     "id": "outro-make-03",
+     "who": "host",
+     "text": "One sentence. Make your own sameep.ai using your GitHub profile. Even I could say that, darling, and I am entirely fictional.",
+     "audio": "audio/clips/outro-make-03.mp3",
+     "shot": "cu",
+     "h": {
+      "k56": {
+       "text": "One sentence, sir. Make your own sameep.ai using your GitHub profile. I have saved it to memory. All thirty-two megabytes of it.",
+       "audio": "audio/clips/outro-make-03-k56.mp3"
+      },
+      "gus": {
+       "text": "One sentence! Make your own sameep.ai using your GitHub profile! Simple as a tap-in from two yards out!",
+       "audio": "audio/clips/outro-make-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "One sentence! Make your own sameep.ai using your GitHub profile! That's it! Ha! I can't even tie my shoes in one sentence!",
+       "audio": "audio/clips/outro-make-03-kimmy.mp3"
+      }
      }
     }
    ],
    "choices": [],
    "next": "outro",
    "title": "Make your own",
-   "blurb": "Anyone's Claude can make one of these, through Switchboard.",
-   "work": "switchboard"
+   "blurb": "One sentence to your own Claude, through Wispr, and it builds yours."
   },
   "outro": {
    "chapter": "Outro",
@@ -7433,14 +7986,18 @@
       "gus": {
        "text": "And that's full time! Thank you to our guest, the artificial but sincere Sameep! What a performance!",
        "audio": "audio/clips/outro-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "That's our show! One last thank-you note. Thank you to our guest, the artificial but sincere Sameep! Give it up, everybody!",
+       "audio": "audio/clips/outro-01-kimmy.mp3"
       }
      }
     },
     {
      "id": "outro-02",
      "who": "sameep",
-     "text": "Thanks for steering. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want one of these for yourself, that's Switchboard.",
-     "audio": "audio/clips/outro-02.mp3",
+     "text": "Thanks for steering. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want one of these for yourself, it's one sentence to your Claude. The steps are at sameep.ai slash make.",
+     "audio": "audio/clips/outro-02-m.mp3",
      "look": "front"
     },
     {
@@ -7458,6 +8015,10 @@
       "gus": {
        "text": "Seven e's! I counted! Good night, everybody! This has been Off the CV!",
        "audio": "audio/clips/outro-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Seven e's! I counted! Good night, everybody! This has been Off the CV!",
+       "audio": "audio/clips/outro-03-kimmy.mp3"
       }
      }
     }
@@ -7509,6 +8070,10 @@
       "gus": {
        "text": "Before kick-off, the team sheet. Sameep, who are you, when you're not a compact disc?",
        "audio": "audio/clips/about-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Before we get started: Sameep, tell the folks at home a little about yourself. Who are you, when you're not a compact disc?",
+       "audio": "audio/clips/about-01-kimmy.mp3"
       }
      }
     },
@@ -7594,6 +8159,10 @@
       "gus": {
        "text": "A career with a lot of tabs open! What a squad! Let's open a few.",
        "audio": "audio/clips/about-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "A man with a lot of tabs open! Ha! I love it! Let's open some of them!",
+       "audio": "audio/clips/about-04-kimmy.mp3"
       }
      }
     }
@@ -7642,6 +8211,16 @@
    "thumb": "img/sprites/hosts/k56-thumb.webp",
    "style": "Polite, anxious, very literal. Can get a little irritating, in a lovable way.",
    "wpm": 141
+  },
+  {
+   "id": "kimmy",
+   "name": "Kimmy Falcon",
+   "kind": "A late-night host",
+   "blurb": "Live from the big desk, every night after the news.",
+   "sprite": "img/sprites/hosts/kimmy",
+   "thumb": "img/sprites/hosts/kimmy-thumb.webp",
+   "style": "Giggly, delighted, cracks up at his own jokes. Hit it, fellas!",
+   "wpm": 158
   }
  ],
  "routes": {

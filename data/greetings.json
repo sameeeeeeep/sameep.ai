@@ -27,6 +27,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Tanay, Wispr's co-founder and CEO! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-tanay-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Tanay, Wispr's co-founder and CEO! Give it up, everybody!",
+     "audio": "audio/clips/greet-tanay-kimmy.mp3"
     }
    }
   },
@@ -46,6 +50,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Sahaj, Wispr's co-founder and CTO! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-sahaj-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Sahaj, Wispr's co-founder and CTO! Give it up, everybody!",
+     "audio": "audio/clips/greet-sahaj-kimmy.mp3"
     }
    }
   },
@@ -65,6 +73,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Nimisha, who leads Wispr in India! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-nimisha-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Nimisha, who leads Wispr in India! Give it up, everybody!",
+     "audio": "audio/clips/greet-nimisha-kimmy.mp3"
     }
    }
   },
@@ -84,6 +96,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Rohan, who leads growth for Wispr in India! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-rohan-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Rohan, who leads growth for Wispr in India! Give it up, everybody!",
+     "audio": "audio/clips/greet-rohan-kimmy.mp3"
     }
    }
   },
@@ -103,6 +119,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Shivam, from Wispr's India growth team! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-shivam-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Shivam, from Wispr's India growth team! Give it up, everybody!",
+     "audio": "audio/clips/greet-shivam-kimmy.mp3"
     }
    }
   },
@@ -122,6 +142,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Vasundhara, from Wispr's growth team! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-vasundhara-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Vasundhara, from Wispr's growth team! Give it up, everybody!",
+     "audio": "audio/clips/greet-vasundhara-kimmy.mp3"
     }
    }
   },
@@ -141,6 +165,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Vishal, from Wispr's customer success team! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-vishal-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Vishal, from Wispr's customer success team! Give it up, everybody!",
+     "audio": "audio/clips/greet-vishal-kimmy.mp3"
     }
    }
   },
@@ -160,6 +188,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Meghna, from Wispr's customer success team! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-meghna-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Meghna, from Wispr's customer success team! Give it up, everybody!",
+     "audio": "audio/clips/greet-meghna-kimmy.mp3"
     }
    }
   },
@@ -179,6 +211,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Deepansh, who builds Wispr's website in Webflow! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-deepansh-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Deepansh, who builds Wispr's website in Webflow! Give it up, everybody!",
+     "audio": "audio/clips/greet-deepansh-kimmy.mp3"
     }
    }
   },
@@ -198,6 +234,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Sitansu, from Wispr's QA team! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-sitansu-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Sitansu, from Wispr's QA team! Give it up, everybody!",
+     "audio": "audio/clips/greet-sitansu-kimmy.mp3"
     }
    }
   },
@@ -217,6 +257,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Suraj, an AI engineer at Wispr! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-suraj-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Suraj, an AI engineer at Wispr! Give it up, everybody!",
+     "audio": "audio/clips/greet-suraj-kimmy.mp3"
     }
    }
   },
@@ -236,6 +280,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Raushan, from Wispr India! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-raushan-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Raushan, from Wispr India! Give it up, everybody!",
+     "audio": "audio/clips/greet-raushan-kimmy.mp3"
     }
    }
   },
@@ -255,6 +303,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's Adarsh, who writes for Wispr! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-adarsh-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: Adarsh, who writes for Wispr! Give it up, everybody!",
+     "audio": "audio/clips/greet-adarsh-kimmy.mp3"
     }
    }
   },
@@ -274,6 +326,10 @@
     "gus": {
      "text": "And there in the crowd tonight, it's you! What a pleasure to have you with us!",
      "audio": "audio/clips/greet-any-gus.mp3"
+    },
+    "kimmy": {
+     "text": "And sitting in our studio audience tonight: you! Give it up, everybody! Make yourself comfortable!",
+     "audio": "audio/clips/greet-any-kimmy.mp3"
     }
    }
   },
@@ -293,6 +349,10 @@
     "gus": {
      "text": "Tanay, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-tanay-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Tanay, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-tanay-kimmy.mp3"
     }
    }
   },
@@ -312,6 +372,10 @@
     "gus": {
      "text": "Sahaj, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-sahaj-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Sahaj, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-sahaj-kimmy.mp3"
     }
    }
   },
@@ -331,6 +395,10 @@
     "gus": {
      "text": "Nimisha, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-nimisha-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Nimisha, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-nimisha-kimmy.mp3"
     }
    }
   },
@@ -350,6 +418,10 @@
     "gus": {
      "text": "Rohan, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-rohan-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Rohan, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-rohan-kimmy.mp3"
     }
    }
   },
@@ -369,6 +441,10 @@
     "gus": {
      "text": "Shivam, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-shivam-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Shivam, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-shivam-kimmy.mp3"
     }
    }
   },
@@ -388,6 +464,10 @@
     "gus": {
      "text": "Vasundhara, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-vasundhara-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Vasundhara, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-vasundhara-kimmy.mp3"
     }
    }
   },
@@ -407,6 +487,10 @@
     "gus": {
      "text": "Vishal, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-vishal-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Vishal, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-vishal-kimmy.mp3"
     }
    }
   },
@@ -426,6 +510,10 @@
     "gus": {
      "text": "Meghna, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-meghna-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Meghna, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-meghna-kimmy.mp3"
     }
    }
   },
@@ -445,6 +533,10 @@
     "gus": {
      "text": "Deepansh, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-deepansh-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Deepansh, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-deepansh-kimmy.mp3"
     }
    }
   },
@@ -464,6 +556,10 @@
     "gus": {
      "text": "Sitansu, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-sitansu-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Sitansu, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-sitansu-kimmy.mp3"
     }
    }
   },
@@ -483,6 +579,10 @@
     "gus": {
      "text": "Suraj, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-suraj-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Suraj, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-suraj-kimmy.mp3"
     }
    }
   },
@@ -502,6 +602,10 @@
     "gus": {
      "text": "Raushan, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-raushan-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Raushan, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-raushan-kimmy.mp3"
     }
    }
   },
@@ -521,6 +625,10 @@
     "gus": {
      "text": "Adarsh, the ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-adarsh-gus.mp3"
+    },
+    "kimmy": {
+     "text": "Adarsh, from here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-adarsh-kimmy.mp3"
     }
    }
   },
@@ -540,6 +648,10 @@
     "gus": {
      "text": "The ball is at your feet! Tap a card, or hold your Flow key and call the play!",
      "audio": "audio/clips/steer-any-gus.mp3"
+    },
+    "kimmy": {
+     "text": "From here on, you steer! Tap a card, or hold your Flow key and just say it! Ha! No pressure!",
+     "audio": "audio/clips/steer-any-kimmy.mp3"
     }
    }
   }

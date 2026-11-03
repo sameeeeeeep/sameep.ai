@@ -116,6 +116,7 @@ export class Studio {
     if (this.insertPlate && !(await loadOK(this.insertPlate))) this.insertPlate = null;
     if (this.cardBox && this.insertPlate) Object.assign(this.cardEl.style, { left: this.cardBox.left * 100 + '%', top: this.cardBox.top * 100 + '%', bottom: 'auto' });
     this.manifest = M;
+    if (this.hostSprite) this.setHostSprite(this.hostSprite); // a picked host's own set needs the manifest
     return this;
   }
 
@@ -136,9 +137,14 @@ export class Studio {
   }
 
   // another host in the host seat: the desk layer without the default host's hands on it
+  // A host can bring its own set (manifest sprites["host-<id>"].studio: { bg, deskFg }), same canvas and seats.
   setHostSprite(key) {
     this.hostSprite = key || null;
-    if (this.layered) this.fg.src = key ? safeUrl('img/sprites/hosts/desk-fg.webp', this.P.base) : this.fgSrc;
+    if (!this.layered) return;
+    const own = key && this.manifest?.sprites?.[key]?.studio;
+    this.bgSrc ||= this.bg.src;
+    this.bg.src = own?.bg ? safeUrl(own.bg, this.P.base) : this.bgSrc;
+    this.fg.src = own?.deskFg ? safeUrl(own.deskFg, this.P.base) : key ? safeUrl('img/sprites/hosts/desk-fg.webp', this.P.base) : this.fgSrc;
   }
 
   // Point the seats: the speaker per the line, the listener across at them.
