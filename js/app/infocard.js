@@ -57,7 +57,6 @@ export function installCards({ area, loadList, folders = [], chapter, onHear }) 
       h('div.icard__body',
         h('p.icard__t', d.title),
         d.what && h('p.icard__what', d.what),
-        d.role && h('p.icard__row', h('b', 'Role'), d.role),
         d.proof && h('p.icard__row', h('b', 'Proof'), d.proof)),
       h('p.icard__where', where(el, d.folder), node && h('span', ` · On the podcast: ${node}`)),
       touch && h('div.icard__btns',
