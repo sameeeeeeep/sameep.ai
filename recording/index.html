@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sameep Rehlan · for Wispr Flow</title>
 <meta name="description" content="My application for Wispr Flow's growth team: a 3-minute video and a portfolio you talk to.">
+<link rel="canonical" href="https://sameep.ai/recording/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sameep.ai">
 <meta property="og:title" content="Sameep Rehlan · for Wispr Flow">
 <meta property="og:description" content="A 3-minute video, and a portfolio you talk to: a CV burned onto a CD, running a podcast you steer with your voice.">
 <meta property="og:image" content="https://sameep.ai/img/og.png">
-<meta property="og:url" content="https://sameep.ai/recording">
+<meta property="og:url" content="https://sameep.ai/recording/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://sameep.ai/img/og.png">
 <link rel="icon" href="../img/ui/offthecv.svg">
@@ -57,21 +60,15 @@ footer { margin-top:44px; color:#6f665a; font:400 12px 'Spline Sans Mono', monos
 <main class="wrap">
   <p class="kicker">Application · Wispr Flow growth team</p>
   <h1>Hi team Wispr, I'm <em>Sameep.</em></h1>
-  <p class="lede">Product manager, founder, and these days a generalist who builds AI products. Most of my career has been growth. Here's three minutes on what I built for you, and the thing itself.</p>
+  <p class="lede">What I built for you, why I built it, and what voice changed. Three minutes.</p>
 
   <div class="player" id="player">
-    <div class="soon" id="soon"><div><b id="soonT">The 3-minute video lands here tonight.</b><span>The portfolio is live right now. Open it below.</span></div></div>
+    <video id="vid" controls playsinline preload="metadata" poster="../video/application.jpg" src="../video/application.mp4"></video>
   </div>
 
   <div class="cta">
     <a class="btn main" href="https://sameep.ai/?version=wispr">▶ Open the portfolio</a>
     <a class="btn" href="https://sameep.ai/make">Make your own</a>
-  </div>
-
-  <div class="grid">
-    <div class="card"><h3>A CV, burned onto a CD</h3><p>Fold it, fly it, crumple it, shred it, burn it. Then it boots a nineties iMac.</p></div>
-    <div class="card"><h3>A podcast you steer</h3><p>Pick a host, hold your Flow key, say where to go. Choose your own adventure.</p></div>
-    <div class="card"><h3>Built by voice</h3><p>Dictated to Claude through Wispr Flow, across a lot of parallel sessions.</p></div>
   </div>
 
   <h2>Find me</h2>
@@ -87,18 +84,12 @@ footer { margin-top:44px; color:#6f665a; font:400 12px 'Spline Sans Mono', monos
   <footer id="upd">sameep.ai/recording</footer>
 </main>
 <script>
-// the video is set in data.json, so a new take never needs a new link
+// a newer take only needs a new file: data.json can point the player elsewhere without touching this page
 fetch('data.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-  if (d.note) document.getElementById('soonT').textContent = d.note.split('. ')[0] + '.';
-  if (d.updated) document.getElementById('upd').textContent = `sameep.ai/recording · updated ${d.updated}`;
-  if (!d.video) return;
-  const v = document.createElement('video');
-  v.controls = true; v.playsInline = true; v.preload = 'metadata';
+  const v = document.getElementById('vid');
+  if (d.video && !v.src.endsWith(d.video.replace('../', ''))) v.src = new URL(d.video, location.href).href;
   if (d.poster) v.poster = new URL(d.poster, location.href).href;
-  v.src = new URL(d.video, location.href).href;
-  v.addEventListener('error', () => { v.remove(); document.getElementById('soon').hidden = false; }, { once: true });
-  document.getElementById('soon').hidden = true;
-  document.getElementById('player').append(v);
+  if (d.updated) document.getElementById('upd').textContent = `sameep.ai/recording · updated ${d.updated}`;
 }).catch(() => {});
 </script>
 </body>
