@@ -7,7 +7,8 @@ import { isWispr } from '../version.js';
 import { flowClean } from './apps.js';
 import * as D from './growthos-data.js';
 import { extraModules } from './gos/index.js';
-import { loadCss, avatar } from './gos/kit.js';
+import { loadCss, avatar, appHead } from './gos/kit.js';
+import { APPS, glyph } from './gos/apps.js';
 
 // ---------------------------------------------------------------- the gate
 // links from the plan data: http(s) only
@@ -32,6 +33,15 @@ export function install({ wm, area, visitor }) {
     h('span.icon__label', 'Wispr Growth OS'));
   icons.prepend(h('li.is-new', btn));
   if (fromLink) openGrowthOS(wm, { visitor });
+  // when the show's end card opens, add a nudge to this folder (the next thing to look at)
+  new MutationObserver(() => {
+    const end = area.querySelector('.win--end .end');
+    if (!end || end.querySelector('.end__gos')) return;
+    end.append(h('div.end__gos',
+      h('p.end__kicker', 'Next, for the Wispr team'),
+      h('p.end__lede', 'I started a growth plan for Wispr Flow. It’s a rough prototype, not reviewed yet, but it’s where I’d start.'),
+      h('button.btn.btn--primary', { type: 'button', onclick: () => { sound.tick('click'); openTab(wm, visitor); } }, 'Open Wispr Growth OS ↗')));
+  }).observe(area, { childList: true });  // windows are direct children of the desktop
   return true;
 }
 
@@ -143,9 +153,7 @@ function download(name, text, type = 'text/csv') {
   const a = h('a', { href: URL.createObjectURL(new Blob([text], { type })), download: name });
   document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
-const head = (m, why, ...tools) => h('header.gos__head', { style: { '--c': m.c } },
-  h('div', h('p.gos__kicker', m.kicker || 'Growth OS'), h('h2.gos__title', m.label), why && h('p.gos__why', rich(why))),
-  tools.length ? h('div.gos__tools', tools) : null);
+const head = (m, why, ...tools) => appHead(m, why, tools);
 
 // ---------------------------------------------------------------- the window
 export function openGrowthOS(wm, { visitor, start } = {}) {
@@ -210,55 +218,68 @@ function signIn(w, done, notice, name = '') {
 // the "work in progress" note: what's still open, each line jumps to its module
 function wipNote(wip, jump) {
   if (!wip?.open?.length) return null;
-  return h('details.gos-wip',
-    h('summary', h('span.gos-wip__dot', { 'aria-hidden': 'true' }), 'Work in progress', h('span.gos-wip__n', `${wip.open.length} open`)),
-    h('p.gos-wip__note', wip.note, wip.updated ? ` Updated ${fmtD(wip.updated)}.` : ''),
-    h('ul.gos-wip__list', wip.open.map((o) => h('li', h('button', { type: 'button', onclick: () => jump(o.mod) }, h('span', o.t), h('span.tag', o.s))))));
+  const box = h('details.gos-wip',
+    h('summary', h('span.gos-wip__dot', { 'aria-hidden': 'true' }), h('span', 'Work in progress'), h('span.gos-wip__n', `${wip.open.length} open`)),
+    h('div.gos-wip__pop',
+      h('p.gos-wip__note', wip.note, wip.updated ? ` Updated ${fmtD(wip.updated)}.` : ''),
+      h('ul.gos-wip__list', wip.open.map((o) => h('li', h('button', { type: 'button', onclick: () => { box.open = false; jump(o.mod); } }, h('span', o.t), h('span.tag', o.s)))))));
+  return box;
 }
 
 function renderPlan(w, { name, start }) {
+  // an OS, not a document: a home screen of apps; each app opens full width with a bar to get back
   const page = h('article.gos__page', { tabindex: '-1' });
-  const nav = h('ul.gos__nav');
-  const root = h('div.gos',
-    h('aside.gos__side',
-      h('p.gos__hello', name ? `Hi ${name}.` : 'Hi.'),
-      h('p.gos__sub', 'A growth plan for Wispr Flow, built as tools you can click. Ready to start Monday.'),
-      wipNote(D.MORE.wip, (id) => go(id)),
-      nav,
-      h('p.gos__foot', 'Made by Sameep. Everything is researched and cited. Your edits stay on this device. ',
-        h('button', { type: 'button', onclick: () => { if (confirm('Clear your edits in Growth OS on this device?')) { localStorage.removeItem(KEY); location.reload(); } } }, 'Reset'), ' · ',
-        h('button', { type: 'button', onclick: async () => { try { await api('/logout', { method: 'POST' }); } catch { /* signing out locally anyway */ } token.set(null); loaded = null; w.body.dataset.ready = ''; w.close(); } }, 'Sign out'))),
-    h('div.gos__main', h('button.btn.btn--sm.gos__back', { type: 'button', onclick: () => { root.classList.remove('is-page'); } }, '‹ All modules'), page));
+  const where = h('span.gos__where');
+  const homeBtn = h('button.gos__homebtn', { type: 'button', 'aria-label': 'Home', onclick: () => showHome() });
+  homeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z"/></svg><span>Home</span>';
+  const signOut = async () => { try { await api('/logout', { method: 'POST' }); } catch { /* signing out locally anyway */ } token.set(null); loaded = null; w.body.dataset.ready = ''; w.close(); };
+  const reset = () => { if (confirm('Clear your edits in Growth OS on this device?')) { for (const k of Object.keys(localStorage)) if (k.startsWith('wgos.') && k !== TOKEN) localStorage.removeItem(k); location.reload(); } };
+  const top = h('div.gos__top', homeBtn, where, h('span.gos__sp'),
+    wipNote(D.MORE.wip, (id) => go(id)),
+    h('details.gos__menu', h('summary', { 'aria-label': 'Account' }, name ? name[0].toUpperCase() : '·'),
+      h('div.gos__menupop', h('p', name ? `Signed in as ${name}` : 'Signed in'), h('button', { type: 'button', onclick: reset }, 'Clear my edits'), h('button', { type: 'button', onclick: signOut }, 'Sign out'))));
+  const root = h('div.gos.gos--os', page);
   w.body.replaceChildren(root);
+  // one bar: the window's own title bar carries Home, where you are, the open tickets and your account
+  const bar = w.el.querySelector('.win__bar');
+  bar.querySelector('.gos__top')?.remove();
+  bar.append(top);
 
   const counts = { campaigns: () => allCampaigns().filter((c) => statusOf(c) !== 'cut').length, creators: () => D.CREATORS.length, crm: () => crmRows().length, events: () => D.EVENTS.length, collabs: () => D.COLLABS.length };
-  let cur = null;
-  function renderNav() {
-    let g = null;
-    nav.replaceChildren(...MODULES.flatMap((m) => {
-      const out = [];
-      if (m.group !== g) { g = m.group; if (g) out.push(h('li.gos__navgroup', g)); }
-      const n = counts[m.id] ? counts[m.id]() : m.count?.();
-      out.push(h('li', h('button.gos__navbtn', { type: 'button', 'aria-current': m.id === cur ? 'page' : null, onclick: () => go(m.id) },
-        h('span.gos__chip', { style: { '--c': m.c } }), h('span', m.label), n ? h('span.gos__count', String(n)) : h('span'))));
-      return out;
-    }));
+  const tile = (m, big) => {
+    const n = counts[m.id] ? counts[m.id]() : m.count?.();
+    const ic = h('span.gapp__ic', { style: { '--c': m.c } }); ic.innerHTML = glyph(m.id, big ? 30 : 26);
+    return h('button.gapp' + (big ? '.gapp--big' : ''), { type: 'button', onclick: () => go(m.id) }, ic,
+      h('span.gapp__t', m.label, n ? h('span.gapp__n', String(n)) : null), h('span.gapp__b', APPS[m.id]?.blurb || ''));
+  };
+  function showHome() {
+    where.textContent = '';
+    top.classList.add('is-home');
+    root.classList.remove('is-app');
+    const groups = GROUPS.filter(Boolean).map((g) => [g, MODULES.filter((m) => m.group === g)]).filter(([, ms]) => ms.length);
+    page.replaceChildren(h('div.ghome',
+      h('header.ghome__head',
+        h('h2.ghome__hi', name ? `Hi ${name}.` : 'Hi.'),
+        h('p.ghome__sub', 'A growth plan for Wispr Flow in India, as apps you can use.'),
+        D.MORE.wip?.disclaimer && h('p.gos-proto', h('b', 'Prototype, not reviewed. '), 'A draft of where I’d start, built before talking to anyone at Wispr. Numbers are cited or marked sample.')),
+      h('div.ghome__start', ...['home', 'dash'].map((id) => mod(id)).filter(Boolean).map((m) => tile(m, true))),
+      ...groups.map(([g, ms]) => h('section.ghome__group', h('h3.ghome__g', g), h('div.ghome__grid', ms.map((m) => tile(m)))))));
+    page.scrollTop = 0;
   }
   function go(id, opts = {}) {
-    const m = mod(id) || mod('home');
-    cur = m.id;
-    renderNav();
+    const m = mod(id);
+    if (!m) return showHome();
+    where.textContent = m.label;
+    top.classList.remove('is-home');
+    root.classList.add('is-app');
     page.style.setProperty('--c', m.c);
     page.replaceChildren(...[].concat(m.render(m, { go, ...opts })));
     page.scrollTop = 0;
-    root.classList.add('is-page');
     if (!opts.quiet) sound.tick('click');
     if (isNarrow()) page.focus({ preventScroll: true });
   }
   w.go = go;
-  renderNav();
-  go(start || 'home', { quiet: true });
-  if (isNarrow() && !start) root.classList.remove('is-page');
+  if (start) go(start, { quiet: true }); else showHome();
 }
 
 // ================================================================ modules

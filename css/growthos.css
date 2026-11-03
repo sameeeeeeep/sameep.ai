@@ -358,3 +358,100 @@
 .gos-wip__list button { width: 100%; display: grid; gap: 4px; justify-items: start; padding: 8px 8px; border: 0; border-radius: 10px; background: none; color: var(--vast); font: 400 12.5px/1.4 var(--sans); text-align: left; cursor: pointer; }
 .gos-wip__list button:hover { background: rgba(255,255,255,.6); }
 .gos-wip__list .tag { padding: 2px 8px; font-size: 10.5px; background: rgba(255,255,255,.7); }
+
+/* the prototype disclaimer above every module */
+.gos-proto { flex: none; margin: 0 0 10px; padding: 10px 16px; border-radius: 14px; background: #fff0d9; font: 400 13px/1.45 var(--sans); color: #5a4420; }
+.gos-proto b { font-weight: 600; color: #3d2c10; }
+@media (max-width: 760px) { .gos-proto { margin: 4px 16px 0; font-size: 12.5px; } }
+
+/* the nudge on the show's end card (Platinum, like the card it sits in) */
+.end__gos { margin-top: 16px; padding-top: 14px; border-top: 1px dashed currentColor; }
+
+/* ================================================================ OS shell: home screen of apps, one bar on top */
+.gos.gos--os { display: flex; flex-direction: column; grid-template-columns: none; }
+.gos--os .gos__page { flex: 1; min-height: 0; overflow: auto; padding: 32px max(24px, calc((100% - 1080px) / 2)) 56px; border-radius: 0; background: var(--lumen); box-shadow: none; }
+.win--gos .win__bar { gap: 14px; }
+.gos__top { order: 2; flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.gos__sp { flex: 1; }
+.gos__homebtn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px 0 10px; border: 0; border-radius: 999px; background: var(--line); color: var(--vast); font: 600 14px var(--sans); cursor: pointer; }
+.gos__homebtn:hover { background: var(--vast); color: var(--lumen); }
+.gos__where { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 20px/1 var(--serif); color: var(--vast); }
+.gos__where:empty { display: none; }
+.gos__top.is-home .gos__homebtn { display: none; }
+/* account menu */
+.gos__menu { position: relative; }
+.gos__menu summary { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--dawn); font: 600 14px var(--sans); cursor: pointer; list-style: none; }
+.gos__menu summary::-webkit-details-marker { display: none; }
+.gos__menupop { position: absolute; right: 0; top: 44px; z-index: 30; min-width: 200px; padding: 8px; border-radius: 16px; background: var(--paper); box-shadow: 0 0 0 1px var(--line), 0 18px 40px -16px rgba(26,26,26,.35); display: grid; gap: 2px; }
+.gos__menupop p { margin: 4px 10px 6px; font: 400 13px var(--sans); color: var(--mute); }
+.gos__menupop button { min-height: 38px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: var(--vast); font: 500 14px var(--sans); text-align: left; cursor: pointer; }
+.gos__menupop button:hover { background: var(--line); }
+/* the work-in-progress note becomes a pill with a dropdown */
+.gos__top .gos-wip { position: relative; margin: 0; background: none; }
+.gos__top .gos-wip summary { min-height: 36px; padding: 0 14px; border-radius: 999px; background: #fff0d9; font-size: 13px; }
+.gos__top .gos-wip__n { margin-left: 6px; }
+.gos__top .gos-wip[open] > :not(summary) { position: relative; }
+.gos__top .gos-wip[open]::after { content: none; }
+.gos__top .gos-wip__note, .gos__top .gos-wip__list { display: none; }
+.gos__top .gos-wip[open] .gos-wip__pop { display: grid; }
+.gos-wip__pop { display: none; position: absolute; right: 0; top: 44px; z-index: 30; width: min(360px, calc(100vw - 24px)); padding: 8px; border-radius: 16px; background: #fff7ea; box-shadow: 0 0 0 1px #f1dfbf, 0 18px 40px -16px rgba(26,26,26,.35); gap: 4px; }
+.gos-wip__pop .gos-wip__note, .gos-wip__pop .gos-wip__list { display: grid; }
+.gos-wip__pop .gos-wip__note { display: block; padding: 6px 8px 4px; }
+
+/* home screen */
+.ghome__head { margin-bottom: 28px; }
+.ghome__hi { margin: 0; font: 400 clamp(48px, 6vw, 76px)/.95 var(--serif); letter-spacing: -.03em; }
+.ghome__sub { margin: 10px 0 16px; font: 400 18px/1.45 var(--sans); color: #33332c; }
+.ghome .gos-proto { display: inline-block; margin: 0; max-width: 640px; }
+.ghome__start { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 34px; }
+.ghome__group { margin-bottom: 30px; }
+.ghome__g { margin: 0 0 12px; font: 600 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.ghome__grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.gapp { display: grid; grid-template-columns: 52px 1fr; grid-template-rows: auto auto; column-gap: 14px; align-items: center; min-height: 76px; padding: 12px 16px 12px 12px; border: 0; border-radius: 20px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); color: var(--vast); text-align: left; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.gapp:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--line), 0 12px 28px -16px rgba(26,26,26,.35); }
+.gapp__ic { grid-row: 1 / 3; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 15px; background: var(--c, var(--fathom)); color: #fff; box-shadow: inset 0 -2px 0 rgba(0,0,0,.08); }
+.gapp__ic svg { filter: drop-shadow(0 1px 0 rgba(0,0,0,.15)); }
+.gapp__t { align-self: end; display: flex; align-items: baseline; gap: 8px; font: 600 15px/1.2 var(--sans); }
+.gapp__n { font: 500 12px var(--sans); color: var(--mute); font-variant-numeric: tabular-nums; }
+.gapp__b { align-self: start; margin-top: 2px; font: 400 13px/1.35 var(--sans); color: var(--mute); }
+.gapp--big { grid-template-columns: 64px 1fr; min-height: 100px; padding: 18px 20px 18px 18px; border-radius: 24px; background: var(--vast); box-shadow: none; color: var(--lumen); }
+.gapp--big .gapp__ic { width: 64px; height: 64px; border-radius: 18px; background: var(--dawn); color: var(--vast); }
+.gapp--big .gapp__t { font: 400 28px/1 var(--serif); }
+.gapp--big .gapp__b { color: #cfcfbd; font-size: 14px; }
+.gapp--big + .gapp--big { background: var(--fathom); }
+.gapp--big + .gapp--big .gapp__ic { background: var(--lumen); color: var(--fathom); }
+/* light tiles keep a readable glyph on the paler Wispr colours */
+.gapp__ic[style*="--lime"], .gapp__ic[style*="--grape"], .gapp__ic[style*="--plat"], .gapp__ic[style*="--line"], .gapp__ic[style*="--dawn"], .gapp__ic[style*="--signal"], .gapp__ic[style*="--glow"], .gapp__ic[style*="--tangerine"] { color: var(--vast); }
+
+/* an app's header: name, one line, the rest folded */
+.gos--os .gos__head { margin-bottom: 22px; }
+.gos--os .gos__title { font-size: clamp(36px, 4vw, 52px); }
+.gos--os .gos__why { margin-top: 10px; font-size: 16px; color: #33332c; }
+.gos__about { margin-top: 8px; max-width: 62ch; }
+.gos__about summary { display: inline-flex; min-height: 32px; align-items: center; font: 600 13px var(--sans); color: var(--fathom); cursor: pointer; list-style: none; }
+.gos__about summary::-webkit-details-marker { display: none; }
+.gos__about summary::after { content: "+"; margin-left: 6px; }
+.gos__about[open] summary::after { content: "–"; }
+.gos__about p { margin: 4px 0 0; font: 400 15px/1.55 var(--sans); color: #33332c; }
+
+@media (max-width: 760px) {
+  .gos--os .gos__page { padding: 20px 16px 40px; }
+  .win--gos .win__bar { gap: 8px; padding: 0 10px; }
+  .win--gos:has(.gos--os.is-app) .win__title { font-size: 0; gap: 0; }
+  .gos__homebtn span { display: none; }
+  .gos__homebtn { width: 36px; padding: 0; justify-content: center; }
+  .gos__where { font-size: 18px; }
+  .gos__top .gos-wip summary { padding: 0 12px; }
+  .gos__top .gos-wip summary > span:not(.gos-wip__dot):not(.gos-wip__n) { display: none; }
+  .ghome__hi { font-size: 48px; }
+  .ghome__sub { font-size: 16px; }
+  /* a phone home screen: icons in a grid, names under them */
+  .ghome__grid { grid-template-columns: repeat(4, 1fr); gap: 16px 8px; }
+  .ghome__grid .gapp { grid-template-columns: 1fr; grid-template-rows: auto auto; justify-items: center; min-height: 0; padding: 0; background: none; box-shadow: none; text-align: center; }
+  .ghome__grid .gapp:hover { transform: none; box-shadow: none; }
+  .ghome__grid .gapp__ic { grid-row: auto; width: 60px; height: 60px; border-radius: 17px; }
+  .ghome__grid .gapp__t { margin-top: 6px; justify-content: center; font: 500 11.5px/1.2 var(--sans); }
+  .ghome__grid .gapp__n, .ghome__grid .gapp__b { display: none; }
+  .ghome__start { grid-template-columns: 1fr; }
+}
+.gos__top .gos-wip summary { white-space: nowrap; }
