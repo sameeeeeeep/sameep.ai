@@ -29,7 +29,8 @@ the first item is required.
 3. **Projects**: default = their public GitHub repos, top 4 to 6 by stars and recent activity. They can
    add or cut, add live URLs, and add a sentence of story for each ("why I made it", "what broke").
 4. **A photo** for the pixel-art guest: face toward the camera, shoulders up. A LinkedIn profile photo
-   is fine if they point you at it or save it for you. Default: a pixel stand-in, no photo.
+   is fine if they point you at it or save it for you. Default: a neutral silhouette (no face, the same
+   for everyone). Tell them a photo looks far better.
 5. **Voice**: a 20 to 60 second recording of them reading naturally, to clone on their own machine.
    Default: a preset voice that isn't a clone of anyone.
 6. **How they talk**: a pasted voice memo transcript, a few messages, a blog post. Default: their CV and
@@ -146,7 +147,7 @@ python3 $SK/check_episode.py site/data/episode.json
 
 ```sh
 python3 $SK/sprite.py frames in/photo.jpg --out site/img/sprites/guest     # from their photo
-python3 $SK/sprite.py placeholder --name "Their Name" --out site/img/sprites/guest   # no photo
+python3 $SK/sprite.py placeholder --out site/img/sprites/guest     # no photo: a neutral silhouette
 python3 $SK/sprite.py preview site/img/sprites/guest --site site           # the 4 frames in the studio seat
 ```
 
@@ -240,7 +241,7 @@ scripts/scaffold.py            engine + me.json → their site (strips Sameep's 
 scripts/starter_episode.py     me.json → a valid starter episode
 scripts/check_episode.py       the graph rules (dead ends, reachability, ids, audio)
 scripts/github_projects.py     public repos → projects
-scripts/sprite.py, face.swift  photo → pixel guest frames (Vision cut-out on a Mac), stand-in, CV image, preview
+scripts/sprite.py, face.swift  photo → pixel guest frames (Vision cut-out on a Mac), neutral silhouette, CV image, preview
 scripts/voice.py               clone + render with the whisper check (Pocket TTS, macOS say, ElevenLabs)
 scripts/visemes.py, words.py, durations.py   lip-sync, karaoke subtitles, timings
 scripts/privacy_scan.sh        what must never ship

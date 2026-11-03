@@ -28,7 +28,7 @@ A static site (plain HTML/JS, no build step, no server) that is the person's own
 1. Name and GitHub username (required).
 2. CV: PDF, LinkedIn export, or pasted text. Default: GitHub alone.
 3. Projects: default = their public repos, top 4-6 by stars and recency; they add/cut and add a sentence of story each.
-4. A photo of themselves for the pixel guest (face to camera, shoulders up). Default: a pixel stand-in.
+4. A photo of themselves for the pixel guest (face to camera, shoulders up). Default: a neutral silhouette, no face.
 5. A 20-60 s recording of their voice to clone locally. Default: a preset voice.
 6. A sample of how they talk (voice memo transcript, messages). Default: plain, from the CV and READMEs.
 7. Where to publish: GitHub Pages (default) or Cloudflare Pages; optional domain.
@@ -58,7 +58,7 @@ A static site (plain HTML/JS, no build step, no server) that is the person's own
    and reports any leftover text about Sameep to fix by hand.
 3. Write the episode in their voice: first person, short spoken sentences, under ~40 words a line, only
    true things from their material. Keep the outro-make node.
-4. Make the pixel guest from their photo (or a stand-in).
+4. Make the pixel guest from their photo (or a neutral silhouette, no face).
 5. Clone their voice locally (Pocket TTS at 127.0.0.1:7897 via Switchboard, or macOS `say`, or their own
    ElevenLabs key) and render each line. Whisper-check every take against the script; re-render misses.
 6. Generate visemes, word timings and durations. Validate the graph: no dead ends, all reachable, all audio present.

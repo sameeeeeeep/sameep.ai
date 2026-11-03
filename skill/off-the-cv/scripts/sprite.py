@@ -2,7 +2,7 @@
 """sprite.py: the guest's pixel-art lip-sync frames (and the CV image), with Pillow.
 
   python3 sprite.py frames <photo> --out img/sprites/guest [--mouth X,Y,W] [--eyes X1,Y1,X2,Y2] [--px 4] [--tone warm|none]
-  python3 sprite.py placeholder --name "Their Name" --out img/sprites/guest     (no photo: a pixel stand-in)
+  python3 sprite.py placeholder --out img/sprites/guest                         (no photo: a neutral silhouette)
   python3 sprite.py cv <cv-page.png> --out img/hero                              (an already-redacted CV page)
   python3 sprite.py preview img/sprites/guest --site .                           (the 4 frames in the studio seat, as one png)
 
@@ -19,7 +19,7 @@ framing reference), then run `frames` on that image with --px 1 so it only adds 
 """
 import argparse, json, random, shutil, subprocess, sys, tempfile
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFilter, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
 HERE = Path(__file__).resolve().parent
 CW, CH = 607, 536            # the guest seat's canvas (same as the engine's guest sprites)
@@ -141,44 +141,36 @@ def cmd_frames(a):
 
 
 def cmd_placeholder(a):
-    """A pixel stand-in for someone who'd rather not use a photo (or for a dry run)."""
-    rnd = random.Random(a.name)
+    """No photo: one fixed, neutral silhouette (no face, nothing random), the same for everyone.
+    It doesn't fake a mouth: when the guest talks, the lamp's rim light along its edge brightens."""
     px = 4; gw, gh = CW // px, CH // px
-    skins = [(241, 200, 170), (224, 172, 130), (198, 140, 100), (160, 105, 72), (112, 72, 50)]
-    hairs = [(40, 28, 22), (92, 58, 36), (176, 120, 60), (30, 30, 34), (200, 196, 190), (120, 40, 30)]
-    shirts = [(10, 143, 168), (255, 138, 31), (255, 79, 123), (123, 79, 214), (155, 209, 58), (52, 60, 72)]
-    skin, hair, shirt = rnd.choice(skins), rnd.choice(hairs), rnd.choice(shirts)
-    dk = lambda c, k=0.72: tuple(int(v * k) for v in c)
-    im = Image.new("RGBA", (gw, gh), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-    cx, top = int(gw * FIG[0]), int(gh * 0.08)
-    hw, hh = 22, 27                                     # half head
-    lt = lambda c, k=1.12: tuple(min(255, int(v * k)) for v in c)
-    sy = top + 2 * hh + 4                                                                                     # shoulders
-    d.ellipse([cx - 66, sy, cx + 66, sy + 150], fill=shirt, outline=OUTLINE)
-    d.pieslice([cx - 66, sy, cx + 66, sy + 150], 300, 60, fill=dk(shirt, 0.82))                            # lamp light from the left
-    d.polygon([(cx - 13, sy + 1), (cx + 13, sy + 1), (cx, sy + 18)], fill=dk(shirt, 0.6))                   # collar
-    d.rectangle([cx - 9, top + 2 * hh - 8, cx + 9, sy + 4], fill=dk(skin, 0.86))                             # neck
-    d.ellipse([cx - hw - 4, top + hh - 6, cx - hw + 5, top + hh + 8], fill=skin, outline=OUTLINE)            # ears
-    d.ellipse([cx + hw - 5, top + hh - 6, cx + hw + 4, top + hh + 8], fill=dk(skin, 0.9), outline=OUTLINE)
-    d.ellipse([cx - hw, top, cx + hw, top + 2 * hh], fill=skin, outline=OUTLINE)                             # head
-    d.chord([cx - hw, top, cx + hw, top + 2 * hh], 290, 70, fill=dk(skin, 0.9))                              # cheek shade
-    style = rnd.randint(0, 2)                                                                                # hair
-    d.ellipse([cx - hw - 3, top - 8, cx + hw + 3, top + hh + 4], fill=hair, outline=OUTLINE)
-    d.ellipse([cx - hw + 3, top + 12, cx + hw - 3, top + 2 * hh - 1], fill=skin)                             # forehead under the fringe
-    d.chord([cx - hw + 3, top + 12, cx + hw - 3, top + 2 * hh - 1], 290, 70, fill=dk(skin, 0.9))
-    if style == 1: d.rectangle([cx - hw - 3, top + hh * 0.5, cx - hw + 4, top + hh * 1.5], fill=hair, outline=OUTLINE)
-    if style == 2: d.ellipse([cx - 10, top - 14, cx + 12, top + 2], fill=hair, outline=OUTLINE)
-    d.arc([cx - hw - 1, top - 6, cx + hw - 6, top + hh], 200, 260, fill=lt(hair, 1.6), width=2)              # shine
-    ey = top + hh + 3
-    eyes = [(cx - 9, ey), (cx + 9, ey)]
-    for ex, _ in eyes:
-        d.rectangle([ex - 2, ey - 2, ex + 2, ey + 2], fill=(250, 248, 240)); d.rectangle([ex - 2, ey - 1, ex, ey + 2], fill=OUTLINE)
-        d.line([ex - 4, ey - 6, ex + 3, ey - 7], fill=dk(hair, 0.8), width=1)                               # brows
-    d.line([cx - 1, ey + 3, cx - 2, ey + 9], fill=dk(skin, 0.72)); d.line([cx - 2, ey + 10, cx + 1, ey + 10], fill=dk(skin, 0.72))  # nose
-    mx, my = cx - 1, top + int(hh * 1.58)
-    d.line([mx - 6, my, mx + 6, my], fill=dk(skin, 0.5), width=1)
-    d.point([(mx - 7, my - 1), (mx + 7, my - 1)], fill=dk(skin, 0.6))
-    build_frames(im, (mx, my, 14), eyes, px, Path(a.out))
+    body, rim = (30, 24, 20, 255), (255, 158, 80)
+    shape = Image.new("L", (gw, gh), 0); d = ImageDraw.Draw(shape)
+    cx, top, hw, hh = int(gw * FIG[0]), int(gh * 0.08), 21, 26
+    sy = top + 2 * hh - 2
+    d.ellipse([cx - hw, top, cx + hw, top + 2 * hh], fill=255)                     # head
+    d.rectangle([cx - 9, top + 2 * hh - 10, cx + 9, sy + 8], fill=255)              # neck
+    d.ellipse([cx - 64, sy, cx + 64, sy + 150], fill=255)                           # shoulders
+    mic = Image.new("L", (gw, gh), 0); m = ImageDraw.Draw(mic)                      # a desk mic, host side
+    mx, my = cx - 52, sy + 6
+    m.rounded_rectangle([mx - 6, my - 14, mx + 6, my + 8], 5, fill=255)
+    m.line([mx, my + 8, mx - 14, gh], fill=255, width=3)
+    def frame(glow):
+        im = Image.new("RGBA", (gw, gh), (0, 0, 0, 0))
+        im.paste(Image.new("RGBA", (gw, gh), body), (0, 0), shape)
+        # rim light: the part of the edge facing the lamp (left), a few pixels in
+        edge = Image.eval(ImageChops.subtract(shape, shape.filter(ImageFilter.MinFilter(9))), lambda v: v)
+        left = Image.new("L", (gw, gh), 0); ImageDraw.Draw(left).rectangle([0, 0, cx + 4, gh], fill=255)
+        r = ImageChops.multiply(edge, left).point(lambda v: int(v * glow))
+        im.paste(Image.new("RGBA", (gw, gh), rim + (255,)), (0, 0), r)
+        im.paste(Image.new("RGBA", (gw, gh), (120, 120, 128, 255)), (0, 0), mic)
+        ring = Image.new("RGBA", (gw, gh), OUTLINE); ring.putalpha(ImageChops.lighter(shape, mic).filter(ImageFilter.MaxFilter(3)))
+        ring.alpha_composite(im)
+        return ring.resize((CW, CH), Image.NEAREST)
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    for k, g in {"closed": 0.3, "blink": 0.3, "mid": 0.7, "oo": 0.7, "open": 1.0, "wide": 1.0}.items():
+        frame(g).save(out / f"{k}.webp", lossless=True)
+    print(f"wrote {out}/{{closed,mid,open,blink}}.webp (neutral silhouette)")
 
 
 def cmd_cv(a):
@@ -215,7 +207,7 @@ def cmd_preview(a):
 ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest="cmd", required=True)
 p = sub.add_parser("frames"); p.add_argument("photo"); p.add_argument("--out", required=True); p.add_argument("--mouth"); p.add_argument("--eyes")
 p.add_argument("--px", type=int, default=4); p.add_argument("--tone", default="warm"); p.add_argument("--no-cutout", action="store_true")
-p = sub.add_parser("placeholder"); p.add_argument("--name", required=True); p.add_argument("--out", required=True)
+p = sub.add_parser("placeholder"); p.add_argument("--name"); p.add_argument("--out", required=True)
 p = sub.add_parser("cv"); p.add_argument("image"); p.add_argument("--out", required=True)
 p = sub.add_parser("preview"); p.add_argument("dir"); p.add_argument("--site", default=".")
 a = ap.parse_args()

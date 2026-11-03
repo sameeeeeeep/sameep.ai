@@ -17,7 +17,7 @@ studies, clips, video, sprite, the Wispr team, his analytics Worker and domain),
 | `data/episode.json`         | the episode you write (or `starter_episode.py`'s skeleton) |
 | `data/work.json` + desktop folders | me.json `projects` |
 | `js/hero/cv.js`             | me.json `cv`: the CV that gets shredded |
-| `img/sprites/guest/*.webp`  | `sprite.py` (from their photo, or a pixel stand-in) |
+| `img/sprites/guest/*.webp`  | `sprite.py` (from their photo, or a neutral silhouette) |
 | `audio/clips/*.mp3`         | `voice.py render` |
 | `data/visemes.json`, `words.json`, `durations.json` | `visemes.py`, `words.py`, `durations.py` |
 
