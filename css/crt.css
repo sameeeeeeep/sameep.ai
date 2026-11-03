@@ -1,4 +1,4 @@
-/* crt.css — the CRT look on the desktop and podcast (see js/crtfx.js). The shader
+/* crt.css — the CRT look on the desktop and podcast: Curved / Flat / Off (see js/crtfx.js). The shader
    overlay does the tube; this adds what the glass can't: a slight red/blue
    convergence fringe and a phosphor glow on text (inherited, so it's one rule).
    No CSS filters here: a filter would turn the phone's fixed chooser sheet into a
@@ -9,7 +9,16 @@
 
 .menubar__crt { height: 100%; padding: 0 8px; border: 0; background: none; color: inherit; font: 800 11px/1 var(--f-dot, monospace); letter-spacing: .08em; cursor: pointer; }
 .menubar__crt:hover, .menubar__crt:focus-visible { background: #141210; color: var(--crt-glow, #b8ffe9); }
-.menubar__crt.is-off { opacity: .45; text-decoration: line-through; }
-@media (max-width: 760px) { .menubar__crt { display: none; } } /* phones: Special › CRT effect */
-/* Special › Curved glass (desktop, opt-in): the screen bent through the barrel map in js/crtfx.js */
+.menubar__crt[data-mode="off"] { opacity: .55; }
+@media (max-width: 760px) { .menubar__crt { display: none; } } /* phones: Special › Display */
+
+/* Curved (desktop): the screen bent through the barrel map in js/crtfx.js. The filter is
+   visual only; .crt-hit (the hit glass) sits over it and replays the pointer where the
+   page is drawn, so clicks land on what you see. */
 .crt-curve .crt__screen.is-on { filter: url(#crt-curve); }
+.crt-hit { position: absolute; inset: 0; z-index: 61; }
+.crt-hit[hidden] { display: none; }
+
+/* Off: clean pixels, no tube (square corners, no inner shade) */
+.crt-plain .crt__tube { border-radius: 0; }
+.crt-plain .crt__tube::after { display: none; }

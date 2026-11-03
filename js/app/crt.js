@@ -7,6 +7,10 @@
 //    vignette, grain). It never resamples the DOM, so text stays crisp.
 //    `strength` (0..1) takes glass from a faint film (0) to the boot's weight (1):
 //    deep scanlines, triads, tube falloff, phosphor haze, flicker. Off = hidden.
+//    `bend` > 0 (Curved, js/crtfx.js) lays the scanlines and triads along the same
+//    barrel the page is bent through, so they bow with it.
+
+import { isLow } from '../power.js';
 
 const VS = `attribute vec2 p; varying vec2 v; void main(){ v = p*0.5+0.5; gl_Position = vec4(p,0.,1.); }`;
 
@@ -22,6 +26,7 @@ uniform float power;    // 0..1 power-on raster
 uniform float k;        // curvature amount
 uniform float flick;
 uniform float strength; // glass mode: 0 faint .. 1 as heavy as the boot
+uniform float bend;     // glass mode: the page's barrel (js/crtfx.js warp), 0 = flat
 
 float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
 
@@ -83,6 +88,13 @@ void main(){
   } else {
     // glass over DOM: output premultiplied rgba
     vec2 c = uv0*2.-1.;
+    if (bend > 0.) {
+      vec2 w = vec2(c.x*(1.-bend*(1.-c.x*c.x)*(1.-.6*c.y*c.y)), c.y*(1.-bend*(1.-c.y*c.y)*(1.-.6*c.x*c.x)));
+      vec2 g = (w*0.5+0.5) * res;
+      scan = 0.5 + 0.5*sin(g.y * 3.14159 / 1.5);
+      tri = mod(floor(g.x), 3.);
+      mask = vec3(tri==0.?1.:.78, tri==1.?1.:.78, tri==2.?1.:.78);
+    }
     float edge = smoothstep(0.55, 1.35, length(c * vec2(0.92, 1.0)));
     float dark = 0.0;
     float s = strength;
@@ -153,7 +165,7 @@ export class CRT {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
     this.u = {};
-    ['tex', 'res', 'texRes', 'time', 'mode', 'power', 'k', 'flick', 'strength'].forEach((n) => (this.u[n] = gl.getUniformLocation(this.pr, n)));
+    ['tex', 'res', 'texRes', 'time', 'mode', 'power', 'k', 'flick', 'strength', 'bend'].forEach((n) => (this.u[n] = gl.getUniformLocation(this.pr, n)));
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     return true;
@@ -178,6 +190,7 @@ export class CRT {
     this.#resize();
   }
   setPower(p) { this.power = p; }
+  setBend(b) { this.bend = b; this.dirty = true; }
   setStrength(s) { this.strength = s; this.canvas.classList.toggle('is-off-glass', s < 0); this.dirty = true; } // -1 = off in glass mode
 
   #loop = () => {
@@ -185,9 +198,9 @@ export class CRT {
     requestAnimationFrame(this.#loop);
     if (!this.ok) return;
     const now = performance.now();
-    // glass mode only needs ~24fps (grain/flicker); screen mode follows the source
+    // glass mode only needs ~24fps (grain/flicker), ~15 on low power; screen mode follows the source
     if (this.mode === 1 && this.reduced && !this.dirty) return;
-    if (this.mode === 1 && now - (this.last || 0) < 41) return;
+    if (this.mode === 1 && now - (this.last || 0) < (isLow ? 66 : 41)) return;
     this.last = now;
     this.dirty = false;
     const gl = this.gl;
@@ -210,6 +223,7 @@ export class CRT {
     gl.uniform1f(this.u.k, this.size.w < 600 ? 0.035 : 0.06);
     gl.uniform1f(this.u.flick, this.reduced ? 0 : 1);
     gl.uniform1f(this.u.strength, Math.max(0, this.strength ?? 1));
+    gl.uniform1f(this.u.bend, this.mode === 1 ? this.bend || 0 : 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   };
 
