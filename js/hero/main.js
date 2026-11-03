@@ -154,10 +154,18 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     clearTimeout(gAuto);
     if (!groovesOn) return;
     gAuto = setTimeout(() => {
+      if (document.documentElement.classList.contains('is-gated')) return;   // the gate closing re-arms it (below)
       if (!inHero() || gBusy || hands?.busy || document.hidden) return arm(IDLE_MS);
       gDir = 1; go(1);
     }, ms);
   };
+  // the first pose gets its full IDLE_MS after the entry gate closes, not whatever was left on a timer
+  let wasGated = document.documentElement.classList.contains('is-gated');
+  new MutationObserver(() => {
+    const g = document.documentElement.classList.contains('is-gated');
+    if (wasGated && !g) arm(IDLE_MS);
+    wasGated = g;
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   const landed = () => arm(gDir > 0 && gChain.has(Math.round(scrollY)) ? CHAIN_MS : IDLE_MS);
   layoutGrooves();
   const glide = (to) => {
