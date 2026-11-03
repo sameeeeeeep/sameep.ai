@@ -1,7 +1,9 @@
-// analytics.js — who ran what, for Sameep's eyes only (sameep.ai/api/admin).
+// analytics.js — who ran what, for Sameep's eyes only (sameep.ai/admin).
 // track(type, data) queues an event; batches go out with sendBeacon. Fire-and-forget:
 // nothing here can throw into the show or wait on the network. Stored: a random visitor id,
-// the version, device class, referrer host, and what was picked/played. No IPs, no fingerprinting.
+// the version, device class, referrer host, the page, and what was picked/played/opened. No IPs, no
+// fingerprinting (the Worker adds country/city from Cloudflare). Every page on the site loads this file:
+// the app, the recording, the project pages and Growth OS, so one visit spans all of them.
 import { VERSION } from './version.js';
 import { POWER } from './power.js';
 
@@ -14,7 +16,9 @@ const rid = () => Math.random().toString(36).slice(2, 12) + Date.now().toString(
 // set by the admin page on this origin, or ?notrack: Sameep's own runs don't count
 const off = ls('otcv-notrack') === '1' || new URLSearchParams(location.search).has('notrack');
 const vid = ls('otcv-vid') || (ls('otcv-vid', rid()), ls('otcv-vid')) || rid();
-const sid = ss('otcv-sid') || (ss('otcv-sid', rid()), ss('otcv-sid')) || rid();
+// one visit = this tab, or any tab of the site active in the last 30 min (project pages open in new tabs)
+const recent = (() => { const [id, t] = String(ls('otcv-last') || '').split(':'); return id && Date.now() - Number(t) < 1_800_000 ? id : null; })();
+const sid = ss('otcv-sid') || (ss('otcv-sid', recent || rid()), ss('otcv-sid')) || recent || rid();
 const t0 = performance.now();
 let q = [], timer = 0, seen = 0, shownAt = document.hidden ? 0 : performance.now();
 
@@ -26,7 +30,7 @@ function device() {
 function ref() {
   try { const h = new URL(document.referrer).hostname; return h && h !== location.hostname ? h : null; } catch { return null; }
 }
-const meta = { vid, sid, site: LIVE ? 'live' : 'dev', version: VERSION, power: POWER, device: device(), ref: ref() };
+const meta = { vid, sid, site: LIVE ? 'live' : 'dev', version: VERSION, power: POWER, device: device(), ref: ref(), path: location.pathname.slice(0, 64) };
 
 function flush() {
   clearTimeout(timer); timer = 0;
@@ -44,6 +48,7 @@ export function track(type, d) {
   if (off) return;
   try {
     q.push({ type, t: Date.now(), d });
+    ls('otcv-last', sid + ':' + Date.now());
     if (q.length >= 20) flush();
     else timer ||= setTimeout(flush, 4000);
   } catch { /* never break the caller */ }
@@ -65,8 +70,55 @@ function away() {
 addEventListener('visibilitychange', () => { if (document.hidden) away(); else shownAt = performance.now(); });
 addEventListener('pagehide', () => { if (shownAt) away(); });
 
-// "Make your own" links live in a few places (menu bar, end card, the episode): catch them all here
+track('page', { path: meta.path });
+
+// where a link goes: a path on this site, else the other site's host
+const dest = (a) => { try { const u = new URL(a.href, location.href); return u.origin === location.origin ? u.pathname : u.hostname; } catch { return null; } };
+
+// Watched from the outside, so the app's own files (js/app/*) need no hooks: clicks on desktop icons and
+// links, windows the app opens (js/app/wm.js: section.win, named by aria-label), and the lock screen
+// (js/app/era.js: .lock, .lock__user; growth-os/: .pv__team). If those class names change, update here.
+let lockPick = null;
+const visitor = () => { try { return JSON.parse(ls('offthecv.visitor') || 'null'); } catch { return null; } };
+function loggedIn() {
+  if (lockPick === 'guest') return track('login', { as: 'guest' });
+  const v = visitor();
+  // Wispr teammates (ids w-…) by the name they picked; an account someone made for themselves stays nameless
+  if (v?.character && /^w-/.test(v.character)) track('login', { as: 'team', id: v.character, name: v.name });
+  else track('login', { as: 'own' });
+}
 addEventListener('click', (e) => {
-  const a = e.target?.closest?.('a[href]');
+  const t = e.target;
+  const a = t?.closest?.('a[href]');
+  // "Make your own" links live in a few places (menu bar, end card, the episode): catch them all here
   if (a && /(^|\/)make\/?(\?|$)|switchboard/i.test(a.getAttribute('href'))) track('make_your_own', { from: a.className.split(' ')[0] || 'link' });
+  const icon = t?.closest?.('.icon');
+  if (icon) track('icon', { label: (icon.dataset.label || icon.querySelector('.icon__label')?.textContent || '').trim().slice(0, 40), to: a ? dest(a) : undefined });
+  else if (a) track('link', { to: dest(a) });
+  const user = t?.closest?.('.lock__user');
+  if (user) lockPick = user.classList.contains('is-guest') ? 'guest' : user.classList.contains('is-add') ? null : 'pick';
+  if (t?.closest?.('.pv__team button')) { lockPick = 'pick'; setTimeout(loggedIn, 0); }
 }, { capture: true, passive: true });
+
+if (!off) {
+  new MutationObserver((list) => {
+    for (const m of list) {
+      for (const n of m.addedNodes) if (n.nodeType === 1 && n.matches('section.win')) track('window', { title: (n.getAttribute('aria-label') || '').slice(0, 40) });
+      // era.js saves the pick to localStorage right after removing the lock screen, before this runs
+      for (const n of m.removedNodes) if (n.nodeType === 1 && n.classList.contains('lock')) loggedIn();
+    }
+  }).observe(document.body, { childList: true, subtree: true });
+}
+
+// videos marked data-track="name" (the recording): play, 25/50/75%, the end
+document.querySelectorAll('video[data-track]').forEach((v) => {
+  const name = v.dataset.track.slice(0, 32);
+  let max = 0;
+  const at = (k, p) => track('video', { name, at: k, p, s: Math.round(v.currentTime) });
+  v.addEventListener('play', () => at('play', max));
+  v.addEventListener('timeupdate', () => {
+    const p = v.duration ? Math.floor((v.currentTime / v.duration) * 4) * 25 : 0;
+    if (p > max && p < 100) { max = p; at('progress', p); }
+  });
+  v.addEventListener('ended', () => { max = 100; at('ended', 100); });
+});

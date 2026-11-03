@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>sameep.ai visits</title>
+<!-- Sameep's private dashboard. The same file is served at sameep.ai/admin (GitHub Pages) and sameep.ai/api/admin
+     (the analytics Worker bundles it). No data or PIN in here: everything comes from /api/admin/data after the PIN
+     (checked by the Worker, analytics/src/admin-auth.js) or the old token link (#k=<ADMIN_TOKEN>). -->
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f3ef; --card: #fcfcfb; --line: #e3e1da; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8983;
+  --accent: #2a78d6; --wispr: #eb6834; --good: #1a7f37; --bad: #c62828; --chip: #ecebe5;
+  --series-1: #2a78d6; --series-2: #eb6834;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --bg: #111110; --card: #1a1a19; --line: #2c2c2a; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
+    --accent: #3987e5; --wispr: #d95926; --good: #4caf6a; --bad: #ef6b6b; --chip: #262624;
+    --series-1: #3987e5; --series-2: #d95926;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111110; --card: #1a1a19; --line: #2c2c2a; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
+  --accent: #3987e5; --wispr: #d95926; --good: #4caf6a; --bad: #ef6b6b; --chip: #262624;
+  --series-1: #3987e5; --series-2: #d95926;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 64px; }
+h1 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); margin: 0 0 12px; }
+.muted { color: var(--ink-3); }
+.small { font-size: 13px; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* lock */
+.lock { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
+.lock form { width: 100%; max-width: 320px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px 24px; text-align: center; }
+.lock h1 { margin-bottom: 4px; }
+.lock p { margin: 0 0 20px; color: var(--ink-2); font-size: 14px; }
+.pin { width: 100%; font-size: 32px; letter-spacing: 0.5em; text-align: center; padding: 12px 0 12px 0.5em; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); outline: none; }
+.pin:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.go { margin-top: 14px; width: 100%; min-height: 46px; border: 0; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 600; }
+.go:disabled { opacity: 0.4; cursor: default; }
+.msg { min-height: 20px; margin-top: 12px; font-size: 14px; color: var(--bad); }
+
+/* top */
+.top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
+.seg { display: inline-flex; background: var(--chip); border-radius: 999px; padding: 3px; }
+.seg button { border: 0; background: none; padding: 6px 12px; border-radius: 999px; font-size: 13px; color: var(--ink-2); min-height: 32px; }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); font-weight: 600; }
+.tog { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); padding: 6px 10px; border-radius: 999px; background: var(--chip); min-height: 38px; }
+.tog input { margin: 0; accent-color: var(--accent); }
+.ghost { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 12px; font-size: 13px; color: var(--ink-2); min-height: 36px; }
+
+/* grid */
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-width: 0; }
+.s12 { grid-column: span 12; } .s8 { grid-column: span 8; } .s6 { grid-column: span 6; } .s4 { grid-column: span 4; }
+@media (max-width: 860px) { .s8, .s6, .s4 { grid-column: span 12; } }
+.kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; grid-column: span 12; }
+@media (max-width: 860px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+.kpi b { display: block; font-size: 28px; line-height: 1.1; font-weight: 650; letter-spacing: -0.02em; }
+.kpi span { font-size: 13px; color: var(--ink-2); }
+.kpi.is-wispr b { color: var(--ink); }
+.kpi.is-wispr { border-color: color-mix(in srgb, var(--wispr) 45%, var(--line)); }
+
+/* here now */
+.here { display: flex; align-items: center; gap: 10px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); flex: none; }
+.dot.on { background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 22%, transparent); animation: pulse 2s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--good) 8%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .dot.on { animation: none; } }
+.herelist { margin: 10px 0 0; padding: 0; list-style: none; font-size: 14px; }
+.herelist li { padding: 6px 0; border-top: 1px solid var(--line); }
+
+/* chart */
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: 180px; overflow: visible; }
+.chart .axis { fill: var(--ink-3); font-size: 11px; }
+.chart .grid-l { stroke: var(--line); stroke-width: 1; }
+.legend { display: flex; gap: 14px; font-size: 13px; color: var(--ink-2); margin-bottom: 8px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 8px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%); opacity: 0; transition: opacity .1s; z-index: 2; }
+
+/* lists */
+.rows { margin: 0; padding: 0; list-style: none; }
+.rows li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.rows li:first-child { border-top: 0; }
+.rows .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rows .meter { grid-column: 1 / -1; height: 4px; border-radius: 4px; background: var(--chip); overflow: hidden; }
+.rows .meter i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.rows .meter i.drop { background: var(--ink-3); }
+.empty { color: var(--ink-3); font-size: 14px; padding: 8px 0; }
+
+/* wispr */
+.wispr-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.yes { color: var(--good); font-weight: 600; }
+.no { color: var(--ink-3); }
+.folks { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.folk { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.folk h3 { margin: 0 0 2px; font-size: 16px; }
+.folk dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 10px 0 0; font-size: 13px; }
+.folk dt { color: var(--ink-3); }
+.folk dd { margin: 0; }
+.pill { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--ink-2); }
+.pill.w { background: color-mix(in srgb, var(--wispr) 18%, transparent); color: var(--ink); }
+.pill.dev { background: color-mix(in srgb, var(--bad) 15%, transparent); }
+.prog { height: 6px; background: var(--chip); border-radius: 6px; overflow: hidden; margin-top: 4px; }
+.prog i { display: block; height: 100%; background: var(--wispr); border-radius: 6px; }
+
+/* visits */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 8px; border-bottom: 1px solid var(--line); }
+td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr.v { cursor: pointer; }
+tr.v:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
+.det p { margin: 0 0 6px; }
+.det b { color: var(--ink); font-weight: 600; }
+.more { margin-top: 12px; }
+@media (max-width: 640px) {
+  table, thead, tbody, tr, td { display: block; }
+  thead { display: none; }
+  tr.v { border-bottom: 1px solid var(--line); padding: 10px 0; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; }
+  tr.v td { border: 0; padding: 0; }
+  tr.v td[data-k="time"] { font-weight: 600; }
+  tr.v td[data-k="place"] { grid-column: 1; color: var(--ink-2); }
+  tr.v td[data-k="dur"] { grid-column: 2; grid-row: 1; text-align: right; }
+  tr.v td[data-k="who"], tr.v td[data-k="far"] { grid-column: 1 / -1; }
+  tr.v td[data-k="device"] { grid-column: 2; grid-row: 2; text-align: right; color: var(--ink-3); font-size: 13px; }
+  tr.v td[data-k="version"], tr.v td.is-empty { display: none; }
+  tr.v td[data-k="who"]::before { content: "Wispr: "; color: var(--ink-3); }
+  .m-only { display: inline-block !important; }
+  tr.detail td { padding: 10px; border-radius: 10px; margin-bottom: 8px; }
+}
+.m-only { display: none; }
+.foot { margin-top: 24px; font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(() => {
+  const API = '/api/admin';
+  const TOKEN = 'otcv-admin', NOTRACK = 'otcv-notrack';
+  const app = document.getElementById('app');
+  const ls = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* private mode */ } } };
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pref = (() => { try { return JSON.parse(ls.get('otcv-dash') || '{}'); } catch { return {}; } })();
+  const state = { days: pref.days || 7, dev: !!pref.dev, wispr: !!pref.wispr, data: null, ep: null, open: new Set(), limit: 50 };
+  const savePref = () => ls.set('otcv-dash', JSON.stringify({ days: state.days, dev: state.dev, wispr: state.wispr }));
+
+  // the old login link: /admin#k=TOKEN (or /api/admin#k=…) keeps the token on this device, then drops it from the address bar
+  const m = location.hash.match(/#k=([^&]+)/);
+  if (m) { ls.set(TOKEN, decodeURIComponent(m[1])); ls.set(NOTRACK, '1'); history.replaceState(null, '', location.pathname); }
+
+  // ---------------------------------------------------------------- lock
+  function lock(msg = '', wait = 0) {
+    app.innerHTML = `<div class="lock"><form autocomplete="off">
+      <h1>sameep.ai visits</h1><p>Enter your PIN</p>
+      <input class="pin num" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="one-time-code" aria-label="PIN" required>
+      <button class="go" type="submit">Unlock</button>
+      <div class="msg" role="status" aria-live="polite">${esc(msg)}</div></form></div>`;
+    const f = app.querySelector('form'), inp = f.querySelector('.pin'), go = f.querySelector('.go'), out = f.querySelector('.msg');
+    let t = 0;
+    const hold = (secs) => {
+      clearInterval(t);
+      const until = Date.now() + secs * 1000;
+      const tick = () => {
+        const s = Math.max(0, Math.round((until - Date.now()) / 1000));
+        inp.disabled = go.disabled = s > 0;
+        out.textContent = s > 0 ? `Too many wrong tries. Try again in ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}.` : '';
+        if (!s) { clearInterval(t); inp.focus(); }
+      };
+      tick(); t = setInterval(tick, 1000);
+    };
+    if (wait) hold(wait); else setTimeout(() => inp.focus(), 50);
+    inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, ''); if (inp.value.length === 4) f.requestSubmit(); });
+    f.onsubmit = async (e) => {
+      e.preventDefault();
+      if (!inp.value) return;
+      go.disabled = true; out.textContent = '';
+      try {
+        const r = await fetch(API + '/pin', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pin: inp.value }) });
+        const d = await r.json().catch(() => ({}));
+        if (r.ok) { ls.set(NOTRACK, '1'); return load(); }
+        inp.value = '';
+        if (r.status === 429) return hold(d.retryIn || 900);
+        out.textContent = d.left ? `${d.error || 'Wrong PIN.'} ${d.left} ${d.left === 1 ? 'try' : 'tries'} left.` : (d.error || 'Couldn’t check the PIN.');
+        go.disabled = false; inp.focus();
+      } catch { out.textContent = 'Offline? Try again.'; go.disabled = false; }
+    };
+  }
+
+  // ---------------------------------------------------------------- load
+  async function load() {
+    if (!state.data) app.innerHTML = '<div class="lock"><p class="muted">Loading…</p></div>';
+    const t = ls.get(TOKEN);
+    try {
+      const [r, ep] = await Promise.all([
+        fetch(`${API}/data?days=${state.days}`, { credentials: 'same-origin', headers: t ? { authorization: 'Bearer ' + t } : {} }),
+        state.ep || fetch('/data/episode.json').then((x) => (x.ok ? x.json() : null)).catch(() => null),
+      ]);
+      state.ep = ep;
+      if (r.status === 401) { if (t) ls.set(TOKEN, null); return lock(); }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      state.data = await r.json();
+      render();
+    } catch (e) { app.innerHTML = `<div class="lock"><p class="msg">Couldn’t load: ${esc(e.message)}</p></div>`; }
+  }
+
+  // ---------------------------------------------------------------- helpers
+  const title = (id) => state.ep?.nodes?.[id]?.title || id;
+  const hostName = (id) => (state.ep?.hosts || []).find((h) => h.id === id)?.name?.split(' ')[0] || id || '—';
+  const mins = (s) => (!s ? '—' : s < 60 ? Math.round(s) + 's' : s < 3600 ? Math.floor(s / 60) + 'm ' + String(Math.round(s % 60)).padStart(2, '0') + 's' : Math.floor(s / 3600) + 'h ' + Math.round((s % 3600) / 60) + 'm');
+  const when = (t) => {
+    const s = (Date.now() - t) / 1000;
+    if (s < 90) return 'just now';
+    if (s < 3600) return Math.round(s / 60) + ' min ago';
+    const d = new Date(t), today = new Date(); today.setHours(0, 0, 0, 0);
+    const hm = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    if (t >= today.getTime()) return 'Today ' + hm;
+    if (t >= today.getTime() - 86400000) return 'Yesterday ' + hm;
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + ', ' + hm;
+  };
+  const place = (v) => [v.city, v.country].filter(Boolean).join(', ') || '—';
+  const teammate = (v) => (v.login?.as === 'team' ? v.login.name || v.login.id?.replace(/^w-/, '') : null);
+  const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || v.pages.some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
+  const watched = (v) => v.video && (v.video.played || v.video.max > 0);
+  const projectPages = (v) => v.pages.filter((p) => p !== '/' && p !== '/index.html' && !p.startsWith('/admin') && !p.startsWith('/api'));
+  const far = (v) => v.ended ? 'Finished the podcast' : v.nodes.length ? `${v.nodes.length} chapter${v.nodes.length > 1 ? 's' : ''} · last “${title(v.nodes[v.nodes.length - 1].id)}”`
+    : v.welcome ? 'Picked a host' : v.login ? 'Logged in' : v.heroDone ? 'Reached the iMac' : v.gate ? `Intro ${Math.round(v.hero)}%` : projectPages(v).length ? 'Pages only' : 'Bounced';
+  const reach = (v) => v.ended ? 100 : v.nodes.length ? Math.min(95, 45 + v.nodes.length * 5) : v.welcome ? 45 : v.heroDone ? 40 : v.gate ? 5 + v.hero * 0.35 : 2;
+  const count = (arr) => { const m = new Map(); for (const x of arr) if (x) m.set(x, (m.get(x) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
+  const median = (xs) => { const s = xs.filter((x) => x > 0).sort((a, b) => a - b); return s.length ? s[Math.floor(s.length / 2)] : 0; };
+  const rows = (list, { fmt = (k) => k, cls = '', max = 8, empty = 'Nothing yet' } = {}) => {
+    if (!list.length) return `<p class="empty">${empty}</p>`;
+    const top = list[0][1];
+    return `<ul class="rows">${list.slice(0, max).map(([k, n]) => `<li><span class="lbl" title="${esc(fmt(k))}">${esc(fmt(k))}</span><span class="num">${n}</span><span class="meter"><i class="${cls}" style="width:${(n / top) * 100}%"></i></span></li>`).join('')}</ul>`;
+  };
+
+  function filtered() {
+    return (state.data?.visits || []).filter((v) => (state.dev || v.site === 'live') && (!state.wispr || isWispr(v)));
+  }
+
+  // ---------------------------------------------------------------- chart: visits per day, Wispr stacked on top
+  function chart(list) {
+    const days = state.days, DAY = 86400000;
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    const buckets = Array.from({ length: days }, (_, i) => ({ t: start.getTime() - (days - 1 - i) * DAY, other: 0, wispr: 0 }));
+    for (const v of list) {
+      const i = Math.floor((v.start - buckets[0].t) / DAY);
+      if (i >= 0 && i < days) buckets[i][isWispr(v) ? 'wispr' : 'other']++;
+    }
+    const max = Math.max(1, ...buckets.map((b) => b.other + b.wispr));
+    const nice = max <= 4 ? max : Math.ceil(max / 5) * 5;
+    const W = 1000, H = 180, padB = 22, padL = 26, plotH = H - padB - 8, bw = (W - padL) / days, gap = Math.min(6, bw * 0.25);
+    const y = (n) => (n / nice) * plotH;
+    const fmtD = (t) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    let bars = '';
+    buckets.forEach((b, i) => {
+      const x = padL + i * bw + gap / 2, w = Math.max(1, bw - gap), base = H - padB;
+      const ho = y(b.other), hw = y(b.wispr);
+      // 4px rounded data-ends; a 2px surface gap between the two stacked fills
+      const seg = (bottom, h, fill) => { const r = Math.min(4, w / 2, h); return `<path d="M${x},${bottom} v${-(h - r)} q0,${-r} ${r},${-r} h${w - 2 * r} q${r},0 ${r},${r} v${h - r} z" fill="${fill}" />`; };
+      if (b.other) bars += seg(base, ho, 'var(--series-1)');
+      if (b.wispr) bars += seg(base - ho - (b.other ? 2 : 0), hw, 'var(--series-2)');
+      bars += `<rect class="hit" data-i="${i}" x="${padL + i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent" />`;
+    });
+    const step = days <= 7 ? 1 : days <= 30 ? 5 : 15;
+    const labels = buckets.map((b, i) => (i % step === 0 || i === days - 1) && (i === days - 1 || days - 1 - i >= step / 2) ? `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${days <= 7 ? new Date(b.t).toLocaleDateString(undefined, { weekday: 'short' }) : fmtD(b.t)}</text>` : '').join('');
+    const grid = [0, nice / 2, nice].filter((n, i, a) => a.indexOf(n) === i && Number.isInteger(n)).map((n) => `<line class="grid-l" x1="${padL}" x2="${W}" y1="${H - padB - y(n)}" y2="${H - padB - y(n)}" /><text class="axis" x="${padL - 6}" y="${H - padB - y(n) + 4}" text-anchor="end">${n}</text>`).join('');
+    return { html: `<div class="legend"><span><i style="background:var(--series-1)"></i>Everyone else</span><span><i style="background:var(--series-2)"></i>Wispr version / recording</span></div>
+      <div class="chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Visits per day">${grid}${bars}${labels}</svg><div class="tip"></div></div>`, buckets, W, fmtD };
+  }
+
+  // ---------------------------------------------------------------- render
+  function render() {
+    const d = state.data, all = filtered();
+    const live = (state.data?.visits || []).filter((v) => state.dev || v.site === 'live');
+    const visitors = new Set(all.map((v) => v.vid)).size;
+    const wisprVisits = live.filter(isWispr);
+    const finished = all.filter((v) => v.ended).length;
+    const rec = all.filter(watched).length;
+    const here = (d.here || []).filter((h) => state.dev || h.site === 'live');
+    const bySid = new Map(d.visits.map((v) => [v.sid, v]));
+
+    // Wispr folks: one card per teammate picked on the lock screen, plus anyone on a Wispr link who didn't log in
+    const folks = new Map();
+    for (const v of wisprVisits) {
+      const name = teammate(v) || (v.login?.as === 'guest' ? 'Guest (Wispr link)' : v.login?.as === 'own' ? 'Own account (Wispr link)' : 'Didn’t log in (Wispr link)');
+      const f = folks.get(name) || { name, team: !!teammate(v), visits: [], };
+      f.visits.push(v); folks.set(name, f);
+    }
+    const folkList = [...folks.values()].sort((a, b) => (b.team - a.team) || (Math.max(...b.visits.map((v) => v.last)) - Math.max(...a.visits.map((v) => v.last))));
+    const folkCard = (f) => {
+      const vs = f.visits, last = Math.max(...vs.map((v) => v.last)), first = Math.min(...vs.map((v) => v.start));
+      const best = vs.reduce((a, b) => (reach(b) > reach(a) ? b : a));
+      const vid = vs.filter((v) => v.video).reduce((a, v) => Math.max(a, v.video.max, v.video.played ? 1 : 0), -1);
+      const gos = vs.some((v) => v.growthOpen);
+      const time = vs.reduce((a, v) => a + (v.duration || 0), 0);
+      const places = [...new Set(vs.map(place).filter((p) => p !== '—'))].join(' · ') || '—';
+      return `<div class="folk"><h3>${esc(f.name)}</h3><div class="small muted">${vs.length} visit${vs.length > 1 ? 's' : ''} · last ${esc(when(last))}${vs.length > 1 ? ' · first ' + esc(when(first)) : ''}</div>
+        <div class="prog" title="How far into the podcast"><i style="width:${reach(best)}%"></i></div>
+        <dl><dt>Podcast</dt><dd>${esc(far(best))}</dd>
+        <dt>Recording</dt><dd>${vid < 0 ? '<span class="no">Not watched</span>' : vid >= 100 ? '<span class="yes">Watched to the end</span>' : `<span class="yes">Played</span>${vid > 1 ? ' · ' + vid + '%' : ''}`}</dd>
+        <dt>Growth OS</dt><dd>${gos ? '<span class="yes">Opened</span>' : '<span class="no">Not opened</span>'}</dd>
+        <dt>Time</dt><dd class="num">${mins(time)}</dd><dt>From</dt><dd>${esc(places)}</dd></dl></div>`;
+    };
+    const glog = (d.growth || []).filter((g) => state.dev || g.site === 'live');
+    const signins = glog.filter((g) => g.kind === 'signin' || g.kind === 'signin_link');
+    const wisprSign = glog.filter((g) => g.domain === 'wispr.ai');
+    const gSummary = glog.length ? `${signins.length} sign-in${signins.length === 1 ? '' : 's'}, ${glog.filter((g) => g.kind === 'code_sent').length} code${glog.filter((g) => g.kind === 'code_sent').length === 1 ? '' : 's'} sent · by domain: ${count(glog.filter((g) => g.domain).map((g) => g.domain)).map(([k, n]) => `${esc(k)} ×${n}`).join(', ') || '—'}${wisprSign.length ? ` · last wispr.ai ${esc(when(wisprSign[0].ts))}` : ''}` : 'No Growth OS sign-ins yet';
+    const anyTeam = folkList.some((f) => f.team);
+
+    // chapters: how many visits reached each, and where the unfinished ones stopped
+    const reached = count(all.flatMap((v) => [...new Set(v.nodes.map((n) => n.id))]));
+    const dropped = count(all.filter((v) => v.nodes.length && !v.ended).map((v) => v.nodes[v.nodes.length - 1].id));
+    const opened = count(all.flatMap((v) => [...new Set([...v.icons, ...v.windows.map((w) => w + ' (window)'), ...projectPages(v).map((p) => p + ' (page)')])]));
+    const refs = count(all.map((v) => v.ref || '(direct)'));
+    const countries = count(all.map((v) => v.country));
+    const c = chart(all);
+
+    app.innerHTML = `<div class="wrap">
+      <div class="top"><h1>sameep.ai visits</h1><div class="small muted">Updated ${esc(new Date(d.now).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }))}</div></div>
+      <div class="bar">
+        <div class="seg" role="group" aria-label="Range">${[[1, 'Today'], [7, '7 days'], [30, '30 days'], [90, '90 days']].map(([n, l]) => `<button type="button" data-days="${n}" aria-pressed="${state.days === n}">${l}</button>`).join('')}</div>
+        <label class="tog"><input type="checkbox" data-f="wispr" ${state.wispr ? 'checked' : ''}> Wispr only</label>
+        <label class="tog"><input type="checkbox" data-f="dev" ${state.dev ? 'checked' : ''}> Include local tests</label>
+        <button class="ghost" type="button" data-act="refresh">Refresh</button>
+      </div>
+      <div class="grid">
+        <div class="kpis">
+          <div class="kpi"><b class="num">${all.length}</b><span>Visits</span></div>
+          <div class="kpi"><b class="num">${visitors}</b><span>People</span></div>
+          <div class="kpi is-wispr"><b class="num">${folkList.filter((f) => f.team).length}</b><span>Wispr teammates</span></div>
+          <div class="kpi"><b class="num">${finished}</b><span>Finished podcast</span></div>
+          <div class="kpi"><b class="num">${rec}</b><span>Watched recording</span></div>
+          <div class="kpi"><b class="num">${mins(median(all.map((v) => v.duration)))}</b><span>Median visit</span></div>
+        </div>
+
+        <section class="card s12" aria-labelledby="h-wispr">
+          <div class="wispr-head"><h2 id="h-wispr">Wispr folks</h2><span class="small muted">${anyTeam ? '' : 'No teammate has logged in yet · '}${gSummary}</span></div>
+          ${folkList.length ? `<div class="folks">${folkList.map(folkCard).join('')}</div>` : '<p class="empty">Nobody from the Wispr link yet in this range.</p>'}
+        </section>
+
+        <section class="card s8" aria-labelledby="h-day"><h2 id="h-day">Visits per day</h2>${c.html}</section>
+        <section class="card s4" aria-labelledby="h-here"><h2 id="h-here">Here now</h2>
+          <div class="here"><span class="dot ${here.length ? 'on' : ''}"></span><b class="num" style="font-size:24px">${here.length}</b><span class="muted small">in the last 90 seconds</span></div>
+          ${here.length ? `<ul class="herelist">${here.map((h) => { const v = bySid.get(h.sid); return `<li>${v ? `${esc(teammate(v) || place(v))} · ${esc(v.device || '')}${isWispr(v) ? ' · <span class="pill w">Wispr</span>' : ''}<div class="small muted">${esc(far(v))}</div>` : '<span class="muted">Someone (no events yet)</span>'}</li>`; }).join('')}</ul>` : ''}
+        </section>
+
+        <section class="card s4" aria-labelledby="h-ch"><h2 id="h-ch">Top chapters</h2>${rows(reached, { fmt: title, empty: 'No chapters played yet' })}</section>
+        <section class="card s4" aria-labelledby="h-drop"><h2 id="h-drop">Where people stopped</h2>${rows(dropped, { fmt: title, cls: 'drop', empty: 'Nobody stopped mid-podcast yet' })}</section>
+        <section class="card s4" aria-labelledby="h-proj"><h2 id="h-proj">Opened</h2>${rows(opened, { empty: 'No icons or pages opened yet' })}</section>
+        <section class="card s6" aria-labelledby="h-ref"><h2 id="h-ref">Referrers</h2>${rows(refs)}</section>
+        <section class="card s6" aria-labelledby="h-geo"><h2 id="h-geo">Countries</h2>${rows(countries, { empty: 'No location yet (added 4 Nov)' })}</section>
+
+        <section class="card s12" aria-labelledby="h-v"><h2 id="h-v">Visits</h2>
+          ${all.length ? `<table><thead><tr><th>Time</th><th>Place</th><th>Device</th><th>Version</th><th>Wispr teammate</th><th>How far</th><th>Time on site</th></tr></thead><tbody>
+          ${all.slice(0, state.limit).map((v) => `<tr class="v" data-sid="${esc(v.sid)}" aria-expanded="${state.open.has(v.sid)}">
+            <td data-k="time">${esc(when(v.start))}${v.version === 'wispr' ? ' <span class="pill w m-only">Wispr</span>' : ''}${v.returning ? ' <span class="pill">back</span>' : ''}${v.site !== 'live' ? ' <span class="pill dev">dev</span>' : ''}</td>
+            <td data-k="place" class="${place(v) === '—' ? 'is-empty' : ''}">${esc(place(v))}</td><td data-k="device">${esc(v.device || '—')}</td>
+            <td data-k="version">${v.version === 'wispr' ? '<span class="pill w">Wispr</span>' : '<span class="pill">Default</span>'}</td>
+            <td data-k="who" class="${teammate(v) ? '' : 'is-empty'}">${teammate(v) ? esc(teammate(v)) : '<span class="muted">—</span>'}</td>
+            <td data-k="far">${esc(far(v))}${watched(v) ? ' · <span class="yes">recording</span>' : ''}${v.growthOpen ? ' · <span class="yes">Growth OS</span>' : ''}</td>
+            <td data-k="dur" class="num">${mins(v.duration)}</td></tr>
+            ${state.open.has(v.sid) ? `<tr class="detail"><td colspan="7"><div class="det">${detail(v)}</div></td></tr>` : ''}`).join('')}
+          </tbody></table>${all.length > state.limit ? `<button class="ghost more" type="button" data-act="more">Show ${Math.min(50, all.length - state.limit)} more of ${all.length - state.limit}</button>` : ''}` : '<p class="empty">No visits in this range.</p>'}
+        </section>
+      </div>
+      <div class="foot"><span>Sameep only. Locked with your PIN for 7 days on this device.</span>
+        <button class="ghost" type="button" data-act="notrack">${ls.get(NOTRACK) ? 'Track this browser again' : 'Stop tracking this browser'}</button>
+        <button class="ghost" type="button" data-act="logout">Lock</button></div>
+    </div>`;
+
+    // chart tooltip
+    const svg = app.querySelector('.chart svg'), tip = app.querySelector('.tip');
+    svg?.addEventListener('pointermove', (e) => {
+      const r = e.target.closest?.('.hit'); if (!r) { tip.style.opacity = 0; return; }
+      const b = c.buckets[r.dataset.i], box = svg.getBoundingClientRect(), x = (Number(r.getAttribute('x')) + Number(r.getAttribute('width')) / 2) / c.W * box.width;
+      tip.innerHTML = `<b>${esc(c.fmtD(b.t))}</b> · ${b.other + b.wispr} visit${b.other + b.wispr === 1 ? '' : 's'}${b.wispr ? ` (${b.wispr} Wispr)` : ''}`;
+      tip.style.left = x + 'px'; tip.style.top = '24px'; tip.style.opacity = 1;
+    });
+    svg?.addEventListener('pointerleave', () => { tip.style.opacity = 0; });
+  }
+
+  function detail(v) {
+    const p = [];
+    p.push(`<p><b>Arrived</b> ${esc(new Date(v.start).toLocaleString())} from ${esc(v.ref || 'a direct link')} · ${esc([v.city, v.region, v.country].filter(Boolean).join(', ') || 'unknown place')} · ${esc(v.device || '')}, ${esc(v.power || '')} power</p>`);
+    if (v.gate) p.push(`<p><b>Gate</b> ${esc(v.gate)} · intro ${Math.round(v.hero)}%${v.heroDone ? ' (done)' : ''}</p>`);
+    if (v.login) p.push(`<p><b>Lock screen</b> ${v.login.as === 'team' ? esc(teammate(v)) : v.login.as === 'own' ? 'made their own account' : 'guest'}</p>`);
+    if (v.welcome) p.push(`<p><b>Host</b> ${esc(hostName(v.welcome.host))} · ${esc(v.welcome.route || 'standard')} length${v.switches.length ? ' · switched to ' + v.switches.map((s) => esc(hostName(s))).join(', ') : ''}</p>`);
+    if (v.nodes.length) p.push(`<p><b>Chapters</b> ${v.nodes.map((n) => esc(title(n.id))).join(' → ')}${v.ended ? ' → <span class="yes">end</span>' : ''}</p>`);
+    if (v.choices.length) p.push(`<p><b>Choices</b> ${v.choices.filter((x) => x.how !== 'auto').length} picked (${v.choices.filter((x) => x.how === 'voice').length} by voice)</p>`);
+    if (v.video) p.push(`<p><b>Recording</b> ${v.video.done ? 'watched to the end' : v.video.played ? `played, got to ${v.video.max}% (${mins(v.video.secs)})` : 'opened, not played'}</p>`);
+    if (v.windows.length) p.push(`<p><b>Windows</b> ${v.windows.map(esc).join(', ')}</p>`);
+    if (v.icons.length) p.push(`<p><b>Icons</b> ${v.icons.map(esc).join(', ')}</p>`);
+    if (projectPages(v).length) p.push(`<p><b>Pages</b> ${projectPages(v).map(esc).join(', ')}</p>`);
+    if (v.links.length) p.push(`<p><b>Links</b> ${v.links.map(esc).join(', ')}</p>`);
+    if (v.make) p.push(`<p><b>Make your own</b> clicked ${v.make}×</p>`);
+    p.push(`<p class="muted">On site ${mins(v.duration)}${v.seen ? `, ${mins(v.seen)} with the tab in view` : ''}</p>`);
+    return p.join('');
+  }
+
+  app.addEventListener('click', async (e) => {
+    const b = e.target.closest('button, tr.v');
+    if (!b) return;
+    if (b.dataset.days) { state.days = Number(b.dataset.days); savePref(); return load(); }
+    if (b.matches('tr.v')) { const s = b.dataset.sid; state.open.has(s) ? state.open.delete(s) : state.open.add(s); return render(); }
+    const act = b.dataset.act;
+    if (act === 'refresh') return load();
+    if (act === 'more') { state.limit += 50; return render(); }
+    if (act === 'notrack') { ls.set(NOTRACK, ls.get(NOTRACK) ? null : '1'); return render(); }
+    if (act === 'logout') { await fetch(API + '/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); ls.set(TOKEN, null); state.data = null; return lock(); }
+  });
+  app.addEventListener('change', (e) => {
+    const f = e.target.dataset?.f;
+    if (f) { state[f] = e.target.checked; savePref(); render(); }
+  });
+  // keep "here now" fresh while the page is open
+  setInterval(() => { if (state.data && !document.hidden) load(); }, 60000);
+  load();
+})();
+</script>
+</body>
+</html>
