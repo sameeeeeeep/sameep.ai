@@ -5,54 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brew-bot film</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600&family=Spline+Sans+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
 <style>
-:root{--bg:#120d09;--panel:#1d1510;--panel2:#261c15;--ink:#f4ebe1;--muted:#a8978a;--accent:#e08a4a;--water:#6fb0ea;--coffee:#7a4520;--ok:#6cc488;--line:rgba(244,235,225,.14)}
+:root{--bg:#0d0d0d;--panel:#171717;--panel2:#202020;--ink:#ececea;--muted:#9a9890;--accent:#7d93ff;--water:#6fb0ea;--coffee:#7a4520;--ok:#6cc488;--line:rgba(244,235,225,.14)}
 html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
 #wrap{position:absolute;inset:0;display:grid;place-items:center}
-#stage{width:1280px;height:720px;position:relative;transform-origin:center;background:radial-gradient(1200px 700px at 50% 30%,#2a1d14,#120d09);color:var(--ink);font:20px/1.4 Inter,system-ui,sans-serif;overflow:hidden}
+#stage{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center;background:radial-gradient(1200px 700px at 50% 30%,#1c1c1c,#0d0d0d);color:var(--ink);font:20px/1.4 'IBM Plex Sans',system-ui,sans-serif;overflow:hidden}
 .scene{position:absolute;inset:0;opacity:0}
-.mono{font-family:'Spline Sans Mono',ui-monospace,monospace}
-.badge{position:absolute;top:24px;left:28px;font:600 13px 'Spline Sans Mono';letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:99px;z-index:5}
-.brand{position:absolute;top:24px;right:28px;font:600 20px Fraunces,serif;z-index:5}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.badge{position:absolute;top:24px;left:28px;font:600 13px 'IBM Plex Mono';letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:99px;z-index:5}
+.brand{position:absolute;top:24px;right:28px;font:600 20px 'IBM Plex Sans',sans-serif;z-index:5}
 .cap{position:absolute;left:0;right:0;bottom:34px;text-align:center;z-index:5}
-.cap span{display:inline-block;background:rgba(0,0,0,.55);padding:10px 20px;border-radius:12px;font:600 24px Inter}
-.cap b{color:var(--accent);margin-right:10px;font-family:'Spline Sans Mono'}
+.cap span{display:inline-block;background:rgba(0,0,0,.55);padding:10px 20px;border-radius:12px;font:600 24px 'IBM Plex Sans'}
+.cap b{color:var(--accent);margin-right:10px;font-family:'IBM Plex Mono'}
 /* wispr */
 .pill{position:absolute;left:50%;top:300px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:#000;border:1px solid var(--line);border-radius:99px;padding:14px 22px}
 .bars{display:flex;gap:5px;align-items:center;height:34px}.bars i{width:5px;border-radius:3px;background:#fff;display:block}
-.key{position:absolute;left:50%;top:420px;transform:translateX(-50%);font:600 18px 'Spline Sans Mono';color:var(--muted)}
+.key{position:absolute;left:50%;top:420px;transform:translateX(-50%);font:600 18px 'IBM Plex Mono';color:var(--muted)}
 .key kbd{background:var(--panel2);border:1px solid var(--line);border-bottom-width:3px;border-radius:8px;padding:6px 12px;color:var(--ink);margin-right:8px}
-.said{position:absolute;left:160px;right:160px;top:160px;text-align:center;font:600 40px/1.25 Fraunces,serif;min-height:100px}
+.said{position:absolute;left:160px;right:160px;top:160px;text-align:center;font:600 40px/1.25 'IBM Plex Sans',sans-serif;min-height:100px}
 /* claude */
 .chat{position:absolute;left:190px;width:900px;top:100px}
 .bub{background:var(--panel2);border-radius:18px;padding:16px 20px;margin:0 0 16px auto;max-width:640px;font-size:22px}
 .reply{font-size:22px;margin:4px 0 14px}
-.tool{background:#0d0906;border:1px solid var(--line);border-radius:14px;padding:16px 20px;font:17px/1.55 'Spline Sans Mono';white-space:pre;color:#e9dccf}
-.tool .h{color:var(--accent);font-weight:600}.k{color:#f0b37e}.s{color:#9fd39b}.n{color:#8cc6ff}
+.tool{background:#0a0a0a;border:1px solid var(--line);border-radius:14px;padding:16px 20px;font:17px/1.55 'IBM Plex Mono';white-space:pre;color:#dedcd5}
+.tool .h{color:var(--accent);font-weight:600}.k{color:#a9b8ff}.s{color:#9fd39b}.n{color:#8cc6ff}
 /* pipe */
 .box{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
-.box h4{margin:0 0 6px;font:600 15px 'Spline Sans Mono';letter-spacing:.08em;color:var(--muted)}
-.box .t{font:600 24px Inter}
+.box h4{margin:0 0 6px;font:600 15px 'IBM Plex Mono';letter-spacing:.08em;color:var(--muted)}
+.box .t{font:600 24px 'IBM Plex Sans'}
 .pkt{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px var(--accent)}
-.logl{font:15px/1.6 'Spline Sans Mono';color:#d9cabb;white-space:pre}
+.logl{font:15px/1.6 'IBM Plex Mono';color:#cfcdc6;white-space:pre}
 /* rig */
 .tele{position:absolute;right:40px;top:96px;width:330px}
 .tele .row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding:10px 0}
-.tele .row span{color:var(--muted);font-size:16px}.tele .row b{font:600 30px 'Spline Sans Mono'}
-.stagebig{font:600 15px 'Spline Sans Mono';letter-spacing:.1em;color:var(--accent);margin:0 0 6px}
-.json{margin-top:18px;background:#0d0906;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:14px/1.55 'Spline Sans Mono';white-space:pre;color:#e9dccf}
+.tele .row span{color:var(--muted);font-size:16px}.tele .row b{font:600 30px 'IBM Plex Mono'}
+.stagebig{font:600 15px 'IBM Plex Mono';letter-spacing:.1em;color:var(--accent);margin:0 0 6px}
+.json{margin-top:18px;background:#0a0a0a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:14px/1.55 'IBM Plex Mono';white-space:pre;color:#dedcd5}
 /* end */
 .note{position:absolute;left:50%;top:130px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px 20px;display:flex;gap:14px;align-items:center;font-size:20px;white-space:nowrap}
 .note i{width:12px;height:12px;border-radius:50%;background:var(--ok);display:block}
 .endt{position:absolute;left:0;right:0;top:530px;text-align:center}
-.endt h1{font:600 54px Fraunces,serif;margin:0}.endt p{margin:6px 0 0;color:var(--muted);font-size:20px}
+.endt h1{font:600 54px 'IBM Plex Sans',sans-serif;margin:0}.endt p{margin:6px 0 0;color:var(--muted);font-size:20px}
 </style>
 </head>
 <body>
 <div id="wrap"><div id="stage">
   <div class="badge">CONCEPT RENDER · NOT A REAL BUILD YET</div>
   <div class="brand">Brew-bot</div>
+
+  <!-- 0 idle -->
+  <div class="scene" id="s0" style="display:grid;place-items:center;text-align:center">
+    <div><div class="mono" style="color:var(--accent);font-size:16px;letter-spacing:.14em">READY · CUP ON THE SCALE</div>
+    <div style="font:600 64px/1.1 'IBM Plex Sans',sans-serif;margin:18px 0">Say “brew recipe A1”</div>
+    <div style="color:var(--muted);font-size:22px">Hold the mic below and say it, or tap a recipe, and watch the machine make it.</div></div>
+  </div>
 
   <!-- 1 Wispr -->
   <div class="scene" id="s1">
@@ -83,25 +90,25 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
   <!-- 4 rig -->
   <div class="scene" id="s4">
     <svg id="rig" style="position:absolute;left:40px;top:70px" width="860" height="580" viewBox="0 0 860 580">
-      <defs><linearGradient id="steel" x1="0" x2="1"><stop offset="0" stop-color="#3a2e26"/><stop offset="1" stop-color="#1c1510"/></linearGradient></defs>
+      <defs><linearGradient id="steel" x1="0" x2="1"><stop offset="0" stop-color="#2c2c2c"/><stop offset="1" stop-color="#151515"/></linearGradient></defs>
       <!-- frame -->
-      <rect x="20" y="30" width="820" height="500" rx="10" fill="none" stroke="#5b4a3d" stroke-width="10"/>
-      <rect x="20" y="500" width="820" height="40" rx="6" fill="#6b4a30"/>
+      <rect x="20" y="30" width="820" height="500" rx="10" fill="none" stroke="#3a3a3a" stroke-width="10"/>
+      <rect x="20" y="500" width="820" height="40" rx="6" fill="#2a2a2a"/>
       <!-- hoppers -->
       <g id="hops"></g>
       <!-- chute -->
-      <path d="M95 175 L200 215 M200 175V215 M305 175 L200 215" stroke="#7a6656" stroke-width="5" stroke-dasharray="10 8"/>
+      <path d="M95 175 L200 215 M200 175V215 M305 175 L200 215" stroke="#555" stroke-width="5" stroke-dasharray="10 8"/>
       <g id="fall"></g>
       <!-- dose cell + grinder -->
-      <rect x="140" y="215" width="120" height="150" rx="16" fill="url(#steel)" stroke="#6d5a4b" stroke-width="3"/>
-      <circle cx="200" cy="270" r="28" fill="#0d0906" stroke="#6d5a4b" stroke-width="3"/>
+      <rect x="140" y="215" width="120" height="150" rx="16" fill="url(#steel)" stroke="#444" stroke-width="3"/>
+      <circle cx="200" cy="270" r="28" fill="#0a0a0a" stroke="#444" stroke-width="3"/>
       <g id="burr"><path d="M200 248v44M178 270h44M185 255l30 30M215 255l-30 30" stroke="var(--accent)" stroke-width="4"/></g>
-      <text x="200" y="340" text-anchor="middle" font-family="Spline Sans Mono" font-size="15" fill="#c9b8a8">ENCORE ESP</text>
-      <rect x="150" y="380" width="100" height="18" rx="4" fill="#0d0906"/><text id="doseg" x="200" y="394" text-anchor="middle" font-family="Spline Sans Mono" font-size="13" fill="var(--ok)">0.0 g</text>
+      <text x="200" y="340" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" fill="#a5a39c">ENCORE ESP</text>
+      <rect x="150" y="380" width="100" height="18" rx="4" fill="#0a0a0a"/><text id="doseg" x="200" y="394" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="var(--ok)">0.0 g</text>
       <!-- shelly plugs -->
-      <g font-family="Spline Sans Mono" font-size="12" fill="#c9b8a8">
-        <rect x="70" y="440" width="96" height="40" rx="8" fill="#2b211a" stroke="#6d5a4b"/><circle id="sh1" cx="90" cy="460" r="7" fill="#444"/><text x="104" y="465">SHELLY 1</text>
-        <rect x="180" y="440" width="96" height="40" rx="8" fill="#2b211a" stroke="#6d5a4b"/><circle id="sh2" cx="200" cy="460" r="7" fill="#444"/><text x="214" y="465">SHELLY 2</text>
+      <g font-family="IBM Plex Mono" font-size="12" fill="#a5a39c">
+        <rect x="70" y="440" width="96" height="40" rx="8" fill="#1e1e1e" stroke="#444"/><circle id="sh1" cx="90" cy="460" r="7" fill="#444"/><text x="104" y="465">SHELLY 1</text>
+        <rect x="180" y="440" width="96" height="40" rx="8" fill="#1e1e1e" stroke="#444"/><circle id="sh2" cx="200" cy="460" r="7" fill="#444"/><text x="214" y="465">SHELLY 2</text>
       </g>
       <!-- rail -->
       <rect x="420" y="78" width="400" height="14" rx="4" fill="#8a8a8a"/>
@@ -109,27 +116,27 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
         <rect x="560" y="70" width="70" height="30" rx="6" fill="#bbb"/>
         <!-- cradle + kettle, pivot at (640,190) -->
         <g id="kettle">
-          <path d="M560 100 V210 H700" fill="none" stroke="#9a8270" stroke-width="6"/>
+          <path d="M560 100 V210 H700" fill="none" stroke="#777" stroke-width="6"/>
           <path d="M600 120 h90 a8 8 0 0 1 8 8 v74 h-106 v-74 a8 8 0 0 1 8 -8z" fill="#111" stroke="#333" stroke-width="2"/>
           <path d="M600 140 C560 140 548 110 520 104" fill="none" stroke="#111" stroke-width="9" stroke-linecap="round"/>
-          <path d="M698 135c26 0 26 50 0 50" fill="none" stroke="#3a2a1f" stroke-width="9"/>
-          <rect x="612" y="150" width="74" height="30" rx="6" fill="#000"/><text id="ktemp" x="649" y="171" text-anchor="middle" font-family="Spline Sans Mono" font-size="16" fill="#fff">25°</text>
-          <text x="649" y="196" text-anchor="middle" font-family="Spline Sans Mono" font-size="10" fill="#777">STAGG EKG</text>
+          <path d="M698 135c26 0 26 50 0 50" fill="none" stroke="#2a2a2a" stroke-width="9"/>
+          <rect x="612" y="150" width="74" height="30" rx="6" fill="#000"/><text id="ktemp" x="649" y="171" text-anchor="middle" font-family="IBM Plex Mono" font-size="16" fill="#fff">25°</text>
+          <text x="649" y="196" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#777">STAGG EKG</text>
         </g>
         <circle cx="640" cy="210" r="7" fill="var(--accent)"/>
-        <path d="M650 210 q20 -40 50 -20" fill="none" stroke="#9a8270" stroke-width="2" stroke-dasharray="3 3"/>
+        <path d="M650 210 q20 -40 50 -20" fill="none" stroke="#777" stroke-width="2" stroke-dasharray="3 3"/>
       </g>
       <path id="stream" d="" fill="none" stroke="var(--water)" stroke-width="5" stroke-linecap="round" opacity="0"/>
       <!-- dripper on turntable on cup cell -->
-      <g id="table"><ellipse cx="520" cy="458" rx="110" ry="14" fill="#3a2e26" stroke="#6d5a4b" stroke-width="2"/><g id="spokes"></g></g>
+      <g id="table"><ellipse cx="520" cy="458" rx="110" ry="14" fill="#2c2c2c" stroke="#444" stroke-width="2"/><g id="spokes"></g></g>
       <rect x="470" y="380" width="100" height="78" rx="10" fill="rgba(160,200,230,.12)" stroke="#9fb7c9" stroke-width="2"/>
       <rect id="cup" x="472" y="456" width="96" height="0" fill="var(--coffee)"/>
-      <path d="M450 300 h140 l-46 70 h-48z" fill="#efe6dc" stroke="#cbbfb2" stroke-width="2"/>
+      <path d="M450 300 h140 l-46 70 h-48z" fill="#ecebe7" stroke="#bdbab3" stroke-width="2"/>
       <path id="bed" d="M466 318 h108 l-12 18 h-84z" fill="#5a3519" opacity="0"/>
-      <path d="M496 370 h48 v10 h-48z" fill="#d7cbbf"/>
-      <rect x="400" y="472" width="240" height="24" rx="6" fill="#0d0906"/><text id="cupg" x="520" y="489" text-anchor="middle" font-family="Spline Sans Mono" font-size="15" fill="var(--ok)">0.0 g</text>
+      <path d="M496 370 h48 v10 h-48z" fill="#d0cec8"/>
+      <rect x="400" y="472" width="240" height="24" rx="6" fill="#0a0a0a"/><text id="cupg" x="520" y="489" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" fill="var(--ok)">0.0 g</text>
       <!-- pi -->
-      <g><rect x="700" y="420" width="110" height="66" rx="6" fill="#1f6b3a"/><text x="755" y="458" text-anchor="middle" font-family="Spline Sans Mono" font-size="15" fill="#fff">Pi 5</text></g>
+      <g><rect x="700" y="420" width="110" height="66" rx="6" fill="#1f6b3a"/><text x="755" y="458" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" fill="#fff">Pi 5</text></g>
       <path id="wire" d="M700 450 H600 M700 440 C640 300 600 200 600 100 M700 470 C400 520 240 470 220 400" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 6" opacity=".5"/>
     </svg>
     <div class="tele">
@@ -143,14 +150,14 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
 
   <!-- 5 done -->
   <div class="scene" id="s5">
-    <div class="note"><i></i><b>Brew-bot</b><span style="color:var(--muted)">Your Riverdale is ready · 250 g · 92 °C · 3:28</span></div>
+    <div class="note"><i></i><b>Brew-bot</b><span style="color:var(--muted)" id="notetext">Your Riverdale is ready</span></div>
     <svg style="position:absolute;left:490px;top:220px" width="300" height="300" viewBox="0 0 300 300">
       <path d="M95 70c-10 -20 10 -30 0 -50M150 70c-10 -20 10 -30 0 -50M205 70c-10 -20 10 -30 0 -50" stroke="rgba(255,255,255,.35)" stroke-width="5" fill="none" stroke-linecap="round" id="steam"/>
-      <path d="M50 100h200l-18 150a20 20 0 0 1 -20 18h-124a20 20 0 0 1 -20 -18z" fill="#efe6dc"/>
+      <path d="M50 100h200l-18 150a20 20 0 0 1 -20 18h-124a20 20 0 0 1 -20 -18z" fill="#ecebe7"/>
       <ellipse cx="150" cy="104" rx="96" ry="12" fill="var(--coffee)"/>
-      <path d="M248 130c40 0 40 70 -8 70" fill="none" stroke="#efe6dc" stroke-width="16"/>
+      <path d="M248 130c40 0 40 70 -8 70" fill="none" stroke="#ecebe7" stroke-width="16"/>
     </svg>
-    <div class="endt"><h1>One sentence. One cup.</h1><p>Wispr Flow → Claude → MCP connector → Raspberry Pi → your pour-over · sameep.ai/brewbot</p></div>
+    <div class="endt"><h1>One sentence. One cup.</h1><p id="endsub">Wispr Flow → Claude → MCP connector → Raspberry Pi → your pour-over · sameep.ai/brewbot</p></div>
   </div>
 
   <div class="cap"><span id="cap"></span></div>
@@ -162,62 +169,91 @@ function cl(x){return x<0?0:x>1?1:x}
 function seg(t,a,b){return cl((t-a)/(b-a))}
 function ease(p){return p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2}
 function fade(t,a,b,f){f=f||.5;return Math.min(seg(t,a,a+f),1-seg(t,b-f,b))}
-var LINE='Brew 18 g of Riverdale at 92°C for 250 ml with a 45-second bloom';
-var ARGS=['<span class="h">brewbot · brew</span>','{','  <span class="k">"coffee"</span>: <span class="s">"riverdale"</span>,','  <span class="k">"grams"</span>: <span class="n">18</span>,','  <span class="k">"temp_c"</span>: <span class="n">92</span>,','  <span class="k">"out_ml"</span>: <span class="n">250</span>,','  <span class="k">"bloom_s"</span>: <span class="n">45</span>,','  <span class="k">"style"</span>: <span class="s">"v60"</span>','}'];
-var PILOG=['$ brewbot serve --mcp','← brew(riverdale, 18 g, 92 °C)','  ✓ cup on scale · tare 312.4 g','  ✓ water level ok','  → hopper 1 · auger on','  → shelly 2 (kettle) · on'];
-var RESP=['{','  <span class="k">"brew_id"</span>: <span class="s">"b_0417"</span>,','  <span class="k">"stage"</span>: <span class="s">"dosing"</span>,','  <span class="k">"eta_s"</span>: <span class="n">208</span>,','  <span class="k">"status_url"</span>: <span class="s">"/live/b_0417"</span>','}'];
-// hoppers
-(function(){var h='',names=['RIVERDALE','ATTIKAN','DARK'];for(var i=0;i<3;i++){var x=50+i*105;h+='<path id="hp'+i+'" d="M'+x+' 60h90l-22 105h-46z" fill="rgba(239,230,220,.08)" stroke="#cbbfb2" stroke-width="3"/><rect id="hb'+i+'" x="'+(x+14)+'" y="100" width="62" height="58" fill="#5a3519" opacity=".9"/><text x="'+(x+45)+'" y="52" text-anchor="middle" font-family="Spline Sans Mono" font-size="12" fill="#c9b8a8">'+names[i]+'</text>'}$('hops').innerHTML=h;
-var s='';for(var k=0;k<8;k++)s+='<circle class="bn" cx="0" cy="0" r="5" fill="#5a3519"/>';$('fall').innerHTML=s;
-var sp='';for(var j=0;j<6;j++)sp+='<rect class="sp" x="-4" y="-2" width="8" height="4" fill="#9a8270"/>';$('spokes').innerHTML=sp;
-var b='';for(var m=0;m<22;m++)b+='<i></i>';$('bars').innerHTML=b})();
+var NAMES=['RIVERDALE','ATTIKAN','DARK'];
+var R={id:'A1',coffee:'riverdale',name:'Riverdale',hopper:0,grams:18,temp_c:92,out_ml:250,bloom_s:45,
+  said:'Brew 18 g of Riverdale at 92°C for 250 ml with a 45-second bloom'};
+var WHO='Sameep';
+var ARGS,PILOG,RESP,caps,pours;
+function k(s){return '<span class="k">"'+s+'"</span>'}function sv(s){return '<span class="s">"'+s+'"</span>'}function nv(n){return '<span class="n">'+n+'</span>'}
+function setup(r){
+  if(r)for(var key in r)R[key]=r[key];
+  var said=R.said;$('ubub').textContent=said;
+  $('reply').innerHTML='<b style="color:var(--accent)">Claude</b> · On it. '+(R.id?'Recipe '+R.id+': ':'')+R.name+', '+R.grams+' g at '+R.temp_c+' °C.';
+  ARGS=['<span class="h">brewbot · brew</span>','{','  '+k('coffee')+': '+sv(R.coffee)+',','  '+k('grams')+': '+nv(R.grams)+',','  '+k('temp_c')+': '+nv(R.temp_c)+',','  '+k('out_ml')+': '+nv(R.out_ml)+',','  '+k('bloom_s')+': '+nv(R.bloom_s)+',','  '+k('style')+': '+sv('v60'),'}'];
+  PILOG=['$ brewbot serve --mcp','← brew('+R.coffee+', '+R.grams+' g, '+R.temp_c+' °C)','  ✓ cup on scale · tare 312.4 g','  ✓ water level ok','  → hopper '+(R.hopper+1)+' · auger on','  → shelly 2 (kettle) · on'];
+  RESP=['{','  '+k('brew_id')+': '+sv('b_0'+(400+Math.floor(Math.random()*99)))+',','  '+k('stage')+': '+sv('dosing')+',','  '+k('eta_s')+': '+nv(60+R.bloom_s+120)+',','  '+k('status_url')+': '+sv('/live'),'}'];
+  var bloomG=Math.round(R.grams*2.5),left=(R.out_ml-bloomG)/3;
+  pours=[[27.6,29.2,bloomG],[31.6,33.2,left],[33.8,35.4,left],[36,37.6,left]];
+  caps=[[0,6.4,'1',(WHO==='You'?'You hold':WHO+' holds')+' the Wispr key and say'+(WHO==='You'?'':'s')+' one sentence'],[6.4,12.4,'2','Claude turns it into a tool call'],[12.4,17.4,'3','The MCP connector checks the token and wakes the Pi'],
+    [17.4,21,'4','Dose: auger '+(R.hopper+1)+' turns until the cell reads '+R.grams.toFixed(1)+' g'],[21,24,'5','Grind: Shelly plug 1 switches the grinder on'],[24,27.5,'6','Heat: the kettle holds '+R.temp_c+' °C'],
+    [27.5,31.5,'7','Bloom: '+bloomG+' g, then wait '+R.bloom_s+' s (sped up)'],[31.5,38.4,'8','Spiral pulses: the cradle tilts while the dripper turns'],[38.4,D+1,'','']];
+  $('notetext').textContent='Your '+R.name+' is ready · '+Math.round(R.out_ml)+' g · '+R.temp_c+' °C';
+  for(var i=0;i<3;i++){$('hp'+i).setAttribute('stroke',i===R.hopper?'var(--accent)':'#bdbab3')}
+}
+(function(){var h='';for(var i=0;i<3;i++){var x=50+i*105;h+='<path id="hp'+i+'" d="M'+x+' 60h90l-22 105h-46z" fill="rgba(239,230,220,.08)" stroke="#bdbab3" stroke-width="3"/><rect id="hb'+i+'" x="'+(x+14)+'" y="100" width="62" height="58" fill="#5a3519" opacity=".9"/><text x="'+(x+45)+'" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#a5a39c">'+NAMES[i]+'</text>'}$('hops').innerHTML=h;
+var s='';for(var j=0;j<8;j++)s+='<circle class="bn" cx="0" cy="0" r="5" fill="#5a3519"/>';$('fall').innerHTML=s;
+var sp='';for(var m=0;m<6;m++)sp+='<rect class="sp" x="-4" y="-2" width="8" height="4" fill="#777"/>';$('spokes').innerHTML=sp;
+var b='';for(var n=0;n<22;n++)b+='<i></i>';$('bars').innerHTML=b})();
 function lines(arr,n){return arr.slice(0,n).join('\n')}
+var idle=false;
 function render(t){
-  // scenes
+  $('s0').style.opacity=idle?1:0;
+  if(idle){['s1','s2','s3','s4','s5'].forEach(function(s){$(s).style.opacity=0});$('cap').style.display='none';return}
   $('s1').style.opacity=fade(t,0,6.6);$('s2').style.opacity=fade(t,6.2,12.6);$('s3').style.opacity=fade(t,12.2,17.6);
   $('s4').style.opacity=fade(t,17.2,38.6);$('s5').style.opacity=fade(t,38.2,D+1);
-  // captions
-  var caps=[[0,6.4,'1','Sameep holds the Wispr key and says one sentence'],[6.4,12.4,'2','Claude turns it into a tool call'],[12.4,17.4,'3','The MCP connector checks the token and wakes the Pi'],
-    [17.4,21,'4','Dose: auger 1 turns until the cell reads 18.0 g'],[21,24,'5','Grind: Shelly plug 1 switches the grinder on'],[24,27.5,'6','Heat: the kettle holds 92 °C, the Pi double-checks'],
-    [27.5,31.5,'7','Bloom: 45 g, then wait 45 s (sped up)'],[31.5,38.4,'8','Spiral pulses: the cradle tilts while the dripper turns'],[38.4,D+1,"",""]];
   for(var i=0;i<caps.length;i++)if(t>=caps[i][0]&&t<caps[i][1]){$('cap').innerHTML=caps[i][2]?'<b>'+caps[i][2]+'</b>'+caps[i][3]:'';$('cap').style.display=caps[i][2]?'':'none'}
-  // s1
-  var n=Math.floor(LINE.length*seg(t,1,4.8));$('said').textContent=n?'“'+LINE.slice(0,n)+(n<LINE.length?'':'”'):'';
-  var bars=$('bars').children,live=t>.6&&t<5.2;for(var b=0;b<bars.length;b++){var hgt=live?6+26*Math.abs(Math.sin(t*9+b*.7)*Math.sin(t*3.3+b)):4;bars[b].style.height=hgt+'px'}
-  // s2
+  var LINE=R.said,n=Math.floor(LINE.length*seg(t,1,4.8));$('said').textContent=n?'“'+LINE.slice(0,n)+(n<LINE.length?'':'”'):'';
+  var bars=$('bars').children,live=t>.6&&t<5.2;for(var b=0;b<bars.length;b++){bars[b].style.height=(live?6+26*Math.abs(Math.sin(t*9+b*.7)*Math.sin(t*3.3+b)):4)+'px'}
   $('ubub').style.opacity=seg(t,6.6,7.2);$('reply').style.opacity=seg(t,7.6,8.2);
   $('tool').innerHTML=lines(ARGS,Math.floor(ARGS.length*seg(t,8.3,11)));$('tool').style.opacity=t>8.2?1:0;
-  // s3
-  var p1=ease(seg(t,12.8,14.2)),x=320+p1*530;$('pkt').style.left=(x-8)+'px';$('pkt').style.top='202px';$('pkt').style.opacity=t>12.8&&t<14.4?1:0;
+  var p1=ease(seg(t,12.8,14.2));$('pkt').style.left=(320+p1*530-8)+'px';$('pkt').style.top='202px';$('pkt').style.opacity=t>12.8&&t<14.4?1:0;
   $('pilog').textContent=lines(PILOG,Math.floor(PILOG.length*seg(t,14,16)));
   $('resp').innerHTML=lines(RESP,Math.floor(RESP.length*seg(t,15.2,17)));$('resp').style.opacity=t>15.2?1:0;
-  // s4 rig
-  var dose=18*ease(seg(t,17.8,20.8));$('doseg').textContent=dose.toFixed(1)+' g';$('tDose').textContent=dose.toFixed(1)+' g';
-  $('hb0').setAttribute('y',100+12*seg(t,17.8,20.8));$('hb0').setAttribute('height',58-12*seg(t,17.8,20.8));
-  var falling=t>17.8&&t<20.8,bn=document.querySelectorAll('.bn');for(var k=0;k<bn.length;k++){var ph=((t*1.6+k/bn.length)%1);bn[k].setAttribute('cx',95+105*ph);bn[k].setAttribute('cy',175+40*ph);bn[k].setAttribute('opacity',falling?1:0)}
+  var dp=seg(t,17.8,20.8),dose=R.grams*ease(dp);$('doseg').textContent=dose.toFixed(1)+' g';$('tDose').textContent=dose.toFixed(1)+' g';
+  for(var h=0;h<3;h++){var d=h===R.hopper?dp:0;$('hb'+h).setAttribute('y',100+12*d);$('hb'+h).setAttribute('height',58-12*d)}
+  var hx=95+R.hopper*105,falling=t>17.8&&t<20.8,bn=document.querySelectorAll('.bn');for(var q=0;q<bn.length;q++){var ph=((t*1.6+q/bn.length)%1);bn[q].setAttribute('cx',hx+(200-hx)*ph);bn[q].setAttribute('cy',175+40*ph);bn[q].setAttribute('opacity',falling?1:0)}
   var grinding=t>21&&t<24;$('burr').setAttribute('transform','rotate('+(grinding?t*900%360:0)+' 200 270)');$('sh1').setAttribute('fill',grinding?'#6cc488':'#444');
-  var heat=t>16&&t<38;$('sh2').setAttribute('fill',heat?'#6cc488':'#444');
-  var temp=Math.round(25+67*ease(seg(t,17.5,27)));$('ktemp').textContent=temp+'°';$('tTemp').textContent=temp+' °C';
-  // pour
-  var pours=[[27.6,29.2,45],[31.6,33.2,68],[33.8,35.4,68],[36,37.6,69]],out=0,pouring=false,tilt=0;
-  for(var q=0;q<pours.length;q++){var P=pours[q];var pp=seg(t,P[0],P[1]);out+=P[2]*pp;if(t>P[0]-.4&&t<P[1]+.4){tilt=Math.max(tilt,Math.min(seg(t,P[0]-.4,P[0]),1-seg(t,P[1],P[1]+.4)))}if(t>P[0]&&t<P[1])pouring=true}
+  $('sh2').setAttribute('fill',t>16&&t<38?'#6cc488':'#444');
+  var temp=Math.round(25+(R.temp_c-25)*ease(seg(t,17.5,27)));$('ktemp').textContent=temp+'°';$('tTemp').textContent=temp+' °C';
+  var out=0,pouring=false,tilt=0;
+  for(var z=0;z<pours.length;z++){var P=pours[z];out+=P[2]*seg(t,P[0],P[1]);if(t>P[0]-.4&&t<P[1]+.4)tilt=Math.max(tilt,Math.min(seg(t,P[0]-.4,P[0]),1-seg(t,P[1],P[1]+.4)));if(t>P[0]&&t<P[1])pouring=true}
   $('kettle').setAttribute('transform','rotate('+(-28*ease(tilt))+' 640 210)');
   var rx=Math.sin(t*2.4)*36*(t>31?1:.3);$('carriage').setAttribute('transform','translate('+(-40+rx)+' 0)');
-  // spout tip after tilt: approximate
-  var a=-28*ease(tilt)*Math.PI/180,sx0=520-640,sy0=104-210,sx=640+sx0*Math.cos(a)-sy0*Math.sin(a)-40+rx,sy=210+sx0*Math.sin(a)+sy0*Math.cos(a);
-  var dx=520+rx*.6;$('stream').setAttribute('d','M'+sx+' '+sy+' C'+(sx-6)+' '+(sy+60)+' '+dx+' 250 '+dx+' 322');$('stream').setAttribute('opacity',pouring?1:0);
+  var a=-28*ease(tilt)*Math.PI/180,sx0=-120,sy0=-106,sx=640+sx0*Math.cos(a)-sy0*Math.sin(a)-40+rx,sy=210+sx0*Math.sin(a)+sy0*Math.cos(a),dx=520+rx*.6;
+  $('stream').setAttribute('d','M'+sx+' '+sy+' C'+(sx-6)+' '+(sy+60)+' '+dx+' 250 '+dx+' 322');$('stream').setAttribute('opacity',pouring?1:0);
   $('bed').setAttribute('opacity',t>24?1:0);
-  var spin=t>27.6&&t<38?t*2.2:0,sps=document.querySelectorAll('.sp');for(var s=0;s<sps.length;s++){var an=spin+s*Math.PI/3;sps[s].setAttribute('transform','translate('+(520+100*Math.cos(an))+' '+(458+12*Math.sin(an))+')');sps[s].setAttribute('opacity',Math.sin(an)>0?1:.35)}
-  var drip=Math.max(0,out-10*seg(t,27.6,38));$('cupg').textContent=(out).toFixed(1)+' g';$('tOut').textContent=Math.round(out)+' g';
-  var lvl=Math.min(drip/250,1)*70;$('cup').setAttribute('height',lvl);$('cup').setAttribute('y',456-lvl);
-  var stg=t<21?'DOSING':t<24?'GRINDING':t<27.5?'HEATING':t<31.5?'BLOOM · 45 S':t<38?'SPIRAL PULSES':'DONE';$('stg').textContent=stg;
-  $('sjson').innerHTML='<span class="h" style="color:var(--accent)">status()</span>\n{\n  <span class="k">"stage"</span>: <span class="s">"'+stg.toLowerCase().split(' ')[0]+'"</span>,\n  <span class="k">"grams"</span>: <span class="n">'+dose.toFixed(1)+'</span>,\n  <span class="k">"water_c"</span>: <span class="n">'+temp+'</span>,\n  <span class="k">"out_g"</span>: <span class="n">'+Math.round(out)+'</span>,\n  <span class="k">"cup"</span>: <span class="s">"present"</span>\n}';
+  var spin=t>27.6&&t<38?t*2.2:0,sps=document.querySelectorAll('.sp');for(var w=0;w<sps.length;w++){var an=spin+w*Math.PI/3;sps[w].setAttribute('transform','translate('+(520+100*Math.cos(an))+' '+(458+12*Math.sin(an))+')');sps[w].setAttribute('opacity',Math.sin(an)>0?1:.35)}
+  var drip=Math.max(0,out-10*seg(t,27.6,38));$('cupg').textContent=out.toFixed(1)+' g';$('tOut').textContent=Math.round(out)+' g';
+  var lvl=Math.min(drip/R.out_ml,1)*70;$('cup').setAttribute('height',lvl);$('cup').setAttribute('y',456-lvl);
+  var stg=t<21?'DOSING':t<24?'GRINDING':t<27.5?'HEATING':t<31.5?'BLOOM · '+R.bloom_s+' S':t<38?'SPIRAL PULSES':'DONE';$('stg').textContent=stg;
+  $('sjson').innerHTML='<span class="h" style="color:var(--accent)">status()</span>\n{\n  '+k('stage')+': '+sv(stg.toLowerCase().split(' ')[0])+',\n  '+k('grams')+': '+nv(dose.toFixed(1))+',\n  '+k('water_c')+': '+nv(temp)+',\n  '+k('out_g')+': '+nv(Math.round(out))+',\n  '+k('cup')+': '+sv('present')+'\n}';
   $('steam').setAttribute('transform','translate(0 '+(-8*Math.sin(t*2))+')');$('steam').setAttribute('opacity',.5+.5*Math.sin(t*3));
 }
-function fit(){var s=Math.min(innerWidth/1280,innerHeight/720);$('stage').style.transform='scale('+s+')'}
+function fit(){var s=Math.min(innerWidth/1280,innerHeight/720);$('stage').style.transform='translate(-50%,-50%) scale('+s+')'}
 addEventListener('resize',fit);fit();
+setup();
 window.render=render;window.FILM_D=D;
-if(!/[?&]rec/.test(location.search)){var t0=performance.now();(function loop(now){render(((now-t0)/1000)%D);requestAnimationFrame(loop)})(t0)}else render(0);
+// recipe data from the parent page: whitelist the coffee, clamp numbers, escape text (some of it lands in innerHTML)
+function esc(x){return String(x).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';'})}
+var COFFEE={riverdale:['Riverdale',0],attikan:['Attikan',1],dark:['Dark roast',2]};
+function num(v,lo,hi,d){v=Number(v);return isFinite(v)?Math.min(Math.max(v,lo),hi):d}
+function clean(r){r=r||{};var c=COFFEE.hasOwnProperty(r.coffee)?r.coffee:'riverdale';
+  return {id:/^[A-C][12]$/.test(r.id)?r.id:'',coffee:c,name:COFFEE[c][0],hopper:COFFEE[c][1],grams:num(r.grams,8,40,18),temp_c:Math.round(num(r.temp_c,80,99,92)),
+    out_ml:Math.round(num(r.out_ml,100,450,250)),bloom_s:Math.round(num(r.bloom_s,0,90,45)),said:String(r.said||'').slice(0,120)}}
+var q=location.search,raf=0;
+var SKIP=11.6,CUT=5.6;
+function play(r,once){setup(r);idle=false;cancelAnimationFrame(raf);var t0=performance.now();
+  if(once){caps=caps.filter(function(c){return c[0]<6||c[0]>17}).map(function(c){return [c[0],c[1],c[2]?' ':'',c[3]]});$('endsub').textContent='Brew-bot · sameep.ai/brewbot'}
+  (function loop(now){var u=(now-t0)/1000,t=once?(u<CUT?u:u+SKIP):u%D;if(once&&t>=D){render(D-0.01);parent.postMessage({brewbot:'done'},location.origin);return}
+    if(once&&u>=CUT&&u<CUT+0.05)$('s1').style.opacity=0;render(t);raf=requestAnimationFrame(loop)})(t0)}
+if(/[?&]rec/.test(q))render(0);
+else if(/[?&]embed/.test(q)){WHO='You';idle=true;render(0);
+  addEventListener('message',function(e){
+    if(e.origin!==location.origin||e.source!==parent)return;
+    var m=e.data||{};if(m.brewbot==='play')play(clean(m.recipe),true);if(m.brewbot==='idle'){cancelAnimationFrame(raf);idle=true;render(0)}})}
+else play(null,false);
 </script>
+
+<script type="module" src="../js/analytics.js"></script>
 </body>
 </html>

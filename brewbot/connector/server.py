@@ -31,6 +31,14 @@ MENU = {
                   "default": {"grams": 20, "temp_c": 88, "ratio": 15, "bloom_s": 30}},
 }
 
+# "brew recipe A1" → one of these
+RECIPES = {
+    "A1": {"coffee": "riverdale", "grams": 18, "temp_c": 93, "out_ml": 270, "bloom_s": 45},
+    "A2": {"coffee": "riverdale", "grams": 15, "temp_c": 95, "out_ml": 250, "bloom_s": 40},
+    "B1": {"coffee": "attikan", "grams": 18, "temp_c": 92, "out_ml": 288, "bloom_s": 30},
+    "C1": {"coffee": "dark", "grams": 20, "temp_c": 88, "out_ml": 300, "bloom_s": 30},
+}
+
 state = {"stage": "idle", "brew": None, "grams": 0.0, "water_c": 25.0, "out_g": 0.0,
          "cup": "present", "updated": time.time(), "log": []}
 last_brew_by: dict[str, float] = {}
@@ -96,15 +104,22 @@ mcp = FastMCP("brewbot", host="0.0.0.0", port=int(os.environ.get("PORT", 8765)))
 @mcp.tool()
 async def menu() -> dict:
     """The three coffees in the hoppers and their default recipes."""
-    return MENU
+    return {"coffees": MENU, "recipes": RECIPES}
 
 
 @mcp.tool()
-async def brew(coffee: str, grams: float = 18, temp_c: float = 92, out_ml: float | None = None,
-               ratio: float | None = None, bloom_s: float = 45, style: str = "v60", caller: str = "anon") -> dict:
-    """Brew a pour-over. coffee is riverdale, attikan or dark. grams 8-40, temp_c 80-99,
-    out_ml up to 450 (or give ratio, e.g. 15 for 1:15). style is v60 or origami."""
+async def brew(coffee: str = "riverdale", grams: float = 18, temp_c: float = 92, out_ml: float | None = None,
+               ratio: float | None = None, bloom_s: float = 45, style: str = "v60", recipe: str | None = None,
+               caller: str = "anon") -> dict:
+    """Brew a pour-over. Either pass recipe (A1, A2, B1, C1; "brew recipe A1") or the details:
+    coffee is riverdale, attikan or dark. grams 8-40, temp_c 80-99, out_ml up to 450
+    (or give ratio, e.g. 15 for 1:15). style is v60 or origami."""
     global task
+    if recipe:
+        r = RECIPES.get(recipe.upper().replace(" ", ""))
+        if not r:
+            return {"error": f"unknown recipe; pick one of {list(RECIPES)}"}
+        coffee, grams, temp_c, out_ml, bloom_s = r["coffee"], r["grams"], r["temp_c"], r["out_ml"], r["bloom_s"]
     coffee = coffee.lower().strip()
     if coffee not in MENU:
         return {"error": f"unknown coffee; pick one of {list(MENU)}"}

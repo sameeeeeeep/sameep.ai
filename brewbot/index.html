@@ -14,211 +14,166 @@
 <meta property="og:image" content="https://sameep.ai/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600&family=Spline+Sans+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
 <style>
-:root{--bg:#f6f1ea;--card:#fffdf9;--ink:#2a1d14;--muted:#6f5d4f;--accent:#b5652b;--accent-ink:#fff;--line:rgba(42,29,20,.12);--water:#5b9bd5;--coffee:#5a3519;--ok:#3f7d4e;
---f-head:'Fraunces',Georgia,serif;--f-body:'Inter',system-ui,sans-serif;--f-mono:'Spline Sans Mono',ui-monospace,monospace}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17110c;--card:#211912;--ink:#f2e8dd;--muted:#b3a294;--accent:#e08a4a;--accent-ink:#1a120b;--line:rgba(242,232,221,.14);--coffee:#c48a5a}}
-:root[data-theme="dark"]{--bg:#17110c;--card:#211912;--ink:#f2e8dd;--muted:#b3a294;--accent:#e08a4a;--accent-ink:#1a120b;--line:rgba(242,232,221,.14);--coffee:#c48a5a}
+:root{--bg:#f3f1ec;--card:#fbfaf7;--ink:#141414;--muted:#6b6962;--rule:#d8d4cb;--accent:#2a45d6;--accent-ink:#fff;--line:#d8d4cb;--water:#3d7fd1;--coffee:#5a3519;--ok:#1f8a4c;
+--f-head:'IBM Plex Sans',system-ui,sans-serif;--f-body:'IBM Plex Sans',system-ui,sans-serif;--f-mono:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--card:#161616;--ink:#ececea;--muted:#9a9890;--rule:#2b2b2b;--line:#2b2b2b;--accent:#7d93ff;--accent-ink:#0f0f0f;--coffee:#c48a5a;--ok:#5fcf8c}}
+:root[data-theme="dark"]{--bg:#0f0f0f;--card:#161616;--ink:#ececea;--muted:#9a9890;--rule:#2b2b2b;--line:#2b2b2b;--accent:#7d93ff;--accent-ink:#0f0f0f;--coffee:#c48a5a;--ok:#5fcf8c}
 *{box-sizing:border-box}html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
-a{color:var(--accent)}
-.top{display:flex;justify-content:space-between;align-items:center;max-width:1040px;margin:0 auto;padding:16px;font-size:14px;color:var(--muted)}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--ink);text-decoration-color:var(--accent);text-underline-offset:3px}
+code{font:.9em var(--f-mono)}
+.top{display:flex;justify-content:space-between;align-items:center;max-width:1040px;margin:0 auto;padding:16px;font:13px var(--f-mono);color:var(--muted);border-bottom:1px solid var(--rule)}
 .top a{color:var(--muted);text-decoration:none}
-main{max-width:1040px;margin:0 auto;padding:0 16px 64px}
-.kicker{font:12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:24px 0 8px}
-h1{font:600 clamp(40px,8vw,72px)/1 var(--f-head);margin:0 0 12px;letter-spacing:-.02em}
-h2{font:600 clamp(26px,4.5vw,36px)/1.15 var(--f-head);margin:64px 0 8px}
-h3{font:600 18px/1.3 var(--f-body);margin:0 0 6px}
-.lede{font-size:19px;max-width:640px;color:var(--muted);margin:0}
-.sub{color:var(--muted);max-width:680px;margin:0 0 24px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
-/* demo */
-.demo{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin-top:32px}
-@media (max-width:760px){.demo{grid-template-columns:1fr}}
-.demo>*,.paths>*,.grid3>*{min-width:0}
-.log{white-space:pre-wrap;word-break:break-word}
-#wtext{min-width:0;overflow-wrap:anywhere}
-@media (max-width:480px){.say{flex-direction:column}}
-.say{display:flex;gap:8px;align-items:stretch;margin-bottom:12px}
-.say input{flex:1;min-width:0;font:15px var(--f-body);padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.btn{font:600 15px var(--f-body);border:0;border-radius:12px;padding:12px 18px;background:var(--accent);color:var(--accent-ink);cursor:pointer;white-space:nowrap}
-.btn:disabled{opacity:.5;cursor:default}
-.hint{font-size:13px;color:var(--muted);margin:0 0 16px}
-.wispr{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);min-height:28px;margin-bottom:12px}
-.mic{width:28px;height:28px;border-radius:50%;background:var(--line);display:grid;place-items:center;flex:none}
-.mic i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.live .mic{background:var(--accent)}.live .mic i{background:var(--accent-ink);animation:pulse .8s infinite}
-@keyframes pulse{50%{transform:scale(1.6)}}
-.log{font:13px/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:236px;max-height:236px;overflow:auto;margin:0}
-.log div{opacity:0;animation:in .3s forwards}.log .c{color:var(--accent)}.log .r{color:var(--muted)}.log .ok{color:var(--ok)}
-@keyframes in{to{opacity:1}}
-.rig svg{width:100%;height:auto;display:block}
-.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.ro{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
-.ro b{display:block;font:600 20px var(--f-mono)}.ro span{font-size:12px;color:var(--muted)}
-.stage{font:12px var(--f-mono);color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-top:10px;min-height:18px}
-#kettle{transform-origin:236px 118px;transition:transform .8s ease}
-#stream{opacity:0;transition:opacity .3s}
-#turn{transform-origin:236px 214px}
-.spin #turn{animation:spin 2.4s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-.hop{transition:fill .3s}
-#beans{opacity:0;transition:opacity .3s}
-/* tables */
-.paths{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media (max-width:760px){.paths{grid-template-columns:1fr}}
-.tag{display:inline-block;font:12px var(--f-mono);padding:2px 8px;border-radius:99px;background:var(--accent);color:var(--accent-ink);margin-bottom:8px}
-.tag.alt{background:var(--line);color:var(--ink)}
-.price{font:600 32px var(--f-head);margin:4px 0}
+main{max-width:1040px;margin:0 auto;padding:0 16px 64px;counter-reset:sec}
+.kicker{font:12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:40px 0 10px}
+h1{font:600 clamp(44px,9vw,84px)/.95 var(--f-head);margin:0 0 16px;letter-spacing:-.035em}
+h2{counter-increment:sec;font:600 clamp(24px,4vw,32px)/1.15 var(--f-head);letter-spacing:-.02em;margin:72px 0 8px;padding-top:16px;border-top:1px solid var(--ink)}
+h2::before{content:counter(sec,decimal-leading-zero);display:block;font:12px var(--f-mono);color:var(--muted);margin-bottom:10px;letter-spacing:.04em}
+h3{font:600 17px/1.3 var(--f-head);margin:0 0 6px}
+.lede{font-size:20px;line-height:1.5;max-width:620px;color:var(--ink);margin:0}
+.sub{color:var(--muted);max-width:660px;margin:0 0 24px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:18px}
+.btn{font:600 14px var(--f-mono);border:0;border-radius:4px;padding:12px 18px;background:var(--accent);color:var(--accent-ink);cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
+.hint{font:13px var(--f-mono);color:var(--muted);margin:12px 0 0}
+/* experience */
+.exp{margin-top:36px}
+.screen{position:relative;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:#0d0d0d}
+.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ctrl{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.micbtn{display:flex;align-items:center;gap:8px;font:600 14px var(--f-mono);border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:11px 16px;cursor:pointer;touch-action:none;user-select:none}
+.micbtn.live{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sayit{display:flex;gap:8px;flex:1;min-width:240px}
+.sayit input{flex:1;min-width:0;font:15px var(--f-mono);padding:11px 14px;border-radius:4px;border:1px solid var(--rule);background:var(--card);color:var(--ink)}
+.recipes{display:grid;grid-template-columns:repeat(4,1fr);margin-top:8px;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
+@media (max-width:760px){.recipes{grid-template-columns:repeat(2,1fr)}}
+.recipes button{text-align:left;font:14px var(--f-body);color:var(--ink);background:none;border:0;border-right:1px solid var(--rule);padding:12px 14px;cursor:pointer;display:grid;gap:2px}
+.recipes button:last-child{border-right:0}
+@media (max-width:760px){.recipes button:nth-child(2){border-right:0}.recipes button:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
+.recipes button:hover{background:var(--bg)}
+.recipes b{font:600 16px var(--f-mono);color:var(--accent)}.recipes small{color:var(--muted);font:12px var(--f-mono)}
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
+.flow>div{padding:16px;border:0;border-right:1px solid var(--rule);border-radius:0;min-width:0;background:none}.flow>div:last-child{border-right:0}
+@media (max-width:760px){.flow{grid-template-columns:1fr}.flow>div{border-right:0!important;border-bottom:1px solid var(--rule)}.flow>div:last-child{border-bottom:0}}
+.flow h3 small{font:12px var(--f-mono);color:var(--muted);display:block;margin-bottom:4px;font-weight:400}
+.flow pre.code{font-size:12px;white-space:pre-wrap;word-break:break-word;border:0;padding:0;background:none;margin-top:8px}
+/* paths */
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
+.paths>.card{border:0;border-right:1px solid var(--rule);border-radius:0;min-width:0}.paths>.card:last-child{border-right:0}
+@media (max-width:760px){.paths{grid-template-columns:1fr}.paths>.card{border-right:0;border-bottom:1px solid var(--rule)}.paths>.card:last-child{border-bottom:0}}
+.tag{display:inline-block;font:12px var(--f-mono);padding:2px 8px;border-radius:2px;background:var(--accent);color:var(--accent-ink);margin-bottom:10px}
+.tag.alt{background:none;color:var(--muted);border:1px solid var(--rule)}
+.price{font:600 36px var(--f-mono);letter-spacing:-.03em;margin:6px 0 10px}
 .paths p{margin:0 0 8px;color:var(--muted);font-size:15px}
-.tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
-.tbl td,.tbl th{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
-.tbl th{font:12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+/* tables */
+.tblwrap{overflow-x:auto;padding:0}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl td,.tbl th{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left}
+.tbl th{font:12px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:400}
 .tbl td:last-child,.tbl th:last-child{text-align:right;white-space:nowrap;font-family:var(--f-mono)}
 .tbl .why{display:block;color:var(--muted);font-size:13px}
-.tbl tr.total td{font-weight:600;border-bottom:0}
-.tblwrap{overflow-x:auto}
-.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
-.steps li{counter-increment:s;padding-left:44px;position:relative}
-.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:600 14px var(--f-mono)}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media (max-width:760px){.grid3{grid-template-columns:1fr}}
-.grid3 .card p{margin:0;color:var(--muted);font-size:14px}
-pre.code{font:13px/1.5 var(--f-mono);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto;margin:0}
-.note{font-size:13px;color:var(--muted);margin-top:24px}
-.film{margin:32px 0 0;background:#120d09;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
-.film video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#120d09}
-.film figcaption{padding:12px 16px;font-size:13px;color:#b3a294}
-.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media (max-width:760px){.flow{grid-template-columns:1fr}}
-.flow pre.code{font-size:12px;white-space:pre-wrap;word-break:break-word}
-.flow .card h3 small{font:12px var(--f-mono);color:var(--accent);display:block;margin-bottom:4px}
-.schem{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;overflow-x:auto}
-.schem svg{display:block;min-width:720px;width:100%;height:auto}
+.tbl tr.total td{font-weight:600;border-bottom:0;border-top:1px solid var(--ink)}
+.tbl td.sku{font:12px var(--f-mono);color:var(--muted);white-space:nowrap;text-align:left}
 .pins td:first-child{font-family:var(--f-mono)}.pins td{white-space:normal!important}
-.tbl td.sku{font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap;text-align:left}
-footer{max-width:1040px;margin:0 auto;padding:24px 16px 48px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+.schem{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:12px;overflow-x:auto}
+.schem svg{display:block;min-width:720px;width:100%;height:auto}
+/* steps, misc */
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;border-top:1px solid var(--rule)}
+.steps li{counter-increment:s;padding:14px 0 14px 48px;position:relative;border-bottom:1px solid var(--rule)}
+.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:14px;font:600 14px var(--f-mono);color:var(--accent)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
+.grid3>.card{border:0;border-right:1px solid var(--rule);border-radius:0;min-width:0}.grid3>.card:last-child{border-right:0}
+@media (max-width:760px){.grid3{grid-template-columns:1fr}.grid3>.card{border-right:0;border-bottom:1px solid var(--rule)}.grid3>.card:last-child{border-bottom:0}}
+.grid3 .card p{margin:0;color:var(--muted);font-size:14px}
+pre.code{font:13px/1.55 var(--f-mono);background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:14px;overflow-x:auto;margin:0}
+.note{font:12px var(--f-mono);color:var(--muted);margin-top:40px}
+.more{border-bottom:1px solid var(--rule)}
+.more summary{cursor:pointer;padding:14px 0;font:600 16px var(--f-head);list-style:none;display:flex;justify-content:space-between}
+.more summary::after{content:'+';font-family:var(--f-mono);color:var(--muted)}.more[open] summary::after{content:'–'}
+.more summary::-webkit-details-marker{display:none}
+.more[open]{padding-bottom:20px}
+footer{max-width:1040px;margin:0 auto;padding:24px 16px 48px;font:12px var(--f-mono);color:var(--muted);border-top:1px solid var(--rule)}
 </style>
+
 </head>
 <body>
 <header class="top"><a href="../?skip">← sameep.ai</a><span>Concept · not built yet</span></header>
 <main>
   <p class="kicker">My $3,000 setup</p>
   <h1>Brew-bot</h1>
-  <p class="lede">Hold the Wispr key, say one sentence, and Claude makes the pour-over. It weighs the beans, grinds them, heats the water and pours the spiral. A few minutes later the cup is ready. Anyone in the office can build one for about $1,000, and anyone's Claude can use it.</p>
+  <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $1,000, and any Claude can run it.</p>
 
-  <figure class="film">
-    <video src="brewbot.mp4" poster="brewbot-poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video>
-    <figcaption>The 44-second concept render: Wispr → Claude → MCP connector → Raspberry Pi → machines → cup. Every machine in it is a real part on the list below.</figcaption>
-  </figure>
-
-  <h2>Try it</h2>
-  <p class="sub">Type what you'd say. This runs the same steps the connector runs, in a simulation.</p>
-  <section class="demo" aria-label="Try it" style="margin-top:0">
-    <div class="card">
-      <h3>Say it</h3>
-      <div class="say">
-        <input id="line" value="Brew 18 g of Riverdale at 92°C for 250 ml with a 45-second bloom" aria-label="What you'd say to Wispr">
-        <button class="btn" id="go">Brew</button>
-      </div>
-      <p class="hint">Change the numbers or the coffee (Riverdale, Attikan, Dark), then press Brew. This is a simulation of the real rig.</p>
-      <div class="wispr" id="wispr"><span class="mic"><i></i></span><span id="wtext">Wispr Flow is ready</span></div>
-      <pre class="log" id="log" aria-live="polite"></pre>
+  <section class="exp" aria-label="Brew one">
+    <div class="screen"><iframe id="film" src="film.html?embed" title="Brew-bot: Wispr to Claude to the rig to your cup" loading="eager"></iframe></div>
+    <div class="ctrl">
+      <button class="micbtn" id="mic" type="button" aria-label="Hold to talk"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" fill="none"/></svg><span id="micl">Hold to talk</span></button>
+      <form class="sayit" id="say"><input id="line" placeholder="or type: brew recipe A1" aria-label="What you'd say" autocomplete="off"><button class="btn" type="submit">Brew</button></form>
     </div>
-    <div class="card rig">
-      <svg viewBox="0 0 400 270" role="img" aria-label="The rig: three hoppers, grinder, kettle in a tilting cradle, dripper on a turntable over a scale">
-        <g fill="none" stroke="var(--muted)" stroke-width="2">
-          <path d="M20 250H380M30 250V30H370V250" opacity=".4"/>
-        </g>
-        <!-- hoppers -->
-        <g id="hoppers" stroke="var(--ink)" stroke-width="2">
-          <path class="hop" id="h0" d="M44 40h40l-10 34h-20z" fill="var(--card)"/>
-          <path class="hop" id="h1" d="M94 40h40l-10 34h-20z" fill="var(--card)"/>
-          <path class="hop" id="h2" d="M144 40h40l-10 34h-20z" fill="var(--card)"/>
-        </g>
-        <text x="64" y="36" font-size="9" text-anchor="middle" fill="var(--muted)" font-family="Spline Sans Mono">RIV</text>
-        <text x="114" y="36" font-size="9" text-anchor="middle" fill="var(--muted)" font-family="Spline Sans Mono">ATT</text>
-        <text x="164" y="36" font-size="9" text-anchor="middle" fill="var(--muted)" font-family="Spline Sans Mono">DRK</text>
-        <path d="M64 74 L114 96 M114 74V96 M164 74 L114 96" stroke="var(--muted)" stroke-width="2" stroke-dasharray="3 3"/>
-        <circle id="beans" cx="114" cy="92" r="5" fill="var(--coffee)"/>
-        <!-- grinder -->
-        <rect x="88" y="98" width="52" height="70" rx="8" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/>
-        <circle id="burr" cx="114" cy="124" r="10" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="6 4"/>
-        <text x="114" y="158" font-size="9" text-anchor="middle" fill="var(--muted)" font-family="Spline Sans Mono">GRIND</text>
-        <!-- kettle in cradle -->
-        <g id="kettle">
-          <path d="M210 118h70" stroke="var(--muted)" stroke-width="3"/>
-          <path d="M222 70h48v46h-48z" fill="var(--ink)" rx="6"/>
-          <path d="M222 80 C200 80 196 60 182 58" fill="none" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
-          <path d="M270 78c14 0 14 26 0 26" fill="none" stroke="var(--ink)" stroke-width="5"/>
-          <text id="ktemp" x="246" y="98" font-size="11" text-anchor="middle" fill="var(--bg)" font-family="Spline Sans Mono">25°</text>
-        </g>
-        <circle cx="236" cy="118" r="4" fill="var(--accent)"/>
-        <path id="stream" d="M184 60 C186 110 220 140 236 176" fill="none" stroke="var(--water)" stroke-width="3" stroke-linecap="round"/>
-        <!-- dripper + turntable -->
-        <g id="turn"><ellipse cx="236" cy="214" rx="44" ry="5" fill="var(--line)"/><path d="M226 214h20" stroke="var(--accent)" stroke-width="3"/></g>
-        <path d="M206 176h60l-20 32h-20z" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/>
-        <rect id="cup" x="216" y="208" width="40" height="0" fill="var(--coffee)" opacity=".85"/>
-        <rect x="190" y="226" width="92" height="14" rx="4" fill="var(--ink)"/>
-        <text id="scale" x="236" y="237" font-size="10" text-anchor="middle" fill="var(--bg)" font-family="Spline Sans Mono">0.0 g</text>
-        <!-- pi -->
-        <rect x="310" y="200" width="46" height="34" rx="4" fill="var(--ok)" opacity=".85"/>
-        <text x="333" y="221" font-size="9" text-anchor="middle" fill="#fff" font-family="Spline Sans Mono">Pi</text>
-      </svg>
-      <div class="stage" id="stage">Waiting for your sentence</div>
-      <div class="readouts">
-        <div class="ro"><b id="rDose">0.0 g</b><span>beans</span></div>
-        <div class="ro"><b id="rTemp">25 °C</b><span>water</span></div>
-        <div class="ro"><b id="rOut">0 g</b><span>in the cup</span></div>
-      </div>
-    </div>
+    <div class="recipes" id="recipes"></div>
+    <p class="hint" id="heard">Simulation of the machine.</p>
   </section>
 
-  <h2>What happens after the sentence</h2>
-  <p class="sub">Four hops, all real software. Wispr turns voice into text, Claude turns the text into a tool call, the connector checks who's asking, and the Pi turns the call into motors and heat.</p>
-  <div class="flow">
-    <div class="card"><h3><small>1 · WISPR FLOW → CLAUDE</small>The prompt</h3><pre class="code">Brew 18 g of Riverdale at 92°C
-for 250 ml with a 45-second bloom</pre></div>
-    <div class="card"><h3><small>2 · CLAUDE → CONNECTOR</small>The tool call (MCP, JSON-RPC)</h3><pre class="code">{"method": "tools/call",
- "params": {"name": "brew",
-  "arguments": {"coffee": "riverdale",
-   "grams": 18, "temp_c": 92,
-   "out_ml": 250, "bloom_s": 45,
-   "style": "v60"}}}</pre></div>
-    <div class="card"><h3><small>3 · PI → CLAUDE</small>The answer, then live status</h3><pre class="code">{"brew_id": "b_0417",
- "stage": "dosing", "eta_s": 225}
 
-status() → {"stage": "pulse 2/3",
- "grams": 18.0, "water_c": 92,
- "out_g": 182, "cup": "present"}</pre></div>
+  <h2>How it works</h2>
+  <p class="lede" style="font-size:18px;max-width:680px">A temperature-controlled kettle sits in a hinged cradle. A geared motor tips it to pour while the dripper turns, so the water spirals. Three hoppers dose beans by weight into a grinder. A Raspberry Pi runs it all, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
+
+  <h2>Parts, about $1,000</h2>
+  <p class="sub">Path A. Prices checked November 2026. "est." means a generic part at a typical price.</p>
+  <div class="card tblwrap">
+    <table class="tbl">
+      <thead><tr><th>Part</th><th>Model</th><th>Price</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://fellowproducts.com">Fellow Stagg EKG Pro</a>, 0.9 L<span class="why">Holds temperature. India: Timemore Fish Smart Pro 900 ml, ₹12,899.</span></td><td class="sku">EKG Pro</td><td>$179.95</td></tr>
+        <tr><td><a href="https://www.seattlecoffeegear.com/collections/grinders/products/baratza-encore-esp-coffee-and-espresso-grinder">Baratza Encore ESP</a> grinder<span class="why">Leave its switch on, and Shelly 1 runs it.</span></td><td class="sku">ZCG495</td><td>$199.95</td></tr>
+        <tr><td><a href="https://www.raspberrypi.com/products/raspberry-pi-5/">Raspberry Pi 5</a> 4 GB + official 27 W PSU + 32 GB card + case</td><td class="sku">Pi 5 4GB</td><td>$90</td></tr>
+        <tr><td>SparkFun load cell amplifier ×2</td><td class="sku">SEN-13879</td><td>$22</td></tr>
+        <tr><td>5 kg straight-bar load cell (under the cup)</td><td class="sku">TAL220B · SEN-14729</td><td>$12 est.</td></tr>
+        <tr><td>1 kg straight-bar load cell (dose)</td><td class="sku">80 mm bar</td><td>$5 est.</td></tr>
+        <tr><td><a href="https://www.omc-stepperonline.com/economy-planetary-gearbox/nema-17-stepper-motor-bipolar-l48mm-w-gear-raio-1001-planetary-gearbox-17hs19-1684s-pg100.html">StepperOnline NEMA 17, 100:1 planetary</a>: tilt</td><td class="sku">17HS19-1684S-PG100</td><td>$30.17</td></tr>
+        <tr><td>StepperOnline NEMA 17 ×2: turntable, rail</td><td class="sku">17HS19-2004S1</td><td>$28 est.</td></tr>
+        <tr><td>BIGTREETECH stepper drivers ×3</td><td class="sku">TMC2209 V1.3</td><td>$25 est.</td></tr>
+        <tr><td>Linear rail 300 mm + carriage</td><td class="sku">MGN12H</td><td>$20 est.</td></tr>
+        <tr><td>6-inch lazy-susan bearing + GT2 belt + 20T/60T pulleys</td><td class="sku">GT2 6 mm</td><td>$20 est.</td></tr>
+        <tr><td>Gear motors for the augers ×3</td><td class="sku">N20 6 V 100 rpm</td><td>$15 est.</td></tr>
+        <tr><td>Pololu dual motor drivers ×2</td><td class="sku">DRV8833 #2130</td><td>$10 est.</td></tr>
+        <tr><td>12 → 6 V buck converter</td><td class="sku">LM2596</td><td>$3 est.</td></tr>
+        <tr><td>Adafruit waterproof temperature probe + 4.7 kΩ</td><td class="sku">DS18B20 · #381</td><td>$10 est.</td></tr>
+        <tr><td>Adafruit time-of-flight cup sensor</td><td class="sku">VL53L0X · #3317</td><td>$15 est.</td></tr>
+        <tr><td>22 mm emergency-stop button, normally closed</td><td class="sku">NC mushroom</td><td>$10 est.</td></tr>
+        <tr><td>12 V 5 A desktop power brick, barrel jack</td><td class="sku">12V5A</td><td>$15 est.</td></tr>
+        <tr><td><a href="https://www.shelly.com/products/shelly-plug-s-gen3">Shelly Plug S Gen3</a> ×2 (use a 16 A adapter in India)<span class="why">Local HTTP API, no cloud needed.</span></td><td class="sku">Plug S Gen3</td><td>$52</td></tr>
+        <tr><td>Frame: 4× 500 mm + 4× 300 mm extrusion, 8 brackets, T-nuts</td><td class="sku">2020 V-slot</td><td>$60 est.</td></tr>
+        <tr><td>18 mm walnut ply top + silicone drip mat</td><td class="sku"></td><td>$30 est.</td></tr>
+        <tr><td>PETG filament 1 kg (hoppers, augers, cradle)</td><td class="sku">PETG</td><td>$22 est.</td></tr>
+        <tr><td>Hario V60 02 ceramic + Range Server 600 ml + 100 filters</td><td class="sku">VDC-02 · VCF-02-100W</td><td>$52 est.</td></tr>
+        <tr><td>Origami Dripper M + wave filters</td><td class="sku">Origami M</td><td>$40 est.</td></tr>
+        <tr><td>GPIO screw-terminal breakout, wire, ferrules, 2 extension springs</td><td class="sku"></td><td>$25 est.</td></tr>
+        <tr class="total"><td>Path A, one unit</td><td></td><td>$991</td></tr>
+      </tbody>
+    </table>
   </div>
-  <div class="grid3" style="margin-top:12px">
-    <div class="card"><h3>Dose and grind</h3><p>The chosen hopper's auger turns until the 1 kg load cell reads the exact grams. The beans drop into the grinder, and Shelly plug 1 switches it on for the grind.</p></div>
-    <div class="card"><h3>Heat</h3><p>The Stagg kettle holds the temperature. The Pi reads its own probe in the water and won't pour if it's more than 1 °C off. Shelly plug 2 is the kettle's hard kill switch.</p></div>
-    <div class="card"><h3>Pour</h3><p>The cradle tilts the kettle while the dripper turns and the rail moves the spout in and out, which makes the spiral. The 5 kg cell under the cup sets the flow, the bloom, the pulses and the stop.</p></div>
+  <p class="sub" style="margin-top:12px">Path B swaps the Stagg and the tilt motor for a Philips HD9306 kettle ($20), an SG90 servo finger ($3), two 12 V 500 ml/min peristaltic pumps with food-grade silicone ($128), 2 m of tubing and two more probes ($20). That comes to $952.</p>
+
+  <h2>What the $3,000 buys</h2>
+  <div class="card tblwrap">
+    <table class="tbl">
+      <tbody>
+        <tr><td>Desk unit (path A)</td><td>$991</td></tr>
+        <tr><td>Travel unit for events, "brew one for the room" (path B)</td><td>$952</td></tr>
+        <tr><td>Acaia Pearl S, the scale people see on camera</td><td>$220</td></tr>
+        <tr><td>A year of Riverdale: 20 g a day is about 29 bags at ₹760</td><td>$250</td></tr>
+        <tr><td>10% buffer</td><td>$241</td></tr>
+        <tr><td>Shipping and Indian import duty on the US parts</td><td>$346</td></tr>
+        <tr class="total"><td>Total</td><td>$3,000</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <h2>Two ways to build it</h2>
-  <p class="sub">Neither uses a robot arm. A $3,000 desktop arm can carry only 600 g, and a full kettle weighs 1.5 kg. Tilting or pumping is cheaper, can't drop anything, and takes about two weekends.</p>
-  <div class="paths">
-    <div class="card">
-      <span class="tag">Recommended</span>
-      <h3>A · Tilt a temperature-controlled kettle</h3>
-      <div class="price">$991</div>
-      <p>The kettle sits in a cradle hinged near its base, and a 100:1 geared stepper leans it forward to pour. The hinge takes the weight, so the motor only needs about 9 kg·cm. The gearbox isn't self-locking, so if power drops a spring pulls the kettle back upright.</p>
-      <p>A real gooseneck gives a smooth stream at exactly the right temperature, and it looks great on camera.</p>
-    </div>
-    <div class="card">
-      <span class="tag alt">Cheapest to hack</span>
-      <h3>B · Regular kettle, mixed down to temperature</h3>
-      <div class="price">$952</div>
-      <p>Any kettle boils the water, and a servo finger presses its switch to reboil. Two peristaltic pumps blend boiling and room-temperature water until a probe in the mixing cup reads the target: hot × (100 − T) = cold × (T − 25).</p>
-      <p>It works with any kettle and never moves anything hot. It's reliable from 85 to 94 °C. Reaching 97 °C takes a warm-up flush, because the tubing loses 3–6 °C.</p>
-    </div>
-  </div>
-
-  <h2>Wiring</h2>
-  <p class="sub">One Raspberry Pi 5 runs everything. Motors run on a separate 12 V brick through the emergency-stop loop, and anything on mains goes through certified Shelly plugs, so the build never touches mains wiring. All grounds are common.</p>
+  <h2>More detail</h2>
+  <details class="more"><summary>Wiring and pins</summary>
+  <p class="sub">One Raspberry Pi 5 runs everything. Motors get 12 V through the emergency-stop loop. Mains only goes through the two Shelly plugs. Common ground.</p>
   <div class="schem">
     <svg viewBox="0 0 1000 560" role="img" aria-label="Wiring schematic: Raspberry Pi 5 GPIO to load cells, stepper drivers, auger drivers, probe, cup sensor, e-stop, and Wi-Fi smart plugs" font-family="Spline Sans Mono, monospace" font-size="12">
       <g fill="var(--card)" stroke="var(--ink)" stroke-width="1.5">
@@ -264,60 +219,9 @@ status() → {"stage": "pulse 2/3",
     </table>
   </div>
 
-  <h2>Every part, exactly</h2>
-  <p class="sub">Path A. Prices were checked in November 2026 at the linked stores. "est." marks generic electronics at a typical price, so check those before you order.</p>
-  <div class="card tblwrap">
-    <table class="tbl">
-      <thead><tr><th>Part</th><th>Model</th><th>Price</th></tr></thead>
-      <tbody>
-        <tr><td><a href="https://fellowproducts.com">Fellow Stagg EKG Pro</a>, 0.9 L<span class="why">Holds temperature. India: Timemore Fish Smart Pro 900 ml, ₹12,899.</span></td><td class="sku">EKG Pro</td><td>$179.95</td></tr>
-        <tr><td><a href="https://www.seattlecoffeegear.com/collections/grinders/products/baratza-encore-esp-coffee-and-espresso-grinder">Baratza Encore ESP</a> grinder<span class="why">Leave its switch on, and Shelly 1 runs it.</span></td><td class="sku">ZCG495</td><td>$199.95</td></tr>
-        <tr><td><a href="https://www.raspberrypi.com/products/raspberry-pi-5/">Raspberry Pi 5</a> 4 GB + official 27 W PSU + 32 GB card + case</td><td class="sku">Pi 5 4GB</td><td>$90</td></tr>
-        <tr><td>SparkFun load cell amplifier ×2</td><td class="sku">SEN-13879</td><td>$22</td></tr>
-        <tr><td>5 kg straight-bar load cell (under the cup)</td><td class="sku">TAL220B · SEN-14729</td><td>$12 est.</td></tr>
-        <tr><td>1 kg straight-bar load cell (dose)</td><td class="sku">80 mm bar</td><td>$5 est.</td></tr>
-        <tr><td><a href="https://www.omc-stepperonline.com/economy-planetary-gearbox/nema-17-stepper-motor-bipolar-l48mm-w-gear-raio-1001-planetary-gearbox-17hs19-1684s-pg100.html">StepperOnline NEMA 17, 100:1 planetary</a>: tilt</td><td class="sku">17HS19-1684S-PG100</td><td>$30.17</td></tr>
-        <tr><td>StepperOnline NEMA 17 ×2: turntable, rail</td><td class="sku">17HS19-2004S1</td><td>$28 est.</td></tr>
-        <tr><td>BIGTREETECH stepper drivers ×3</td><td class="sku">TMC2209 V1.3</td><td>$25 est.</td></tr>
-        <tr><td>Linear rail 300 mm + carriage</td><td class="sku">MGN12H</td><td>$20 est.</td></tr>
-        <tr><td>6-inch lazy-susan bearing + GT2 belt + 20T/60T pulleys</td><td class="sku">GT2 6 mm</td><td>$20 est.</td></tr>
-        <tr><td>Gear motors for the augers ×3</td><td class="sku">N20 6 V 100 rpm</td><td>$15 est.</td></tr>
-        <tr><td>Pololu dual motor drivers ×2</td><td class="sku">DRV8833 #2130</td><td>$10 est.</td></tr>
-        <tr><td>12 → 6 V buck converter</td><td class="sku">LM2596</td><td>$3 est.</td></tr>
-        <tr><td>Adafruit waterproof temperature probe + 4.7 kΩ</td><td class="sku">DS18B20 · #381</td><td>$10 est.</td></tr>
-        <tr><td>Adafruit time-of-flight cup sensor</td><td class="sku">VL53L0X · #3317</td><td>$15 est.</td></tr>
-        <tr><td>22 mm emergency-stop button, normally closed</td><td class="sku">NC mushroom</td><td>$10 est.</td></tr>
-        <tr><td>12 V 5 A desktop power brick, barrel jack</td><td class="sku">12V5A</td><td>$15 est.</td></tr>
-        <tr><td><a href="https://www.shelly.com/products/shelly-plug-s-gen3">Shelly Plug S Gen3</a> ×2 (use a 16 A adapter in India)<span class="why">Local HTTP API, no cloud needed.</span></td><td class="sku">Plug S Gen3</td><td>$52</td></tr>
-        <tr><td>Frame: 4× 500 mm + 4× 300 mm extrusion, 8 brackets, T-nuts</td><td class="sku">2020 V-slot</td><td>$60 est.</td></tr>
-        <tr><td>18 mm walnut ply top + silicone drip mat</td><td class="sku"></td><td>$30 est.</td></tr>
-        <tr><td>PETG filament 1 kg (hoppers, augers, cradle)</td><td class="sku">PETG</td><td>$22 est.</td></tr>
-        <tr><td>Hario V60 02 ceramic + Range Server 600 ml + 100 filters</td><td class="sku">VDC-02 · VCF-02-100W</td><td>$52 est.</td></tr>
-        <tr><td>Origami Dripper M + wave filters</td><td class="sku">Origami M</td><td>$40 est.</td></tr>
-        <tr><td>GPIO screw-terminal breakout, wire, ferrules, 2 extension springs</td><td class="sku"></td><td>$25 est.</td></tr>
-        <tr class="total"><td>Path A, one unit</td><td></td><td>$991</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="sub" style="margin-top:12px">Path B swaps the Stagg and the tilt motor for a Philips HD9306 kettle ($20), an SG90 servo finger ($3), two 12 V 500 ml/min peristaltic pumps with food-grade silicone ($128), 2 m of tubing and two more probes ($20). That comes to $952.</p>
-
-  <h2>Where the $3,000 goes</h2>
-  <div class="card tblwrap">
-    <table class="tbl">
-      <tbody>
-        <tr><td>Desk unit (path A)</td><td>$991</td></tr>
-        <tr><td>Travel unit for events, "brew one for the room" (path B)</td><td>$952</td></tr>
-        <tr><td>Acaia Pearl S, the scale people see on camera</td><td>$220</td></tr>
-        <tr><td>A year of Riverdale: 20 g a day is about 29 bags at ₹760</td><td>$250</td></tr>
-        <tr><td>10% buffer</td><td>$241</td></tr>
-        <tr><td>Shipping and Indian import duty on the US parts</td><td>$346</td></tr>
-        <tr class="total"><td>Total</td><td>$3,000</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2>Build your own in two weekends</h2>
-  <p class="sub">Anyone in the office can build one. It needs no mains wiring and no special tools beyond a 3D printer, or a print service.</p>
+  </details>
+  <details class="more"><summary>Build it in two weekends</summary>
+  <p class="sub">No mains wiring, and no tools beyond a 3D printer or a print service.</p>
   <ol class="steps">
     <li><b>Saturday 1: frame and scales.</b> Bolt up the extrusion frame. Mount the 5 kg load cell under a plate for the cup and the 1 kg cell under the grinder chute, then calibrate both with a known weight.</li>
     <li><b>Sunday 1: hoppers and grinder.</b> Print three hoppers with augers and wire the gear motors to the Pi. Put the grinder on a Shelly plug. Test: "dose 18 g" should land within 0.2 g.</li>
@@ -325,86 +229,85 @@ status() → {"stage": "pulse 2/3",
     <li><b>Sunday 2: connector and safety.</b> Run the MCP server on the Pi, add the cup sensor and the emergency stop, and test that no cup means no pour. Then tell your Claude about it.</li>
   </ol>
 
-  <h2>The connector</h2>
-  <p class="sub">A small Python MCP server that runs on the Pi. It defaults to simulator mode, so you can plug it into Claude today with no hardware. It's tested: brew, status, menu and cancel all answer, and calls without the token get a 401.</p>
+  </details>
+  <details class="more"><summary>The connector (download)</summary>
+  <p class="sub">A small Python MCP server for the Pi. It starts in simulator mode, so it works with no hardware. Calls without the token get a 401.</p>
   <pre class="code">pip install "mcp[cli]&lt;2" uvicorn
 BREWBOT_TOKEN=pick-a-secret python server.py     # simulator
 BREWBOT_HW=1 BREWBOT_TOKEN=... python server.py  # on the Pi
 
-brew(coffee, grams, temp_c, out_ml?, ratio?, bloom_s?, style?)  → brew id
+brew(recipe="A1")  or  brew(coffee, grams, temp_c, out_ml?, bloom_s?)
 status()  → stage, grams, °C, grams in the cup
 menu()    → the three coffees and their default recipes
 cancel()  → motors off, kettle tips upright, plugs off</pre>
-  <div class="cs-links" style="margin-top:12px"><a class="btn" style="text-decoration:none;display:inline-block" href="connector/server.py" download>Download server.py</a></div>
+  <p style="margin:12px 0 0"><a class="btn" href="connector/server.py" download>Download server.py</a></p>
   <p class="sub" style="margin-top:12px"><b>Tell your Claude:</b> in Claude, open Settings → Connectors → Add custom connector. Paste the rig's URL (for example <code>https://brewbot.your-office.dev/mcp</code>) and the token you were given. Then just say, "make me a Riverdale, 18 grams, 92 degrees." Each person gets one brew every 10 minutes, one brew runs at a time, and nothing pours without a cup on the scale. Live status shows at the same URL without <code>/mcp</code>.</p>
 
-  <h2>What's in the hoppers</h2>
-  <div class="grid3">
-    <div class="card"><h3>Riverdale</h3><p>Riverdale Estate N72, a light roast from the Shevaroy Hills in Tamil Nadu (<a href="https://bluetokaicoffee.com/collections/roasted-and-ground-coffee-beans/products/riverdale-estate-n72">Blue Tokai</a>, ₹760 for 250 g). Default: 18 g, 92–94 °C, 1:15, 45 s bloom.</p></div>
-    <div class="card"><h3>Attikan</h3><p>A medium roast for everyday cups. Default: 18 g, 92 °C, 1:16, 30 s bloom.</p></div>
-    <div class="card"><h3>Dark</h3><p>A darker roast for a heavier cup. Default: 20 g, 88 °C, 1:15, 30 s bloom.</p></div>
+  </details>
+  <details class="more"><summary>Cheaper version: regular kettle + pumps</summary>
+  <p class="sub">No robot arm: a $3,000 desktop arm lifts 600 g, and a full kettle weighs 1.5 kg. Tilting or pumping is cheaper and can't drop anything.</p>
+  <div class="paths">
+    <div class="card">
+      <span class="tag">Recommended</span>
+      <h3>A · Tilt a temperature-controlled kettle</h3>
+      <div class="price">$991</div>
+      <p>The kettle sits in a cradle hinged near its base, and a 100:1 geared stepper leans it forward to pour. The hinge takes the weight, so the motor only needs about 9 kg·cm. The gearbox isn't self-locking, so if power drops a spring pulls the kettle back upright.</p>
+      <p>A real gooseneck pours the smoothest stream.</p>
+    </div>
+    <div class="card">
+      <span class="tag alt">Cheapest to hack</span>
+      <h3>B · Regular kettle, mixed down to temperature</h3>
+      <div class="price">$952</div>
+      <p>Any kettle boils the water, and a servo finger presses its switch to reboil. Two peristaltic pumps blend boiling and room-temperature water until a probe in the mixing cup reads the target: hot × (100 − T) = cold × (T − 25).</p>
+      <p>It works with any kettle and never moves anything hot. It's reliable from 85 to 94 °C. Reaching 97 °C takes a warm-up flush, because the tubing loses 3–6 °C.</p>
+    </div>
   </div>
 
-  <p class="note">This is a concept: the demo above is a simulation, not footage of a real build. The parts list and connector are real, and the first unit is what the $3,000 buys.</p>
+  </details>
+
+  <p class="note">Concept. The demo is a simulation; the parts list and connector are real. The $3,000 builds the first one.</p>
 </main>
 <footer>Part of Sameep Rehlan's portfolio, sameep.ai. Built by voice with Wispr Flow and Claude.</footer>
 <script>
 (function(){
-  var $=function(id){return document.getElementById(id)};
-  var log=$('log'),go=$('go'),rig=document.querySelector('.rig');
-  var COFFEES={riverdale:'Riverdale',attikan:'Attikan',dark:'Dark'};
-  var HOP={riverdale:0,attikan:1,dark:2};
+  var RECIPES={
+    A1:{coffee:'riverdale',name:'Riverdale',hopper:0,grams:18,temp_c:93,out_ml:270,bloom_s:45,note:'classic, 1:15'},
+    A2:{coffee:'riverdale',name:'Riverdale',hopper:0,grams:15,temp_c:95,out_ml:250,bloom_s:40,note:'bright, 1:16.7'},
+    B1:{coffee:'attikan',name:'Attikan',hopper:1,grams:18,temp_c:92,out_ml:288,bloom_s:30,note:'everyday, 1:16'},
+    C1:{coffee:'dark',name:'Dark roast',hopper:2,grams:20,temp_c:88,out_ml:300,bloom_s:30,note:'heavy, 1:15'}};
+  var $=function(i){return document.getElementById(i)},film=$('film'),busy=false;
+  $('recipes').innerHTML=Object.keys(RECIPES).map(function(id){var r=RECIPES[id];
+    return '<button type="button" data-id="'+id+'"><b>'+id+'</b><span>'+r.name+'</span><small>'+r.grams+' g · '+r.temp_c+' °C · '+r.out_ml+' ml · '+r.note+'</small></button>'}).join('');
   function parse(t){
-    t=t.toLowerCase();
-    var c='riverdale';for(var k in COFFEES)if(t.indexOf(k)>-1)c=k;
-    var g=(t.match(/(\d+(?:\.\d+)?)\s*(?:g\b|grams?)/)||[])[1];
-    var temp=(t.match(/(\d{2,3})\s*(?:°|º|degrees?|c\b)/)||[])[1];
-    var ml=(t.match(/(\d{2,4})\s*(?:ml|millilit)/)||[])[1];
-    var bloom=(t.match(/(\d{1,3})[\s-]*(?:s\b|sec|second)/)||[])[1];
-    g=Math.min(Math.max(+g||18,8),40);temp=Math.min(Math.max(+temp||92,80),99);
-    ml=Math.min(Math.max(+ml||g*15,100),450);bloom=Math.min(Math.max(+bloom||45,0),90);
-    return {coffee:c,grams:g,temp_c:temp,out_ml:ml,bloom_s:bloom};
-  }
-  function line(cls,txt){var d=document.createElement('div');d.className=cls;d.textContent=txt;log.appendChild(d);log.scrollTop=log.scrollHeight}
-  function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
-  function tween(ms,fn){return new Promise(function(r){var t0=performance.now();(function f(now){var p=Math.min((now-t0)/ms,1);fn(p);p<1?requestAnimationFrame(f):r()})(t0)})}
-  function stage(s){$('stage').textContent=s}
-  function reset(){log.textContent='';$('kettle').style.transform='';$('stream').style.opacity=0;$('beans').style.opacity=0;
-    rig.classList.remove('spin');$('cup').setAttribute('height',0);$('cup').setAttribute('y',208);
-    ['h0','h1','h2'].forEach(function(h){$(h).style.fill=''});
-    $('rDose').textContent='0.0 g';$('rTemp').textContent='25 °C';$('rOut').textContent='0 g';$('scale').textContent='0.0 g';$('ktemp').textContent='25°'}
-  async function run(){
-    go.disabled=true;reset();
-    var txt=$('line').value.trim()||$('line').placeholder, r=parse(txt), out=0;
-    var w=$('wispr'),wt=$('wtext');w.classList.add('live');wt.textContent='Listening…';await wait(900);
-    wt.textContent='"'+txt+'"';w.classList.remove('live');await wait(500);
-    line('c','→ brew('+JSON.stringify(r).replace(/"(\w+)":/g,'$1: ').replace(/[{}]/g,'').replace(/,/g,', ')+')');
-    await wait(400);line('r','  ✓ cup detected · tare 312.4 g · brew #'+(100+Math.floor(Math.random()*900)));
-    stage('Dosing '+COFFEES[r.coffee]);$('h'+HOP[r.coffee]).style.fill='var(--coffee)';$('beans').style.opacity=1;
-    await tween(1600,function(p){$('rDose').textContent=(r.grams*p).toFixed(1)+' g'});
-    line('r','  dosed '+r.grams.toFixed(1)+' g of '+COFFEES[r.coffee]);
-    stage('Grinding');$('beans').style.opacity=0;
-    await tween(1400,function(p){$('burr').setAttribute('transform','rotate('+(p*720)+' 114 124)')});
-    line('r','  ground · medium-fine');
-    stage('Heating to '+r.temp_c+' °C');
-    await tween(1800,function(p){var t=Math.round(25+(r.temp_c-25)*p);$('rTemp').textContent=t+' °C';$('ktemp').textContent=t+'°'});
-    line('c','→ status()');line('r','  water '+r.temp_c+'.0 °C ✓ within ±1 °C');
-    function pour(ms,grams,label){stage(label);$('kettle').style.transform='rotate(-24deg)';$('stream').style.opacity=1;rig.classList.add('spin');
-      var start=out;return tween(ms,function(p){out=start+grams*p;$('rOut').textContent=Math.round(out)+' g';$('scale').textContent=out.toFixed(1)+' g';
-        var h=Math.min(out/r.out_ml,1)*16;$('cup').setAttribute('height',h);$('cup').setAttribute('y',224-h)})}
-    function stop(){$('kettle').style.transform='';$('stream').style.opacity=0}
-    var bloomG=Math.round(r.grams*2.5);
-    await pour(1000,bloomG,'Bloom · '+bloomG+' g');stop();
-    line('r','  bloom '+bloomG+' g · waiting '+r.bloom_s+' s');stage('Blooming '+r.bloom_s+' s');await wait(1100);
-    var left=r.out_ml-bloomG;
-    for(var i=1;i<=3;i++){await pour(1100,left/3,'Spiral pulse '+i+' of 3');stop();line('r','  pulse '+i+' · '+Math.round(out)+' g');await wait(350)}
-    rig.classList.remove('spin');stage('Drawing down');await wait(900);
-    line('ok','✓ done · '+Math.round(out)+' g · '+COFFEES[r.coffee]+' at '+r.temp_c+' °C · ready for you');
-    stage('Your cup is ready');go.disabled=false;
-  }
-  go.addEventListener('click',run);
-  $('line').addEventListener('keydown',function(e){if(e.key==='Enter'&&!go.disabled)run()});
+    var s=t.toLowerCase().replace(/\bone\b/g,'1').replace(/\btwo\b/g,'2');
+    var m=s.match(/recipe\s*([abc])\s*-?\s*([12])/)||s.match(/\b([abc])\s*-?\s*([12])\b/);
+    if(m&&RECIPES[(m[1]+m[2]).toUpperCase()]){var id=(m[1]+m[2]).toUpperCase(),r=Object.assign({id:id},RECIPES[id]);return r}
+    var c=/attikan/.test(s)?'B1':/dark/.test(s)?'C1':'A1',base=Object.assign({},RECIPES[c],{id:''});
+    var g=(s.match(/(\d+(?:\.\d+)?)\s*(?:g\b|grams?)/)||[])[1],temp=(s.match(/(\d{2,3})\s*(?:°|º|degrees?|c\b)/)||[])[1],
+        ml=(s.match(/(\d{2,4})\s*(?:ml|millilit)/)||[])[1],bl=(s.match(/(\d{1,3})[\s-]*(?:s\b|sec|second)/)||[])[1];
+    if(!g&&!temp&&!ml)return null;
+    base.grams=Math.min(Math.max(+g||base.grams,8),40);base.temp_c=Math.min(Math.max(+temp||base.temp_c,80),99);
+    base.out_ml=Math.min(Math.max(+ml||base.grams*15,100),450);base.bloom_s=Math.min(Math.max(+bl||base.bloom_s,0),90);return base}
+  function brew(said){
+    var r=parse(said);if(!r){$('heard').textContent='Heard “'+said+'”. Try “brew recipe A1”, or name grams and degrees.';return}
+    r.said=said.charAt(0).toUpperCase()+said.slice(1);busy=true;
+    $('heard').textContent='Brewing '+(r.id?'recipe '+r.id+': ':'')+r.name+', '+r.grams+' g at '+r.temp_c+' °C for '+r.out_ml+' ml.';
+    film.contentWindow.postMessage({brewbot:'play',recipe:r},location.origin);film.scrollIntoView({behavior:'smooth',block:'center'})}
+  addEventListener('message',function(e){if(e.origin!==location.origin)return;if(e.data&&e.data.brewbot==='done'){busy=false;$('heard').textContent+=' Done. Say another one.'}});
+  $('recipes').addEventListener('click',function(e){var b=e.target.closest('button');if(b)brew('Brew recipe '+b.dataset.id)});
+  $('say').addEventListener('submit',function(e){e.preventDefault();var v=$('line').value.trim();if(v)brew(v)});
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=$('mic');
+  if(!SR){mic.hidden=true;return}
+  var rec=new SR();rec.lang='en-IN';rec.interimResults=true;rec.continuous=true;var text='',on=false;
+  rec.onresult=function(e){text='';for(var i=0;i<e.results.length;i++)text+=e.results[i][0].transcript;$('line').value=text};
+  rec.onend=function(){mic.classList.remove('live');$('micl').textContent='Hold to talk';if(on){on=false;if(text.trim())brew(text.trim())}};
+  rec.onerror=function(e){$('heard').textContent=e.error==='not-allowed'?'Mic blocked. Type it or tap a recipe instead.':'Didn\'t catch that. Try again or type it.'};
+  function start(e){e.preventDefault();if(on)return;text='';on=true;try{rec.start()}catch(_){}mic.classList.add('live');$('micl').textContent='Listening… release to brew'}
+  function stop(){if(on)try{rec.stop()}catch(_){}}
+  mic.addEventListener('pointerdown',start);addEventListener('pointerup',stop);mic.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter')start(e)});mic.addEventListener('keyup',stop);
 })();
 </script>
+
+<script type="module" src="../js/analytics.js"></script>
 </body>
 </html>
