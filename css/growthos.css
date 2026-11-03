@@ -455,3 +455,48 @@
   .ghome__start { grid-template-columns: 1fr; }
 }
 .gos__top .gos-wip summary { white-space: nowrap; }
+
+/* campaigns board: a column per stage, a picture on every card */
+.cboard { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 6px; }
+.cboard__col { min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 20px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); transition: background .15s; }
+.cboard__col.is-over { background: #f6efff; }
+.cboard__h { display: flex; justify-content: space-between; margin: 4px 6px 2px; font: 600 12px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+.cboard__empty { margin: 6px; padding: 18px 10px; border: 1.5px dashed var(--line); border-radius: 14px; text-align: center; font: 400 13px var(--sans); color: var(--mute); }
+.ccard { display: grid; gap: 0; padding: 0; overflow: hidden; border: 0; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px rgba(26,26,26,.06), inset 0 0 0 1px var(--line); color: var(--vast); text-align: left; cursor: grab; transition: transform .15s, box-shadow .15s; }
+.ccard:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -14px rgba(26,26,26,.35), inset 0 0 0 1px var(--line); }
+.ccard .gart { border-radius: 0; }
+.ccard__swatch { display: block; height: 8px; background: var(--c); }
+.ccard__b { display: grid; gap: 4px; padding: 12px 14px 14px; border-top: 4px solid var(--c, var(--fathom)); }
+.ccard__t { font: 400 21px/1.1 var(--serif); }
+.ccard__p { font: 400 13px/1.4 var(--sans); color: #45453c; }
+.ccard__m { margin-top: 2px; font: 500 12px var(--sans); color: var(--mute); }
+.brief__line { margin: 8px 0 0; max-width: 60ch; font: 400 16px/1.5 var(--sans); color: #e4e4d0; }
+.tag--planned { background: #e9dcff; }
+@media (max-width: 760px) {
+  .cboard { grid-template-columns: repeat(4, 78vw); scroll-snap-type: x mandatory; }
+  .cboard__col { scroll-snap-align: start; }
+}
+/* Start here: the season's campaigns as a strip of pictures */
+.home-strip { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); gap: 12px; overflow-x: auto; margin: 6px 0 22px; padding-bottom: 6px; }
+.home-strip .ccard__t { font-size: 18px; }
+@media (max-width: 760px) { .home-strip { grid-auto-columns: 62vw; } }
+/* a people kanban (creators pipeline) */
+.kb { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(210px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+.kb__col { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 20px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.kb__card { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.kb__t { display: grid; min-width: 0; font: 400 13px/1.3 var(--sans); color: var(--mute); }
+.kb__t b { font-weight: 600; color: var(--vast); overflow-wrap: anywhere; }
+.kb__mv { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 6px; }
+.kb__mv button { width: 34px; height: 30px; border: 0; border-radius: 999px; background: var(--line); color: var(--vast); font: 600 14px var(--sans); cursor: pointer; }
+.kb__mv button:hover { background: var(--vast); color: var(--lumen); }
+@media (max-width: 760px) { .kb { grid-auto-columns: 78vw; } }
+/* creators: a grid of faces */
+.crgrid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.crcard { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 20px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.crcard__top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.crcard__n { margin: 0; font: 400 21px/1.1 var(--serif); }
+.crcard__m { margin: 0; font: 500 12.5px var(--sans); color: var(--mute); }
+.crcard .fit summary { font: 400 13.5px/1.45 var(--sans); color: #3c3c34; }
+.crcard .tags:empty { display: none; }
+.cgrid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.ccard[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--vast); }

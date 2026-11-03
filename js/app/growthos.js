@@ -7,7 +7,7 @@ import { isWispr } from '../version.js';
 import { flowClean } from './apps.js';
 import * as D from './growthos-data.js';
 import { extraModules } from './gos/index.js';
-import { loadCss, avatar, appHead } from './gos/kit.js';
+import { loadCss, avatar, appHead, art } from './gos/kit.js';
 import { APPS, glyph } from './gos/apps.js';
 
 // ---------------------------------------------------------------- the gate
@@ -110,7 +110,7 @@ const tone = (c) => TONES[c] || c;
 const fmtD = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 const days = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 864e5);
 const TODAY = new Date().toISOString().slice(0, 10);
-const STATUSES = ['idea', 'approved', 'live', 'done', 'cut'];
+const STATUSES = ['idea', 'planned', 'live', 'done'];
 const tag = (t, kind = t) => h('span.tag.tag--' + String(kind).toLowerCase(), t);
 const sample = () => h('span.tag.tag--sample', { title: 'Made-up number to show the layout. Real numbers need Wispr data.' }, 'Sample');
 const gbox = (label, ...kids) => h('section.gbox', h('h3.gbox__label', label), ...kids);
@@ -290,14 +290,12 @@ function home(m, { go }) {
   return [
     head({ ...m, kicker: 'Read this first' }, null),
     h('p.lede', rich(P.thesis)),
+    h('div.home-strip', allCampaigns().filter((c) => c.art).sort((a, b) => a.start.localeCompare(b.start)).map((c) => h('button.ccard', { type: 'button', style: { '--c': tone(c.c) }, onclick: () => go('campaigns', { focus: c.id }) },
+      art(c.art, '', { ratio: '4/3' }), h('span.ccard__b', h('span.ccard__t', c.name), h('span.ccard__m', monthSpan(c)))))),
     gboxW('The bet, in three lines', ul(P.bets)),
-    gbox('The first 90 days', h('div.gos-grid.gos-grid--2', P.days90.map((p) => h('div.card', h('div.card__top', h('p.card__t', p.t), tag(p.when, 'real')), ul(p.items))))),
-    gbox('What I’d cut, and why', h('div.tbl-wrap', h('table.tbl.tbl--stack', h('thead', h('tr', h('th', 'Cut'), h('th', 'Why'))),
-      h('tbody', P.cut.map((c) => h('tr', h('td.tbl__name', c.t), h('td.tbl__wide', rich(c.why)))))))),
-    gbox('Where my own lessons show up', h('div.gos-grid.gos-grid--2', P.learnings.map((l) => h('div.card',
-      h('p.card__t', l.from), h('p.card__p', rich(l.lesson)), h('p.card__meta', h('span', '→ ', l.where.map((x, i) => [i ? ', ' : '', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go(x.mod); } }, x.t)]))))))),
-    gbox('What I’d need from Wispr in week one', ul(P.asks)),
-    h('div.row', h('button.btn.btn--primary', { type: 'button', onclick: () => go('dash') }, 'See how it’s measured →'), h('button.btn', { type: 'button', onclick: () => go('campaigns') }, 'Open the calendar')),
+    gbox('Month by month', h('div.gos-grid', P.days90.map((p) => h('div.card', h('div.card__top', h('p.card__t', p.t)), ul(p.items))))),
+    gbox('What we need to start', ul(P.asks)),
+    h('div.row', h('button.btn.btn--primary', { type: 'button', onclick: () => go('dash') }, 'See how it’s measured →'), h('button.btn', { type: 'button', onclick: () => go('campaigns') }, 'Open campaigns')),
   ];
 }
 
@@ -324,43 +322,58 @@ function dash(m, { go }) {
 
 // ---------------------------------------------------------------- campaigns
 const allCampaigns = () => [...D.CAMPAIGNS, ...S.added];
-const statusOf = (c) => S.status[c.id] || c.status;
+const statusOf = (c) => (STATUSES.includes(S.status[c.id]) ? S.status[c.id] : STATUSES.includes(c.status) ? c.status : 'idea');
+const CAMP_COLS = [['idea', 'Ideas'], ['planned', 'Planned'], ['live', 'Live'], ['done', 'Done']];
+const monthSpan = (c) => { const f = (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { month: 'short' }); const a = f(c.start), z = f(c.end); return a === z ? a : `${a} – ${z}`; };
 function campaigns(m, opts) {
   const list = allCampaigns().sort((a, b) => a.start.localeCompare(b.start));
-  const first = D.CALENDAR.from, last = D.CALENDAR.to;
-  const weeks = Math.ceil(days(first, last) / 7);
-  const x = (d) => `calc(${days(first, d) / 7} * var(--wk))`;
-  const detail = h('div');
+  const detail = h('div.camp-detail');
+  const rerender = (o = {}) => { const page = document.querySelector('.gos__page'); const keep = page?.scrollTop; page?.replaceChildren(...campaigns(m, { ...opts, ...o })); if (page) page.scrollTop = keep; };
   const open = (c) => { detail.replaceChildren(briefView(c, () => campaigns(m, { ...opts, focus: c.id }), opts)); detail.scrollIntoView({ behavior: 'smooth', block: 'start' }); sound.tick('pick'); };
 
-  // month labels
-  const months = [];
-  for (let d = new Date(first + 'T00:00:00'); d <= new Date(last + 'T00:00:00'); d.setMonth(d.getMonth() + 1, 1)) months.push(new Date(d));
-  const tl = h('div.tl', { style: { '--n': weeks } }, h('div.tl__in',
-    h('div.tl__months', h('div', { style: { padding: '0 8px' } }, 'Campaign'), h('div.tl__mrow', months.map((d) => { const iso = d.toISOString().slice(0, 10) < first ? first : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`; return h('span.tl__m', { style: { left: x(iso) } }, d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' })); }))),
-    h('div', { style: { position: 'relative' } },
-      list.map((c) => h('div.tl__row', h('button.tl__name', { type: 'button', onclick: () => open(c) }, c.name),
-        h('div.tl__track', h('button.tl__bar' + (statusOf(c) === 'cut' ? '.is-cut' : ''), { type: 'button', title: `${c.name}: ${fmtD(c.start)} – ${fmtD(c.end)}`, 'aria-label': c.name, onclick: () => open(c), style: { left: x(c.start), width: `max(8px, calc(${Math.max(1, days(c.start, c.end)) / 7} * var(--wk)))`, '--c': tone(c.c) || 'var(--bondi)' } })))),
-      h('div', { style: { position: 'absolute', inset: '0 0 0 200px', pointerEvents: 'none' } },
-        D.CALENDAR.marks.map((k) => h('span.tl__mark', { style: { left: x(k.d), top: '0' } }, h('span.tl__marklabel', k.t))),
-        TODAY >= first && TODAY <= last ? h('span.tl__mark.tl__today', { style: { left: x(TODAY), top: '0' } }, h('span.tl__marklabel', 'Today')) : null))));
+  // the board: one column per stage, a picture on every card; drag a card, or set its stage in the brief
+  const board = () => h('div.cboard', CAMP_COLS.map(([st, label]) => {
+    const cards = list.filter((c) => statusOf(c) === st);
+    const col = h('section.cboard__col', { ondragover: (e) => { e.preventDefault(); col.classList.add('is-over'); }, ondragleave: () => col.classList.remove('is-over'),
+      ondrop: (e) => { e.preventDefault(); const id = e.dataTransfer.getData('text/plain'); if (id) { S.status[id] = st; save(); sound.tick('pick'); rerender({ tab: 0 }); } } },
+      h('h3.cboard__h', label, h('span', String(cards.length))),
+      cards.length ? cards.map((c) => h('button.ccard', { type: 'button', draggable: 'true', style: { '--c': tone(c.c) }, ondragstart: (e) => e.dataTransfer.setData('text/plain', c.id), onclick: () => open(c) },
+        c.art ? art(c.art, '', { ratio: '16/9' }) : h('span.ccard__swatch'),
+        h('span.ccard__b', h('span.ccard__t', c.name), h('span.ccard__p', c.line || rich(c.goal)), h('span.ccard__m', monthSpan(c), ' · ', c.owner || 'Owner tbc'))))
+        : h('p.cboard__empty', 'Nothing here yet'));
+    return col;
+  }));
 
-  // phone: an agenda by month
-  const byMonth = {};
-  list.forEach((c) => { const k = c.start.slice(0, 7); (byMonth[k] ||= []).push(c); });
-  const agenda = h('div.agenda', Object.entries(byMonth).map(([k, cs]) => h('div',
-    h('p.agenda__m', new Date(k + '-01T00:00:00').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })),
-    h('div.agenda__list', cs.map((c) => campCard(c, () => open(c)))))));
+  // the plan: months across, one bar per campaign
+  const plan = () => {
+    const first = D.CALENDAR.from, last = D.CALENDAR.to;
+    const weeks = Math.ceil(days(first, last) / 7);
+    const x = (d) => `calc(${Math.max(0, days(first, d)) / 7} * var(--wk))`;
+    const months = [];
+    for (let d = new Date(first + 'T00:00:00'); d <= new Date(last + 'T00:00:00'); d.setMonth(d.getMonth() + 1, 1)) months.push(new Date(d));
+    const tl = h('div.tl', { style: { '--n': weeks } }, h('div.tl__in',
+      h('div.tl__months', h('div', { style: { padding: '0 8px' } }, 'Campaign'), h('div.tl__mrow', months.map((d) => h('span.tl__m', { style: { left: x(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`) } }, d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' }))))),
+      h('div', { style: { position: 'relative' } },
+        list.map((c) => h('div.tl__row', h('button.tl__name', { type: 'button', onclick: () => open(c) }, c.name),
+          h('div.tl__track', h('button.tl__bar', { type: 'button', title: `${c.name}: ${fmtD(c.start)} – ${fmtD(c.end)}`, 'aria-label': c.name, onclick: () => open(c), style: { left: x(c.start), width: `max(8px, calc(${Math.max(1, days(c.start, c.end)) / 7} * var(--wk)))`, '--c': tone(c.c) || 'var(--bondi)' } })))),
+        h('div', { style: { position: 'absolute', inset: '0 0 0 220px', pointerEvents: 'none' } },
+          TODAY >= first && TODAY <= last ? h('span.tl__mark.tl__today', { style: { left: x(TODAY), top: '0' } }, h('span.tl__marklabel', 'Today')) : null))));
+    const byMonth = {};
+    list.forEach((c) => { const k = c.start.slice(0, 7); (byMonth[k] ||= []).push(c); });
+    const agenda = h('div.agenda', Object.entries(byMonth).map(([k, cs]) => h('div',
+      h('p.agenda__m', new Date(k + '-01T00:00:00').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })),
+      h('div.agenda__list', cs.map((c) => campCard(c, () => open(c)))))));
+    return [tl, agenda];
+  };
 
   const form = newCampaignForm(() => campaigns(m, opts));
   const view = [
-    head(m, D.CALENDAR.why, h('button.btn.btn--sm', { type: 'button', onclick: () => { form.hidden = !form.hidden; } }, '+ New campaign')),
-    form, tl, agenda,
-    h('p.note', 'Dashed lines are the moments we plan around. Tap a bar for its brief. Each brief ends with what it causes downstream, what could backfire, and when we kill it.'),
+    head(m, D.CALENDAR.why, h('button.btn.btn--primary.btn--sm', { type: 'button', onclick: () => { form.hidden = !form.hidden; } }, '+ New campaign')),
+    form,
+    tabs(['Board', 'Plan'], (i) => (i ? plan() : board()), opts.tab || 0),
     detail,
   ];
-  const focus = opts.focus ? list.find((c) => c.id === opts.focus) : list.find((c) => statusOf(c) !== 'cut');
-  if (focus) detail.append(briefView(focus, () => campaigns(m, { ...opts, focus: focus.id }), opts));
+  if (opts.focus) { const f = list.find((c) => c.id === opts.focus); if (f) detail.append(briefView(f, () => campaigns(m, { ...opts, focus: f.id }), opts)); }
   return view;
 }
 function campCard(c, onclick) {
@@ -374,7 +387,7 @@ function briefView(c, rerender, { go } = {}) {
   const page = document.querySelector('.gos__page');
   return h('article.brief', { style: { '--c': tone(c.c) } },
     h('div.brief__head',
-      h('div', h('h3.brief__t', c.name), h('p.brief__dates', `${fmtD(c.start)} – ${fmtD(c.end)} · ${days(c.start, c.end) + 1} days · ${c.owner || 'Owner: tbc'}`, c.tier ? ' · ' : '', c.tier && h('b', c.tier))),
+      h('div', h('h3.brief__t', c.name), h('p.brief__dates', `${fmtD(c.start)} – ${fmtD(c.end)} · ${c.owner || 'Owner: tbc'}`), c.line && h('p.brief__line', c.line)),
       h('div.row', { style: { marginTop: 0 } }, tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
         copyBtn(() => briefText(c), 'Copy brief'))),
     h('dl.dl',
@@ -385,7 +398,6 @@ function briefView(c, rerender, { go } = {}) {
       h('dt', 'Channels'), h('dd', rich((c.channels || []).join(' · '))),
       h('dt', 'KPIs'), h('dd', ul(c.kpis || [])),
       h('dt', 'Budget'), h('dd', rich(c.budget || 'tbc')),
-      c.learn && [h('dt', 'From my work'), h('dd', rich(c.learn))],
       c.links?.length && [h('dt', 'Uses'), h('dd', c.links.map((l, i) => [i ? ' · ' : '', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go?.(l.mod); } }, l.t)]))]),
     gbox('Second-order', secondOrder(c.so)));
 }
@@ -419,11 +431,14 @@ function newCampaignForm(rerender) {
 function events(m) {
   const detail = h('div');
   let on = null;
-  const cards = h('div.gos-grid', D.EVENTS.map((e) => h('button.card', { type: 'button', 'aria-pressed': 'false', style: { '--c': tone(e.c) }, onclick: (ev) => show(e, ev.currentTarget) },
-    h('div.card__top', h('p.card__t', e.name), tag(e.tier, e.tier === 'Cut' ? 'cut' : 'real')), h('p.card__p', e.one), h('p.card__meta', h('span', e.where), h('span', e.cost)))));
+  // a picture on every event (the plan's own art)
+  const EV_ART = { tvt: 'ev-stream-desk', mic: 'ev-mic-taping', booth: 'ev-vo-booth', inbox: 'mb-monsoon-office', build: 'sb-startup-7', fest: 'ev-city-drop' };
+  const cards = h('div.cgrid', D.EVENTS.map((e) => h('button.ccard', { type: 'button', 'aria-pressed': 'false', style: { '--c': tone(e.c) }, onclick: (ev) => show(e, ev.currentTarget) },
+    EV_ART[e.id] ? art(EV_ART[e.id], '', { ratio: '16/9' }) : h('span.ccard__swatch'),
+    h('span.ccard__b', h('span.ccard__t', e.name), h('span.ccard__p', e.one), h('span.ccard__m', e.where)))));
   function show(e, btn) {
     on = e.id;
-    cards.querySelectorAll('.card').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
+    cards.querySelectorAll('.ccard').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
     const done = S.checks[e.id] || {};
     detail.replaceChildren(h('article.brief', { style: { '--c': tone(e.c) } },
       h('div.brief__head', h('div', h('h3.brief__t', e.name), h('p.brief__dates', `${e.where} · ${e.when} · ${e.cost}`))),
@@ -531,18 +546,20 @@ function creators(m) {
   function discover() {
     const q = { text: '', region: 'all', bucket: 'all', tier: 'all', starred: false, fresh: false };
     const buckets = [...new Set(D.CREATORS.map((c) => c.bucket))];
-    const body = h('tbody');
+    const body = h('div.crgrid');
     const count = h('span.small', { style: { margin: 0 } });
     const draw = () => {
       const rows = D.CREATORS.filter((c) => (q.region === 'all' || c.region === q.region) && (q.bucket === 'all' || c.bucket === q.bucket) && (q.tier === 'all' || c.tier === q.tier) && (!q.starred || S.stars[c.handle]) && (!q.fresh || !c.promotedWispr) &&
         (!q.text || [c.name, c.handle, c.fit, c.bucket, c.niche].join(' ').toLowerCase().includes(q.text)));
       count.textContent = `${rows.length} of ${D.CREATORS.length}`;
-      body.replaceChildren(...rows.map((c) => h('tr',
-        h('td.tbl__star', h('button.star', { type: 'button', 'aria-pressed': String(!!S.stars[c.handle]), 'aria-label': 'Shortlist ' + c.name, onclick: (e) => { S.stars[c.handle] = !S.stars[c.handle]; if (S.stars[c.handle] && stageOf(c) === 'found') S.stages[c.handle] = 'shortlisted'; save(); e.currentTarget.setAttribute('aria-pressed', String(!!S.stars[c.handle])); } }, '★')),
-        h('td.tbl__name.tbl__wide', h('div.who', avatar({ name: c.name, photo: c.photo }), h('div.who__t', c.name, h('span.tbl__sub', first(c.handle)))), h('span.tags', c.pick ? tag('Top pick', 'approved') : null, c.dont ? tag('Conflict: builds a competing app', 'warn') : null, c.promotedWispr ? tag('Already with Flow', 'done') : null)),
-        h('td', { 'data-k': 'Reach' }, first(c.followers) || '?', h('span.tbl__sub', c.region === 'IN' ? 'India' : 'Global')),
-        h('td', { 'data-k': 'Size' }, c.tier, h('span.tbl__sub', c.lang)),
-        h('td.tbl__wide', h('details.fit', h('summary', rich(c.fit)), c.format && h('p', h('b', 'Format: '), c.format), c.risk && h('p', h('b', 'Watch: '), c.risk), h('p.muted', 'Reach as of ', c.followersAsOf || '?', ' · ', c.source && h('a', { href: safeHttp(c.source), target: '_blank', rel: 'noopener' }, 'source ↗')))))));
+      // a card per creator: face first, then reach, then one line on fit (the rest on tap)
+      body.replaceChildren(...rows.map((c) => h('article.crcard',
+        h('div.crcard__top', avatar({ name: c.name, photo: c.photo, size: 56 }),
+          h('button.star', { type: 'button', 'aria-pressed': String(!!S.stars[c.handle]), 'aria-label': 'Shortlist ' + c.name, onclick: (e) => { S.stars[c.handle] = !S.stars[c.handle]; if (S.stars[c.handle] && stageOf(c) === 'found') S.stages[c.handle] = 'shortlisted'; save(); e.currentTarget.setAttribute('aria-pressed', String(!!S.stars[c.handle])); } }, '★')),
+        h('h4.crcard__n', c.name),
+        h('p.crcard__m', [first(c.followers), c.tier, c.region === 'IN' ? 'India' : 'Global'].filter(Boolean).join(' · ')),
+        h('span.tags', c.pick ? tag('Top pick', 'approved') : null, c.dont ? tag('Conflict: builds a competing app', 'warn') : null, c.promotedWispr ? tag('Already with Flow', 'done') : null),
+        h('details.fit', h('summary', rich(c.fit)), c.format && h('p', h('b', 'Format: '), c.format), c.risk && h('p', h('b', 'Watch: '), c.risk), h('p.muted', first(c.handle), ' · as of ', c.followersAsOf || '?', ' · ', c.source && h('a', { href: safeHttp(c.source), target: '_blank', rel: 'noopener' }, 'source ↗'))))));
     };
     const onIn = (k) => (v) => { q[k] = v; draw(); };
     const view = [
@@ -554,8 +571,8 @@ function creators(m) {
         h('label.small', { style: { margin: 0, display: 'flex', gap: '6px', alignItems: 'center' } }, h('input', { type: 'checkbox', onchange: (e) => onIn('starred')(e.target.checked) }), '★ only'),
         h('label.small', { style: { margin: 0, display: 'flex', gap: '6px', alignItems: 'center' } }, h('input', { type: 'checkbox', onchange: (e) => onIn('fresh')(e.target.checked) }), 'New to Flow only'),
         count),
-      h('div.tbl-wrap', { style: { maxHeight: '440px' } }, h('table.tbl.tbl--stack.tbl--creators', h('thead', h('tr', ['', 'Creator', 'Reach', 'Size', 'Why they fit (tap for format and risks)'].map((t) => h('th', t)))), body)),
-      h('p.note', 'Real, public creators, researched for fit on 3 Nov 2026. Nobody here has been contacted, and none has agreed to anything. “Already with Flow” means we found a Flow video on their YouTube; Instagram and LinkedIn weren\u2019t checked. Counts are approximate, with the date checked.'),
+      body,
+      h('p.note', 'Public creators, researched for fit. Nobody here has been contacted. Counts are approximate, dated on each card.'),
     ];
     draw();
     return view;
@@ -564,13 +581,20 @@ function creators(m) {
   function pipeline() {
     const list = D.CREATORS.filter((c) => S.stars[c.handle] || stageOf(c) !== 'found');
     if (!list.length) return h('div.empty', 'Star creators in Discover to start a pipeline. Each one moves from contacted → replied → briefed → live → rights cleared.');
-    const cols = STAGES.filter((s) => s !== 'found');
-    return [h('div.tbl-wrap', h('table.tbl.tbl--stack', h('thead', h('tr', ['Creator', 'Stage', 'Next step'].map((t) => h('th', t)))),
-      h('tbody', list.map((c) => h('tr',
-        h('td.tbl__name', h('div.who', avatar({ name: c.name, photo: c.photo, size: 30 }), h('div.who__t', c.name, h('span.tbl__sub', c.handle)))),
-        h('td', select(stageOf(c) === 'found' ? 'shortlisted' : stageOf(c), cols, (v) => { S.stages[c.handle] = v; save(); }, 'Stage for ' + c.name)),
-        h('td.tbl__wide.muted', D.NEXT_STEP[stageOf(c)] || '')))))),
-    h('p.note', 'Stages here are yours to move; this is a planning view, so nothing is sent from it.')];
+    // a kanban: one column per stage, a face on every card; ← → moves a creator along
+    const cols = STAGES.filter((s) => s !== 'found' && s !== 'passed');
+    const move = (c, d) => { const i = cols.indexOf(stageOf(c) === 'found' ? 'shortlisted' : stageOf(c)); const n = cols[Math.min(cols.length - 1, Math.max(0, i + d))]; S.stages[c.handle] = n; save(); sound.tick('click'); paint(); };
+    const wrap = h('div');
+    const paint = () => wrap.replaceChildren(h('div.kb', cols.map((st) => {
+      const cs = list.filter((c) => (stageOf(c) === 'found' ? 'shortlisted' : stageOf(c)) === st);
+      return h('section.kb__col', h('h3.cboard__h', st, h('span', String(cs.length))),
+        cs.length ? cs.map((c) => h('div.kb__card', avatar({ name: c.name, photo: c.photo, size: 44 }),
+          h('div.kb__t', h('b', c.name), h('span', first(c.followers) || c.tier)),
+          h('div.kb__mv', h('button', { type: 'button', 'aria-label': 'Back a stage', onclick: () => move(c, -1) }, '←'), h('button', { type: 'button', 'aria-label': 'Next stage', onclick: () => move(c, 1) }, '→'))))
+          : h('p.cboard__empty', 'Nobody here'));
+    })), h('p.note', 'Star creators in Discover to add them here. Moving a card sends nothing.'));
+    paint();
+    return wrap;
   }
 
   function briefBuilder() {

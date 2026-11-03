@@ -89,7 +89,7 @@ function ideasModule(m, { go, focus } = {}) {
       h('button.btn.btn--sm', { type: 'button', onclick: () => { form.hidden = !form.hidden; if (!form.hidden) form.querySelector('input')?.focus(); } }, '+ New idea'),
       h('button.btn.btn--sm', { type: 'button', onclick: () => download('wispr-india-ideas.csv', ideasCsv()) }, 'Export CSV')),
     form,
-    tabs(['Bank', 'By stage', 'Generator'], (i) => (i === 0 ? bankPane() : i === 1 ? stagePane() : generator(() => { paintList(); }))),
+    tabs(['Board', 'List', 'Generator'], (i) => (i === 0 ? stagePane() : i === 1 ? bankPane() : generator(() => { paintList(); }))),
     detail,
   ];
   const start = focus && allIdeas().find((i) => i.id === focus);
