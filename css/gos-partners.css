@@ -1,0 +1,152 @@
+/* gos-partners.css — influencer calendar, connects, partnerships, negotiation, vendors, integrations
+   (js/app/gos/partners.js). Only what the shared Growth OS classes don't cover. */
+
+/* ---- influencer calendar */
+.gos .pinf__bar { align-items: center; }
+.gos .pinf__views { margin: 0; }
+.gos .pinf__nav { display: flex; align-items: center; gap: 8px; margin: 14px 0 10px; }
+.gos .pinf__label { margin: 0 6px; font: 400 26px/1 var(--serif); }
+.gos .pinf__month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.gos .pinf__wd { padding: 4px 6px; font: 600 11px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
+.gos .pinf__day { min-height: 92px; padding: 6px; border-radius: var(--r-sm); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.gos .pinf__day.is-pad { background: transparent; box-shadow: none; }
+.gos .pinf__day.is-today { box-shadow: inset 0 0 0 2px var(--vast); }
+.gos .pinf__n { font: 600 12px/1 var(--sans); color: var(--mute); }
+.gos .pinf__dow { display: none; }
+.gos .pinf__chip { display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; padding: 5px 7px; border: 0; border-radius: 8px; background: var(--dawn); color: var(--vast); text-align: left; cursor: pointer; font: 500 11.5px/1.25 var(--sans); }
+.gos .pinf__chip:hover { box-shadow: inset 0 0 0 1.5px var(--vast); }
+.gos .pinf__chip[data-k="draft"], .gos .pinf__lg[data-k="draft"] { background: var(--dawn); }
+.gos .pinf__chip[data-k="review"], .gos .pinf__lg[data-k="review"] { background: var(--signal); }
+.gos .pinf__chip[data-k="live"], .gos .pinf__lg[data-k="live"] { background: #cfe8dc; }
+.gos .pinf__chip[data-k="rights"], .gos .pinf__lg[data-k="rights"] { background: #ffe1bd; }
+.gos .pinf__chip.is-done { opacity: .5; text-decoration: line-through; }
+.gos .pinf__chip.is-late, .gos .pinf__lg.is-late { background: var(--flare); color: #fff; }
+.gos .pinf__kw { display: grid; gap: 1px; min-width: 0; }
+.gos .pinf__k { font-weight: 600; }
+.gos .pinf__w { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gos .pinf__legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.gos .pinf__lg { padding: 4px 10px; border-radius: 999px; font: 600 12px/1.2 var(--sans); }
+.gos .pinf__late { margin: 12px 0 0; padding: 12px 14px; border-radius: var(--r-sm); background: #ffe7e0; }
+.gos .pinf__latet { margin: 0 0 8px; font: 600 14px var(--sans); color: var(--flare); }
+.gos .pinf__week { display: grid; gap: 6px; }
+.gos .pinf__wrow { display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: start; padding: 10px; border-radius: var(--r-sm); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.gos .pinf__wrow.is-today { box-shadow: inset 0 0 0 2px var(--vast); }
+.gos .pinf__wlabel { margin: 4px 0 0; font: 600 13px var(--sans); }
+.gos .pinf__wchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gos .pinf__wchips .pinf__chip { width: auto; max-width: 240px; }
+.gos .pinf__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.gos .pinf__acts .field { width: auto; min-height: 40px; }
+.gos .pinf__done { display: flex; align-items: center; gap: 8px; min-height: 40px; font: 600 14px var(--sans); }
+.gos .pinf__done input { width: 20px; height: 20px; accent-color: var(--dawn); }
+.gos .pinf__note { display: grid; gap: 4px; margin-top: 12px; font: 600 13px var(--sans); }
+
+/* ---- connects */
+.gos .pcon__alert { margin: 0 0 12px; padding: 10px 14px; border-radius: 999px; background: #ffe7e0; color: var(--flare); font: 600 14px var(--sans); display: inline-block; }
+.gos .pcon__fu { display: grid; gap: 8px; }
+.gos .pcon__furow { display: grid; grid-template-columns: minmax(200px, 1.2fr) 1.5fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: var(--r-sm); box-shadow: inset 0 0 0 1px var(--line); background: #fff; }
+.gos .pcon__furow.is-late { box-shadow: inset 0 0 0 1.5px var(--flare); }
+.gos .pcon__next { margin: 0; font: 500 14px/1.4 var(--sans); }
+.gos .pcon__btns { display: flex; gap: 6px; }
+.gos .who .tags { display: inline-flex; margin-top: 3px; }
+
+/* ---- partnerships */
+.gos .pdeal__board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(210px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+.gos .pdeal__col { padding: 12px; border-radius: var(--r); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.gos .pdeal__colt { margin: 0; display: flex; justify-content: space-between; align-items: center; font: 600 13px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.gos .pdeal__help { margin: 0; font: 400 12.5px/1.35 var(--sans); color: var(--mute); }
+.gos .pdeal__card { display: grid; gap: 8px; padding: 10px; border-radius: var(--r-sm); background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.gos .pdeal__next { min-height: 40px; font-size: 13px; }
+.gos .pdeal__mv { display: grid; grid-template-columns: 40px 1fr 40px; gap: 6px; align-items: center; }
+.gos .pdeal__mv .btn { padding: 0; }
+.gos .pdeal__mv .sel { min-width: 0; width: 100%; }
+.gos .pdeal__side { display: grid; gap: 8px; align-content: start; }
+.gos .pdeal__ex { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.gos .pdeal__ex li { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr) 40px; gap: 6px; align-items: center; }
+.gos .pdeal__ex .sel { min-width: 0; width: 100%; }
+.gos .pdeal__ex .btn { padding: 0; }
+.gos .pdeal__onewrap { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 14px; align-items: start; }
+.gos .pdeal__one { width: 100%; font: 400 14px/1.55 var(--sans); white-space: pre-wrap; }
+
+/* ---- negotiation */
+.gos .pneg { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; align-items: start; }
+.gos .pneg__threads { display: grid; gap: 6px; }
+.gos .pneg__t { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px; border: 0; border-radius: var(--r-sm); background: transparent; text-align: left; cursor: pointer; font: 500 14px/1.25 var(--sans); color: var(--vast); }
+.gos .pneg__t:hover { background: var(--paper); }
+.gos .pneg__t[aria-current="true"] { background: #fff; box-shadow: inset 0 0 0 1.5px var(--vast); }
+.gos .pneg__tn { display: grid; min-width: 0; }
+.gos .pneg__main { display: grid; gap: 14px; min-width: 0; }
+.gos .pneg__top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.gos .pneg__hist { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.gos .pneg__hist > li { padding: 12px 14px; border-radius: var(--r-sm); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.gos .pneg__k { margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font: 600 12px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--mute); }
+.gos .pneg__k .tags { display: inline-flex; flex-wrap: wrap; gap: 4px; text-transform: none; letter-spacing: 0; }
+.gos .pneg__them { margin: 0; font: 400 19px/1.35 var(--serif); font-style: italic; }
+.gos .pneg__old { white-space: pre-wrap; font-size: 13.5px; color: var(--mute); }
+.gos .pneg__work { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 14px; align-items: start; }
+.gos .pneg__draft { width: 100%; font: 400 15px/1.55 var(--sans); }
+.gos .pneg__send { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.gos .pneg__mail { display: inline-flex; align-items: center; text-decoration: none; }
+.gos .pneg__guard { padding: 14px; border-radius: var(--r); background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.gos .pneg__gl { margin: 0 0 12px; }
+.gos .pneg__money { display: grid; gap: 4px; font: 600 13px var(--sans); }
+.gos .pneg__money .tag { justify-self: start; }
+.gos .pneg__samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.gos .pneg__sample { display: grid; gap: 4px; min-height: 44px; padding: 10px 12px; border: 0; border-radius: var(--r-sm); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); text-align: left; cursor: pointer; color: var(--vast); font: 500 14px/1.3 var(--sans); }
+.gos .pneg__sample:hover { box-shadow: inset 0 0 0 1.5px var(--vast); }
+
+/* ---- vendors */
+.gos .pven__intro { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; align-items: start; margin-bottom: 14px; }
+.gos .pven__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+.gos .pven__card .card__top { align-items: flex-start; }
+.gos .pven__card .card__meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gos .pven__card .card__t { margin: 0; }
+
+/* ---- integrations */
+.gos .pint__wrap { overflow-x: auto; margin-top: 8px; border-radius: var(--r); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.gos .pint__svg { display: block; width: 100%; min-width: 720px; height: auto; color: var(--line-2); }
+.gos .pint__edge path { fill: none; stroke: var(--line-2); stroke-width: 1.5; }
+.gos .pint__edge.is-on { color: var(--vast); }
+.gos .pint__edge.is-on path { stroke: var(--vast); stroke-width: 2; }
+.gos .pint__edge text { font: 600 12px var(--sans); fill: var(--vast); paint-order: stroke; stroke: var(--paper); stroke-width: 4px; }
+.gos .pint__node { cursor: pointer; outline: none; }
+.gos .pint__node rect { fill: #fff; stroke: var(--line-2); stroke-width: 1.5; }
+.gos .pint__node text { font: 500 14px var(--sans); fill: var(--vast); }
+.gos .pint__node:hover rect, .gos .pint__node:focus-visible rect { stroke: var(--vast); }
+.gos .pint__node.is-sel rect { stroke: var(--vast); stroke-width: 2.5; }
+.gos .pint__node circle { fill: var(--line-2); }
+.gos .pint__node.is-have circle, .gos .pint__lg.is-have::before { fill: var(--fathom); background: var(--fathom); }
+.gos .pint__node.is-need circle, .gos .pint__lg.is-need::before { fill: var(--glow); background: var(--glow); }
+.gos .pint__node.is-later circle, .gos .pint__lg.is-later::before { fill: var(--line-2); background: var(--line-2); }
+.gos .pint__legend { display: flex; gap: 14px; margin: 14px 0 0; font: 600 13px var(--sans); }
+.gos .pint__lg { display: inline-flex; align-items: center; gap: 6px; }
+.gos .pint__lg::before { content: ""; width: 10px; height: 10px; border-radius: 50%; }
+
+/* ---- narrow */
+@media (max-width: 760px) {
+  .gos .pinf__month { grid-template-columns: 1fr; }
+  .gos .pinf__wd, .gos .pinf__day.is-pad, .gos .pinf__day.is-empty { display: none; }
+  .gos .pinf__day { min-height: 0; padding: 10px; }
+  .gos .pinf__dow { display: inline; }
+  .gos .pinf__chip { min-height: 44px; font-size: 14px; }
+  .gos .pinf__wrow { grid-template-columns: 1fr; }
+  .gos .pinf__wchips .pinf__chip { max-width: 100%; width: 100%; }
+  .gos .pinf__acts .field { flex: 1 0 100%; }
+  .gos .pinf__label { font-size: 22px; }
+  .gos .pcon__furow { grid-template-columns: 1fr; }
+  .gos .pcon__alert { border-radius: var(--r-sm); }
+  .gos .pdeal__board { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: 1fr; overflow: visible; }
+  .gos .pdeal__mv { grid-template-columns: 44px 1fr 44px; }
+  .gos .pdeal__ex li { grid-template-columns: 1fr 44px; }
+  .gos .pdeal__ex li .sel { grid-column: 1 / -1; }
+  .gos .pdeal__onewrap { grid-template-columns: 1fr; }
+  .gos .pdeal__onewrap .gart { display: none; }
+  .gos .pneg { grid-template-columns: 1fr; }
+  .gos .pneg__threads { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; }
+  .gos .pneg__threads > .small { display: none; }
+  .gos .pneg__work { grid-template-columns: 1fr; }
+  .gos .pneg__them { font-size: 17px; }
+  .gos .pven__intro { grid-template-columns: 1fr; }
+  .gos .pven__intro .gart { display: none; }
+  .gos .pven__grid { grid-template-columns: 1fr; }
+  .gos .pint__svg { min-width: 680px; }
+}

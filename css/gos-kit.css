@@ -1,0 +1,14 @@
+/* gos-kit.css — shared bits for the extra Growth OS modules (js/app/gos/kit.js) */
+
+/* display pictures: photo over initials, so a missing photo never shows a broken image */
+.gav { position: relative; flex: none; display: inline-grid; place-items: center; width: var(--s, 36px); height: var(--s, 36px); border-radius: 50%; overflow: hidden; background: var(--bg, var(--dawn)); color: var(--vast); font: 600 calc(var(--s, 36px) * .38)/1 var(--sans); letter-spacing: .02em; }
+.gav__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.who__t { min-width: 0; display: grid; }
+
+/* art from the plan, with a quiet placeholder until it exists */
+.gart { position: relative; margin: 0; overflow: hidden; border-radius: var(--r-sm, 12px); background: repeating-linear-gradient(135deg, var(--lumen) 0 10px, var(--line) 10px 11px); }
+.gart__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s; }
+.gart.is-in .gart__img { opacity: 1; }
+.gart__ph { position: absolute; inset: auto 10px 10px; font: 500 12px/1.3 var(--sans); color: var(--mute); }
+.gart.is-in .gart__ph { display: none; }

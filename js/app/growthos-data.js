@@ -3,7 +3,13 @@
 // and load() fills these bindings. Everything below is presentation logic only.
 export let PLAN, KPIS, CALENDAR, CAMPAIGNS, EVENTS_WHY, EVENTS, TVT, COLLABS_WHY, COLLAB_RULES, COLLAB_WEIGHTS, COLLABS, CREATORS_WHY, NEXT_STEP, RIGHTS, RIGHTS_RULES, UGC_SAMPLE, CREATOR_RULES, CREATOR_SO, LINKEDIN, BRAND, CRM_WHY, CRM_TYPES, CRM_STAGES, CRM_RULES, CRM_VENUES, SOURCES, CREATORS;
 
+// the extra modules' words (gos/*.js read D.MORE.<key>)
+export let MORE = {};
+
 export function load(content) {
+  MORE = content.MORE || {};
+  // each area brings its own sources (ids 100+), so [n] links work everywhere
+  content = { ...content, SOURCES: [...(content.SOURCES || []), ...Object.values(MORE).flatMap((a) => a?.sources || [])] };
   ({ PLAN, KPIS, CALENDAR, CAMPAIGNS, EVENTS_WHY, EVENTS, TVT, COLLABS_WHY, COLLAB_RULES, COLLAB_WEIGHTS, COLLABS, CREATORS_WHY, NEXT_STEP, RIGHTS, RIGHTS_RULES, UGC_SAMPLE, CREATOR_RULES, CREATOR_SO, LINKEDIN, BRAND, CRM_WHY, CRM_TYPES, CRM_STAGES, CRM_RULES, CRM_VENUES, SOURCES, CREATORS } = content);
   // the linter's rules live here; the server sends their wording
   LINKEDIN = { ...LINKEDIN, lint: (LINKEDIN?.lint || []).map((r) => ({ ...r, test: LINT[r.id] || (() => true) })) };

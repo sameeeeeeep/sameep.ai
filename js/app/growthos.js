@@ -6,6 +6,8 @@ import { sound } from './audio.js';
 import { isWispr } from '../version.js';
 import { flowClean } from './apps.js';
 import * as D from './growthos-data.js';
+import { extraModules } from './gos/index.js';
+import { loadCss, avatar } from './gos/kit.js';
 
 // ---------------------------------------------------------------- the gate
 // links from the plan data: http(s) only
@@ -60,20 +62,30 @@ let loaded = null;
 const fetchPlan = () => (loaded ||= api('/data').then((d) => { D.load(d.content); return d; }).catch((e) => { loaded = null; throw e; }));
 
 // ---------------------------------------------------------------- helpers
+// the sidebar's groups, in order; gos/*.js modules slot into these by `group`
+const GROUPS = ['', 'Plan', 'Brand', 'People', 'Events', 'Run it'];
 const MODULES = [
-  { id: 'home', label: 'Start here', c: 'var(--vast)', render: home },
-  { id: 'dash', label: 'Dashboard', c: 'var(--lime)', render: dash },
-  { sep: true },
-  { id: 'campaigns', label: 'Campaigns', c: 'var(--bondi)', render: campaigns },
-  { id: 'events', label: 'Events & popups', c: 'var(--tangerine)', render: events },
-  { id: 'collabs', label: 'Brand collabs', c: 'var(--grape)', render: collabs },
-  { id: 'creators', label: 'Creators', c: 'var(--strawberry)', render: creators },
-  { id: 'linkedin', label: 'LinkedIn & founders', c: 'var(--pulse)', render: linkedin },
-  { id: 'brand', label: 'Brand: cool in India', c: 'var(--glow)', render: brand },
-  { sep: true },
-  { id: 'crm', label: 'CRM', c: 'var(--plat-4)', render: crm },
-  { id: 'sources', label: 'Sources', c: 'var(--line-2)', render: sources },
+  { id: 'home', label: 'Start here', c: 'var(--vast)', group: '', render: home },
+  { id: 'dash', label: 'Dashboard', c: 'var(--lime)', group: '', render: dash },
+  { id: 'campaigns', label: 'Campaigns', c: 'var(--bondi)', group: 'Plan', render: campaigns },
+  { id: 'brand', label: 'Brand: cool in India', c: 'var(--glow)', group: 'Brand', render: brand },
+  { id: 'linkedin', label: 'LinkedIn & founders', c: 'var(--pulse)', group: 'Brand', render: linkedin },
+  { id: 'creators', label: 'Creators', c: 'var(--strawberry)', group: 'People', render: creators },
+  { id: 'collabs', label: 'Brand collabs', c: 'var(--grape)', group: 'People', render: collabs },
+  { id: 'events', label: 'Events & popups', c: 'var(--tangerine)', group: 'Events', render: events },
+  { id: 'crm', label: 'CRM', c: 'var(--plat-4)', group: 'Run it', render: crm },
+  { id: 'sources', label: 'Sources', c: 'var(--line-2)', group: 'Run it', render: sources },
 ];
+let extrasIn = false;
+async function addExtras() {
+  if (extrasIn) return;
+  extrasIn = true;
+  for (const f of ['kit', 'ideas', 'brand', 'partners', 'events', 'wrapped']) loadCss(f);
+  const more = await extraModules();
+  for (const m of more) if (!MODULES.some((x) => x.id === m.id)) MODULES.push({ group: 'Plan', ...m });
+  // keep each group together, the original modules first within it
+  MODULES.sort((a, b) => GROUPS.indexOf(a.group ?? '') - GROUPS.indexOf(b.group ?? ''));
+}
 const mod = (id) => MODULES.find((m) => m.id === id);
 const TONES = { '#2f6fd6': 'var(--pulse)', '#e0b400': 'var(--glow)' };
 const tone = (c) => TONES[c] || c;
@@ -142,17 +154,19 @@ export function openGrowthOS(wm, { visitor, start } = {}) {
     return w;
   }
   const name = (v?.name || '').split(' ')[0];
-  const ready = () => { renderPlan(w, { name, start }); };
+  const ready = () => addExtras().catch((e) => console.warn('[growth os] extras', e)).then(() => renderPlan(w, { name, start }));
   if (token.get()) {
     w.body.append(h('div.gos-lock', h('p.big', 'Opening the plan…')));
-    fetchPlan().then(ready).catch((e) => { if (e.status === 401) token.set(null); signIn(w, ready, e.status === 401 ? 'Your session ended. Sign in again.' : e.message); });
-  } else signIn(w, ready, fromLink === 'expired' ? 'That link has expired. Ask for a new code.' : null);
+    fetchPlan().then(ready).catch((e) => { if (e.status === 401) token.set(null); signIn(w, ready, e.status === 401 ? 'Your session ended. Sign in again.' : e.message, name); });
+  } else signIn(w, ready, fromLink === 'expired' ? 'That link has expired. Ask for a new code.' : null, name);
   return w;
 }
 
 // the email prompt inside the folder: @wispr.ai address → 6-digit code (or the magic link in the same email)
-function signIn(w, done, notice) {
-  let email = '';
+function signIn(w, done, notice, name = '') {
+  // a guess from the teammate picked on the lock screen (firstname@wispr.ai); they can edit it
+  const guess = String(name).toLowerCase().normalize('NFD').replace(/[^a-z]/g, '');
+  let email = guess ? guess + '@wispr.ai' : '';
   const msg = h('p.gos-signin__msg', { role: 'status', 'aria-live': 'polite' }, notice || '');
   const icon = h('p.gos__kicker', 'A growth plan for Flow in India');
   const box = h('div.gos-lock.gos-signin');
@@ -166,8 +180,8 @@ function signIn(w, done, notice) {
       busy(f, true); msg.textContent = 'Sending…';
       try { await api('/login', { method: 'POST', body: { email } }); askCode(); } catch (err) { msg.textContent = err.message; busy(f, false); }
     } }, inp, h('button.btn.btn--primary', { type: 'submit' }, 'Send code'));
-    box.replaceChildren(icon, h('p.big', 'For the Wispr team, ', h('em', 'only.')), h('p', 'Enter your @wispr.ai email and I\u2019ll send you a code.'), f, msg);
-    setTimeout(() => inp.focus({ preventScroll: true }), 60);
+    box.replaceChildren(icon, h('p.big', 'For the Wispr team, ', h('em', 'only.')), h('p', email ? 'I\u2019ll send a code to your @wispr.ai email. Fix it if yours is different.' : 'Enter your @wispr.ai email and I\u2019ll send you a code.'), f, msg);
+    setTimeout(() => { inp.focus({ preventScroll: true }); if (email) inp.select(); }, 60);
   };
   const askCode = () => {
     const inp = h('input.field.gos-signin__code', { type: 'text', name: 'code', required: true, autocomplete: 'one-time-code', inputmode: 'numeric', pattern: '[0-9 ]{6,7}', maxlength: 7, placeholder: '123456', 'aria-label': '6-digit code' });
@@ -185,6 +199,15 @@ function signIn(w, done, notice) {
   askEmail();
 }
 
+// the "work in progress" note: what's still open, each line jumps to its module
+function wipNote(wip, jump) {
+  if (!wip?.open?.length) return null;
+  return h('details.gos-wip',
+    h('summary', h('span.gos-wip__dot', { 'aria-hidden': 'true' }), 'Work in progress', h('span.gos-wip__n', `${wip.open.length} open`)),
+    h('p.gos-wip__note', wip.note, wip.updated ? ` Updated ${fmtD(wip.updated)}.` : ''),
+    h('ul.gos-wip__list', wip.open.map((o) => h('li', h('button', { type: 'button', onclick: () => jump(o.mod) }, h('span', o.t), h('span.tag', o.s))))));
+}
+
 function renderPlan(w, { name, start }) {
   const page = h('article.gos__page', { tabindex: '-1' });
   const nav = h('ul.gos__nav');
@@ -192,6 +215,7 @@ function renderPlan(w, { name, start }) {
     h('aside.gos__side',
       h('p.gos__hello', name ? `Hi ${name}.` : 'Hi.'),
       h('p.gos__sub', 'A growth plan for Wispr Flow, built as tools you can click. Ready to start Monday.'),
+      wipNote(D.MORE.wip, (id) => go(id)),
       nav,
       h('p.gos__foot', 'Made by Sameep. Everything is researched and cited. Your edits stay on this device. ',
         h('button', { type: 'button', onclick: () => { if (confirm('Clear your edits in Growth OS on this device?')) { localStorage.removeItem(KEY); location.reload(); } } }, 'Reset'), ' · ',
@@ -202,9 +226,15 @@ function renderPlan(w, { name, start }) {
   const counts = { campaigns: () => allCampaigns().filter((c) => statusOf(c) !== 'cut').length, creators: () => D.CREATORS.length, crm: () => crmRows().length, events: () => D.EVENTS.length, collabs: () => D.COLLABS.length };
   let cur = null;
   function renderNav() {
-    nav.replaceChildren(...MODULES.map((m) => m.sep ? h('li.gos__navsep', { role: 'separator' }) :
-      h('li', h('button.gos__navbtn', { type: 'button', 'aria-current': m.id === cur ? 'page' : null, onclick: () => go(m.id) },
-        h('span.gos__chip', { style: { '--c': m.c } }), h('span', m.label), counts[m.id] ? h('span.gos__count', String(counts[m.id]())) : h('span')))));
+    let g = null;
+    nav.replaceChildren(...MODULES.flatMap((m) => {
+      const out = [];
+      if (m.group !== g) { g = m.group; if (g) out.push(h('li.gos__navgroup', g)); }
+      const n = counts[m.id] ? counts[m.id]() : m.count?.();
+      out.push(h('li', h('button.gos__navbtn', { type: 'button', 'aria-current': m.id === cur ? 'page' : null, onclick: () => go(m.id) },
+        h('span.gos__chip', { style: { '--c': m.c } }), h('span', m.label), n ? h('span.gos__count', String(n)) : h('span'))));
+      return out;
+    }));
   }
   function go(id, opts = {}) {
     const m = mod(id) || mod('home');
@@ -480,7 +510,7 @@ function creators(m) {
       count.textContent = `${rows.length} of ${D.CREATORS.length}`;
       body.replaceChildren(...rows.map((c) => h('tr',
         h('td.tbl__star', h('button.star', { type: 'button', 'aria-pressed': String(!!S.stars[c.handle]), 'aria-label': 'Shortlist ' + c.name, onclick: (e) => { S.stars[c.handle] = !S.stars[c.handle]; if (S.stars[c.handle] && stageOf(c) === 'found') S.stages[c.handle] = 'shortlisted'; save(); e.currentTarget.setAttribute('aria-pressed', String(!!S.stars[c.handle])); } }, '★')),
-        h('td.tbl__name.tbl__wide', c.name, h('span.tbl__sub', first(c.handle)), h('span.tags', c.pick ? tag('Top pick', 'approved') : null, c.dont ? tag('Conflict: builds a competing app', 'warn') : null, c.promotedWispr ? tag('Already with Flow', 'done') : null)),
+        h('td.tbl__name.tbl__wide', h('div.who', avatar({ name: c.name, photo: c.photo }), h('div.who__t', c.name, h('span.tbl__sub', first(c.handle)))), h('span.tags', c.pick ? tag('Top pick', 'approved') : null, c.dont ? tag('Conflict: builds a competing app', 'warn') : null, c.promotedWispr ? tag('Already with Flow', 'done') : null)),
         h('td', { 'data-k': 'Reach' }, first(c.followers) || '?', h('span.tbl__sub', c.region === 'IN' ? 'India' : 'Global')),
         h('td', { 'data-k': 'Size' }, c.tier, h('span.tbl__sub', c.lang)),
         h('td.tbl__wide', h('details.fit', h('summary', rich(c.fit)), c.format && h('p', h('b', 'Format: '), c.format), c.risk && h('p', h('b', 'Watch: '), c.risk), h('p.muted', 'Reach as of ', c.followersAsOf || '?', ' · ', c.source && h('a', { href: safeHttp(c.source), target: '_blank', rel: 'noopener' }, 'source ↗')))))));
@@ -508,7 +538,7 @@ function creators(m) {
     const cols = STAGES.filter((s) => s !== 'found');
     return [h('div.tbl-wrap', h('table.tbl.tbl--stack', h('thead', h('tr', ['Creator', 'Stage', 'Next step'].map((t) => h('th', t)))),
       h('tbody', list.map((c) => h('tr',
-        h('td.tbl__name', c.name, h('span.tbl__sub', c.handle)),
+        h('td.tbl__name', h('div.who', avatar({ name: c.name, photo: c.photo, size: 30 }), h('div.who__t', c.name, h('span.tbl__sub', c.handle)))),
         h('td', select(stageOf(c) === 'found' ? 'shortlisted' : stageOf(c), cols, (v) => { S.stages[c.handle] = v; save(); }, 'Stage for ' + c.name)),
         h('td.tbl__wide.muted', D.NEXT_STEP[stageOf(c)] || '')))))),
     h('p.note', 'Stages here are yours to move; this is a planning view, so nothing is sent from it.')];
@@ -628,7 +658,7 @@ function crm(m) {
     body.replaceChildren(...list.map((r) => {
       const late = r.due && r.due < TODAY && !['won', 'lost', 'parked'].includes(r.stage);
       return h('tr',
-        h('td.tbl__name', r.name, h('span.tbl__sub', [r.type, r.org].filter(Boolean).join(' · '))),
+        h('td.tbl__name', h('div.who', avatar({ name: r.name, photo: r.photo || D.CREATORS.find((c) => c.name === r.name)?.photo, size: 32 }), h('div.who__t', r.name, h('span.tbl__sub', [r.type, r.org].filter(Boolean).join(' · '))))),
         h('td', { 'data-k': 'Stage' }, select(r.stage, D.CRM_STAGES, (v) => { r.stage = v; commit(); draw(); }, 'Stage for ' + r.name)),
         h('td.tbl__wide', { 'data-k': 'Next' }, r.next || '—', r.due && h('span.tbl__sub' + (late ? '.is-overdue' : ''), (late ? 'Overdue · ' : 'By ') + fmtD(r.due))),
         h('td', { 'data-k': 'Owner' }, r.owner || '—'),
