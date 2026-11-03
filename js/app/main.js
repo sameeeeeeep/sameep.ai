@@ -272,7 +272,7 @@ function endCard(wm, persona, pod, fromIcon) {
     h('p.end__say', { style: 'margin:0 0 14px;padding:10px 12px;border:2px solid currentColor;font:500 15px/1.4 "Spline Sans Mono",monospace' }, '“Make your own sameep.ai using your GitHub profile.”'),
     h('p.end__lede', 'It reads your GitHub, writes your episode in your voice, draws your pixel guest, and builds this same iMac for you.'),
     h('a.btn.btn--primary.btn--lg', { href: MAKE_URL, target: '_blank', rel: 'noopener' }, 'sameep.ai/make ↗'),
-    h('ul.end__links', others.map((l) => h('li', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗')))),
+    h('ul.end__links', others.map((l) => h('li', l.kind === 'email' ? h('a', { href: l.url }, l.label) : h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗')))),
     h('div.end__row',
       h('button.btn', { type: 'button', onclick: () => { w.close(); pod()?.go(pod().ep.nodes.hub ? 'hub' : pod().ep.start); } }, 'Pick another thread'),
       h('button.btn', { type: 'button', onclick: () => { w.close(); pod()?.go(pod().ep.start, { push: false }); } }, 'Replay from the top'))));

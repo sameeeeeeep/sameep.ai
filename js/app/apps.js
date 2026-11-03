@@ -214,7 +214,8 @@ export function buildApps(ctx) {
       const w = wm.win('sayhi', { title: 'Say hi', width: 340 });
       const links = (P.links || []).filter((l) => l.kind !== 'make');
       w.body.append(h('p.small', `Find ${P.shortName || 'me'} here.`),
-        h('div.sayhi', links.map((l) => h('a.btn', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗'))));
+        h('div.sayhi', links.map((l) => (l.kind === 'email' ? h('a.btn', { href: l.url }, l.label)
+          : h('a.btn', { href: l.url, target: '_blank', rel: 'noopener' }, l.label + ' ↗')))));
     } },
     { id: 'wallpap', label: 'wallpap Controls', icon: 'wallpap', open() {
       const w = wm.win('wallpap', { title: 'wallpap Control Panel', width: 360 });

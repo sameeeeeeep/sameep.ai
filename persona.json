@@ -63,6 +63,11 @@
   },
   "links": [
     {
+      "label": "hello@sameep.ai",
+      "url": "mailto:hello@sameep.ai",
+      "kind": "email"
+    },
+    {
       "label": "Make your own with Switchboard",
       "url": "https://thelastprompt.ai/switchboard",
       "kind": "make"

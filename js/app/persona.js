@@ -51,7 +51,7 @@ export async function loadPersona({ episodeUrl } = {}) {
 
   // links: array [{label,url,kind?}] or object {github, makeYourOwn}
   let links = [];
-  if (Array.isArray(p.links)) links = p.links.map((l) => ({ label: l.label || l.url, url: abs(l.url), kind: l.kind || guessKind(l) })).filter((l) => l.url);
+  if (Array.isArray(p.links)) links = p.links.map((l) => ({ label: l.label || l.url, url: mailto(l.url) || abs(l.url), kind: l.kind || guessKind(l) })).filter((l) => l.url);
   else if (p.links && typeof p.links === 'object') {
     if (p.links.makeYourOwn) links.push({ label: p.links.makeYourOwnLabel || 'Make your own', url: abs(p.links.makeYourOwn), kind: 'make' });
     if (p.links.github) links.push({ label: p.links.github.replace(/^https?:\/\//, ''), url: abs(p.links.github), kind: 'github' });
@@ -89,6 +89,9 @@ export async function loadPersona({ episodeUrl } = {}) {
   persona.episodeBase = epUrl || siteBase;
   return { persona, episode };
 }
+
+// a plain mailto: link (safeUrl only lets http(s) through)
+const mailto = (u) => (/^mailto:[^\s@<>"]+@[^\s@<>"]+$/i.test(String(u || '')) ? u : null);
 
 function guessKind(l) {
   const u = String(l.url || '');
