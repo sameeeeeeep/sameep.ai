@@ -6,11 +6,13 @@ import { sharedCtx } from '../unlock.js';
 
 const KEY = 'offthecv.sound';
 const listeners = new Set();
+// ?mute (or an automated browser) starts silent without touching the visitor's saved choice: test runs stay quiet
+const FORCE_MUTE = new URLSearchParams(location.search).has('mute') || navigator.webdriver === true;
 
 export const sound = {
   ctx: null,
   master: null,
-  on: store.get(KEY) !== 'off',
+  on: !FORCE_MUTE && store.get(KEY) !== 'off',
 
   ensure() {
     if (this.ctx) return this.ctx;
@@ -34,7 +36,7 @@ export const sound = {
   },
   set(on) {
     this.on = on;
-    store.set(KEY, on ? 'on' : 'off');
+    if (!FORCE_MUTE) store.set(KEY, on ? 'on' : 'off');
     if (this.master) this.master.gain.setTargetAtTime(on ? 1 : 0, this.ctx.currentTime, 0.03);
     listeners.forEach((fn) => fn(on));
   },

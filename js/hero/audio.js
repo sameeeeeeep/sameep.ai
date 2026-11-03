@@ -10,6 +10,9 @@ export class HeroAudio {
     this.buffers = new Map();
     this.muted = false;
     try { this.muted = localStorage.getItem('offthecv.muted') === '1'; } catch { /* private mode */ }
+    // ?mute (or an automated browser) keeps test runs silent without changing the saved choice
+    this.forceMute = new URLSearchParams(location.search).has('mute') || navigator.webdriver === true;
+    if (this.forceMute) this.muted = true;
     this.unlocked = false;
     this.fire = null;
     this.onchange = null;
@@ -48,8 +51,9 @@ export class HeroAudio {
   }
 
   setMuted(m) {
+    if (this.forceMute) m = true;
+    else { try { localStorage.setItem('offthecv.muted', m ? '1' : '0'); } catch { /* ignore */ } }
     this.muted = m;
-    try { localStorage.setItem('offthecv.muted', m ? '1' : '0'); } catch { /* ignore */ }
     if (this.master) this.master.gain.setTargetAtTime(m ? 0 : 0.9, this.ctx.currentTime, 0.05);
     this.onchange?.();
   }
