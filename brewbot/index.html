@@ -14,112 +14,122 @@
 <meta property="og:image" content="https://sameep.ai/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Spline+Sans+Mono:wght@400;500;700&family=VT323&display=swap">
 <style>
-:root{--bg:#f3f1ec;--card:#fbfaf7;--ink:#141414;--muted:#6b6962;--rule:#d8d4cb;--accent:#2a45d6;--accent-ink:#fff;--line:#d8d4cb;--water:#3d7fd1;--coffee:#5a3519;--ok:#1f8a4c;
---f-head:'IBM Plex Sans',system-ui,sans-serif;--f-body:'IBM Plex Sans',system-ui,sans-serif;--f-mono:'IBM Plex Mono',ui-monospace,monospace}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f0f0f;--card:#161616;--ink:#ececea;--muted:#9a9890;--rule:#2b2b2b;--line:#2b2b2b;--accent:#7d93ff;--accent-ink:#0f0f0f;--coffee:#c48a5a;--ok:#5fcf8c}}
-:root[data-theme="dark"]{--bg:#0f0f0f;--card:#161616;--ink:#ececea;--muted:#9a9890;--rule:#2b2b2b;--line:#2b2b2b;--accent:#7d93ff;--accent-ink:#0f0f0f;--coffee:#c48a5a;--ok:#5fcf8c}
+:root{--bondi:#0a8fa8;--tangerine:#ff8a1f;--plat-1:#eee;--plat-2:#ddd;--plat-3:#bbb;--plat-4:#888;
+--card:#fff;--ink:#111;--muted:#555;--rule:#bbb;--line:#bbb;--accent:#0a8fa8;--accent-ink:#fff;--water:#3d7fd1;--coffee:#5a3519;--ok:#1f8a4c;
+--f-ui:'Spline Sans Mono',ui-monospace,monospace;--f-head:'Jersey 10','VT323',monospace;--f-mono:'Spline Sans Mono',ui-monospace,monospace}
 *{box-sizing:border-box}html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
-a{color:var(--ink);text-decoration-color:var(--accent);text-underline-offset:3px}
-code{font:.9em var(--f-mono)}
-.top{display:flex;justify-content:space-between;align-items:center;max-width:1040px;margin:0 auto;padding:16px;font:13px var(--f-mono);color:var(--muted);border-bottom:1px solid var(--rule)}
-.top a{color:var(--muted);text-decoration:none}
-main{max-width:1040px;margin:0 auto;padding:0 16px 64px;counter-reset:sec}
-.kicker{font:12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:40px 0 10px}
-h1{font:600 clamp(44px,9vw,84px)/.95 var(--f-head);margin:0 0 16px;letter-spacing:-.035em}
-h2{counter-increment:sec;font:600 clamp(24px,4vw,32px)/1.15 var(--f-head);letter-spacing:-.02em;margin:72px 0 8px;padding-top:16px;border-top:1px solid var(--ink)}
-h2::before{content:counter(sec,decimal-leading-zero);display:block;font:12px var(--f-mono);color:var(--muted);margin-bottom:10px;letter-spacing:.04em}
-h3{font:600 17px/1.3 var(--f-head);margin:0 0 6px}
-.lede{font-size:20px;line-height:1.5;max-width:620px;color:var(--ink);margin:0}
-.sub{color:var(--muted);max-width:660px;margin:0 0 24px}
-.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:18px}
-.btn{font:600 14px var(--f-mono);border:0;border-radius:4px;padding:12px 18px;background:var(--accent);color:var(--accent-ink);cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
-.hint{font:13px var(--f-mono);color:var(--muted);margin:12px 0 0}
-/* experience */
-.exp{margin-top:36px}
-.screen{position:relative;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:#0d0d0d}
+body{min-height:100vh;color:#111;font:400 14px/1.55 var(--f-ui);background:var(--bondi) radial-gradient(rgba(255,255,255,.12) 1px,transparent 1.2px) 0 0/6px 6px;-webkit-font-smoothing:antialiased}
+a{color:#111}
+code{font:inherit;background:#fff;border:1px solid var(--plat-3);padding:0 4px}
+/* menu bar */
+.menubar{position:sticky;top:0;z-index:10;height:28px;display:flex;align-items:center;gap:2px;padding:0 12px;background:linear-gradient(#f2f2f2,#dcdcdc);border-bottom:1px solid #111;font:500 13px var(--f-ui);white-space:nowrap;overflow:hidden}
+.mb__logo{font-weight:700;text-decoration:none;padding:0 10px 0 2px}.mb__item{padding:0 10px}.mb__right{margin-left:auto;color:#555}
+@media (max-width:560px){.mb__hide{display:none}.mb__right{font-size:11px}}
+/* desktop */
+.desk{max-width:980px;margin:0 auto;padding:28px 16px 64px;display:grid;gap:22px}
+.hero{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35);padding:12px 0 4px}
+.kick{margin:0;font:700 12px var(--f-ui);letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+h1{margin:2px 0 6px;font:400 clamp(64px,13vw,120px)/.85 var(--f-head);letter-spacing:.01em}
+.lede{margin:0;max-width:620px;font:500 16px/1.55 var(--f-ui)}
+/* Platinum window */
+.win{background:var(--plat-2);border:1px solid #111;box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 var(--plat-4),0 2px 0 rgba(0,0,0,.25),0 18px 40px rgba(0,0,0,.28);min-width:0}
+.win__bar{position:relative;height:24px;display:flex;align-items:center;gap:8px;padding:0 6px;border-bottom:1px solid var(--plat-4)}
+.win__stripes{position:absolute;left:28px;right:28px;top:6px;height:11px;background:repeating-linear-gradient(#fff 0 1px,var(--plat-4) 1px 2px)}
+.win__close,.win__shade{position:relative;z-index:1;width:14px;height:14px;border:1px solid #111;background:linear-gradient(135deg,#fff,var(--plat-3));flex:none}
+.win__shade{margin-left:auto}.win__shade::after{content:"";position:absolute;left:1px;right:1px;top:4px;height:2px;border-top:1px solid #111;border-bottom:1px solid #111}
+.win__title{position:relative;z-index:1;margin:0 auto;padding:0 10px;background:var(--plat-2);font:700 12px/24px var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 80px)}
+.win__body{padding:14px 16px 16px;box-shadow:inset 0 1px 0 #fff}
+.win__body>p:first-child{margin-top:0}.win__body>p:last-child{margin-bottom:0}
+.win--flush .win__body{padding:0;background:#fff;margin:8px;border:1px solid #111;box-shadow:inset 1px 1px 0 var(--plat-3)}
+.win--flush .win__body>.sub{padding:10px 12px 0;margin:0 0 8px}
+/* demo */
+.screen{position:relative;aspect-ratio:16/9;background:#050807;border:1px solid #111;box-shadow:inset 0 0 0 3px #222}
 .screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.ctrl{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.micbtn{display:flex;align-items:center;gap:8px;font:600 14px var(--f-mono);border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:11px 16px;cursor:pointer;touch-action:none;user-select:none}
-.micbtn.live{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.sayit{display:flex;gap:8px;flex:1;min-width:240px}
-.sayit input{flex:1;min-width:0;font:15px var(--f-mono);padding:11px 14px;border-radius:4px;border:1px solid var(--rule);background:var(--card);color:var(--ink)}
-.recipes{display:grid;grid-template-columns:repeat(4,1fr);margin-top:8px;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
-@media (max-width:760px){.recipes{grid-template-columns:repeat(2,1fr)}}
-.recipes button{text-align:left;font:14px var(--f-body);color:var(--ink);background:none;border:0;border-right:1px solid var(--rule);padding:12px 14px;cursor:pointer;display:grid;gap:2px}
-.recipes button:last-child{border-right:0}
-@media (max-width:760px){.recipes button:nth-child(2){border-right:0}.recipes button:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
-.recipes button:hover{background:var(--bg)}
-.recipes b{font:600 16px var(--f-mono);color:var(--accent)}.recipes small{color:var(--muted);font:12px var(--f-mono)}
-/* flow */
-.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
-.flow>div{padding:16px;border:0;border-right:1px solid var(--rule);border-radius:0;min-width:0;background:none}.flow>div:last-child{border-right:0}
-@media (max-width:760px){.flow{grid-template-columns:1fr}.flow>div{border-right:0!important;border-bottom:1px solid var(--rule)}.flow>div:last-child{border-bottom:0}}
-.flow h3 small{font:12px var(--f-mono);color:var(--muted);display:block;margin-bottom:4px;font-weight:400}
-.flow pre.code{font-size:12px;white-space:pre-wrap;word-break:break-word;border:0;padding:0;background:none;margin-top:8px}
-/* paths */
-.paths{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
-.paths>.card{border:0;border-right:1px solid var(--rule);border-radius:0;min-width:0}.paths>.card:last-child{border-right:0}
-@media (max-width:760px){.paths{grid-template-columns:1fr}.paths>.card{border-right:0;border-bottom:1px solid var(--rule)}.paths>.card:last-child{border-bottom:0}}
-.tag{display:inline-block;font:12px var(--f-mono);padding:2px 8px;border-radius:2px;background:var(--accent);color:var(--accent-ink);margin-bottom:10px}
-.tag.alt{background:none;color:var(--muted);border:1px solid var(--rule)}
-.price{font:600 36px var(--f-mono);letter-spacing:-.03em;margin:6px 0 10px}
-.paths p{margin:0 0 8px;color:var(--muted);font-size:15px}
+.say{display:flex;align-items:center;margin-top:12px;min-height:48px;border:1px solid #111;background:#fff;box-shadow:inset 1px 1px 0 #aaa}
+.say:focus-within{outline:2px solid var(--bondi);outline-offset:1px}
+.say__flow{flex:none;width:44px;display:grid;place-items:center}.say__flow img{image-rendering:pixelated}
+.say__input{flex:1;min-width:0;height:46px;border:0;background:none;font:500 15px var(--f-ui);color:#111;outline:none;padding:0 4px}
+.say__input::placeholder{color:#888}
+.say__go{flex:none;height:46px;border:0;border-left:1px solid #111;background:#111;color:#fff;cursor:pointer;padding:0 18px;font:700 13px var(--f-ui)}
+.say__go:hover{background:var(--bondi)}
+.say__hint{margin:10px 0 8px;font:500 12px var(--f-ui);color:#333}
+.recipes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:700px){.recipes{grid-template-columns:repeat(2,1fr)}}
+.recipes button{text-align:left;font:500 12px/1.4 var(--f-ui);color:#111;background:linear-gradient(#fafafa,#e2e2e2);border:1px solid #111;border-radius:4px;box-shadow:inset 1px 1px 0 #fff,0 1px 0 rgba(0,0,0,.2);padding:8px 10px;cursor:pointer;display:grid;gap:1px}
+.recipes button:active{background:#555;color:#fff}
+.recipes b{font:400 26px/1 var(--f-head);color:var(--bondi)}.recipes small{color:#555;font-size:11px}
 /* tables */
-.tblwrap{overflow-x:auto;padding:0}
-.tbl{width:100%;border-collapse:collapse;font-size:14px}
-.tbl td,.tbl th{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top;text-align:left}
-.tbl th{font:12px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:400}
-.tbl td:last-child,.tbl th:last-child{text-align:right;white-space:nowrap;font-family:var(--f-mono)}
-.tbl .why{display:block;color:var(--muted);font-size:13px}
-.tbl tr.total td{font-weight:600;border-bottom:0;border-top:1px solid var(--ink)}
-.tbl td.sku{font:12px var(--f-mono);color:var(--muted);white-space:nowrap;text-align:left}
-.pins td:first-child{font-family:var(--f-mono)}.pins td{white-space:normal!important}
-.schem{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:12px;overflow-x:auto}
-.schem svg{display:block;min-width:720px;width:100%;height:auto}
-/* steps, misc */
-.steps{counter-reset:s;list-style:none;padding:0;margin:0;border-top:1px solid var(--rule)}
-.steps li{counter-increment:s;padding:14px 0 14px 48px;position:relative;border-bottom:1px solid var(--rule)}
-.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:14px;font:600 14px var(--f-mono);color:var(--accent)}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
-.grid3>.card{border:0;border-right:1px solid var(--rule);border-radius:0;min-width:0}.grid3>.card:last-child{border-right:0}
-@media (max-width:760px){.grid3{grid-template-columns:1fr}.grid3>.card{border-right:0;border-bottom:1px solid var(--rule)}.grid3>.card:last-child{border-bottom:0}}
-.grid3 .card p{margin:0;color:var(--muted);font-size:14px}
-pre.code{font:13px/1.55 var(--f-mono);background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:14px;overflow-x:auto;margin:0}
-.note{font:12px var(--f-mono);color:var(--muted);margin-top:40px}
-.more{border-bottom:1px solid var(--rule)}
-.more summary{cursor:pointer;padding:14px 0;font:600 16px var(--f-head);list-style:none;display:flex;justify-content:space-between}
-.more summary::after{content:'+';font-family:var(--f-mono);color:var(--muted)}.more[open] summary::after{content:'–'}
+.tblwrap{overflow-x:auto;padding:0;border:0;background:none}
+.card{background:none;border:0;padding:0}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl td,.tbl th{padding:7px 10px;border-bottom:1px dotted #999;vertical-align:top;text-align:left}
+.tbl th{font:700 11px var(--f-ui);text-transform:uppercase;color:#555;background:var(--plat-1);border-bottom:1px solid #111}
+.tbl tbody tr:nth-child(even){background:#f4f9fb}
+.tbl td:last-child,.tbl th:last-child{text-align:right;white-space:nowrap}
+.tbl .why{display:block;color:#666;font-size:11.5px}
+.tbl tr.total td{font-weight:700;border-top:1px solid #111;border-bottom:0;background:var(--plat-1)}
+.tbl td.sku{font-size:11px;color:#666;white-space:nowrap;text-align:left}
+.tbl a{color:#111;text-decoration-color:var(--bondi)}
+.sub{color:#444;margin:0 0 12px;max-width:680px}
+/* more detail: disclosure triangles */
+.more{border-top:1px solid var(--plat-4);box-shadow:inset 0 1px 0 #fff}.more:first-child{border-top:0;box-shadow:none}
+.more summary{cursor:pointer;list-style:none;padding:9px 0 9px 20px;position:relative;font:700 13px var(--f-ui)}
 .more summary::-webkit-details-marker{display:none}
-.more[open]{padding-bottom:20px}
-footer{max-width:1040px;margin:0 auto;padding:24px 16px 48px;font:12px var(--f-mono);color:var(--muted);border-top:1px solid var(--rule)}
+.more summary::before{content:"";position:absolute;left:4px;top:13px;border:5px solid transparent;border-left:7px solid #111;border-right:0}
+.more[open] summary::before{transform:rotate(90deg);transform-origin:3px 5px}
+.more[open]{padding-bottom:14px}
+.more .card,.more .schem,.more pre.code{background:#fff;border:1px solid #111;box-shadow:inset 1px 1px 0 var(--plat-3)}
+.schem{padding:8px;overflow-x:auto}.schem svg{display:block;min-width:720px;width:100%;height:auto}
+.pins td{white-space:normal!important}
+pre.code{font:12px/1.55 var(--f-ui);padding:12px;overflow-x:auto;margin:0;white-space:pre}
+.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding:8px 0 8px 34px;border-bottom:1px dotted #999}
+.steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:22px;height:22px;border:1px solid #111;background:#fff;display:grid;place-items:center;font:700 12px var(--f-ui)}
+.paths{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:700px){.paths{grid-template-columns:1fr}}
+.paths .card{padding:12px}.paths p{margin:0 0 8px;font-size:13px;color:#333}
+.tag{display:inline-block;font:700 11px var(--f-ui);padding:1px 6px;border:1px solid #111;background:var(--tangerine);margin-bottom:6px}.tag.alt{background:#fff}
+.price{font:400 34px/1 var(--f-head);margin:4px 0 8px}
+.btn{display:inline-block;font:700 13px var(--f-ui);color:#111;text-decoration:none;background:linear-gradient(#fafafa,#e2e2e2);border:2px solid #111;border-radius:6px;padding:6px 14px;box-shadow:inset 1px 1px 0 #fff}
+.btn:active{background:#555;color:#fff}
+.note{color:#fff;opacity:.85;font:500 12px var(--f-ui);margin:0;text-align:center}
+footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding:0 16px 32px}
 </style>
 
 </head>
 <body>
-<header class="top"><a href="../?skip">← sameep.ai</a><span>Concept · not built yet</span></header>
-<main>
-  <p class="kicker">My $3,000 setup</p>
-  <h1>Brew-bot</h1>
-  <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $1,000, and any Claude can run it.</p>
-
-  <section class="exp" aria-label="Brew one">
-    <div class="screen"><iframe id="film" src="film.html?embed" title="Brew-bot: Wispr to Claude to the rig to your cup" loading="eager"></iframe></div>
-    <div class="ctrl">
-      <button class="micbtn" id="mic" type="button" aria-label="Hold to talk"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" fill="none"/></svg><span id="micl">Hold to talk</span></button>
-      <form class="sayit" id="say"><input id="line" placeholder="or type: brew recipe A1" aria-label="What you'd say" autocomplete="off"><button class="btn" type="submit">Brew</button></form>
+<nav class="menubar" aria-label="Menu"><a class="mb__logo" href="../?skip">sameep.ai</a><span class="mb__item"><b>Brew-bot</b></span><span class="mb__item mb__hide">File</span><span class="mb__item mb__hide">Edit</span><span class="mb__item mb__hide">Special</span><span class="mb__right">Concept · not built yet</span></nav>
+<main class="desk">
+  <header class="hero">
+    <p class="kick">My $3,000 setup</p>
+    <h1>Brew-bot</h1>
+    <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $1,000, and any Claude can run it.</p>
+  </header>
+  <section class="win win--demo">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Brew-bot — make a cup</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <div class="screen"><iframe id="film" src="film.html?embed" title="Brew-bot making a pour-over" loading="eager"></iframe></div>
+      <form class="say" id="say">
+        <span class="say__flow" aria-hidden="true"><img src="../img/ui/wispr.svg" alt="" width="20" height="20"></span>
+        <input class="say__input" id="line" placeholder="Click here, hold fn and say “brew recipe A1”" aria-label="Dictate with Wispr Flow, or type" autocomplete="off">
+        <button class="say__go" type="submit">Brew</button>
+      </form>
+      <p class="say__hint" id="heard">Dictate with <b>Wispr Flow</b>, or just type. Try a recipe:</p>
+      <div class="recipes" id="recipes"></div>
     </div>
-    <div class="recipes" id="recipes"></div>
-    <p class="hint" id="heard">Simulation of the machine.</p>
   </section>
 
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">How it works</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <p>A temperature-controlled kettle sits in a hinged cradle. A geared motor tips it to pour while the dripper turns, so the water spirals. Three hoppers dose beans by weight into a grinder. A Raspberry Pi runs it all, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
+    </div>
+  </section>
 
-  <h2>How it works</h2>
-  <p class="lede" style="font-size:18px;max-width:680px">A temperature-controlled kettle sits in a hinged cradle. A geared motor tips it to pour while the dripper turns, so the water spirals. Three hoppers dose beans by weight into a grinder. A Raspberry Pi runs it all, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
-
-  <h2>Parts, about $1,000</h2>
+  <section class="win win--flush">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Parts.txt — about $1,000</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
   <p class="sub">Path A. Prices checked November 2026. "est." means a generic part at a typical price.</p>
   <div class="card tblwrap">
     <table class="tbl">
@@ -155,8 +165,12 @@ footer{max-width:1040px;margin:0 auto;padding:24px 16px 48px;font:12px var(--f-m
     </table>
   </div>
   <p class="sub" style="margin-top:12px">Path B swaps the Stagg and the tilt motor for a Philips HD9306 kettle ($20), an SG90 servo finger ($3), two 12 V 500 ml/min peristaltic pumps with food-grade silicone ($128), 2 m of tubing and two more probes ($20). That comes to $952.</p>
+    </div>
+  </section>
 
-  <h2>What the $3,000 buys</h2>
+  <section class="win win--flush">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">What the $3,000 buys</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
   <div class="card tblwrap">
     <table class="tbl">
       <tbody>
@@ -170,8 +184,12 @@ footer{max-width:1040px;margin:0 auto;padding:24px 16px 48px;font:12px var(--f-m
       </tbody>
     </table>
   </div>
+    </div>
+  </section>
 
-  <h2>More detail</h2>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">More detail</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
   <details class="more"><summary>Wiring and pins</summary>
   <p class="sub">One Raspberry Pi 5 runs everything. Motors get 12 V through the emergency-stop loop. Mains only goes through the two Shelly plugs. Common ground.</p>
   <div class="schem">
@@ -264,10 +282,12 @@ cancel()  → motors off, kettle tips upright, plugs off</pre>
   </div>
 
   </details>
+    </div>
+  </section>
 
   <p class="note">Concept. The demo is a simulation; the parts list and connector are real. The $3,000 builds the first one.</p>
 </main>
-<footer>Part of Sameep Rehlan's portfolio, sameep.ai. Built by voice with Wispr Flow and Claude.</footer>
+<footer>Part of Sameep Rehlan’s portfolio, sameep.ai. Built by voice with Wispr Flow and Claude.</footer>
 <script>
 (function(){
   var RECIPES={
@@ -292,22 +312,12 @@ cancel()  → motors off, kettle tips upright, plugs off</pre>
     var r=parse(said);if(!r){$('heard').textContent='Heard “'+said+'”. Try “brew recipe A1”, or name grams and degrees.';return}
     r.said=said.charAt(0).toUpperCase()+said.slice(1);busy=true;
     $('heard').textContent='Brewing '+(r.id?'recipe '+r.id+': ':'')+r.name+', '+r.grams+' g at '+r.temp_c+' °C for '+r.out_ml+' ml.';
-    film.contentWindow.postMessage({brewbot:'play',recipe:r},location.origin);film.scrollIntoView({behavior:'smooth',block:'center'})}
+    film.contentWindow.postMessage({brewbot:'play',recipe:r},location.origin);film.scrollIntoView({behavior:'smooth',block:'nearest'})}
   addEventListener('message',function(e){if(e.origin!==location.origin)return;if(e.data&&e.data.brewbot==='done'){busy=false;$('heard').textContent+=' Done. Say another one.'}});
   $('recipes').addEventListener('click',function(e){var b=e.target.closest('button');if(b)brew('Brew recipe '+b.dataset.id)});
   $('say').addEventListener('submit',function(e){e.preventDefault();var v=$('line').value.trim();if(v)brew(v)});
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=$('mic');
-  if(!SR){mic.hidden=true;return}
-  var rec=new SR();rec.lang='en-IN';rec.interimResults=true;rec.continuous=true;var text='',on=false;
-  rec.onresult=function(e){text='';for(var i=0;i<e.results.length;i++)text+=e.results[i][0].transcript;$('line').value=text};
-  rec.onend=function(){mic.classList.remove('live');$('micl').textContent='Hold to talk';if(on){on=false;if(text.trim())brew(text.trim())}};
-  rec.onerror=function(e){$('heard').textContent=e.error==='not-allowed'?'Mic blocked. Type it or tap a recipe instead.':'Didn\'t catch that. Try again or type it.'};
-  function start(e){e.preventDefault();if(on)return;text='';on=true;try{rec.start()}catch(_){}mic.classList.add('live');$('micl').textContent='Listening… release to brew'}
-  function stop(){if(on)try{rec.stop()}catch(_){}}
-  mic.addEventListener('pointerdown',start);addEventListener('pointerup',stop);mic.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter')start(e)});mic.addEventListener('keyup',stop);
 })();
 </script>
-
 <script type="module" src="../js/analytics.js"></script>
 </body>
 </html>

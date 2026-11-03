@@ -5,48 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Brew-bot film</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Spline+Sans+Mono:wght@400;600&family=VT323&display=swap">
 <style>
-:root{--bg:#0d0d0d;--panel:#171717;--panel2:#202020;--ink:#ececea;--muted:#9a9890;--accent:#7d93ff;--water:#6fb0ea;--coffee:#7a4520;--ok:#6cc488;--line:rgba(244,235,225,.14)}
+:root{--bg:#0d0d0d;--panel:#171717;--panel2:#202020;--ink:#ececea;--muted:#9a9890;--accent:#2fc6e0;--water:#6fb0ea;--coffee:#7a4520;--ok:#6cc488;--line:rgba(244,235,225,.14)}
 html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
 #wrap{position:absolute;inset:0;display:grid;place-items:center}
-#stage{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center;background:radial-gradient(1200px 700px at 50% 30%,#1c1c1c,#0d0d0d);color:var(--ink);font:20px/1.4 'IBM Plex Sans',system-ui,sans-serif;overflow:hidden}
+#stage{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center;background:radial-gradient(1200px 700px at 50% 30%,#0f2a2e,#050807);color:var(--ink);font:20px/1.4 'Spline Sans Mono',system-ui,sans-serif;overflow:hidden}
 .scene{position:absolute;inset:0;opacity:0}
-.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
-.badge{position:absolute;top:24px;left:28px;font:600 13px 'IBM Plex Mono';letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:99px;z-index:5}
-.brand{position:absolute;top:24px;right:28px;font:600 20px 'IBM Plex Sans',sans-serif;z-index:5}
+.mono{font-family:'Spline Sans Mono',ui-monospace,monospace}
+.badge{position:absolute;top:24px;left:28px;font:600 13px 'Spline Sans Mono';letter-spacing:.12em;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:99px;z-index:5}
+.brand{position:absolute;top:24px;right:28px;font:600 20px 'Jersey 10','VT323',monospace;z-index:5}
 .cap{position:absolute;left:0;right:0;bottom:34px;text-align:center;z-index:5}
-.cap span{display:inline-block;background:rgba(0,0,0,.55);padding:10px 20px;border-radius:12px;font:600 24px 'IBM Plex Sans'}
-.cap b{color:var(--accent);margin-right:10px;font-family:'IBM Plex Mono'}
+.cap span{display:inline-block;background:rgba(0,0,0,.55);padding:10px 20px;border-radius:12px;font:600 20px 'Spline Sans Mono'}
+.cap b{color:var(--accent);margin-right:10px;font-family:'Spline Sans Mono'}
 /* wispr */
 .pill{position:absolute;left:50%;top:300px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:#000;border:1px solid var(--line);border-radius:99px;padding:14px 22px}
 .bars{display:flex;gap:5px;align-items:center;height:34px}.bars i{width:5px;border-radius:3px;background:#fff;display:block}
-.key{position:absolute;left:50%;top:420px;transform:translateX(-50%);font:600 18px 'IBM Plex Mono';color:var(--muted)}
+.key{position:absolute;left:50%;top:420px;transform:translateX(-50%);font:600 18px 'Spline Sans Mono';color:var(--muted)}
 .key kbd{background:var(--panel2);border:1px solid var(--line);border-bottom-width:3px;border-radius:8px;padding:6px 12px;color:var(--ink);margin-right:8px}
-.said{position:absolute;left:160px;right:160px;top:160px;text-align:center;font:600 40px/1.25 'IBM Plex Sans',sans-serif;min-height:100px}
+.said{position:absolute;left:160px;right:160px;top:160px;text-align:center;font:400 54px/1.1 'Jersey 10','VT323',monospace;min-height:100px}
 /* claude */
 .chat{position:absolute;left:190px;width:900px;top:100px}
 .bub{background:var(--panel2);border-radius:18px;padding:16px 20px;margin:0 0 16px auto;max-width:640px;font-size:22px}
 .reply{font-size:22px;margin:4px 0 14px}
-.tool{background:#0a0a0a;border:1px solid var(--line);border-radius:14px;padding:16px 20px;font:17px/1.55 'IBM Plex Mono';white-space:pre;color:#dedcd5}
-.tool .h{color:var(--accent);font-weight:600}.k{color:#a9b8ff}.s{color:#9fd39b}.n{color:#8cc6ff}
+.tool{background:#0a0a0a;border:1px solid var(--line);border-radius:14px;padding:16px 20px;font:17px/1.55 'Spline Sans Mono';white-space:pre;color:#dedcd5}
+.tool .h{color:var(--accent);font-weight:600}.k{color:#8fe3f0}.s{color:#9fd39b}.n{color:#8cc6ff}
 /* pipe */
 .box{position:absolute;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
-.box h4{margin:0 0 6px;font:600 15px 'IBM Plex Mono';letter-spacing:.08em;color:var(--muted)}
-.box .t{font:600 24px 'IBM Plex Sans'}
+.box h4{margin:0 0 6px;font:600 15px 'Spline Sans Mono';letter-spacing:.08em;color:var(--muted)}
+.box .t{font:600 20px 'Spline Sans Mono'}
 .pkt{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px var(--accent)}
-.logl{font:15px/1.6 'IBM Plex Mono';color:#cfcdc6;white-space:pre}
+.logl{font:15px/1.6 'Spline Sans Mono';color:#cfcdc6;white-space:pre}
 /* rig */
 .tele{position:absolute;right:40px;top:96px;width:330px}
 .tele .row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding:10px 0}
-.tele .row span{color:var(--muted);font-size:16px}.tele .row b{font:600 30px 'IBM Plex Mono'}
-.stagebig{font:600 15px 'IBM Plex Mono';letter-spacing:.1em;color:var(--accent);margin:0 0 6px}
-.json{margin-top:18px;background:#0a0a0a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:14px/1.55 'IBM Plex Mono';white-space:pre;color:#dedcd5}
+.tele .row span{color:var(--muted);font-size:16px}.tele .row b{font:600 30px 'Spline Sans Mono'}
+.stagebig{font:600 15px 'Spline Sans Mono';letter-spacing:.1em;color:var(--accent);margin:0 0 6px}
+.json{margin-top:18px;background:#0a0a0a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:14px/1.55 'Spline Sans Mono';white-space:pre;color:#dedcd5}
 /* end */
 .note{position:absolute;left:50%;top:130px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px 20px;display:flex;gap:14px;align-items:center;font-size:20px;white-space:nowrap}
 .note i{width:12px;height:12px;border-radius:50%;background:var(--ok);display:block}
 .endt{position:absolute;left:0;right:0;top:530px;text-align:center}
-.endt h1{font:600 54px 'IBM Plex Sans',sans-serif;margin:0}.endt p{margin:6px 0 0;color:var(--muted);font-size:20px}
+.endt h1{font:400 80px/1 'Jersey 10','VT323',monospace;margin:0}.endt p{margin:6px 0 0;color:var(--muted);font-size:20px}
 </style>
 </head>
 <body>
@@ -57,8 +57,8 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
   <!-- 0 idle -->
   <div class="scene" id="s0" style="display:grid;place-items:center;text-align:center">
     <div><div class="mono" style="color:var(--accent);font-size:16px;letter-spacing:.14em">READY · CUP ON THE SCALE</div>
-    <div style="font:600 64px/1.1 'IBM Plex Sans',sans-serif;margin:18px 0">Say “brew recipe A1”</div>
-    <div style="color:var(--muted);font-size:22px">Hold the mic below and say it, or tap a recipe, and watch the machine make it.</div></div>
+    <div style="font:400 96px/1 'Jersey 10','VT323',monospace;margin:18px 0">Say “brew recipe A1”</div>
+    <div style="color:var(--muted);font-size:22px">Dictate it with Wispr Flow below, or tap a recipe, and watch the machine make it.</div></div>
   </div>
 
   <!-- 1 Wispr -->
@@ -103,10 +103,10 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
       <rect x="140" y="215" width="120" height="150" rx="16" fill="url(#steel)" stroke="#444" stroke-width="3"/>
       <circle cx="200" cy="270" r="28" fill="#0a0a0a" stroke="#444" stroke-width="3"/>
       <g id="burr"><path d="M200 248v44M178 270h44M185 255l30 30M215 255l-30 30" stroke="var(--accent)" stroke-width="4"/></g>
-      <text x="200" y="340" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" fill="#a5a39c">ENCORE ESP</text>
-      <rect x="150" y="380" width="100" height="18" rx="4" fill="#0a0a0a"/><text id="doseg" x="200" y="394" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" fill="var(--ok)">0.0 g</text>
+      <text x="200" y="340" text-anchor="middle" font-family="Spline Sans Mono" font-size="15" fill="#a5a39c">ENCORE ESP</text>
+      <rect x="150" y="380" width="100" height="18" rx="4" fill="#0a0a0a"/><text id="doseg" x="200" y="394" text-anchor="middle" font-family="Spline Sans Mono" font-size="13" fill="var(--ok)">0.0 g</text>
       <!-- shelly plugs -->
-      <g font-family="IBM Plex Mono" font-size="12" fill="#a5a39c">
+      <g font-family="Spline Sans Mono" font-size="12" fill="#a5a39c">
         <rect x="70" y="440" width="96" height="40" rx="8" fill="#1e1e1e" stroke="#444"/><circle id="sh1" cx="90" cy="460" r="7" fill="#444"/><text x="104" y="465">SHELLY 1</text>
         <rect x="180" y="440" width="96" height="40" rx="8" fill="#1e1e1e" stroke="#444"/><circle id="sh2" cx="200" cy="460" r="7" fill="#444"/><text x="214" y="465">SHELLY 2</text>
       </g>
@@ -120,8 +120,8 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
           <path d="M600 120 h90 a8 8 0 0 1 8 8 v74 h-106 v-74 a8 8 0 0 1 8 -8z" fill="#111" stroke="#333" stroke-width="2"/>
           <path d="M600 140 C560 140 548 110 520 104" fill="none" stroke="#111" stroke-width="9" stroke-linecap="round"/>
           <path d="M698 135c26 0 26 50 0 50" fill="none" stroke="#2a2a2a" stroke-width="9"/>
-          <rect x="612" y="150" width="74" height="30" rx="6" fill="#000"/><text id="ktemp" x="649" y="171" text-anchor="middle" font-family="IBM Plex Mono" font-size="16" fill="#fff">25°</text>
-          <text x="649" y="196" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#777">STAGG EKG</text>
+          <rect x="612" y="150" width="74" height="30" rx="6" fill="#000"/><text id="ktemp" x="649" y="171" text-anchor="middle" font-family="Spline Sans Mono" font-size="16" fill="#fff">25°</text>
+          <text x="649" y="196" text-anchor="middle" font-family="Spline Sans Mono" font-size="10" fill="#777">STAGG EKG</text>
         </g>
         <circle cx="640" cy="210" r="7" fill="var(--accent)"/>
         <path d="M650 210 q20 -40 50 -20" fill="none" stroke="#777" stroke-width="2" stroke-dasharray="3 3"/>
@@ -134,9 +134,9 @@ html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
       <path d="M450 300 h140 l-46 70 h-48z" fill="#ecebe7" stroke="#bdbab3" stroke-width="2"/>
       <path id="bed" d="M466 318 h108 l-12 18 h-84z" fill="#5a3519" opacity="0"/>
       <path d="M496 370 h48 v10 h-48z" fill="#d0cec8"/>
-      <rect x="400" y="472" width="240" height="24" rx="6" fill="#0a0a0a"/><text id="cupg" x="520" y="489" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" fill="var(--ok)">0.0 g</text>
+      <rect x="400" y="472" width="240" height="24" rx="6" fill="#0a0a0a"/><text id="cupg" x="520" y="489" text-anchor="middle" font-family="Spline Sans Mono" font-size="15" fill="var(--ok)">0.0 g</text>
       <!-- pi -->
-      <g><rect x="700" y="420" width="110" height="66" rx="6" fill="#1f6b3a"/><text x="755" y="458" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" fill="#fff">Pi 5</text></g>
+      <g><rect x="700" y="420" width="110" height="66" rx="6" fill="#1f6b3a"/><text x="755" y="458" text-anchor="middle" font-family="Spline Sans Mono" font-size="15" fill="#fff">Pi 5</text></g>
       <path id="wire" d="M700 450 H600 M700 440 C640 300 600 200 600 100 M700 470 C400 520 240 470 220 400" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 6" opacity=".5"/>
     </svg>
     <div class="tele">
@@ -190,7 +190,7 @@ function setup(r){
   $('notetext').textContent='Your '+R.name+' is ready · '+Math.round(R.out_ml)+' g · '+R.temp_c+' °C';
   for(var i=0;i<3;i++){$('hp'+i).setAttribute('stroke',i===R.hopper?'var(--accent)':'#bdbab3')}
 }
-(function(){var h='';for(var i=0;i<3;i++){var x=50+i*105;h+='<path id="hp'+i+'" d="M'+x+' 60h90l-22 105h-46z" fill="rgba(239,230,220,.08)" stroke="#bdbab3" stroke-width="3"/><rect id="hb'+i+'" x="'+(x+14)+'" y="100" width="62" height="58" fill="#5a3519" opacity=".9"/><text x="'+(x+45)+'" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="#a5a39c">'+NAMES[i]+'</text>'}$('hops').innerHTML=h;
+(function(){var h='';for(var i=0;i<3;i++){var x=50+i*105;h+='<path id="hp'+i+'" d="M'+x+' 60h90l-22 105h-46z" fill="rgba(239,230,220,.08)" stroke="#bdbab3" stroke-width="3"/><rect id="hb'+i+'" x="'+(x+14)+'" y="100" width="62" height="58" fill="#5a3519" opacity=".9"/><text x="'+(x+45)+'" y="52" text-anchor="middle" font-family="Spline Sans Mono" font-size="12" fill="#a5a39c">'+NAMES[i]+'</text>'}$('hops').innerHTML=h;
 var s='';for(var j=0;j<8;j++)s+='<circle class="bn" cx="0" cy="0" r="5" fill="#5a3519"/>';$('fall').innerHTML=s;
 var sp='';for(var m=0;m<6;m++)sp+='<rect class="sp" x="-4" y="-2" width="8" height="4" fill="#777"/>';$('spokes').innerHTML=sp;
 var b='';for(var n=0;n<22;n++)b+='<i></i>';$('bars').innerHTML=b})();
