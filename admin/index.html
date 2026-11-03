@@ -238,10 +238,11 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
   };
   const place = (v) => [v.city, v.country].filter(Boolean).join(', ') || '—';
   const teammate = (v) => (v.login?.as === 'team' ? v.login.name || v.login.id?.replace(/^w-/, '') : null);
-  const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || v.pages.some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
+  const strs = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []);
+  const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || strs(v.pages).some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
   const watched = (v) => v.video && (v.video.played || v.video.max > 0);
-  const projectPages = (v) => v.pages.filter((p) => p !== '/' && p !== '/index.html' && !p.startsWith('/admin') && !p.startsWith('/api'));
-  const far = (v) => v.ended ? 'Finished the podcast' : v.nodes.length ? `${v.nodes.length} chapter${v.nodes.length > 1 ? 's' : ''} · last “${title(v.nodes[v.nodes.length - 1].id)}”`
+  const projectPages = (v) => strs(v.pages).filter((p) => p !== '/' && p !== '/index.html' && !p.startsWith('/admin') && !p.startsWith('/api'));
+  const far = (v) => v.ended ? 'Finished the podcast' : v.nodes.length ? `${v.nodes.length} chapter${v.nodes.length > 1 ? 's' : ''} · last “${esc(title(v.nodes[v.nodes.length - 1].id))}”`
     : v.welcome ? 'Picked a host' : v.login ? 'Logged in' : v.heroDone ? 'Reached the iMac' : v.gate ? `Intro ${Math.round(v.hero)}%` : projectPages(v).length ? 'Pages only' : 'Bounced';
   const reach = (v) => v.ended ? 100 : v.nodes.length ? Math.min(95, 45 + v.nodes.length * 5) : v.welcome ? 45 : v.heroDone ? 40 : v.gate ? 5 + v.hero * 0.35 : 2;
   const count = (arr) => { const m = new Map(); for (const x of arr) if (x) m.set(x, (m.get(x) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1]); };
@@ -406,13 +407,13 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
     if (v.welcome) p.push(`<p><b>Host</b> ${esc(hostName(v.welcome.host))} · ${esc(v.welcome.route || 'standard')} length${v.switches.length ? ' · switched to ' + v.switches.map((s) => esc(hostName(s))).join(', ') : ''}</p>`);
     if (v.nodes.length) p.push(`<p><b>Chapters</b> ${v.nodes.map((n) => esc(title(n.id))).join(' → ')}${v.ended ? ' → <span class="yes">end</span>' : ''}</p>`);
     if (v.choices.length) p.push(`<p><b>Choices</b> ${v.choices.filter((x) => x.how !== 'auto').length} picked (${v.choices.filter((x) => x.how === 'voice').length} by voice)</p>`);
-    if (v.video) p.push(`<p><b>Recording</b> ${v.video.done ? 'watched to the end' : v.video.played ? `played, got to ${v.video.max}% (${mins(v.video.secs)})` : 'opened, not played'}</p>`);
+    if (v.video) p.push(`<p><b>Recording</b> ${v.video.done ? 'watched to the end' : v.video.played ? `played, got to ${Number(v.video.max) || 0}% (${mins(Number(v.video.secs) || 0)})` : 'opened, not played'}</p>`);
     if (v.windows.length) p.push(`<p><b>Windows</b> ${v.windows.map(esc).join(', ')}</p>`);
     if (v.icons.length) p.push(`<p><b>Icons</b> ${v.icons.map(esc).join(', ')}</p>`);
     if (projectPages(v).length) p.push(`<p><b>Pages</b> ${projectPages(v).map(esc).join(', ')}</p>`);
     if (v.links.length) p.push(`<p><b>Links</b> ${v.links.map(esc).join(', ')}</p>`);
-    if (v.make) p.push(`<p><b>Make your own</b> clicked ${v.make}×</p>`);
-    p.push(`<p class="muted">On site ${mins(v.duration)}${v.seen ? `, ${mins(v.seen)} with the tab in view` : ''}</p>`);
+    if (v.make) p.push(`<p><b>Make your own</b> clicked ${Number(v.make) || 0}×</p>`);
+    p.push(`<p class="muted">On site ${mins(Number(v.duration) || 0)}${v.seen ? `, ${mins(Number(v.seen) || 0)} with the tab in view` : ''}</p>`);
     return p.join('');
   }
 
