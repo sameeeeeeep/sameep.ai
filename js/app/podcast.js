@@ -244,13 +244,14 @@ export class Podcast {
     const P = this.persona;
     const L = this.layer.getBoundingClientRect();
     // leave the right-hand icon column visible on wide screens
-    const reserve = L.width > 1180 ? 330 : L.width > 900 ? 120 : 0;
-    const w = Math.min(1180, L.width - 40 - reserve);
-    const hgt = Math.min(780, L.height - 28);
+    // (the show is the main act: it fills the screen, only the right-hand icon column stays clear on wide screens)
+    const reserve = L.width > 1180 ? 290 : 0;
+    const w = Math.min(1520, L.width - 24 - reserve);
+    const hgt = Math.min(960, L.height - 20);
     this.win = this.wm.win('podcast', {
       title: `${P.showName} — ${P.episodeTitle || ''}`.replace(/ — $/, ''),
       width: w, height: hgt, persist: true,
-      x: Math.max(12, (L.width - reserve - w) / 2), y: Math.max(12, (L.height - hgt) / 2),
+      x: Math.max(12, (L.width - reserve - w) / 2), y: Math.max(10, (L.height - hgt) / 2),
       className: 'win--podcast',
       label: 'Podcast player',
       onClose: () => this.pause(),
