@@ -63,7 +63,7 @@ footer { margin-top:44px; color:#6f665a; font:400 12px 'Spline Sans Mono', monos
   <p class="lede">What I built for you, why I built it, and what voice changed. Three minutes.</p>
 
   <div class="player" id="player">
-    <video id="vid" controls playsinline preload="metadata" poster="../video/application.jpg" src="../video/application.mp4"></video>
+    <video id="vid" data-track="application" controls playsinline preload="metadata" poster="../video/application.jpg" src="../video/application-66d152bd.mp4"></video>
   </div>
 
   <div class="cta">
@@ -87,10 +87,11 @@ footer { margin-top:44px; color:#6f665a; font:400 12px 'Spline Sans Mono', monos
 // a newer take only needs a new file: data.json can point the player elsewhere without touching this page
 fetch('data.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
   const v = document.getElementById('vid');
-  if (d.video && !v.src.endsWith(d.video.replace('../', ''))) v.src = new URL(d.video, location.href).href;
+  if (d.video && !v.src.endsWith(d.video.replace('../', ''))) { v.src = new URL(d.video, location.href).href; v.load(); }
   if (d.poster) v.poster = new URL(d.poster, location.href).href;
   if (d.updated) document.getElementById('upd').textContent = `sameep.ai/recording · updated ${d.updated}`;
 }).catch(() => {});
 </script>
+<script type="module" src="../js/analytics.js"></script>
 </body>
 </html>
