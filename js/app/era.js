@@ -2,7 +2,7 @@
 // that every PC had in its shared folder; OFF THE CV installs in the background with an
 // installer that takes its time; when it's done the music fades out and the show launches itself.
 // Also: one desktop icon per project, each opening the real thing in a new tab.
-import { h, wait } from './util.js';
+import { h, wait, isNarrow } from './util.js';
 import { sound } from './audio.js';
 import { presence } from '../presence.js';
 
@@ -28,11 +28,16 @@ const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(
 
 // ---------------------------------------------------------------- the jukebox
 export function jukebox(wm, { reduced } = {}) {
-  const narrow = matchMedia('(max-width: 760px)').matches;
-  // bottom left, just clear of the projects column
-  const col = document.querySelector('.icons--proj')?.getBoundingClientRect(), area = document.querySelector('.desk__area')?.getBoundingClientRect();
+  const narrow = isNarrow();
+  // bottom left, just clear of the projects column; on a phone it hangs from the menu bar like a live activity
+  const layer = document.querySelector('.desk__area');
+  const col = document.querySelector('.icons--proj')?.getBoundingClientRect(), area = layer?.getBoundingClientRect();
   const x = col && area && !narrow ? col.right - area.left + 14 : 16;
-  const w = wm.win('jukebox', { title: 'Jukebox ’99', width: 320, x, y: 9999, className: 'win--juke', sheet: false });
+  // audio only: the YouTube player is mounted invisibly (it has to be on screen to play); the LCD is the only UI
+  const host = h('div.juke__host', { 'aria-hidden': 'true' });
+  const w = wm.win('jukebox', { title: 'Jukebox ’99', width: 320, x, y: 9999, className: 'win--juke' + (narrow ? ' win--island' : ''), sheet: false,
+    onClose: () => { host.remove(); layer?.classList.remove('has-island'); } });
+  if (narrow) layer?.classList.add('has-island');
   const src = `https://www.youtube-nocookie.com/embed/${SONG.id}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&mute=${sound.on ? 0 : 1}&origin=${encodeURIComponent(location.origin)}`;
   const frame = h('iframe.juke__vid', { src, title: `${SONG.artist}, ${SONG.title} (music video)`, allow: 'autoplay; encrypted-media', referrerpolicy: 'strict-origin-when-cross-origin', tabindex: '-1' });
   const cmd = (func, args = []) => { try { frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args }), '*'); } catch { /* not ready */ } };
@@ -42,14 +47,16 @@ export function jukebox(wm, { reduced } = {}) {
   const bars = h('div.juke__bars', { 'aria-hidden': 'true' }, Array.from({ length: 14 }, (_, i) => h('i', { style: { animationDelay: (-(i * 37) % 900) + 'ms' } })));
   let t = 0, playing = true, timer = 0;
   const run = () => { clearInterval(timer); timer = setInterval(() => { if (playing) { t += 1; clock.textContent = fmt(t); } }, 1000); };
-  const setPlaying = (on, label) => { playing = on; w.el.classList.toggle('is-playing', on); state.textContent = label || (on ? '▶' : '❚❚'); };
+  const toggle = h('button.juke__toggle', { type: 'button', 'aria-label': 'Pause', onclick: (e) => { e.stopPropagation(); if (playing) { cmd('pauseVideo'); setPlaying(false); } else { cmd('playVideo'); setPlaying(true); } } }, '❚❚');
+  const setPlaying = (on, label) => { playing = on; w.el.classList.toggle('is-playing', on); state.textContent = label || (on ? '▶' : '❚❚'); toggle.textContent = on ? '❚❚' : '▶'; toggle.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
   const btn = (txt, aria, fn) => h('button.juke__btn', { type: 'button', 'aria-label': aria, title: aria, onclick: (e) => { e.stopPropagation(); fn(); } }, txt);
+  host.append(frame);
+  (layer || w.el).append(host);
   w.body.append(h('div.juke',
     h('div.juke__lcd',
       h('div.juke__row', state, clock, h('span.juke__kbps', '128 kbps · 44 kHz · stereo')),
       h('div.juke__marquee', h('span', `${SONG.artist.toUpperCase()} - ${SONG.title.toUpperCase()} *** 1999 *** `.repeat(2))),
-      bars),
-    h('div.juke__screen', frame),
+      bars, toggle),
     h('div.juke__ctrl',
       btn('⏮', 'Back to the start', () => { cmd('seekTo', [0, true]); t = 0; clock.textContent = '0:00'; }),
       btn('▶', 'Play', () => { cmd('playVideo'); setPlaying(true); }),
@@ -77,8 +84,10 @@ export function jukebox(wm, { reduced } = {}) {
 
 // ---------------------------------------------------------------- the installer
 // resolves when the install is done (at least minMs, and not before `ready`); "Open now" skips ahead
-export function installer(wm, { ready, minMs = 60000, reduced } = {}) {
-  const w = wm.win('install', { title: 'Installer', width: 400, y: 40, className: 'win--install', sheet: false });
+// on a phone there's no window: the desktop icon fills up like an app downloading (onProgress), and tapping it skips (bindSkip)
+export function installer(wm, { ready, minMs = 60000, reduced, onProgress, bindSkip } = {}) {
+  const narrow = isNarrow();
+  const w = narrow ? null : wm.win('install', { title: 'Installer', width: 400, y: 40, className: 'win--install', sheet: false });
   const steps = [
     ['Reading “OFF THE CV 1.0” disc…', 'Installer'],
     ['Checking for viruses (none, probably)…', 'Norton AntiVirus 5.0'],
@@ -104,7 +113,8 @@ export function installer(wm, { ready, minMs = 60000, reduced } = {}) {
   const bar = h('div.inst__bar', { role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-label': 'Installing' }, fill);
   let skip;
   const skipP = new Promise((r) => { skip = r; });
-  w.body.append(h('div.inst',
+  bindSkip?.(() => skip());
+  w?.body.append(h('div.inst',
     h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installing “OFF THE CV”'), h('p.inst__s', 'Items remaining to be installed: ', left))),
     doing, bar, file,
     h('div.inst__row', h('span.inst__note', 'Have a play while you wait: the games and the projects are on the left.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Skip'))));
@@ -119,6 +129,7 @@ export function installer(wm, { ready, minMs = 60000, reduced } = {}) {
       const shown = readyNow ? p : Math.min(p, 0.92);
       fill.style.transform = `scaleX(${shown.toFixed(3)})`;
       bar.setAttribute('aria-valuenow', String(Math.round(shown * 100)));
+      onProgress?.(shown);
       const i = Math.min(steps.length - 1, Math.floor(shown * steps.length));
       if (doing.textContent !== steps[i][0]) { doing.textContent = steps[i][0]; file.textContent = steps[i][1]; left.textContent = String(steps.length - i); }
       if (shown >= 1) finish(); else requestAnimationFrame(tick);
@@ -127,12 +138,13 @@ export function installer(wm, { ready, minMs = 60000, reduced } = {}) {
       if (done) return;
       done = true;
       fill.style.transform = 'scaleX(1)';
+      onProgress?.(1);
       doing.textContent = 'Installation was successful.';
       file.textContent = 'OFF THE CV is on your desktop.';
       left.textContent = '0';
       sound.tick('pick');
-      await wait(reduced ? 0 : 900);
-      w.close();
+      await wait(reduced || narrow ? 0 : 900);
+      w?.close();
       resolve();
     };
     // rAF pauses in background tabs; a slow timer keeps it moving there
@@ -349,17 +361,19 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 
 // ---------------------------------------------------------------- installed: open it, or it opens itself
 // resolves when the visitor clicks Open (here or on the new desktop icon via `open`), or after `secs`
-export function installed(wm, { secs = 60, reduced } = {}) {
+// on a phone there's no window: the icon wears a badge counting down (onCount), and tapping it opens the show
+export function installed(wm, { secs = 60, reduced, onCount } = {}) {
   let go;
   const p = new Promise((r) => { go = r; });
-  const w = wm.win('installed', { title: 'Installer', width: 380, y: 40, className: 'win--install', sheet: false });
+  const w = isNarrow() ? null : wm.win('installed', { title: 'Installer', width: 380, y: 40, className: 'win--install', sheet: false });
   const left = h('b', String(secs));
-  w.body.append(h('div.inst',
+  w?.body.append(h('div.inst',
     h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is now on your desktop.'))),
     h('p.inst__doing', 'Open it now, or it opens by itself in ', left, ' seconds.'),
     h('div.inst__row', h('span.inst__note', 'Double-click its icon any time.'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open'))));
   sound.tick('pick');
   let n = reduced ? 3 : secs;
-  const t = setInterval(() => { n -= 1; left.textContent = String(Math.max(0, n)); if (n <= 0) go(); }, 1000);
-  return { open: () => go(), done: p.then(() => { clearInterval(t); w.close(); }) };
+  onCount?.(n);
+  const t = setInterval(() => { n -= 1; left.textContent = String(Math.max(0, n)); onCount?.(Math.max(0, n)); if (n <= 0) go(); }, 1000);
+  return { open: () => go(), done: p.then(() => { clearInterval(t); w?.close(); onCount?.(null); }) };
 }

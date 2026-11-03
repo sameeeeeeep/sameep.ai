@@ -62,7 +62,11 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     askName: (q) => (pod ? pod.askName(q) : Promise.resolve('')),
     installing: false,
     openPodcast() {
-      if (ctx.installing) { desk.notice('OFF THE CV is still installing. It opens by itself when it’s done.'); return; }
+      if (ctx.installing) {
+        // on a phone the icon is the installer, so tapping it means "open it now"
+        if (isNarrow() && ctx.skipInstall) { ctx.skipInstall(); return; }
+        desk.notice('OFF THE CV is still installing. It opens by itself when it’s done.'); return;
+      }
       if (ctx.launch) { ctx.launch(); return; }
       if (!pod) { desk.notice('The tape is still being recorded. Try again in a minute.'); return; }
       pod.win.el.hidden ? wm.win('podcast') : pod.win.focus();
@@ -91,10 +95,12 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     if (era) {
       ctx.installing = true;
       desk.setInstalling(true);
-      await installer(wm, { reduced });
+      if (isNarrow()) desk.notice('OFF THE CV is installing. Have a play while you wait.');
+      await installer(wm, { reduced, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
+      ctx.skipInstall = null;
       ctx.installing = false;
       desk.setInstalling(false);  // the icon lands on the desktop
-      const ready = installed(wm, { reduced });
+      const ready = installed(wm, { reduced, onCount: desk.setBadge });
       ctx.launch = ready.open;
       await ready.done;
       ctx.launch = null;
@@ -135,8 +141,10 @@ function buildDesktop(screen, persona) {
   const menubar = h('nav.menubar', { 'aria-label': 'Menu bar' });
   const area = h('div.desk__area');
   const icons = h('ul.icons', { 'aria-label': 'Desktop' });
+  // desktop: two icon columns, one each side; phone: one home-screen grid that scrolls as a whole
+  const home = h('div.desk__home', icons);
   const toast = h('div.desk__toast', { role: 'status' });
-  area.append(icons, toast);
+  area.append(home, toast);
   const desk = h('div.desk', h('div.desk__fallback'), wall, menubar, area);
   screen.append(desk);
 
@@ -154,9 +162,36 @@ function buildDesktop(screen, persona) {
       const ul = h('ul.icons.icons--proj', { 'aria-label': 'Projects' }, list.map((p) => h('li', h('a.icon.icon--proj', { href: p.url, target: '_blank', rel: 'noopener', title: p.label + ' (opens in a new tab)', onclick: () => sound.tick('click') },
         h('img', { src: `img/ui/proj-${p.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
         h('span.icon__label', p.label)))));
-      area.insertBefore(ul, toast);
+      home.append(ul);
     },
-    setInstalling(on) { const li = icons.querySelector('.icon')?.parentElement; if (!li) return; li.hidden = on; if (!on) { li.classList.add('is-new'); sound.tick('pick'); } },
+    // desktop: the icon appears when the install is done; phone: it sits there downloading, like an app
+    setInstalling(on) {
+      const btn = icons.querySelector('.icon'), li = btn?.parentElement;
+      if (!li) return;
+      const label = btn.querySelector('.icon__label');
+      if (on && isNarrow()) {
+        btn.classList.add('is-installing');
+        btn.dataset.label = label.textContent; label.textContent = 'Installing…';
+        btn.style.setProperty('--p', '0');
+        btn.querySelector('img').after(h('span.icon__dl', { 'aria-hidden': 'true' }));
+      } else if (on) li.hidden = true;
+      else {
+        if (btn.classList.contains('is-installing')) { btn.classList.remove('is-installing'); label.textContent = btn.dataset.label; btn.querySelector('.icon__dl')?.remove(); }
+        li.hidden = false;
+        li.classList.add('is-new'); sound.tick('pick');
+      }
+    },
+    setProgress(p) { icons.querySelector('.icon.is-installing')?.style.setProperty('--p', p.toFixed(3)); },
+    // phone: a badge counts down to the show opening by itself; null clears it
+    setBadge(n) {
+      const btn = icons.querySelector('.icon');
+      if (!btn || !isNarrow()) return;
+      const label = btn.querySelector('.icon__label');
+      let b = btn.querySelector('.icon__badge');
+      if (n == null) { b?.remove(); if (btn.dataset.label) label.textContent = btn.dataset.label; return; }
+      if (!b) { b = h('span.icon__badge', { 'aria-hidden': 'true' }); btn.append(b); btn.dataset.label = btn.dataset.label || label.textContent; label.textContent = 'Tap to open'; }
+      b.textContent = String(n);
+    },
     renderMenus(ctx, apps) {
       const clock = h('span.menubar__clock');
       const tick = () => { const d = new Date(); clock.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };

@@ -90,7 +90,7 @@ img { max-width: 100%; }
 .boot-chrome button:hover { background: var(--crt-glow); color: #04232b; text-shadow: none; }
 
 /* ---------------------------------------------------------------- desktop */
-.desk { position: absolute; inset: 0; overflow: hidden; isolation: isolate; }
+.desk { position: absolute; inset: 0; overflow: hidden; overflow: clip; isolation: isolate; } /* clip: a focus() off-screen can't scroll the desk sideways */
 .desk__fallback { position: absolute; inset: 0; background:
   radial-gradient(120% 80% at 70% 110%, rgba(255,138,31,.45), transparent 60%),
   radial-gradient(90% 70% at 10% 0%, rgba(123,79,214,.55), transparent 60%),
@@ -118,6 +118,7 @@ img { max-width: 100%; }
 .menubar__sound.is-off .ico--speaker { -webkit-mask-image: var(--i-mute); mask-image: var(--i-mute); }
 
 .desk__area { position: absolute; top: 28px; left: 0; right: 0; bottom: 0; z-index: 10; }
+.desk__home { display: contents; }
 .icons { position: absolute; inset: 14px clamp(10px, 1.6vw, 22px) 14px auto; margin: 0; padding: 0; list-style: none; display: grid; grid-auto-flow: column; grid-template-rows: repeat(auto-fill, 88px); grid-auto-columns: 96px; direction: rtl; gap: 2px 6px; max-width: calc(100% - 28px); }
 .icons li { direction: ltr; }
 .icon { width: 96px; height: 88px; padding: 2px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; border-radius: 4px; }
@@ -751,9 +752,36 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
   .menu__list { min-width: 200px; }
   .menu__item { padding: 10px 16px; font-size: 14px; }
   .desk__area { top: 40px; }
-  .icons { inset: 10px 8px auto 8px; max-width: none; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); grid-auto-columns: auto; direction: ltr; max-height: calc(100% - 20px); overflow: auto; }
-  .icon { width: 100%; height: 86px; }
-  .icon__label { font-size: 12px; }
+  /* one home screen: every icon in a single grid that scrolls as a whole, like a phone */
+  .desk__home { display: grid; position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; grid-template-columns: repeat(4, minmax(0, 1fr)); align-content: start; gap: 8px 4px; padding: 14px 10px calc(24px + env(safe-area-inset-bottom)); transition: padding-top .45s var(--ease-out); }
+  .desk__home > .icons { display: contents; }
+  .desk__area.has-island .desk__home { padding-top: 64px; }
+  .icon { position: relative; width: 100%; height: 88px; }
+  .desk__home .icon .icon__label { max-width: 100%; padding: 0 2px; background: none; color: #fff; font: 600 11.5px/1.25 var(--f-ui); text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 0 8px rgba(0,0,0,.6); }
+  .desk__home .icon.is-selected .icon__label { background: none; color: #fff; }
+  .desk__home .icon--wispr .icon__label { background: linear-gradient(90deg, var(--lime), #ffd23f, var(--tangerine), var(--strawberry), var(--grape), var(--bondi)); color: #111; padding: 0 5px; border-radius: 3px; text-shadow: none; }
+
+  /* installing: the icon is the installer, filling up like an app downloading */
+  .desk__home .icon.is-installing .icon__label::after { content: none; }
+  .desk__home .icon.is-installing img { opacity: 1; filter: grayscale(.6) brightness(.8); }
+  .icon__dl { position: absolute; top: 2px; left: 50%; width: 48px; height: 48px; margin-left: -24px; border-radius: 12px; background: rgba(0,0,0,.45); display: grid; place-items: center; pointer-events: none; }
+  .icon__dl::before { content: ""; width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,.9); background: conic-gradient(rgba(255,255,255,.9) calc(var(--p, 0) * 1turn), transparent 0); box-sizing: border-box; box-shadow: inset 0 0 0 2px rgba(0,0,0,.45); transition: background .3s; }
+  .icon__badge { position: absolute; top: -3px; left: calc(50% + 14px); min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #ff3b30; color: #fff; font: 700 12px/22px var(--f-ui); text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.4); pointer-events: none; }
+
+  /* the jukebox hangs off the menu bar as a small black pill: what's playing, the time, play/pause */
+  .win.win--island { left: 50% !important; top: 8px !important; width: min(340px, calc(100% - 20px)) !important; max-height: none; border: 0; border-radius: 22px; background: #000; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.55); transform: translate(-50%, -64px) scale(.6); transform-origin: 50% 0; transition: opacity .3s var(--ease-out), transform .5s cubic-bezier(.2, 1.25, .4, 1); }
+  .win.win--island.is-open { transform: translate(-50%, 0); }
+  .win.win--island.is-closing { transform: translate(-50%, -64px) scale(.6); opacity: 0; }
+  .win--island .win__bar, .win--island .juke__ctrl, .win--island .juke__status, .win--island .juke__state, .win--island .juke__kbps { display: none; }
+  .win--island .juke { grid-template-columns: minmax(0, 1fr); }
+  .win--island .win__body { padding: 0; background: #000; box-shadow: none; overflow: hidden; }
+  .win--island .juke__lcd { margin: 0; padding: 7px 8px 7px 16px; border: 0; background: none; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .win--island .juke__row { display: contents; }
+  .win--island .juke__bars { order: 0; flex: none; width: 26px; height: 18px; gap: 1px; }
+  .win--island .juke__bars i:nth-child(n+7) { display: none; }
+  .win--island .juke__marquee { order: 1; flex: 1; min-width: 0; font-size: 12px; }
+  .win--island .juke__time { order: 2; font-size: 20px; min-width: 0; }
+  .win--island .juke__toggle { order: 3; display: grid; }
 
   .win--sheet { left: 0 !important; right: 0; top: auto !important; bottom: 0; width: auto !important; max-height: calc(100% - 6px); border-radius: 14px 14px 0 0; transform: translateY(40px); box-shadow: 0 -12px 40px rgba(0,0,0,.45); }
   .win--sheet.is-open { transform: none; }
@@ -1184,8 +1212,11 @@ a.icon { text-decoration: none; }
 .juke__bars i { flex: 1; height: 15%; background: linear-gradient(#ff5b3a, #ffd84a 40%, #9bff5e); transform-origin: bottom; }
 .win--juke.is-playing .juke__bars i { animation: juke-eq .9s ease-in-out infinite alternate; }
 @keyframes juke-eq { 0% { height: 12%; } 30% { height: 85%; } 60% { height: 35%; } 100% { height: 70%; } }
-.juke__screen { margin: 0 8px; aspect-ratio: 16 / 9; background: #000; border: 2px inset #4a4d55; overflow: hidden; }
+/* audio only: the player has to be on screen for YouTube to play it, so it sits behind everything, invisible */
+.juke__host { position: absolute; left: 0; bottom: 0; width: 200px; height: 200px; opacity: .001; pointer-events: none; z-index: -1; overflow: hidden; }
 .juke__vid { display: block; width: 100%; height: 100%; border: 0; }
+.juke__toggle { display: none; place-items: center; flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #2a2c31; color: #9bff5e; font: 700 12px var(--f-ui); cursor: pointer; }
+.juke__toggle:active { background: #3a3d44; }
 .juke__ctrl { display: flex; gap: 4px; padding: 6px 8px 2px; }
 .juke__btn { flex: 1; min-height: 30px; border: 1px solid #111; border-radius: 2px; background: linear-gradient(#e6e3dc, #a9a59c); color: #111; font: 700 12px var(--f-ui); cursor: pointer; box-shadow: inset 1px 1px 0 #fff; }
 .juke__btn:active { background: linear-gradient(#a9a59c, #e6e3dc); }
@@ -1218,9 +1249,6 @@ a.icon { text-decoration: none; }
 .splash__dots i { width: 7px; height: 7px; background: #111; animation: splash-dot 1s steps(2) infinite; }
 .splash__dots i:nth-child(2) { animation-delay: .33s; } .splash__dots i:nth-child(3) { animation-delay: .66s; }
 @keyframes splash-dot { 50% { opacity: .2; } }
-@media (max-width: 760px) {
-  .icons--proj { inset: auto 8px 10px 8px; max-height: 38%; }
-}
 @media (prefers-reduced-motion: reduce) { .juke__marquee span, .juke__bars i, .inst__bar i, .splash__dots i { animation: none !important; } }
 .folder__bar { margin: 0; padding: 4px 10px; border-bottom: 1px solid var(--plat-4); font: 400 12px var(--f-ui); color: #444; text-align: center; }
 .folder__grid { margin: 0; padding: 10px; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; background: #fff; }
