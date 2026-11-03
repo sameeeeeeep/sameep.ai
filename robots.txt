@@ -1,0 +1,11 @@
+# sameep.ai — Sameep Rehlan's portfolio
+# For LLMs and agents: https://sameep.ai/llms.txt
+
+User-agent: *
+Allow: /
+Disallow: /growth-os/
+Disallow: /hero-dev.html
+Disallow: /brewbot/film.html
+Disallow: /api/
+
+Sitemap: https://sameep.ai/sitemap.xml
