@@ -4,56 +4,60 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex">
-  <title>Wispr Growth OS (preview)</title>
+  <meta name="theme-color" content="#ffffeb">
+  <title>Wispr Growth OS</title>
+  <link rel="icon" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Doto:wght@500;800&family=Spline+Sans+Mono:wght@400;500;700&family=VT323&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600&family=Jersey+10&family=Doto:wght@500;800&family=Spline+Sans+Mono:wght@400;500;700&family=VT323&display=swap">
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/app.css">
   <link rel="stylesheet" href="../css/growthos.css">
   <style>
-    /* preview only: a bare desktop, so the app can be reviewed before the hook goes in */
-    html, body { height: 100%; overflow: hidden; }
-    .pv { position: fixed; inset: 0; background: #000; }
-    .pv .desk__fallback { background: linear-gradient(160deg, #3aa6b9, #0a6f84 60%, #064a59); }
-    .pv__bar { position: absolute; top: 0; left: 0; right: 0; height: 28px; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: linear-gradient(#fafafa, #dadada); border-bottom: 1px solid #111; font: 600 12px var(--f-ui); color: #111; z-index: 20; }
-    .pv__bar span:last-child { margin-left: auto; font-weight: 500; color: #555; }
-    .pv__lock { position: absolute; inset: 28px 0 0; z-index: 30; display: grid; place-items: center; background: rgba(4,35,43,.72); }
-    .pv__card { width: min(420px, calc(100% - 32px)); padding: 18px; background: var(--plat-2); border: 1px solid #111; box-shadow: inset 1px 1px 0 #fff, 6px 6px 0 rgba(0,0,0,.5); color: #111; font: 400 13px/1.5 var(--f-ui); }
-    .pv__card h1 { margin: 0 0 6px; font: 400 30px/1 var(--f-head); }
-    .pv__team { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; margin: 12px 0; }
-    .pv__team button { min-height: 40px; }
-    @media (max-width: 500px) { .pv__bar span:last-child { display: none; } }
+    /* Wispr Growth OS in its own tab: the app fills the page. The desktop icon on sameep.ai opens this;
+       the lock-screen login (same origin) carries over, and the @wispr.ai code is the real gate. */
+    html, body { height: 100%; margin: 0; overflow: hidden; background: #ffffeb; }
+    .pv, .pv .desk, .pv .desk__area { position: fixed; inset: 0; }
+    .pv__lock { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: #ffffeb; color: #1a1a1a; font: 400 15px/1.5 Figtree, system-ui, sans-serif; }
+    .pv__card { width: min(460px, 100%); }
+    .pv__card p.k { margin: 0 0 10px; font: 600 12px/1 Figtree, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #5d5d52; }
+    .pv__card h1 { margin: 0 0 10px; font: 400 clamp(40px, 8vw, 60px)/.95 "EB Garamond", Georgia, serif; letter-spacing: -.03em; }
+    .pv__card h1 i { font-style: italic; }
+    .pv__card a { color: #034f46; }
+    .pv__team { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin: 18px 0; }
+    .pv__team button { min-height: 44px; border: 0; border-radius: 999px; background: #e4e4d0; color: #1a1a1a; font: 600 14px Figtree, sans-serif; cursor: pointer; }
+    .pv__team button:hover { background: #1a1a1a; color: #ffffeb; }
   </style>
 </head>
 <body>
-  <div class="pv">
-    <div class="desk">
-      <div class="desk__fallback"></div>
-      <div class="pv__bar"><span>Wispr Growth OS</span><span>Preview · not linked from the site</span></div>
-      <div class="desk__area"><div class="desk__home"><ul class="icons" aria-label="Desktop"><li></li><li></li></ul></div></div>
-    </div>
-  </div>
+  <div class="pv"><div class="desk"><div class="desk__area"></div></div></div>
   <script type="module">
     import { createWM } from '../js/app/wm.js';
-    import { install, openGrowthOS, canSeeGrowthOS } from '../js/app/growthos.js';
+    import { openGrowthOS, canSeeGrowthOS } from '../js/app/growthos.js';
     import { isWispr } from '../js/version.js';
     const area = document.querySelector('.desk__area');
     const wm = createWM(area);
+    const params = new URLSearchParams(location.search);
     // ?as=w-nimisha logs in as that teammate (for reviewing a module directly)
-    const as = new URLSearchParams(location.search).get('as');
+    const as = params.get('as');
     if (as && as.startsWith('w-')) localStorage.setItem('offthecv.visitor', JSON.stringify({ name: as.slice(2)[0].toUpperCase() + as.slice(3), character: as }));
     const visitor = () => { try { return JSON.parse(localStorage.getItem('offthecv.visitor') || 'null'); } catch { return null; } };
-    const go = () => { install({ wm, area, visitor: visitor() }); openGrowthOS(wm, { visitor: visitor(), start: new URLSearchParams(location.search).get('m') || undefined }); };
-    if (canSeeGrowthOS()) go();
+    // closing the app's window closes the tab when the site opened it, else goes back to the site
+    const open = () => {
+      const w = openGrowthOS(wm, { visitor: visitor(), start: params.get('m') || undefined });
+      const x = w?.el?.querySelector('.win__close');
+      x?.addEventListener('click', () => { if (window.opener) window.close(); else location.href = '../?skip&version=wispr'; }, { once: true });
+    };
+    if (canSeeGrowthOS()) open();
     else {
-      // stand-in for the lock screen: pick a teammate (same storage the real login writes)
+      // opened directly (not from the desktop): say who you are first; the @wispr.ai code is still required after this
       const team = (await (await fetch('../persona.json')).json()).wisprTeam || [];
       const lock = document.createElement('div');
       lock.className = 'pv__lock';
-      lock.innerHTML = `<div class="pv__card"><h1>Log in</h1><p>${isWispr ? 'Pick a Wispr teammate. On the real site this is the lock screen.' : 'This preview needs <a href="?version=wispr">?version=wispr</a>, like the real Wispr link.'}</p><div class="pv__team"></div><button class="btn" type="button" data-guest>Guest (shows the locked folder)</button></div>`;
-      if (isWispr) lock.querySelector('.pv__team').append(...team.map((t) => { const b = document.createElement('button'); b.className = 'btn'; b.type = 'button'; b.textContent = t.label; b.onclick = () => { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: t.label, character: t.id })); lock.remove(); go(); }; return b; }));
-      lock.querySelector('[data-guest]').onclick = () => { lock.remove(); openGrowthOS(wm, { visitor: { name: 'Guest' } }); };
-      document.querySelector('.desk').append(lock);
+      lock.innerHTML = isWispr
+        ? `<div class="pv__card"><p class="k">Wispr Growth OS</p><h1>Who’s <i>this?</i></h1><p>Pick your name. Next you’ll get a code at your @wispr.ai email.</p><div class="pv__team"></div></div>`
+        : `<div class="pv__card"><p class="k">Wispr Growth OS</p><h1>For the Wispr team, <i>only.</i></h1><p>Open it from <a href="../?version=wispr">the Wispr version of sameep.ai</a>.</p></div>`;
+      if (isWispr) lock.querySelector('.pv__team').append(...team.map((t) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t.label; b.onclick = () => { localStorage.setItem('offthecv.visitor', JSON.stringify({ name: t.label, character: t.id })); lock.remove(); open(); }; return b; }));
+      document.body.append(lock);
     }
   </script>
 </body>

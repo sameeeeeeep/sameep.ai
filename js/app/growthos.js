@@ -27,12 +27,20 @@ export function install({ wm, area, visitor }) {
   // top of the left column, above the projects (the right column is the system and the toys)
   const icons = area.querySelector('.icons--proj') || area.querySelector('.icons');
   if (!icons || area.querySelector('[data-app="growthos"]')) return false;
-  const btn = h('button.icon.icon--gos', { type: 'button', dataset: { app: 'growthos' }, onclick: () => { sound.tick('click'); openGrowthOS(wm, { visitor }); } },
+  const btn = h('button.icon.icon--gos', { type: 'button', dataset: { app: 'growthos' }, onclick: () => { sound.tick('click'); openTab(wm, visitor); } },
     h('img', { src: new URL('../../growth-os/icon.svg', import.meta.url).href, alt: '', width: 48, height: 48, draggable: 'false' }),
     h('span.icon__label', 'Wispr Growth OS'));
   icons.prepend(h('li.is-new', btn));
   if (fromLink) openGrowthOS(wm, { visitor });
   return true;
+}
+
+// Growth OS lives in its own tab (growth-os/, same origin, so the lock-screen login carries over);
+// if the browser blocks the tab, it opens in a window here instead
+export const GROWTH_URL = new URL('../../growth-os/?version=wispr', import.meta.url).href;
+function openTab(wm, visitor) {
+  const tab = window.open(GROWTH_URL, '_blank');
+  if (!tab) openGrowthOS(wm, { visitor });
 }
 
 // ---------------------------------------------------------------- state (this device only)
@@ -153,7 +161,7 @@ export function openGrowthOS(wm, { visitor, start } = {}) {
       h('p', 'Log in as a Wispr teammate on the lock screen to open it.')));
     return w;
   }
-  const name = (v?.name || '').split(' ')[0];
+  const name = (v?.name || teamId(v).replace(/^w-/, '')).split(' ')[0];
   const ready = () => addExtras().catch((e) => console.warn('[growth os] extras', e)).then(() => renderPlan(w, { name, start }));
   if (token.get()) {
     w.body.append(h('div.gos-lock', h('p.big', 'Opening the plan…')));
