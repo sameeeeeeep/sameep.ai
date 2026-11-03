@@ -239,6 +239,7 @@ function entryGate() {
           <button type="button" class="gate__quiet" disabled>Enter muted</button>
           <button type="button" class="gate__enter" disabled><span aria-hidden="true">▶</span> Enter <span>· sound on</span></button>
         </div>
+        <p class="gate__how">Press <kbd>space</kbd> or <b>scroll</b> to begin. One press, one step.</p>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
       <p class="gate__hint">Best with headphones. Works on your phone, even better on a bigger screen.</p>
@@ -271,11 +272,10 @@ function entryGate() {
     store.set('offthecv.muted', withSound ? '0' : '1');
     store.set('offthecv.sound', withSound ? 'on' : 'off');
     close();
-    // first time: say how the intro moves (it only moves when you do)
+    // first time on a phone: say how the intro moves (on desktop the gate already taught space / scroll)
     const touch = matchMedia('(pointer: coarse)').matches;
-    setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
-      touch ? '<b>Swipe up</b> to move the story along. One swipe, one step. Swipe down to go back.'
-        : '<b>Scroll</b> (or press <b>↓</b>) to move the story along. One step at a time; scroll up to go back.', { follow: false }), 1400);
+    if (touch) setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
+      '<b>Swipe up</b> to move the story along. One swipe, one step. Swipe down to go back.', { follow: false }), 1400);
     autoplayCard();
     // the hero's own sound pill reflects its state; nudge it to match the choice
     setTimeout(() => {
@@ -284,6 +284,28 @@ function entryGate() {
     }, 60);
   };
   g.querySelector('.gate__enter').addEventListener('click', () => enter(true));
+  // desktop: enter the way the intro moves (space or a scroll), so the gesture is learned before step one
+  // (the entering press must not also count as the hero's first step, so it's stopped here; a flick's
+  // inertia tail is swallowed for a moment too)
+  let gateOpen = false, swallow = 0;
+  const viaKey = (e) => {
+    if (!gateOpen || e.key !== ' ' || e.target.closest?.('button:not(.gate__enter), input, textarea')) return;
+    e.preventDefault(); e.stopImmediatePropagation(); off(); enter(true);
+  };
+  const viaWheel = (e) => {
+    if (!gateOpen) { if (performance.now() < swallow) { e.preventDefault(); e.stopImmediatePropagation(); } return; }
+    if (e.deltaY <= 0) return;
+    e.preventDefault(); e.stopImmediatePropagation(); off(); enter(true);   // a wheel isn't a gesture browsers unlock audio on: the next tap does
+  };
+  const off = () => {
+    gateOpen = false; swallow = performance.now() + 900;
+    removeEventListener('keydown', viaKey, true);
+    setTimeout(() => removeEventListener('wheel', viaWheel, { capture: true }), 1000);
+  };
+  addEventListener('keydown', viaKey, true);
+  addEventListener('wheel', viaWheel, { capture: true, passive: false });
+  g.addEventListener('gate-ready', () => { gateOpen = true; });
+  g.querySelectorAll('.gate__enter, .gate__quiet, .gate__skip').forEach((b) => b.addEventListener('click', off));
   g.querySelector('.gate__quiet').addEventListener('click', () => enter(false));
   g.querySelector('.gate__skip')?.addEventListener('click', () => { track('gate_enter', { how: 'skip' }); store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
   return {

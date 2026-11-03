@@ -20,7 +20,7 @@ import { isLow } from '../power.js';
 import { isWispr } from '../version.js';
 
 const BEATS = [   // caption markup is font play: <b> dot-matrix, <i> handwriting, <em> flame, <s> struck
-  { id: 'pile', len: 1.0, cap: isWispr ? 'Heard you received <b>2,000</b> CVs, all very similar.' : 'Every CV gets piled with <b>a thousand</b> others.' },
+  { id: 'pile', len: 1.0, cap: isWispr ? 'Getting <b>2,000</b> CVs, all very similar, makes sending a CV <i>pointless</i>.' : 'A pile of <b>a thousand</b> CVs makes sending a CV <i>pointless</i>.' },
   { id: 'envelope', len: 1.4, cap: 'So I took <i>mine</i>,' },
   { id: 'origami', len: 1.3, cap: 'Made a <i>plane</i> out of it,' },
   { id: 'flight', len: 0.8, cap: '<b>Flew</b> it around,' },
@@ -41,6 +41,10 @@ const G = (id, local) => { const b = BEATS[BI[id]]; return b.a + (b.b - b.a) * l
 // One gesture moves one groove (scroll-snap-stop: always).
 const GROOVES = () => [0, G('envelope', 0.57), G('envelope', 0.75), G('envelope', 1), G('origami', 1) - 1e-4, G('flight', 0.5),
   G('crumple', 0.9), G('shred', 1) - 1e-4, G('burn', 0.3), G('burn', 0.62), G('cd', 0.95), G('insert', 0.5), 1];
+// The burn is one step: striking the match (burn 0.3) carries on by itself to the flames and then the CD,
+// a beat apart. Any other pose waits for the visitor, and moves on alone after IDLE_MS of nothing.
+const CHAIN_FROM = () => [G('burn', 0.3), G('burn', 0.62)];
+const CHAIN_MS = 1000, IDLE_MS = 5000;
 
 const S = new THREE.Vector3(2.5, 1.15, 0.7);       // the stage, where the sheet performs
 const PILE_C = new THREE.Vector3(-0.35, 0, -2.0);
@@ -137,11 +141,24 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   // swallowed, and a scrollbar drag that stops mid-fold settles to the nearest pose.
   const groovesOn = !/[?&](debug|timer)\b/.test(location.search);
   let gTop = [], gAnim = 0, gBusy = false, gQuiet = 0, gAcc = 0, gIdle = 0, gLive = groovesOn;
+  let gChain = new Set(), gAuto = 0, gDir = 1;
   const layoutGrooves = () => {
     const base = dom.track.getBoundingClientRect().top + scrollY;
     const total = dom.track.offsetHeight - dom.stage.clientHeight;
-    gTop = GROOVES().map((p) => Math.round(base + p * total));
+    const at = (p) => Math.round(base + p * total);
+    gTop = GROOVES().map(at);
+    gChain = new Set(CHAIN_FROM().map(at));
   };
+  // after every landing: chain on (the burn), or wait IDLE_MS and take the next step alone. Any input re-arms it.
+  const arm = (ms) => {
+    clearTimeout(gAuto);
+    if (!groovesOn) return;
+    gAuto = setTimeout(() => {
+      if (!inHero() || gBusy || hands?.busy || document.hidden) return arm(IDLE_MS);
+      gDir = 1; go(1);
+    }, ms);
+  };
+  const landed = () => arm(gDir > 0 && gChain.has(Math.round(scrollY)) ? CHAIN_MS : IDLE_MS);
   layoutGrooves();
   const glide = (to) => {
     cancelAnimationFrame(gAnim);
@@ -152,11 +169,12 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     const step = (now) => {
       const k = Math.min(1, (now - t0) / dur);
       scrollTo(0, from + d * (k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2));
-      if (k < 1) gAnim = requestAnimationFrame(step); else gBusy = false;
+      if (k < 1) gAnim = requestAnimationFrame(step); else { gBusy = false; landed(); }
     };
     gAnim = requestAnimationFrame(step);
   };
   const go = (dir) => {
+    gDir = dir; arm(IDLE_MS);
     const y = scrollY;
     const to = dir > 0 ? gTop.find((t) => t > y + 4) : [...gTop].reverse().find((t) => t < y - 4);
     if (to !== undefined) glide(to);
@@ -204,9 +222,10 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     m('wheel', onWheel, { passive: false }); m('touchstart', onTouchStart, { passive: true });
     m('touchmove', onTouchMove, { passive: false }); m('touchend', onTouchEnd, { passive: true });
     m('keydown', onKey); m('scroll', onSettle, { passive: true });
-    if (!on) cancelAnimationFrame(gAnim);
+    if (!on) { cancelAnimationFrame(gAnim); clearTimeout(gAuto); }
+    else arm(IDLE_MS);
   };
-  snap(true);
+  snap(true);   // (arms the idle timer: it waits out the gate, then the first pose moves on alone)
 
   // ------------------------------------------------------------------ renderer
   const renderer = new THREE.WebGLRenderer({ canvas: dom.canvas, antialias: false, alpha: false, powerPreference: 'high-performance', stencil: false });
