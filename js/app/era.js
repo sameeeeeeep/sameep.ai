@@ -81,7 +81,7 @@ const fileOf = (s) => (s.artist + '_-_' + s.title).toLowerCase().replace(/[’']
 // Where a project has no public page, it gets a short one on this site (sameep.ai/<slug>/). Icon: img/ui/proj-<id>.svg
 // Hover cards: each item's copy is its data/work.json entry (`card`); a folder's own card is here.
 export const FOLDERS = [
-  { id: 'growth', label: 'Growth work', card: { what: 'Getting people talking before a launch or a sale', role: 'PM at Nykaa, chief of staff at Nailinit', proof: '+30% sale conversion at Nykaa', thumb: 'img/work/diwali/desktop-1.webp', node: 'g-intro' }, items: [
+  { id: 'growth', label: 'Growth work', card: { what: 'Getting people talking before a launch or a sale', proof: '+30% sale conversion at Nykaa', thumb: 'img/work/diwali/desktop-1.webp', node: 'g-intro' }, items: [
     { id: 'pinkbox', label: 'Nykaa Pink Box', url: 'pinkbox/' },
     { id: 'khushi', label: 'Khushi Kapoor launch', url: 'khushi-launch/' },
     { id: 'slumber', label: 'Secret Slumber Party', url: 'secretslumberparty/' },
@@ -89,7 +89,7 @@ export const FOLDERS = [
     { id: 'happydiwali', label: 'happydiwali.to', url: 'https://happydiwali.to/' },
   ] },
   // Switchboard is a folder of its own wrapps: the app, its public site and store, then the best wrapps built on it
-  { id: 'switchboard', label: 'Switchboard', card: { what: 'Switchboard, its store, and the wrapps that run on it', role: 'Built all of it', proof: '90+ wrapps so far, none needing an API key', thumb: 'video/switchboard-poster.webp', node: 'sb-intro' }, items: [
+  { id: 'switchboard', label: 'Switchboard', card: { what: 'Switchboard, its store, and the wrapps that run on it', proof: '90+ wrapps so far, none needing an API key', thumb: 'video/switchboard-poster.webp', node: 'sb-intro' }, items: [
     { id: 'switchboard', label: 'Switchboard', url: 'https://thelastprompt.ai/switchboard' },
     { id: 'thelastprompt', label: 'The Last Prompt', url: 'https://thelastprompt.ai/' },
     { id: 'brandbrain', label: 'Brand Brain', url: 'https://brandbrain.thelastprompt.ai' },
@@ -108,7 +108,7 @@ export const FOLDERS = [
     { id: 'repurpose', label: 'Repurpose', url: 'repurpose/' },
     { id: 'reachout', label: 'Reachout', url: 'reachout/' },
   ] },
-  { id: 'tools', label: 'Claude tools', card: { what: 'Small tools that make Claude better at my work', role: 'Built them for myself', proof: 'Four are open source on GitHub', thumb: 'video/video2ai-poster.webp', node: 'tools-intro' }, items: [
+  { id: 'tools', label: 'Claude tools', card: { what: 'Small tools that make Claude better at my work', proof: 'Four are open source on GitHub', thumb: 'video/video2ai-poster.webp', node: 'tools-intro' }, items: [
     { id: 'video2ai', label: 'video2ai', url: 'https://github.com/sameeeeeeep/video2ai' },
     { id: 'refs', label: '/refs', url: 'https://github.com/sameeeeeeep/references-mcp' },
     { id: 'asknotch', label: 'Ask Notch', url: 'https://github.com/sameeeeeeep/ask-notch' },
@@ -117,14 +117,14 @@ export const FOLDERS = [
     { id: 'cartridge', label: 'Cartridge', url: 'https://cartridge.thelastprompt.ai' },
     { id: 'pastedeck', label: 'PasteDeck', url: 'pastedeck/' },
   ] },
-  { id: 'products', label: 'Products', card: { what: 'Products I built or co-founded', role: 'Founder, co-founder, builder', proof: 'ppt.live: 50 phones joined at once, zero errors', thumb: 'video/pptlive-poster.webp', node: 'ppt-intro' }, items: [
+  { id: 'products', label: 'Products', card: { what: 'Products, from live shows to travel hacking', proof: 'ppt.live: 50 phones joined at once, zero errors', thumb: 'video/pptlive-poster.webp', node: 'ppt-intro' }, items: [
     { id: 'pptlive', label: 'ppt.live', url: 'https://www.ppt.live' },
     { id: 'often', label: 'Often', url: 'often/' },
     { id: 'trippy', label: 'Trippy', url: 'trippy/' },
     { id: 'nia', label: 'Nia', url: 'nia/' },
     { id: 'prophexy', label: 'Prophexy', url: 'https://thelastprompt.ai/prophexy/' },
   ] },
-  { id: 'fun', label: 'Fun', card: { what: 'Side quests and half-finished things', role: 'Built for fun', proof: 'MacCat’s cats led to wallpap’s, then psspss', thumb: 'video/wallpap-poster.webp', node: 'fun-intro' }, items: [
+  { id: 'fun', label: 'Fun', card: { what: 'Side quests and half-finished things', proof: 'MacCat’s cats led to wallpap’s, then psspss', thumb: 'video/wallpap-poster.webp', node: 'fun-intro' }, items: [
     { id: 'wallpap', label: 'wallpap', url: 'https://wallpap.live' },
     { id: 'psspss', label: 'psspss', url: 'https://github.com/sameeeeeeep/psspss' },
     { id: 'agentbar', label: 'The Agent Bar', url: 'https://thelastprompt.ai/agentbreakroom/' },
