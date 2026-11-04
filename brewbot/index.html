@@ -93,6 +93,13 @@ pre.code{font:12px/1.55 var(--f-ui);padding:12px;overflow-x:auto;margin:0;white-
 .price{font:400 34px/1 var(--f-head);margin:4px 0 8px}
 .btn{display:inline-block;font:700 13px var(--f-ui);color:#111;text-decoration:none;background:linear-gradient(#fafafa,#e2e2e2);border:2px solid #111;border-radius:6px;padding:6px 14px;box-shadow:inset 1px 1px 0 #fff}
 .btn:active{background:#555;color:#fff}
+.win__snd{position:relative;z-index:1;font:700 11px var(--f-ui);background:#fff;border:1px solid #111;border-radius:3px;padding:0 6px;height:18px;cursor:pointer}
+.win__snd[aria-pressed="false"]{color:#888}
+.bp{background:#0b4a66;border:1px solid #111;overflow-x:auto}.bp svg{display:block;width:100%;min-width:640px;height:auto}
+.key{columns:2;column-gap:28px;margin:14px 0 0;padding-left:22px;font-size:13px}.key li{break-inside:avoid;margin:0 0 6px}
+@media (max-width:700px){.key{columns:1}}
+.dots{margin:10px 0 0;padding-left:18px}.dots li{margin:0 0 8px}
+.win__body pre.code{background:#fff;border:1px solid #111;box-shadow:inset 1px 1px 0 var(--plat-3);margin:10px 0}
 .note{color:#fff;opacity:.85;font:500 12px var(--f-ui);margin:0;text-align:center}
 footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding:0 16px 32px}
 </style>
@@ -104,10 +111,10 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
   <header class="hero">
     <p class="kick">My $3,000 setup</p>
     <h1>Brew-bot</h1>
-    <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $1,000, and any Claude can run it.</p>
+    <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $920, and any Claude can run it.</p>
   </header>
   <section class="win win--demo">
-    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Brew-bot — make a cup</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Brew-bot — make a cup</span><button class="win__snd" id="snd" type="button" aria-pressed="true">Sound on</button><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
       <div class="screen"><iframe id="film" src="film.html?embed" title="Brew-bot making a pour-over" loading="eager"></iframe></div>
       <form class="say" id="say">
@@ -123,75 +130,150 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
   <section class="win ">
     <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">How it works</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-      <p>A temperature-controlled kettle sits in a hinged cradle. A geared motor tips it to pour while the dripper turns, so the water spirals. Three hoppers dose beans by weight into a grinder. A Raspberry Pi runs it all, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
+      <p>A plain gooseneck kettle sits in a hinged cradle, and the Pi is its thermostat: a probe in the water and a smart plug on its base. A geared motor tips it to pour while the dripper turns and a rail moves the spout in and out, so the water spirals. Three hoppers dose beans by weight into a grinder. A scale under the cup runs the whole pour, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
+      <p>The full blueprint is below: drawings, wiring, the control loops, safety, the software, the build steps and every part.</p>
     </div>
   </section>
-
-  <section class="win win--flush">
-    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Parts.txt — about $1,000</span><span class="win__shade" aria-hidden="true"></span></div>
+  <section class="win win--bp">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Blueprint — front view (600 × 450 × 300 mm)</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-  <p class="sub">Path A. Prices checked November 2026. "est." means a generic part at a typical price.</p>
-  <div class="card tblwrap">
-    <table class="tbl">
-      <thead><tr><th>Part</th><th>Model</th><th>Price</th></tr></thead>
-      <tbody>
-        <tr><td><a href="https://fellowproducts.com">Fellow Stagg EKG Pro</a>, 0.9 L<span class="why">Holds temperature. India: Timemore Fish Smart Pro 900 ml, ₹12,899.</span></td><td class="sku">EKG Pro</td><td>$179.95</td></tr>
-        <tr><td><a href="https://www.seattlecoffeegear.com/collections/grinders/products/baratza-encore-esp-coffee-and-espresso-grinder">Baratza Encore ESP</a> grinder<span class="why">Leave its switch on, and Shelly 1 runs it.</span></td><td class="sku">ZCG495</td><td>$199.95</td></tr>
-        <tr><td><a href="https://www.raspberrypi.com/products/raspberry-pi-5/">Raspberry Pi 5</a> 4 GB + official 27 W PSU + 32 GB card + case</td><td class="sku">Pi 5 4GB</td><td>$90</td></tr>
-        <tr><td>SparkFun load cell amplifier ×2</td><td class="sku">SEN-13879</td><td>$22</td></tr>
-        <tr><td>5 kg straight-bar load cell (under the cup)</td><td class="sku">TAL220B · SEN-14729</td><td>$12 est.</td></tr>
-        <tr><td>1 kg straight-bar load cell (dose)</td><td class="sku">80 mm bar</td><td>$5 est.</td></tr>
-        <tr><td><a href="https://www.omc-stepperonline.com/economy-planetary-gearbox/nema-17-stepper-motor-bipolar-l48mm-w-gear-raio-1001-planetary-gearbox-17hs19-1684s-pg100.html">StepperOnline NEMA 17, 100:1 planetary</a>: tilt</td><td class="sku">17HS19-1684S-PG100</td><td>$30.17</td></tr>
-        <tr><td>StepperOnline NEMA 17 ×2: turntable, rail</td><td class="sku">17HS19-2004S1</td><td>$28 est.</td></tr>
-        <tr><td>BIGTREETECH stepper drivers ×3</td><td class="sku">TMC2209 V1.3</td><td>$25 est.</td></tr>
-        <tr><td>Linear rail 300 mm + carriage</td><td class="sku">MGN12H</td><td>$20 est.</td></tr>
-        <tr><td>6-inch lazy-susan bearing + GT2 belt + 20T/60T pulleys</td><td class="sku">GT2 6 mm</td><td>$20 est.</td></tr>
-        <tr><td>Gear motors for the augers ×3</td><td class="sku">N20 6 V 100 rpm</td><td>$15 est.</td></tr>
-        <tr><td>Pololu dual motor drivers ×2</td><td class="sku">DRV8833 #2130</td><td>$10 est.</td></tr>
-        <tr><td>12 → 6 V buck converter</td><td class="sku">LM2596</td><td>$3 est.</td></tr>
-        <tr><td>Adafruit waterproof temperature probe + 4.7 kΩ</td><td class="sku">DS18B20 · #381</td><td>$10 est.</td></tr>
-        <tr><td>Adafruit time-of-flight cup sensor</td><td class="sku">VL53L0X · #3317</td><td>$15 est.</td></tr>
-        <tr><td>22 mm emergency-stop button, normally closed</td><td class="sku">NC mushroom</td><td>$10 est.</td></tr>
-        <tr><td>12 V 5 A desktop power brick, barrel jack</td><td class="sku">12V5A</td><td>$15 est.</td></tr>
-        <tr><td><a href="https://www.shelly.com/products/shelly-plug-s-gen3">Shelly Plug S Gen3</a> ×2 (use a 16 A adapter in India)<span class="why">Local HTTP API, no cloud needed.</span></td><td class="sku">Plug S Gen3</td><td>$52</td></tr>
-        <tr><td>Frame: 4× 500 mm + 4× 300 mm extrusion, 8 brackets, T-nuts</td><td class="sku">2020 V-slot</td><td>$60 est.</td></tr>
-        <tr><td>18 mm walnut ply top + silicone drip mat</td><td class="sku"></td><td>$30 est.</td></tr>
-        <tr><td>PETG filament 1 kg (hoppers, augers, cradle)</td><td class="sku">PETG</td><td>$22 est.</td></tr>
-        <tr><td>Hario V60 02 ceramic + Range Server 600 ml + 100 filters</td><td class="sku">VDC-02 · VCF-02-100W</td><td>$52 est.</td></tr>
-        <tr><td>Origami Dripper M + wave filters</td><td class="sku">Origami M</td><td>$40 est.</td></tr>
-        <tr><td>GPIO screw-terminal breakout, wire, ferrules, 2 extension springs</td><td class="sku"></td><td>$25 est.</td></tr>
-        <tr class="total"><td>Path A, one unit</td><td></td><td>$991</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="sub" style="margin-top:12px">Path B swaps the Stagg and the tilt motor for a Philips HD9306 kettle ($20), an SG90 servo finger ($3), two 12 V 500 ml/min peristaltic pumps with food-grade silicone ($128), 2 m of tubing and two more probes ($20). That comes to $952.</p>
+      <div class="bp"><svg viewBox="0 0 900 640" role="img" aria-label="Front view blueprint with numbered parts and dimensions" font-family="Spline Sans Mono, monospace" font-size="13">
+        <defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="rgba(255,255,255,.07)"/></pattern>
+        <marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#fff"/></marker></defs>
+        <rect width="900" height="640" fill="#0b4a66"/><rect width="900" height="640" fill="url(#g)"/>
+        <g fill="none" stroke="#fff" stroke-width="2">
+          <rect x="90" y="40" width="720" height="540"/><path d="M90 70H810M90 560H810"/>
+          <path d="M120 80h90l-18 90h-54zM230 80h90l-18 90h-54zM340 80h90l-18 90h-54z"/>
+          <path d="M147 170h50v14h-50zM257 170h50v14h-50zM367 170h50v14h-50z"/>
+          <path d="M197 177H262M307 177h20M417 177H452" stroke-dasharray="6 4"/>
+          <path d="M240 200h70l-8 26h-54z"/><rect x="230" y="226" width="90" height="8"/>
+          <rect x="215" y="250" width="120" height="170" rx="10"/><circle cx="275" cy="300" r="26"/>
+          <path d="M470 84H790" stroke-width="4"/><rect x="590" y="74" width="70" height="22"/>
+          <path d="M625 96V130M560 130h150M560 130V320M560 320h70"/>
+          <rect x="575" y="170" width="120" height="140" rx="8"/><path d="M575 190c-40 0-55-30-85-40"/><path d="M695 200c26 0 26 60 0 60"/>
+          <circle cx="600" cy="320" r="9"/>
+          <path d="M470 380h130l-42 64h-46z"/><path d="M500 444h40v12h-40z"/>
+          <ellipse cx="520" cy="520" rx="95" ry="12"/><rect x="470" y="460" width="100" height="58" rx="6"/>
+          <rect x="420" y="534" width="200" height="22"/>
+          <rect x="680" y="470" width="115" height="86"/><circle cx="770" cy="440" r="14"/>
+        </g>
+        <path d="M490 150 C485 230 510 300 520 384" fill="none" stroke="#7fd6ff" stroke-width="2" stroke-dasharray="4 4"/>
+        <g fill="#fff" text-anchor="middle">
+          <g stroke="#fff" stroke-width="1">
+            <path d="M90 612H810" marker-start="url(#ar)" marker-end="url(#ar)"/><path d="M850 40V580" marker-start="url(#ar)" marker-end="url(#ar)"/>
+          </g>
+          <rect x="410" y="602" width="80" height="20" fill="#0b4a66"/><text x="450" y="617">600 mm</text>
+          <g transform="translate(866 310) rotate(-90)"><rect x="-40" y="-14" width="80" height="20" fill="#0b4a66"/><text y="1">450 mm</text></g>
+        </g>
+        <g font-weight="700" font-size="12">
+          <g fill="#ffcf3a" stroke="#0b4a66" stroke-width="0"><circle cx="165" cy="60" r="11"/><circle cx="110" cy="190" r="11"/><circle cx="350" cy="216" r="11"/><circle cx="350" cy="300" r="11"/><circle cx="460" cy="62" r="11"/><circle cx="700" cy="112" r="11"/><circle cx="715" cy="230" r="11"/><circle cx="625" cy="340" r="11"/><circle cx="455" cy="410" r="11"/><circle cx="400" cy="520" r="11"/><circle cx="400" cy="548" r="11"/><circle cx="738" cy="458" r="11"/><circle cx="770" cy="414" r="11"/></g>
+          <g fill="#0b4a66" text-anchor="middle"><text x="165" y="64">1</text><text x="110" y="194">2</text><text x="350" y="220">3</text><text x="350" y="304">4</text><text x="460" y="66">5</text><text x="700" y="116">6</text><text x="715" y="234">7</text><text x="625" y="344">8</text><text x="455" y="414">9</text><text x="400" y="524">10</text><text x="400" y="552">11</text><text x="738" y="462">12</text><text x="770" y="418">13</text></g>
+        </g>
+        <text x="100" y="600" fill="rgba(255,255,255,.7)" font-size="11">BREW-BOT · FRONT ELEVATION · 2020 EXTRUSION FRAME · NOT TO SCALE DETAIL</text>
+      </svg></div>
+      <ol class="key">
+        <li><b>Bean hoppers ×3</b>, printed PETG, 250 g each, one coffee per hopper.</li>
+        <li><b>Augers ×3</b>, each turned by an N20 gear motor, push beans into one chute.</li>
+        <li><b>Dose cup on the 1 kg load cell.</b> When it reads the target, an SG90 servo tips it into the grinder.</li>
+        <li><b>Baratza Encore ESP</b>, on Shelly plug 1. It grinds until its power draw drops to idle, which means the beans are gone.</li>
+        <li><b>MGN12 rail</b>, 300 mm, belt-driven by a NEMA 17. It moves the kettle in and out to draw the spiral.</li>
+        <li><b>Carriage and cradle</b> hanging from the rail.</li>
+        <li><b>Gooseneck kettle with its base</b>, both fixed in the cradle so they tilt together. A probe goes in through the lid.</li>
+        <li><b>Hinge and tilt motor</b> (see the side view).</li>
+        <li><b>V60 or Origami dripper</b> on a fixed ring above the server.</li>
+        <li><b>Turntable</b>: a 6-inch lazy-susan bearing, belt-driven, spinning the server and dripper at 30–40 rpm.</li>
+        <li><b>5 kg load cell</b> under the turntable. It's the scale for the whole pour.</li>
+        <li><b>Electronics box</b>: Pi 5, 3× TMC2209, 2× DRV8833, HX711s, 12 V input.</li>
+        <li><b>Emergency stop</b>, normally closed, cutting 12 V to every motor.</li>
+      </ol>
     </div>
   </section>
-
-  <section class="win win--flush">
-    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">What the $3,000 buys</span><span class="win__shade" aria-hidden="true"></span></div>
+  <section class="win win--bp">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Side view — the tilt cradle</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-  <div class="card tblwrap">
-    <table class="tbl">
-      <tbody>
-        <tr><td>Desk unit (path A)</td><td>$991</td></tr>
-        <tr><td>Travel unit for events, "brew one for the room" (path B)</td><td>$952</td></tr>
-        <tr><td>Acaia Pearl S, the scale people see on camera</td><td>$220</td></tr>
-        <tr><td>A year of Riverdale: 20 g a day is about 29 bags at ₹760</td><td>$250</td></tr>
-        <tr><td>10% buffer</td><td>$241</td></tr>
-        <tr><td>Shipping and Indian import duty on the US parts</td><td>$346</td></tr>
-        <tr class="total"><td>Total</td><td>$3,000</td></tr>
-      </tbody>
-    </table>
-  </div>
+      <div class="bp"><svg viewBox="0 0 760 400" role="img" aria-label="Side view of the kettle cradle: pivot, motor, angles" font-family="Spline Sans Mono, monospace" font-size="13">
+        <rect width="760" height="400" fill="#0b4a66"/><rect width="760" height="400" fill="url(#g)"/>
+        <g fill="none" stroke="#fff" stroke-width="2">
+          <path d="M60 340H700"/><path d="M300 40V90"/><rect x="250" y="20" width="100" height="22"/>
+          <path d="M300 90 L300 120"/>
+          <g transform="rotate(-28 360 300)" opacity=".45" stroke-dasharray="6 5"><rect x="340" y="140" width="150" height="150" rx="10"/><path d="M340 165c-60 0-80-40-120-55"/></g>
+          <rect x="340" y="140" width="150" height="150" rx="10"/><path d="M340 165c-60 0-80-40-120-55"/><path d="M490 175c34 0 34 80 0 80"/>
+          <path d="M330 300H500V130"/><rect x="330" y="300" width="170" height="16"/>
+          <circle cx="360" cy="300" r="10"/><path d="M300 120 V290 H350"/>
+          <rect x="250" y="250" width="50" height="50"/><rect x="200" y="258" width="50" height="34"/>
+          <path d="M360 300 L360 210" stroke-dasharray="3 4"/>
+          <path d="M420 215 L420 300" stroke="#ffcf3a" stroke-dasharray="3 4"/>
+          <path d="M520 90 A170 170 0 0 1 560 160" stroke="#7fd6ff"/>
+        </g>
+        <g fill="#fff" font-size="12">
+          <text x="370" y="335">pivot (hinge, 8 mm shaft)</text>
+          <text x="140" y="250">NEMA 17 + 100:1 gearbox</text><text x="140" y="266">direct on the pivot shaft</text>
+          <text x="430" y="230" fill="#ffcf3a">centre of mass of a full kettle</text><text x="430" y="246" fill="#ffcf3a">sits behind the pivot</text>
+          <text x="570" y="120" fill="#7fd6ff">0° rest · 28° pour · 40° hard stop</text>
+          <text x="160" y="90">pour stream lands on the dripper</text>
+          <text x="560" y="300">cradle holds kettle + base</text>
+        </g>
+      </svg></div>
+      <p>The kettle and its power base are clamped in an aluminium L-cradle, so they tilt together and the base contact never breaks. The hinge sits under the spout side, in front of the kettle's centre of mass. That means gravity always pulls the cradle back upright: the motor has to hold every degree of tilt, and if power drops the kettle falls back to 0°. It can't spill toward the cup.</p>
+      <p>Torque: a full 0.9 L kettle with its base weighs about 1.6 kg, and its centre of mass sits at most about 6 cm from the pivot. That needs about 9.5 kg·cm. A 17HS19 motor through a 100:1 planetary gearbox gives over 30 kg·cm, so there's about 3× margin. A printed hard stop at 40° stops it ever tipping past a full pour.</p>
     </div>
   </section>
-
   <section class="win ">
-    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">More detail</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Temperature — how the Pi sets “93 °C”</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-  <details class="more"><summary>Wiring and pins</summary>
-  <p class="sub">One Raspberry Pi 5 runs everything. Motors get 12 V through the emergency-stop loop. Mains only goes through the two Shelly plugs. Common ground.</p>
+      <p><b>The honest problem:</b> no smart kettle you can buy today lets another device set its temperature. Fellow's kettles only listen to Fellow's app. The older Stagg EKG+ was reverse-engineered over Bluetooth (the <a href="https://pypi.org/project/fellow-stagg-ble/">fellow-stagg-ble</a> library can set its target temperature), but it's discontinued, and the current EKG Pro is only <a href="https://community.home-assistant.io/t/ble-reverse-engineering-a-fellow-stagg-ekg-pro-kettle/863026">partly cracked</a>.</p>
+      <p><b>So the Pi becomes the kettle's thermostat.</b> Use a plain electric gooseneck with a mechanical switch and a boil cut-off. Leave its switch on, and put its base on Shelly plug 2. A food-safe DS18B20 probe sits in a stainless sleeve through the lid, 2 cm above the bottom. The Pi reads it every 0.75 s and switches the plug:</p>
+      <pre class="code">target = 93                                   # from brew(recipe="A1")
+loop every 0.75 s:
+    t = probe.read()
+    if t &lt; target - 3:      kettle(on)          # full power
+    elif t &lt; target - 0.5:  pulse(2 s on, 6 s off)  # creep up, no overshoot
+    else:                   kettle(off)         # hold: it loses ~1 °C a minute
+    if t &gt; 101 or rising &gt; 3 °C/s:  kettle(off); abort("boil-dry")
+
+kettle(on) = GET http://shelly-kettle.local/rpc/Switch.Set?id=0&amp;on=true&amp;toggle_after=10</pre>
+      <p>Two details make this safe and accurate:</p>
+      <ul class="dots">
+        <li><b><code>toggle_after=10</code></b> tells the Shelly to switch itself off after 10 seconds unless the Pi renews the command. If the Pi crashes, the kettle turns off on its own.</li>
+        <li><b>Because the Pi stops below boiling</b>, the kettle's boil cut-off never trips, so the next "on" works. The cut-off stays in place as a second safety. The probe holds within ±1 °C, and the pour won't start unless the reading is in range.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Pour — a closed loop on the scale</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <p>The 5 kg cell under the turntable is the only thing the pour trusts. It reads 80 times a second, and a median filter turns that into grams and grams per second.</p>
+      <pre class="code">tare()                                  # cup + dripper + grounds = 0 g
+bloom = 2.5 × dose                      # A1: 45 g
+pour_to(bloom);  wait(bloom_s)          # A1: 45 s
+for target in thirds(out_ml - bloom):   # 3 pulses
+    pour_to(target);  wait(10 s)
+wait until rate &lt; 0.1 g/s               # draw-down finished → "ready"
+
+pour_to(g):
+    turntable(35 rpm); tilt to 20°, then creep until flow &gt; 0.5 g/s
+    while weight &lt; g:
+        tilt += k × (5 g/s − flow)          # hold 5 g/s whatever the kettle's level
+        rail = r_max × |sin(π·t/T)|          # centre → edge → centre: the spiral
+        if flow ≈ 0 for 2 s: abort("stream missing the cup")
+    tilt to 0°                              # gravity helps</pre>
+      <p>Why tilt is controlled by flow and not by angle: as the kettle empties, the same angle pours less and less. Closing the loop on grams per second keeps every pulse even, from a full kettle to the last 200 ml.</p>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Dose and grind</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <ul class="dots">
+        <li><b>Dose:</b> the chosen auger runs fast until the 1 kg cell reads 90% of the target, then pulses in 150 ms bursts until it's within ±0.2 g. The SG90 servo then tips the cup into the grinder and returns it, and the cell re-tares.</li>
+        <li><b>Grind:</b> the Encore ESP's dial is set once for pour-over, around 14–16. Shelly plug 1 turns it on. The plug also measures watts, so when the draw falls to idle the burrs are empty and the Pi switches it off. There's no fixed timer to guess.</li>
+        <li><b>Into the dripper:</b> the grounds bin is swapped for a printed funnel that drops straight into the filter.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Wiring</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+  <p class="sub">One Raspberry Pi 5 runs everything; the probe in the kettle is on GPIO4. Motors get 12 V through the emergency-stop loop. Mains only goes through the two Shelly plugs. Common ground.</p>
   <div class="schem">
     <svg viewBox="0 0 1000 560" role="img" aria-label="Wiring schematic: Raspberry Pi 5 GPIO to load cells, stepper drivers, auger drivers, probe, cup sensor, e-stop, and Wi-Fi smart plugs" font-family="Spline Sans Mono, monospace" font-size="12">
       <g fill="var(--card)" stroke="var(--ink)" stroke-width="1.5">
@@ -211,13 +293,13 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
         <text x="52" y="224" font-weight="600">DS18B20 water probe</text><text x="52" y="246" fill="var(--muted)">1-Wire GPIO4 · 4.7 kΩ→3V3</text>
         <text x="52" y="304" font-weight="600">VL53L0X cup sensor</text><text x="52" y="326" fill="var(--muted)">I²C SDA GPIO2 · SCL GPIO3</text>
         <text x="52" y="394" font-weight="600">DRV8833 ×2 · 3 augers</text><text x="52" y="414" fill="var(--muted)">A1 GPIO12/16 · A2 GPIO20/21</text><text x="52" y="434" fill="var(--muted)">A3 GPIO7/8 · VM 6 V (buck)</text>
-        <text x="52" y="494" font-weight="600">E-stop (NC mushroom)</text><text x="52" y="516" fill="var(--muted)">sense GPIO18 · cuts 12 V</text>
+        <text x="52" y="494" font-weight="600">E-stop (NC) · SG90 servo</text><text x="52" y="516" fill="var(--muted)">E-stop GPIO18 · servo GPIO10</text>
         <text x="742" y="54" font-weight="600">TMC2209 · tilt (PG100)</text><text x="742" y="76" fill="var(--muted)">STEP GPIO17 · DIR GPIO27</text>
         <text x="742" y="134" font-weight="600">TMC2209 · turntable</text><text x="742" y="156" fill="var(--muted)">STEP GPIO22 · DIR GPIO23</text>
         <text x="742" y="214" font-weight="600">TMC2209 · spout rail</text><text x="742" y="236" fill="var(--muted)">STEP GPIO24 · DIR GPIO25</text>
         <text x="742" y="314" font-weight="600">EN (all drivers)</text><text x="742" y="336" fill="var(--muted)">GPIO26 · high = motors off</text>
         <text x="742" y="404" font-weight="600">Shelly 1 · grinder</text><text x="742" y="426" fill="var(--muted)">/rpc/Switch.Set?on=true</text>
-        <text x="742" y="494" font-weight="600">Shelly 2 · kettle kill</text><text x="742" y="516" fill="var(--muted)">off if probe &gt;101 °C</text>
+        <text x="742" y="494" font-weight="600">Shelly 2 · kettle power</text><text x="742" y="516" fill="var(--muted)">Pi thermostat · toggle_after</text>
       </g>
       <g fill="none" stroke="var(--accent)" stroke-width="2">
         <path d="M270 62 H340 V200 H400"/><path d="M270 142 H330 V220 H400"/><path d="M270 232 H400"/><path d="M270 312 H330 V260 H400"/><path d="M270 412 H340 V300 H400"/><path d="M270 502 H360 V340 H400"/>
@@ -236,19 +318,105 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
       </tbody>
     </table>
   </div>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Safety — what stops a pour</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <ul class="dots">
+        <li><b>No cup, no pour.</b> The cup cell has to read inside the known tare window and the time-of-flight sensor has to see the server. Either one failing cancels the brew.</li>
+        <li><b>Overflow:</b> every brew stops at target + 5%, there's an absolute ceiling of 450 g, and a stream that misses the cup stops within 2 s.</li>
+        <li><b>Boil-dry:</b> the Pi cuts power above 101 °C or when the temperature rises faster than 3 °C/s (an empty kettle heats far faster). The kettle's own cut-off is the backstop.</li>
+        <li><b>The Pi dies:</b> both plugs switch themselves off within 10 s (<code>toggle_after</code>), the motor drivers disable, and gravity tips the kettle upright.</li>
+        <li><b>Hands:</b> a mushroom emergency stop cuts 12 V to every motor in hardware, and the Pi sees it on GPIO18. Mains only goes through the two certified plugs, behind an RCCB socket.</li>
+        <li><b>Strangers:</b> the connector needs a bearer token, allows one brew per person every 10 minutes and one brew at a time, and <code>cancel()</code> always works.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Software</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <pre class="code">Raspberry Pi OS Lite (64-bit) · Python 3.11 · one asyncio service, systemd
 
-  </details>
-  <details class="more"><summary>Build it in two weekends</summary>
-  <p class="sub">No mains wiring, and no tools beyond a 3D printer or a print service.</p>
-  <ol class="steps">
-    <li><b>Saturday 1: frame and scales.</b> Bolt up the extrusion frame. Mount the 5 kg load cell under a plate for the cup and the 1 kg cell under the grinder chute, then calibrate both with a known weight.</li>
-    <li><b>Sunday 1: hoppers and grinder.</b> Print three hoppers with augers and wire the gear motors to the Pi. Put the grinder on a Shelly plug. Test: "dose 18 g" should land within 0.2 g.</li>
-    <li><b>Saturday 2: the pour.</b> Build the hinged cradle with its return spring, add the tilt stepper, the turntable and the rail. Tune the tilt against the cup scale until a pulse pours a steady 4–6 g per second.</li>
-    <li><b>Sunday 2: connector and safety.</b> Run the MCP server on the Pi, add the cup sensor and the emergency stop, and test that no cup means no pour. Then tell your Claude about it.</li>
-  </ol>
-
-  </details>
-  <details class="more"><summary>The connector (download)</summary>
+brewbot/
+  hw/scale.py      HX711 ×2 via lgpio, 80 Hz, median-of-5, tare + calibrate
+  hw/steppers.py   TMC2209 STEP/DIR via lgpio, accel ramps, EN on GPIO26
+  hw/augers.py     DRV8833 PWM, dose loop
+  hw/probe.py      DS18B20 on 1-Wire (/sys/bus/w1)
+  hw/shelly.py     HTTP RPC Switch.Set / Switch.GetStatus (watts)
+  brew.py          the recipe → dose → grind → heat → bloom → pulses state machine
+  server.py        MCP connector + status page (download below)</pre>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Build it in two weekends</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <ol class="steps">
+        <li><b>Saturday 1, frame and scales.</b> Cut and bolt the 2020 frame: 600 × 450 × 300 mm. Mount the 5 kg cell under the turntable plate and the 1 kg cell under the dose cup. Calibrate both with a 500 g weight and check the drift over 10 minutes is under 0.3 g.</li>
+        <li><b>Sunday 1, beans.</b> Print the hoppers, augers and dose cup. Wire the N20 motors to the DRV8833s and the servo to GPIO10. Put the grinder on Shelly 1 and set its dial to 15. Test 20 doses of 18 g: each should land within ±0.2 g.</li>
+        <li><b>Saturday 2, water.</b> Build the cradle and hinge, and fit the hard stop at 40°. Put the kettle base on Shelly 2 and the probe through the lid. Tune the heat loop: from 25 °C to 93 °C with under 1 °C of overshoot. Then fit the rail and turntable.</li>
+        <li><b>Sunday 2, pour and safety.</b> Tune the flow loop until pulses hold 5 g/s ±0.5. Wire the emergency stop and the cup sensor, and test each failure on purpose: pull the cup mid-pour, kill the Pi, run the kettle empty. Then run <code>server.py</code> with <code>BREWBOT_HW=1</code> and add it to Claude.</li>
+      </ol>
+    </div>
+  </section>
+  <section class="win win--flush">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Parts.txt: about $920</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <p class="sub">Prices checked November 2026. "est." means a generic part at a typical price.</p>
+      <div class="tblwrap"><table class="tbl">
+        <thead><tr><th>#</th><th>Part</th><th>Model</th><th>Price</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Electric gooseneck kettle, 0.8 L, plain on/off with boil cut-off<span class="why">The Pi is its thermostat. Any plain gooseneck with a mechanical switch works.</span></td><td class="sku">Hario V60 Buono electric (non-variable)</td><td>$80 est.</td></tr>
+          <tr><td>2</td><td><a href="https://www.seattlecoffeegear.com/collections/grinders/products/baratza-encore-esp-coffee-and-espresso-grinder">Baratza Encore ESP</a> grinder</td><td class="sku">ZCG495</td><td>$199.95</td></tr>
+          <tr><td>3</td><td><a href="https://www.raspberrypi.com/products/raspberry-pi-5/">Raspberry Pi 5</a> 4 GB + 27 W PSU + 32 GB card + case</td><td class="sku">Pi 5 4GB</td><td>$90</td></tr>
+          <tr><td>4</td><td>SparkFun load-cell amplifier ×2</td><td class="sku">SEN-13879</td><td>$22</td></tr>
+          <tr><td>5</td><td>5 kg straight-bar load cell (pour scale)</td><td class="sku">TAL220B · SEN-14729</td><td>$12 est.</td></tr>
+          <tr><td>6</td><td>1 kg straight-bar load cell (dose cup)</td><td class="sku">80 mm bar</td><td>$5 est.</td></tr>
+          <tr><td>7</td><td><a href="https://www.omc-stepperonline.com/economy-planetary-gearbox/nema-17-stepper-motor-bipolar-l48mm-w-gear-raio-1001-planetary-gearbox-17hs19-1684s-pg100.html">NEMA 17 + 100:1 planetary</a> (tilt)</td><td class="sku">17HS19-1684S-PG100</td><td>$30.17</td></tr>
+          <tr><td>8</td><td>NEMA 17 ×2 (turntable, rail)</td><td class="sku">17HS19-2004S1</td><td>$28 est.</td></tr>
+          <tr><td>9</td><td>Stepper drivers ×3</td><td class="sku">BIGTREETECH TMC2209 V1.3</td><td>$25 est.</td></tr>
+          <tr><td>10</td><td>Linear rail 300 mm + carriage</td><td class="sku">MGN12H</td><td>$20 est.</td></tr>
+          <tr><td>11</td><td>6-inch lazy-susan bearing + GT2 belt + 20T/60T pulleys</td><td class="sku">GT2 6 mm</td><td>$20 est.</td></tr>
+          <tr><td>12</td><td>Gear motors ×3 (augers)</td><td class="sku">N20 6 V 100 rpm</td><td>$15 est.</td></tr>
+          <tr><td>13</td><td>Dual motor drivers ×2</td><td class="sku">Pololu DRV8833 #2130</td><td>$10 est.</td></tr>
+          <tr><td>14</td><td>Micro servo (tips the dose cup)</td><td class="sku">SG90</td><td>$3 est.</td></tr>
+          <tr><td>15</td><td>12 → 6 V buck converter</td><td class="sku">LM2596</td><td>$3 est.</td></tr>
+          <tr><td>16</td><td>Waterproof temperature probe + 4.7 kΩ</td><td class="sku">Adafruit DS18B20 #381</td><td>$10 est.</td></tr>
+          <tr><td>17</td><td>Stainless 6 mm probe sleeve + silicone lid grommet<span class="why">Keeps the probe food-safe and in the same spot every brew.</span></td><td class="sku">thermowell</td><td>$8 est.</td></tr>
+          <tr><td>18</td><td>Time-of-flight cup sensor</td><td class="sku">Adafruit VL53L0X #3317</td><td>$15 est.</td></tr>
+          <tr><td>19</td><td>22 mm emergency stop, normally closed</td><td class="sku">NC mushroom</td><td>$10 est.</td></tr>
+          <tr><td>20</td><td>12 V 5 A desktop power brick</td><td class="sku">barrel jack</td><td>$15 est.</td></tr>
+          <tr><td>21</td><td><a href="https://www.shelly.com/products/shelly-plug-s-gen3">Shelly Plug S Gen3</a> ×2 (kettle, grinder)<span class="why">Local HTTP API, auto-off timer, and power metering. In India, use a 16 A adapter.</span></td><td class="sku">Plug S Gen3</td><td>$52</td></tr>
+          <tr><td>22</td><td>Frame: 4× 600 + 4× 450 + 4× 300 mm extrusion, brackets, T-nuts</td><td class="sku">2020 V-slot</td><td>$60 est.</td></tr>
+          <tr><td>23</td><td>Cradle: 40×40 aluminium angle, 8 mm shaft, 2 flange bearings</td><td class="sku">KFL08</td><td>$18 est.</td></tr>
+          <tr><td>24</td><td>18 mm walnut ply top + silicone drip mat</td><td class="sku"></td><td>$30 est.</td></tr>
+          <tr><td>25</td><td>PETG 1 kg (hoppers, augers, dose cup, funnel, hard stop)</td><td class="sku">PETG</td><td>$22 est.</td></tr>
+          <tr><td>26</td><td>Hario V60 02 ceramic + Range Server 600 ml + 100 filters</td><td class="sku">VDC-02 · VCF-02-100W</td><td>$52 est.</td></tr>
+          <tr><td>27</td><td>Origami Dripper M + wave filters</td><td class="sku">Origami M</td><td>$40 est.</td></tr>
+          <tr><td>28</td><td>GPIO screw-terminal breakout, wire, ferrules</td><td class="sku"></td><td>$25 est.</td></tr>
+          <tr class="total"><td></td><td>One Brew-bot</td><td></td><td>$920</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+  <section class="win win--flush">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">What the $3,000 buys</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <div class="tblwrap"><table class="tbl"><tbody>
+        <tr><td>Brew-bot #1, for my desk</td><td>$920</td></tr>
+        <tr><td>Brew-bot #2, for the office and events ("brew one for the room")</td><td>$920</td></tr>
+        <tr><td>Acaia Pearl S, the display scale people see</td><td>$220</td></tr>
+        <tr><td>A year of Riverdale: 20 g a day is about 29 bags at ₹760</td><td>$250</td></tr>
+        <tr><td>Spares: a second kettle, load cells, drivers</td><td>$150</td></tr>
+        <tr><td>10% buffer</td><td>$246</td></tr>
+        <tr><td>Shipping and Indian import duty on the US parts</td><td>$294</td></tr>
+        <tr class="total"><td>Total</td><td>$3,000</td></tr>
+      </tbody></table></div>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">The connector</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
   <p class="sub">A small Python MCP server for the Pi. It starts in simulator mode, so it works with no hardware. Calls without the token get a 401.</p>
   <pre class="code">pip install "mcp[cli]&lt;2" uvicorn
 BREWBOT_TOKEN=pick-a-secret python server.py     # simulator
@@ -260,35 +428,44 @@ menu()    → the three coffees and their default recipes
 cancel()  → motors off, kettle tips upright, plugs off</pre>
   <p style="margin:12px 0 0"><a class="btn" href="connector/server.py" download>Download server.py</a></p>
   <p class="sub" style="margin-top:12px"><b>Tell your Claude:</b> in Claude, open Settings → Connectors → Add custom connector. Paste the rig's URL (for example <code>https://brewbot.your-office.dev/mcp</code>) and the token you were given. Then just say, "make me a Riverdale, 18 grams, 92 degrees." Each person gets one brew every 10 minutes, one brew runs at a time, and nothing pours without a cup on the scale. Live status shows at the same URL without <code>/mcp</code>.</p>
-
-  </details>
-  <details class="more"><summary>Cheaper version: regular kettle + pumps</summary>
-  <p class="sub">No robot arm: a $3,000 desktop arm lifts 600 g, and a full kettle weighs 1.5 kg. Tilting or pumping is cheaper and can't drop anything.</p>
-  <div class="paths">
-    <div class="card">
-      <span class="tag">Recommended</span>
-      <h3>A · Tilt a temperature-controlled kettle</h3>
-      <div class="price">$991</div>
-      <p>The kettle sits in a cradle hinged near its base, and a 100:1 geared stepper leans it forward to pour. The hinge takes the weight, so the motor only needs about 9 kg·cm. The gearbox isn't self-locking, so if power drops a spring pulls the kettle back upright.</p>
-      <p>A real gooseneck pours the smoothest stream.</p>
-    </div>
-    <div class="card">
-      <span class="tag alt">Cheapest to hack</span>
-      <h3>B · Regular kettle, mixed down to temperature</h3>
-      <div class="price">$952</div>
-      <p>Any kettle boils the water, and a servo finger presses its switch to reboil. Two peristaltic pumps blend boiling and room-temperature water until a probe in the mixing cup reads the target: hot × (100 − T) = cold × (T − 25).</p>
-      <p>It works with any kettle and never moves anything hot. It's reliable from 85 to 94 °C. Reaching 97 °C takes a warm-up flush, because the tubing loses 3–6 °C.</p>
-    </div>
-  </div>
-
-  </details>
     </div>
   </section>
-
   <p class="note">Concept. The demo is a simulation; the parts list and connector are real. The $3,000 builds the first one.</p>
 </main>
 <footer>Part of Sameep Rehlan’s portfolio, sameep.ai. Built by voice with Wispr Flow and Claude.</footer>
 <script>
+// sound effects, synthesized (no audio files); driven by the demo's timeline
+var SFX=(function(){
+  var ctx=null,master=null,on=!/[?&]mute/.test(location.search),loops={},fired={},noiseBuf=null;
+  function init(){if(ctx)return;var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;ctx=new AC();master=ctx.createGain();master.gain.value=on?.5:0;master.connect(ctx.destination);
+    noiseBuf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);var d=noiseBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1}
+  function noise(){var n=ctx.createBufferSource();n.buffer=noiseBuf;n.loop=true;return n}
+  function env(g,a,v,t){g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(v,t+a)}
+  function tone(f,dur,type,vol,when){var t=ctx.currentTime+(when||0),o=ctx.createOscillator(),g=ctx.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||.3,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.05)}
+  var make={
+    motor:function(){var o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=95;f.type='lowpass';f.frequency.value=420;o.connect(f);f.connect(g);g.gain.value=0;g.connect(master);o.start();
+      var r=noise(),rf=ctx.createBiquadFilter(),rg=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();rf.type='bandpass';rf.frequency.value=3200;rf.Q.value=2;lfo.frequency.value=13;lg.gain.value=.05;lfo.connect(lg);lg.connect(rg.gain);rg.gain.value=.05;r.connect(rf);rf.connect(rg);rg.connect(g);r.start();lfo.start();return {g:g,v:.16}},
+    grind:function(){var o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=150;f.type='bandpass';f.frequency.value=900;f.Q.value=.7;o.connect(f);f.connect(g);
+      var n=noise(),nf=ctx.createBiquadFilter();nf.type='highpass';nf.frequency.value=2000;n.connect(nf);nf.connect(g);g.gain.value=0;g.connect(master);o.start();n.start();return {g:g,v:.22}},
+    heat:function(){var n=noise(),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='lowpass';f.frequency.value=260;n.connect(f);f.connect(g);g.gain.value=0;g.connect(master);n.start();return {g:g,v:.35,f:f}},
+    pour:function(){var n=noise(),f=ctx.createBiquadFilter(),g=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();f.type='bandpass';f.frequency.value=1500;f.Q.value=.9;lfo.type='triangle';lfo.frequency.value=7;lg.gain.value=500;lfo.connect(lg);lg.connect(f.frequency);n.connect(f);f.connect(g);g.gain.value=0;g.connect(master);n.start();lfo.start();return {g:g,v:.4}}};
+  function loop(name,want){if(!ctx)return;var L=loops[name];if(!L){if(!want)return;L=loops[name]=make[name]()}env(L.g,want?.12:.25,want?L.v:0,ctx.currentTime)}
+  function once(key,fn){if(fired[key])return;fired[key]=1;if(ctx)fn()}
+  var POURS=[[27.6,29.2],[31.6,33.2],[33.8,35.4],[36,37.6]];
+  function at(t){if(!ctx)return;
+    if(t>0.5)once('wispr',function(){tone(880,.18,'sine',.25);tone(1320,.22,'sine',.2,.09)});
+    if(t>5.2&&t<17.5)once('sent',function(){tone(660,.12,'triangle',.18);tone(990,.16,'triangle',.15,.08)});
+    loop('motor',t>17.8&&t<20.8);loop('grind',t>21&&t<24);
+    var heating=t>17.5&&t<27.4;loop('heat',heating);if(loops.heat&&heating)loops.heat.f.frequency.value=220+600*Math.min(1,(t-17.5)/9.9);
+    if(t>27.4)once('ready',function(){tone(1046,.25,'sine',.15)});
+    var p=false;for(var i=0;i<POURS.length;i++){if(t>POURS[i][0]&&t<POURS[i][1])p=true;if(t>POURS[i][0]-.4)once('tilt'+i,function(){tone(320,.35,'square',.04);tone(420,.3,'square',.03,.12)})}
+    loop('pour',p);
+    if(t>38.4)once('done',function(){[784,988,1175,1568].forEach(function(f,i){tone(f,.9,'sine',.18,i*.12)})});}
+  function reset(){fired={};for(var k in loops)loop(k,false)}
+  function stop(){for(var k in loops)loop(k,false)}
+  function set(v){on=v;if(master)master.gain.value=v?.5:0}
+  return {init:init,at:at,reset:reset,stop:stop,set:set,isOn:function(){return on}}})();
+
 (function(){
   var RECIPES={
     A1:{coffee:'riverdale',name:'Riverdale',hopper:0,grams:18,temp_c:93,out_ml:270,bloom_s:45,note:'classic, 1:15'},
@@ -310,10 +487,12 @@ cancel()  → motors off, kettle tips upright, plugs off</pre>
     base.out_ml=Math.min(Math.max(+ml||base.grams*15,100),450);base.bloom_s=Math.min(Math.max(+bl||base.bloom_s,0),90);return base}
   function brew(said){
     var r=parse(said);if(!r){$('heard').textContent='Heard “'+said+'”. Try “brew recipe A1”, or name grams and degrees.';return}
-    r.said=said.charAt(0).toUpperCase()+said.slice(1);busy=true;
+    r.said=said.charAt(0).toUpperCase()+said.slice(1);busy=true;SFX.init();SFX.reset();
     $('heard').textContent='Brewing '+(r.id?'recipe '+r.id+': ':'')+r.name+', '+r.grams+' g at '+r.temp_c+' °C for '+r.out_ml+' ml.';
     film.contentWindow.postMessage({brewbot:'play',recipe:r},location.origin);film.scrollIntoView({behavior:'smooth',block:'nearest'})}
-  addEventListener('message',function(e){if(e.origin!==location.origin)return;if(e.data&&e.data.brewbot==='done'){busy=false;$('heard').textContent+=' Done. Say another one.'}});
+  addEventListener('message',function(e){if(e.origin!==location.origin)return;if(e.data&&e.data.brewbot==='t')SFX.at(+e.data.t||0);if(e.data&&e.data.brewbot==='done'){busy=false;$('heard').textContent+=' Done. Say another one.'}});
+  var snd=$('snd');function sndLabel(){snd.textContent=SFX.isOn()?'Sound on':'Sound off';snd.setAttribute('aria-pressed',SFX.isOn())}sndLabel();
+  snd.addEventListener('click',function(){SFX.init();SFX.set(!SFX.isOn());sndLabel()});
   $('recipes').addEventListener('click',function(e){var b=e.target.closest('button');if(b)brew('Brew recipe '+b.dataset.id)});
   $('say').addEventListener('submit',function(e){e.preventDefault();var v=$('line').value.trim();if(v)brew(v)});
 })();
