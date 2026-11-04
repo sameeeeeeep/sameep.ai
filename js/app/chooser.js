@@ -230,36 +230,77 @@ export function planChoices(map, nodeId, visited) {
   return { primary, alts, more, doors: [], actions, menu: false };
 }
 
-// The episode map: calm chapter rows (number · title · minutes), the current
-// chapter open with its parts as a quiet indented list; others fold (click to
-// open). The recommended route is a small ember mark, the current part is lit.
-export function chapterMap(map, { visited, currentChapter, currentNode, open, onGo, onToggle }) {
-  const chapters = (map.ep.chapters || []).filter((c) => map.N[c.to]);
+// Every part of the episode, grouped by chapter in the order the show reaches them. Inside a
+// chapter, the parts its entry (or its hub) opens sit at the top level; the parts a part of its
+// own opens (Wrapps → seven wrapps) nest one level under it. Hubs are menus, not parts: they
+// pass straight through. Computed once per map.
+export function episodeParts(map) {
+  if (map._parts) return map._parts;
+  const N = map.N, listed = map.ep.chapters || [];
+  // the order the show reaches each node, from the start
+  const order = new Map(), q = [map.ep.start || Object.keys(N)[0]];
+  while (q.length) { const id = q.shift(); if (order.has(id) || !N[id]) continue; order.set(id, order.size); q.push(...map.edges(id)); }
+  for (const id of Object.keys(N)) if (!order.has(id)) order.set(id, order.size);
+  const byCh = new Map();
+  for (const id of [...order.keys()]) { const ch = N[id].chapter || N[id].title || id; if (!byCh.has(ch)) byCh.set(ch, []); byCh.get(ch).push(id); }
+  const groups = [];
+  for (const [ch, ids] of byCh) {
+    const li = listed.find((c) => N[c.to]?.chapter === ch);
+    const entry = li && N[li.to] ? li.to : ids[0];
+    const set = new Set(ids);
+    const owner = new Map([[entry, null]]), bfs = [entry];
+    while (bfs.length) {
+      const x = bfs.shift();
+      const own = isHub(x) ? owner.get(x) : x === entry ? null : owner.get(x) ?? x;
+      for (const y of map.edges(x)) if (set.has(y) && !owner.has(y)) { owner.set(y, own); bfs.push(y); }
+    }
+    for (const id of ids) if (!owner.has(id)) owner.set(id, null);
+    const parts = ids.filter((id) => !isHub(id));
+    const top = parts.filter((id) => owner.get(id) == null).sort((a, b) => (a === entry ? -1 : b === entry ? 1 : 0));
+    const kids = (p) => parts.filter((id) => owner.get(id) === p);
+    groups.push({ ch, label: li?.label || ch, entry, hubOnly: !parts.length, parts, tree: top.map((id) => ({ id, kids: kids(id) })) });
+  }
+  return (map._parts = groups);
+}
+
+// The episode map: every chapter with every part (title · minutes), heard ones ticked, the one
+// playing lit, the one ⏭ goes to marked "next". Chapters can fold; all start open.
+export function chapterMap(map, { visited, currentNode, nextNode, folded, onGo, onToggle }) {
   const stops = new Set(map.route.stops || []);
-  return chapters.map((c, idx) => {
-    const ch = map.N[c.to].chapter;
-    const subs = map.subs(c.to);
-    const ids = [c.to, ...subs];
-    const heard = ids.some((s) => visited.has(s));
-    const cur = ch === currentChapter;
-    const onRoute = ids.some((s) => stops.has(s));
-    const fold = subs.length > 0;
-    const expanded = fold && open === c.to;
-    const item = (s, label, sec) => h('li', h('button.sub' + (visited.has(s) ? '.is-visited' : '') + (stops.has(s) ? '.is-rec' : '') + (s === currentNode ? '.is-now' : ''), {
-      type: 'button', dataset: { to: s }, 'aria-current': s === currentNode ? 'true' : null, onclick: () => onGo(s),
-      title: stops.has(s) ? 'On the recommended route' : null,
-    }, h('i.sub__dot', { 'aria-hidden': 'true' }), h('span.sub__t', keepWhole(label)), h('span.sub__m', mins(sec))));
-    return h('li.cmap__ch' + (cur ? '.is-current' : '') + (heard ? '.is-visited' : '') + (expanded ? '.is-open' : '') + (onRoute ? '.is-route' : ''),
-      h('button.chap', {
-        type: 'button', dataset: { to: c.to },
-        'aria-expanded': fold ? String(expanded) : null,
-        'aria-current': cur && !fold ? 'true' : null,
-        onclick: () => (fold ? onToggle(c.to) : onGo(c.to)),
-      },
-        h('span.chap__n', heard && !cur ? { 'aria-label': `${idx + 1}, heard` } : null, heard && !cur ? '✓' : String(idx + 1).padStart(2, '0')),
-        h('span.chap__t', { title: c.label }, keepWhole(isHub(c.to) ? c.label : map.title(c.to) || c.label), onRoute && h('span.chap__route', { title: 'On the recommended route', 'aria-label': ', on the recommended route' }),
-          cur && h('span.chap__now', 'Now')),
-        h('span.chap__m', isHub(c.to) ? '' : mins(map.chapterSec(c.to)))),
-      expanded ? h('ul.cmap__subs', item(c.to, 'From the top', map.sec(c.to)), subs.map((s) => item(s, map.title(s), map.sec(s)))) : null);
+  let n = 0;
+  const part = (s, nested) => {
+    const heard = visited.has(s), now = s === currentNode, next = s === nextNode && !now;
+    return h('button.sub' + (heard ? '.is-visited' : '') + (stops.has(s) ? '.is-rec' : '') + (now ? '.is-now' : '') + (next ? '.is-next' : '') + (nested ? '.is-nested' : ''), {
+      type: 'button', dataset: { to: s }, 'aria-current': now ? 'true' : null, onclick: () => onGo(s),
+      'aria-label': `${map.title(s)}, ${mins(map.sec(s)) || 'short'}${now ? ', playing now' : heard ? ', heard' : ''}${next ? ', up next' : ''}`,
+    }, h('i.sub__dot', { 'aria-hidden': 'true' }, now ? '▶' : heard ? '✓' : ''), h('span.sub__t', keepWhole(map.title(s)), next && h('span.sub__next', 'next')), h('span.sub__m', mins(map.sec(s))));
+  };
+  return episodeParts(map).map((g) => {
+    if (g.hubOnly) {
+      // the menu: one row that jumps back to it
+      const cur = g.entry === currentNode || (isHub(currentNode) && map.N[currentNode]?.chapter === g.ch);
+      return h('li.cmap__ch.cmap__ch--hub' + (cur ? '.is-current' : ''), h('button.chap', { type: 'button', dataset: { to: g.entry }, onclick: () => onGo(isMainHub(g.entry) ? 'hub' : g.entry) },
+        h('span.chap__n', { 'aria-hidden': 'true' }, '≡'), h('span.chap__t', g.label, cur && h('span.chap__now', 'Now')), h('span.chap__m', 'all topics')));
+    }
+    const idx = ++n;
+    const heardN = g.parts.filter((s) => visited.has(s)).length;
+    const all = heardN === g.parts.length;
+    const cur = g.ch === map.N[currentNode]?.chapter;
+    const single = g.parts.length === 1;
+    const open = !single && !folded.has(g.entry);
+    const sec = g.parts.reduce((a, s) => a + map.sec(s), 0);
+    const onRoute = g.parts.some((s) => stops.has(s));
+    const head = h('button.chap', {
+      type: 'button', dataset: { to: g.entry },
+      'aria-expanded': single ? null : String(open), 'aria-current': cur && single ? 'true' : null,
+      onclick: () => (single ? onGo(g.entry) : onToggle(g.entry)),
+    },
+      h('span.chap__n', all ? { 'aria-label': `${idx}, all heard` } : null, all ? '✓' : String(idx).padStart(2, '0')),
+      h('span.chap__t', { title: g.label }, keepWhole(single ? map.title(g.entry) : g.label), onRoute && h('span.chap__route', { title: 'On the recommended route', 'aria-label': ', on the recommended route' }),
+        cur && h('span.chap__now', 'Now')),
+      h('span.chap__m', single ? mins(sec) : `${heardN ? `${heardN}/${g.parts.length} heard` : `${g.parts.length} parts`} · ${mins(sec)}`));
+    const list = open ? h('ul.cmap__subs', g.tree.map((t) => h('li', part(t.id, false),
+      t.kids.length ? h('ul.cmap__fork', { 'aria-label': `Opens from ${map.title(t.id)}` }, t.kids.map((k) => h('li', part(k, true)))) : null))) : null;
+    return h('li.cmap__ch' + (cur ? '.is-current' : '') + (heardN ? '.is-visited' : '') + (open ? '.is-open' : '') + (onRoute ? '.is-route' : ''), head, list);
   });
 }

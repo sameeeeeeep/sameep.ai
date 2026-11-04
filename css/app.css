@@ -1567,3 +1567,28 @@ a.icon { text-decoration: none; }
 @media (max-width: 760px) { .lock__user { width: 86px; } .lock__face { width: 60px; height: 60px; } .lock__role { display: none; } }
 @media (prefers-reduced-motion: reduce) { .lock__online::before { animation: none; } }
 .lock__online[hidden] { display: none; }
+
+/* episode map: every part, grouped by chapter; ✓ heard, ▶ playing, "next" = where ⏭ goes, forks nest */
+.cmap .sub { grid-template-columns: 14px minmax(0, 1fr) auto; column-gap: 7px; color: #1d1d1d; }
+.cmap .sub__dot { width: 14px; height: 14px; border: 0; border-radius: 0; box-shadow: none; background: none; display: grid; place-items: center; font: 700 11px/1 var(--f-ui); color: var(--bondi); }
+.cmap .sub__dot:empty::before { content: ""; width: 6px; height: 6px; border-radius: 50%; border: 1px solid #999; box-sizing: border-box; }
+.cmap .sub.is-rec .sub__dot:empty::before { border-color: var(--ember); box-shadow: 0 0 0 1px rgba(255,108,76,.2); }
+.cmap .sub.is-visited { color: #6a6a6a; }
+.cmap .sub.is-visited .sub__dot, .cmap .sub.is-now .sub__dot { background: none; border: 0; }
+.cmap .sub.is-now .sub__dot { color: var(--ember); font-size: 9px; }
+.cmap .sub.is-now { color: #111; }
+.sub__next { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid #111; border-radius: 3px; font: 700 9.5px/1.45 var(--f-ui); letter-spacing: .08em; text-transform: uppercase; vertical-align: 1px; color: #111; background: #fff; }
+.cmap__fork { margin: 0 0 4px 13px; padding: 0 0 0 8px; list-style: none; border-left: 1px dashed var(--plat-3); }
+.cmap__fork li { display: block; }
+.cmap .sub.is-nested { border-left: 0; min-height: 28px; font-size: 12px; }
+.cmap .sub.is-nested.is-now { border-left: 3px solid var(--flame); }
+.cmap .chap__m { font-size: 11.5px; }
+.cmap__ch--hub > .chap { font-weight: 500; color: #444; }
+.cmap__ch--hub > .chap .chap__n { color: #777; font-size: 14px; }
+.cmap__ch--hub > .chap::after { content: "›"; }
+@media (max-width: 760px) { .cmap .sub.is-nested { min-height: 38px; } .cmap__fork { margin-left: 10px; } }
+.cmap .sub.is-rec .sub__dot { border: 0; box-shadow: none; }
+.side__mk { font: 700 11px/1 var(--f-ui); }
+.side__mk.is-heard { color: var(--bondi); }
+.side__mk.is-now { color: var(--ember); font-size: 9px; }
+.side__legend .sub__next { margin-left: 0; }

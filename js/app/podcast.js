@@ -17,7 +17,7 @@ import { loadWork, openWork } from './work.js';
 import { Monitor, resolveVisual } from './monitor.js';
 import { FlowBar } from './flowbar.js';
 import { markLine } from '../resume.js';
-import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, planChoices, isMainHub, mins } from './chooser.js';
+import { EpisodeMap, audienceEl, avatarEl, routeEl, cardEl, chapterMap, episodeParts, planChoices, isMainHub, mins } from './chooser.js';
 import { isWispr, pick as pickVersion, shows, savedHost, saveHost, savedLength, saveLength } from '../version.js';
 import { takeAudio } from '../unlock.js';
 import { projectCards } from './projects.js';
@@ -325,9 +325,9 @@ export class Podcast {
     });
 
     // transport
-    this.btnBack = h('button.tbtn', { type: 'button', 'aria-label': 'Back', title: 'Back (←)', onclick: () => this.back() }, h('span.ico.ico--back'));
+    this.btnBack = h('button.tbtn', { type: 'button', 'aria-label': 'Previous part', title: 'Start of this part, press again for the previous one (←)', onclick: () => this.back() }, h('span.ico.ico--back'));
     this.btnPlay = h('button.tbtn.tbtn--play', { type: 'button', 'aria-label': 'Pause', title: 'Play / pause (space)', onclick: () => this.toggle() }, h('span.ico.ico--pause'));
-    this.btnSkip = h('button.tbtn', { type: 'button', 'aria-label': 'Skip', title: 'Skip (→)', onclick: () => this.skip() }, h('span.ico.ico--skip'));
+    this.btnSkip = h('button.tbtn', { type: 'button', 'aria-label': 'Next part', title: 'Next part (→)', onclick: () => this.skip() }, h('span.ico.ico--skip'));
     this.scrubFill = h('div.scrub__fill');
     this.scrubKnob = h('div.scrub__knob');
     this.scrubTicks = h('div.scrub__ticks');
@@ -357,7 +357,8 @@ export class Podcast {
     this.chapEl = h('ol.chapters.cmap');
     this.routeSide = h('div.side__route');
     const legend = h('p.side__legend', { 'aria-hidden': 'true' },
-      h('span', h('i.sub__dot.is-heard'), 'heard'), h('span', h('i.sub__dot.is-route'), 'recommended route'));
+      h('span', h('b.side__mk.is-heard', '✓'), 'heard'), h('span', h('b.side__mk.is-now', '▶'), 'playing'),
+      h('span', h('i.sub__dot.is-route'), 'recommended route'), h('span', h('span.sub__next', 'next'), '⏭ goes here'));
     // two ways in: by topic (the chapter map) or by project (one card each)
     this.projEl = h('ul.pcards');
     const tab = (id, label) => h('button.side__tab', { type: 'button', role: 'tab', dataset: { tab: id }, onclick: () => this.#sideTab(id) }, label);
@@ -485,11 +486,11 @@ export class Podcast {
     if (!this.chapEl) return;
     this.#renderTabs();
     this.#renderProjects();
-    const cur = this.#mapChapter();
+    this.mapFolded ||= new Set();
     this.chapEl.replaceChildren(...chapterMap(this.map, {
-      visited: this.visited, currentChapter: cur, currentNode: this.nodeId, open: this.mapOpen,
+      visited: this.visited, currentNode: this.nodeId, nextNode: this.node ? this.#nextPart()?.to : null, folded: this.mapFolded,
       onGo: (to) => { this.chapDrawer.open = false; this.go(to, { from: 'chapter' }); },
-      onToggle: (to) => { this.mapOpen = this.mapOpen === to ? null : to; this.#renderChapters(); this.chapEl.querySelector(`.chap[data-to="${to}"]`)?.focus({ preventScroll: true }); },
+      onToggle: (to) => { const f = this.mapFolded; f.has(to) ? f.delete(to) : f.add(to); this.#renderChapters(); this.chapEl.querySelector(`.chap[data-to="${to}"]`)?.focus({ preventScroll: true }); },
     }));
     const r = routeEl(this.map, this.visited, { onJump: (s) => this.go(s, { from: 'chapter' }) });
     this.routeSide.replaceChildren(...(r ? [r] : []));
@@ -498,25 +499,25 @@ export class Podcast {
     if (meta) meta.textContent = p.total ? `route ${p.done}/${p.total}${p.left && p.done < p.total ? ' · ≈ ' + mins(p.left) + ' left' : ''}` : '';
   }
 
-  // the map's chapter for where the show is: the node's own, or for nodes whose chapter isn't on the map
-  // (the intro after the cold open, the outro) the last map chapter it passed through
-  #mapChapter() {
-    const listed = new Set((this.ep.chapters || []).map((c) => this.ep.nodes[c.to]?.chapter));
-    const ch = this.node?.chapter;
-    if (listed.has(ch)) this.lastMapCh = ch;
-    return listed.has(ch) ? ch : this.lastMapCh || this.ep.nodes[this.ep.start]?.chapter;
-  }
-
   #markChapter() {
-    const label = this.#mapChapter();
-    // the map opens the chapter you're in (until you fold it yourself)
-    if (label !== this.mapChapter) {
-      this.mapChapter = label;
-      this.mapOpen = (this.ep.chapters || []).find((c) => this.ep.nodes[c.to]?.chapter === label)?.to || null;
-    }
+    // the chapter you're in unfolds if you'd folded it
+    this.mapFolded?.delete(episodeParts(this.map).find((g) => g.ch === this.node?.chapter)?.entry);
     this.#renderChapters();
+    this.#revealNow();
     const own = this.node?.chapter;
     this.nodeLabel.textContent = own ? '· Now: ' + (this.node.title && this.node.title !== own ? `${own} · ${this.node.title}` : own) : '';
+  }
+
+  // keep the part that's playing in view in the map's own scroll box (never scrolls the page)
+  #revealNow() {
+    requestAnimationFrame(() => {
+      const el = this.chapEl.querySelector('.sub.is-now');
+      let box = el?.parentElement;
+      while (box && box !== this.root && !/(auto|scroll)/.test(getComputedStyle(box).overflowY)) box = box.parentElement;
+      if (!el || !box || box === this.root || !box.clientHeight) return;
+      const r = el.getBoundingClientRect(), b = box.getBoundingClientRect();
+      if (r.top < b.top + 40 || r.bottom > b.bottom - 16) box.scrollTop += r.top - b.top - box.clientHeight / 3;
+    });
   }
 
   #renderAudience(line) {
@@ -877,6 +878,24 @@ export class Podcast {
       chips.push(h('button.chip.chip--next', { type: 'button', onclick: () => this.go(n.next) }, h('span.chip__k', 'Up next'), nx.chapter && nx.chapter !== n.chapter ? nx.chapter : 'keep going'));
     }
     this.chips.replaceChildren(...chips);
+    const nx = this.#nextPart();
+    const t = nx ? this.map.title(nx.to) : null;
+    this.btnSkip.title = t ? `Next part: ${t} (→)` : 'Next part (→)';
+    this.btnSkip.setAttribute('aria-label', t ? `Next part: ${t}` : 'Next part');
+  }
+
+  // where ⏭ goes: at a fork the recommended branch, else the part after this one (the picked length may skip one)
+  #nextPart() {
+    const n = this.node;
+    if (!n) return null;
+    if (n.choices?.length) {
+      const c = planChoices(this.map, this.nodeId, this.visited).primary?.c;
+      if (c) return { to: c.to, choice: c };
+    }
+    let nx = n.next;
+    const skip = this.routes[this.routeId]?.skip || [];
+    while (nx && skip.includes(nx) && this.ep.nodes[nx]?.next) nx = this.ep.nodes[nx].next;
+    return nx && this.ep.nodes[nx] ? { to: nx } : null;
   }
 
   #choiceTitle(c) { return isMainHub(c.to) || /-hub$|-again$/.test(c.to) ? c.label : this.map.title(c.to) || c.label; }
@@ -1113,7 +1132,7 @@ export class Podcast {
     const it = m.item;
     if (it.choice) return this.#pick(it.choice, q, !this.rec);
     if (it.to) return this.#pick({ to: it.to, label: q }, q);
-    if (it.cmd === 'skip' || it.cmd === 'back') this.#ack(it.cmd === 'skip' ? 'skipping ahead.' : 'going back.');
+    if (it.cmd === 'skip' || it.cmd === 'back') this.#ack(it.cmd === 'skip' ? 'on to the next part.' : 'going back.');
     if (it.cmd === 'skip') this.skip();
     if (it.cmd === 'back') this.back();
     if (it.cmd === 'pause') this.pause();
@@ -1204,31 +1223,28 @@ export class Podcast {
     else if (this.mode === 'timer') this.tPaused = this.t;
   }
   toggle() { this.playing ? this.pause() : this.play(); }
+  // ⏭ / →: the start of the next part (at a fork, the recommended branch)
   skip() {
     if (!this.node) return;
-    if (this.root.classList.contains('is-waiting')) {
-      // at a fork: skip takes the recommended card, else the default path
-      const c = planChoices(this.map, this.nodeId, this.visited).primary?.c;
-      if (c) this.#pick(c, c.label);
-      else if (this.node.next) this.go(this.node.next);
-      return;
-    }
-    this.playing = true; this.#setPlayIcon();
-    if (this.li + 1 < this.lines.length) this.#playLine(this.li + 1, 0);
-    else { this.audio.pause(); this.#nodeEnded(); }
+    // the intro still has to seat the visitor in the audience: finish it the normal way
+    if (!this.casted && this.nodeId === this.castAt) { this.#stopAuto(); this.audio.pause(); this.subCtl?.cancel(); return this.#nodeEnded(); }
+    const nx = this.#nextPart();
+    if (!nx) return;
+    this.#stopAuto();
+    if (nx.choice) this.#pick(nx.choice, nx.choice.label, true);
+    else this.go(nx.to, { from: 'pick' });
   }
+  // ⏮ / ←: the start of this part, or the previous part if it only just began (like a music player)
   back() {
     if (!this.node) return;
     this.#stopAuto();
+    const prev = this.#nodeTime() < 3 && this.history.length ? this.history.pop() : null;
+    if (prev) return this.go(prev, { push: false, from: 'pick' });
     this.root.classList.remove('is-waiting');
     this.chooser.hidden = true;
+    this.monitor.hide();
     this.playing = true; this.#setPlayIcon();
-    if (this.mode && this.t > 2) return this.#playLine(this.li, 0);
-    if (this.li > 0 && this.mode) return this.#playLine(this.li - 1, 0);
-    if (!this.mode && this.lines.length) return this.#playLine(Math.max(0, this.lines.length - 1), 0);
-    const prev = this.history.pop();
-    if (prev) this.go(prev, { push: false });
-    else this.#playLine(0, 0);
+    this.#playLine(0, 0);
   }
 
   #bedSync() {
