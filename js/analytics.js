@@ -13,8 +13,10 @@ const ls = (k, v) => { try { return v === undefined ? localStorage.getItem(k) : 
 const ss = (k, v) => { try { return v === undefined ? sessionStorage.getItem(k) : sessionStorage.setItem(k, v); } catch { return null; } };
 const rid = () => Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
 
-// set by the admin page on this origin, or ?notrack: Sameep's own runs don't count
-const off = ls('otcv-notrack') === '1' || new URLSearchParams(location.search).has('notrack');
+// ?notrack: this page sends nothing. Sameep's own browsers still send, so his test runs (a Wispr login) show up;
+// the Worker marks them owner (the dashboard registers the browser) and the panel hides them unless "Include my visits".
+// (The dashboard used to set a sticky otcv-notrack flag, which silenced those tests entirely; it's ignored now.)
+const off = new URLSearchParams(location.search).has('notrack');
 const vid = ls('otcv-vid') || (ls('otcv-vid', rid()), ls('otcv-vid')) || rid();
 // one visit = this tab, or any tab of the site active in the last 30 min (project pages open in new tabs)
 const recent = (() => { const [id, t] = String(ls('otcv-last') || '').split(':'); return id && Date.now() - Number(t) < 1_800_000 ? id : null; })();

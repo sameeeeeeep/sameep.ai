@@ -168,7 +168,8 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
 <script>
 (() => {
   const API = '/api/admin';
-  const TOKEN = 'otcv-admin', NOTRACK = 'otcv-notrack';
+  const TOKEN = 'otcv-admin';
+  try { localStorage.removeItem('otcv-notrack'); } catch { /* the old sticky opt-out: this browser's visits now send, marked as Sameep's */ }
   const app = document.getElementById('app');
   const ls = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* private mode */ } } };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -179,7 +180,7 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
 
   // the old login link: /admin#k=TOKEN (or /api/admin#k=…) keeps the token on this device, then drops it from the address bar
   const m = location.hash.match(/#k=([^&]+)/);
-  if (m) { ls.set(TOKEN, decodeURIComponent(m[1])); ls.set(NOTRACK, '1'); history.replaceState(null, '', location.pathname); }
+  if (m) { ls.set(TOKEN, decodeURIComponent(m[1])); history.replaceState(null, '', location.pathname); }
 
   // ---------------------------------------------------------------- lock
   function lock(msg = '', wait = 0) {
@@ -210,7 +211,7 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
       try {
         const r = await fetch(API + '/pin', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pin: inp.value }) });
         const d = await r.json().catch(() => ({}));
-        if (r.ok) { ls.set(NOTRACK, '1'); return load(); }
+        if (r.ok) return load();
         inp.value = '';
         if (r.status === 429) return hold(d.retryIn || 900);
         out.textContent = d.left ? `${d.error || 'Wrong PIN.'} ${d.left} ${d.left === 1 ? 'try' : 'tries'} left.` : (d.error || 'Couldn’t check the PIN.');
@@ -268,7 +269,10 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
     return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + ', ' + hm;
   };
   const place = (v) => [v.city, v.country].filter(Boolean).join(', ') || '—';
-  const teammate = (v) => (v.login?.as === 'team' ? v.login.name || v.login.id?.replace(/^w-/, '') : null);
+  // the lock-screen pick; failing that, a w- seat in the podcast (same person, the login event just didn't arrive)
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const teammate = (v) => (v.login?.as === 'team' ? v.login.name || cap(v.login.id?.replace(/^w-/, '') || '')
+    : /^w-[\w-]+$/.test(v.welcome?.seat || '') ? cap(v.welcome.seat.slice(2)) : null);
   const strs = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []);
   const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || strs(v.pages).some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
   const watched = (v) => v.video && (v.video.played || v.video.max > 0);
