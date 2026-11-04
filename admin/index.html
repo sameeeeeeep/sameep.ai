@@ -33,7 +33,8 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-html { scroll-padding-top: 64px; }
+html { scroll-padding-top: 120px; }
+@media (max-width: 520px) { html { scroll-padding-top: 12px; } }
 body { background: var(--bg); color: var(--ink); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
 .wrap { max-width: 920px; margin: 0 auto; padding: 16px 16px 64px; }
 h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
