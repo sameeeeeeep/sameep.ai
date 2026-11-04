@@ -23,7 +23,7 @@ export function canSeeGrowthOS(visitor) {
 }
 
 // desktop hook: puts the folder icon on the desktop if this visitor is on the team
-export function install({ wm, area, visitor }) {
+export function install({ wm, area, visitor, icon = true }) {
   if (!canSeeGrowthOS(visitor)) return false;
   // top of the left column, above the projects (the right column is the system and the toys)
   const icons = area.querySelector('.icons--proj') || area.querySelector('.icons');
@@ -31,7 +31,7 @@ export function install({ wm, area, visitor }) {
   const btn = h('button.icon.icon--gos', { type: 'button', dataset: { app: 'growthos' }, onclick: () => { sound.tick('click'); openTab(wm, visitor); } },
     h('img', { src: new URL('../../growth-os/icon.svg', import.meta.url).href, alt: '', width: 48, height: 48, draggable: 'false' }),
     h('span.icon__label', 'Wispr Growth OS'));
-  icons.prepend(h('li.is-new', btn));
+  if (icon) icons.prepend(h('li.is-new', btn));  // off when the Wispr folder carries it
   if (fromLink) openGrowthOS(wm, { visitor });
   // when the show's end card opens, add a nudge to this folder (the next thing to look at)
   new MutationObserver(() => {

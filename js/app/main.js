@@ -14,6 +14,7 @@ import { fillUrl } from './demos.js';
 import { installCards } from './infocard.js';
 import { startTour, guideOn, endGuide } from './tour.js';
 import { loadWork } from './work.js';
+import { WISPR, openWisprFolder } from './wisprfolder.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
 
@@ -91,7 +92,9 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   // the desktop in the second, so nothing good hides in a folder. right: the system (HD up top, Trash at the
   // bottom) and the toys, then a column of games: mine, and the classics
   const folderApp = (f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) });
-  desk.renderProjects([...FOLDERS.map(folderApp), ...pick(['work'])],
+  // the Wispr folder (Growth OS and the prototypes): top left on the Wispr version, with the folders otherwise
+  const wispr = { ...folderApp(WISPR), open: () => openWisprFolder(wm) };
+  desk.renderProjects([...(isWispr ? [wispr] : []), ...FOLDERS.map(folderApp), ...(isWispr ? [] : [wispr]), ...pick(['work'])],
     // the application extras: the Wispr version only (the pages stay reachable by URL)
     [...STARS, ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])]);
   desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
@@ -100,13 +103,13 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   [...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), ...CLASSICS]);
   desk.renderMenus(ctx, apps);
   // hover (or first tap) on a project or folder: what it is, my part, one proof point, where it opens
-  installCards({ area: desk.area, folders: FOLDERS, loadList: () => loadWork(persona).then((r) => r.list),
+  installCards({ area: desk.area, folders: [...FOLDERS, WISPR], loadList: () => loadWork(persona).then((r) => r.list),
     chapter: (id) => { const n = pod?.ep?.nodes?.[id]; return n && (n.title || n.chapter); },
     onHear: (id) => { ctx.openPodcast(); pod?.go(id); } });
   const era = eraOn;
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
   const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
-  if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn })); // Wispr teammates only
+  if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn, icon: false })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
   let tour = null;
 

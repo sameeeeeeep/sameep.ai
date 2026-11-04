@@ -44,7 +44,7 @@ function mainStops(phone) {
     phone
       ? { id: 'again', at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Replay this from Special › Show me around. Next, Back and Skip are on every bubble.' }
       : { id: 'again', at: q('.menubar__help'), say: 'Replay this any time with ?. Next, Back and Skip are on every bubble.' },
-    { id: 'gos', at: q('[data-app="growthos"]'), say: 'Wispr Growth OS: a growth plan I started for your team.', wisprOnly: true },
+    { id: 'gos', at: q('[data-card="folder-wispr"]'), say: 'The Wispr folder: a growth plan I started for your team, and two prototypes.', wisprOnly: true },
   ];
 }
 function nextStops() {
@@ -52,7 +52,7 @@ function nextStops() {
   return [
     { id: 'n-hello', at: () => null, say: 'Thanks for listening. Here’s where to go next.' },
     { id: 'n-work', at: q('[data-card="folder-growth"]'), say: 'Open any folder on the left for a project’s own page.' },
-    { id: 'n-gos', at: q('[data-app="growthos"]'), say: 'Wispr Growth OS: the plan I’d start with.', wisprOnly: true },
+    { id: 'n-gos', at: q('[data-card="folder-wispr"]'), say: 'The Wispr folder: the growth plan I’d start with, and two prototypes.', wisprOnly: true },
     { id: 'n-make', at: q('.is-switchboard .icon'), say: 'Make your own: say one sentence to your Claude or Emergent.' },
     { id: 'n-games', at: q('.is-moto .icon'), say: 'Or play one of mine: Moto Thappad, Samosa Snake, Rangoli Breakout.' },
     { id: 'n-juke', at: q('.win--juke, .win--island, .is-jukebox .icon'), say: `${PLAYER.name} is still here, if you want more ’99.` },
