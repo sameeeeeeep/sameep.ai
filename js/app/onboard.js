@@ -61,7 +61,7 @@ export function practice(host, { isWispr = false, step = '' } = {}) {
     // footer
     const foot = el('div', 'onb__foot');
     const skip = el('button', 'cast__skip', 'Skip the practice'); skip.type = 'button';
-    const go = el('button', 'btn btn--primary onb__go', 'Start the show'); go.type = 'button'; go.disabled = true;
+    const go = el('button', 'btn btn--primary onb__go', 'Start the show'); go.type = 'button';  // live from the start: the practice is optional
     skip.onclick = () => done(); go.onclick = () => done();
     foot.append(skip, go);
 
@@ -76,7 +76,6 @@ export function practice(host, { isWispr = false, step = '' } = {}) {
       light(cards.indexOf(b));
       s1ok.hidden = false;
       s1ok.innerHTML = '✓ That’s it. At a real fork that plays the next part. Do nothing and the <b>recommended</b> one plays after a short countdown.';
-      go.disabled = false;
       if (s2.classList.contains('is-later')) {
         s1.classList.replace('is-now', 'is-done'); s2.classList.replace('is-later', 'is-now');
         setTimeout(() => (isWispr || !SR ? input : mic || input).focus({ preventScroll: true }), 200);
@@ -91,7 +90,7 @@ export function practice(host, { isWispr = false, step = '' } = {}) {
       s2ok.hidden = false; s2ok.className = 'onb__ok';
       s2ok.innerHTML = `✓ Heard “${escapeHTML(t)}” → <b>${escapeHTML(m.item.label)}</b>. You’re steering. Say anything close: it matches what you mean, not exact words.`;
       s2.classList.replace('is-now', 'is-done');
-      go.disabled = false; go.focus({ preventScroll: true });
+      go.focus({ preventScroll: true });
       root.classList.add('is-win');
     }
     // dictation tools set the value in all sorts of ways: read it on every event, and poll
