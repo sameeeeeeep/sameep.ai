@@ -239,7 +239,7 @@ function entryGate() {
           <button type="button" class="gate__quiet" disabled>Enter muted</button>
           <button type="button" class="gate__enter" disabled><span aria-hidden="true">▶</span> Enter <span>· sound on</span></button>
         </div>
-        <p class="gate__how">Press <kbd>space</kbd> or <b>scroll</b> to begin. One press, one step.</p>
+        <p class="gate__how">Better experienced with Sound On and on a Laptop.</p>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
       <p class="gate__hint">Best with headphones. Works on your phone, even better on a bigger screen.</p>
@@ -272,7 +272,7 @@ function entryGate() {
     store.set('offthecv.muted', withSound ? '0' : '1');
     store.set('offthecv.sound', withSound ? 'on' : 'off');
     close();
-    // first time on a phone: say how the intro moves (on desktop the gate already taught space / scroll)
+    // first time on a phone: say how the intro moves (desktop visitors find space / scroll themselves)
     const touch = matchMedia('(pointer: coarse)').matches;
     if (touch) setTimeout(() => coach.show('hero-scroll', heroEl.querySelector('.hero-cap'),
       '<b>Swipe up</b> to move the story along. One swipe, one step. Swipe down to go back.', { follow: false }), 1400);

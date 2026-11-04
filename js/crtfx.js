@@ -1,9 +1,9 @@
 // crtfx.js — the CRT look after boot, and the switch for it. Three modes:
-//   Curved: the flat look plus the whole live page bent through the boot screen's own tube
+//   Curved: the default on desktop. The flat look plus the whole live page bent through the boot screen's own tube
 //           barrel (js/app/crt.js barrel()): a soft bulge, rounded dark corners, the
 //           vignette. Scaled so the page's edges just reach the screen's: nothing is cropped.
 //   Flat:   the glass shader (js/app/crt.js: scanlines, triads, glow, vignette) plus a hint
-//           of RGB convergence fringe on text (css/crt.css). The default.
+//           of RGB convergence fringe on text (css/crt.css). Phones and touch screens get this.
 //   Off:    clean pixels, no CRT at all.
 // The "CRT" button in the menu bar cycles Curved → Flat → Off (Special › Display on phones,
 // where the bar's right side is cut off); remembered.
@@ -15,7 +15,7 @@
 // dblclick, context menu, wheel scrolling, focus, hover enter/leave and pointer capture
 // (drags). CSS :hover can't be replayed, so hovers show through cursor changes only;
 // iframes get the real pointer (a few px off mid-screen) since they can't be reached.
-// Curved is desktop-only (fine pointer, ≥900px) and opt-in: the filter costs frames.
+// Curved is desktop-only (≥768px, a mouse or trackpad): touch screens can't use the hit glass well.
 
 import { barrel, curveK } from './app/crt.js';
 
@@ -24,7 +24,7 @@ const get = (k) => { try { return localStorage.getItem(k); } catch { return null
 const set = (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode: this visit only */ } };
 const MODES = ['curved', 'flat', 'off'];
 const LABEL = { curved: 'Curved', flat: 'Flat', off: 'Off' };
-const desk = matchMedia('(min-width: 900px) and (pointer: fine)');
+const desk = matchMedia('(min-width: 768px) and (hover: hover) and (pointer: fine)');
 
 // the old on/off + curved switches carry over
 function saved() {
@@ -34,13 +34,13 @@ function saved() {
   if (get('otcv-curve') === 'on') return 'curved';
   return null;
 }
-// Flat by default, everywhere: it's the iMac look at no cost to sharpness or clicks. Curved
-// softens text a touch and costs frames, so it's there for whoever wants the full tube.
-// Low-power devices get Flat too, the shader just ticks slower there (js/app/crt.js).
-let mode = saved() || 'flat';
+// Curved by default: the full tube. A mode the visitor picked wins; phones and touch screens
+// show Flat (Curved there falls back to it). ?crt=curved|flat|off forces one for the visit (QA).
+const forced = new URLSearchParams(location.search).get('crt');
+let mode = MODES.includes(forced) ? forced : saved() || 'curved';
 let btn = null, item = null;
 
-const can = (m) => m !== 'curved';   // Curved is off for now: the switch is Flat / Off, a saved Curved shows as Flat
+const can = (m) => m !== 'curved' || desk.matches;
 const shown = () => (can(mode) ? mode : 'flat'); // a saved Curved shows as Flat on a phone
 function next() {
   let i = MODES.indexOf(shown());
@@ -72,6 +72,12 @@ window.otcvCrt = {
   get mode() { return shown(); },
   preview(m) { if (MODES.includes(m) && can(m)) { mode = m; apply(); } },
   restore(m) { if (MODES.includes(m)) { mode = m; apply(); } },
+};
+// for the desktop guide and anything else that sets the mode for good: window.crtfx.set('flat')
+// switches and remembers it, like a click on the CRT button. { save: false } for this visit only.
+window.crtfx = {
+  get mode() { return shown(); },
+  set(m, { save = true } = {}) { if (!MODES.includes(m)) return false; mode = m; if (save) set(KEY, m); apply(); return shown() === m; },
 };
 
 // ---- curved glass: the barrel map
