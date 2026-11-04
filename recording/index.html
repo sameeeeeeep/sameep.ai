@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sameep Rehlan · Application video for Wispr Flow’s growth team</title>
-<meta name="description" content="Sameep Rehlan’s application for Wispr Flow’s growth team: a 3-minute video and sameep.ai, a voice-steered portfolio you talk to.">
+<meta name="description" content="Sameep Rehlan’s application for Wispr Flow’s growth team: a 2-minute video and sameep.ai, a voice-steered portfolio you talk to.">
 <link rel="canonical" href="https://sameep.ai/recording/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="sameep.ai">
 <meta property="og:title" content="Sameep Rehlan · Application video for Wispr Flow’s growth team">
-<meta property="og:description" content="A 3-minute video, and a portfolio you talk to: a CV burned onto a CD, running a podcast you steer with your voice.">
+<meta property="og:description" content="A 2-minute video, and a portfolio you talk to: a CV burned onto a CD, running a podcast you steer with your voice.">
 <meta property="og:image" content="https://sameep.ai/img/og.png">
 <meta property="og:url" content="https://sameep.ai/recording/">
 <meta name="twitter:card" content="summary_large_image">
@@ -17,72 +17,109 @@
 <link rel="icon" href="../img/ui/offthecv.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Spline+Sans+Mono:wght@400;500;700&family=VT323&display=swap">
+<link rel="stylesheet" href="../css/tokens.css">
 <style>
-:root { --bg:#120f0c; --card:#1c1814; --line:#352e26; --paper:#f3eee2; --dim:#a69d8d; --flame:#ff9a3d; --teal:#3fb3c8; }
-:root:not([data-theme="light"]) { color-scheme: dark; }
 * { box-sizing:border-box; }
-html { background:var(--bg); }
-body { margin:0; min-height:100vh; background:radial-gradient(120% 70% at 50% -10%, #2a1d12 0%, var(--bg) 60%); color:var(--paper); font:16px/1.5 'Bricolage Grotesque', system-ui, sans-serif; }
+html { background:#0b5566; color-scheme:light; }
+body { margin:0; min-height:100vh; overflow-x:hidden; color:#111; font:400 13px/1.45 var(--f-ui);
+  background:
+    radial-gradient(120% 80% at 70% 110%, rgba(255,138,31,.45), transparent 60%),
+    radial-gradient(90% 70% at 10% 0%, rgba(123,79,214,.55), transparent 60%),
+    linear-gradient(180deg, #0b5566, #0a8fa8 55%, #2c6f63) fixed; }
 a { color:inherit; }
-.wrap { max-width:960px; margin:0 auto; padding:clamp(20px, 5vw, 56px) 16px 64px; }
-.kicker { font:500 12px 'Spline Sans Mono', monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--flame); margin:0 0 10px; }
-h1 { font-size:clamp(32px, 6vw, 60px); line-height:1.02; letter-spacing:-.02em; margin:0 0 12px; font-weight:800; }
-h1 em { font-style:normal; color:var(--teal); }
-.lede { color:var(--dim); font-size:clamp(16px, 2.2vw, 19px); max-width:58ch; margin:0 0 28px; }
-.player { position:relative; aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#000; border:1px solid var(--line); box-shadow:0 30px 80px -30px rgba(0,0,0,.8); }
-.player video { width:100%; height:100%; display:block; background:#000; }
-.player video::cue { font:600 clamp(15px, 2.4vw, 22px)/1.35 'Bricolage Grotesque', system-ui, sans-serif; color:#fff; background:rgba(0,0,0,.72); }
-.soon { position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:24px; background:url(../img/og.png) center/cover; }
-.soon[hidden] { display:none; }
-.soon::before { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(18,15,12,.78), rgba(18,15,12,.94)); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
-.soon > div { position:relative; }
-.soon b { display:block; font-size:clamp(20px, 3.4vw, 30px); margin-bottom:8px; }
-.soon span { color:var(--dim); }
-.cta { display:flex; flex-wrap:wrap; gap:12px; margin:22px 0 40px; }
-.btn { display:inline-flex; align-items:center; gap:10px; min-height:48px; padding:0 20px; border-radius:999px; text-decoration:none; font-weight:700; border:1px solid var(--line); background:var(--card); }
-.btn.main { background:var(--flame); color:#1a0f05; border-color:var(--flame); }
-.btn:hover { border-color:var(--dim); }
-.btn.main:hover { filter:brightness(1.06); }
-.grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; margin-bottom:40px; }
-.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
-.card h3 { margin:0 0 4px; font-size:16px; }
-.card p { margin:0; color:var(--dim); font-size:14px; }
-h2 { font:500 12px 'Spline Sans Mono', monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin:0 0 12px; }
-.links { display:flex; flex-wrap:wrap; gap:10px; }
-.links a { display:inline-flex; align-items:center; gap:8px; min-height:42px; padding:0 16px; border-radius:999px; border:1px solid var(--line); text-decoration:none; font-size:15px; background:rgba(28,24,20,.6); }
-.links a:hover { border-color:var(--flame); color:var(--flame); }
-.links small { color:var(--dim); font:400 13px 'Spline Sans Mono', monospace; }
-footer { margin-top:44px; color:#6f665a; font:400 12px 'Spline Sans Mono', monospace; }
-@media (max-width: 720px) { .grid { grid-template-columns:1fr; } .btn { flex:1 1 100%; justify-content:center; } }
+
+/* menu bar */
+.menubar { position:sticky; top:0; z-index:5; height:28px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 12px; background:linear-gradient(#f2f2f2, #dcdcdc); border-bottom:1px solid #111; font:500 13px var(--f-ui); white-space:nowrap; }
+.menubar__l { display:flex; align-items:center; gap:10px; min-width:0; }
+.menubar__l img { display:block; image-rendering:pixelated; }
+.menubar b { font-weight:700; }
+.menubar a { text-decoration:none; }
+.menubar a:hover { text-decoration:underline; }
+
+.wrap { max-width:920px; margin:0 auto; padding:clamp(24px, 5vw, 56px) 16px 56px; }
+h1 { margin:0 0 6px; font:400 clamp(40px, 8vw, 76px)/.9 var(--f-head); letter-spacing:.01em; color:#fff; text-shadow:3px 3px 0 #073b47; }
+.lede { margin:0 0 24px; font:400 clamp(19px, 2.6vw, 24px)/1.15 var(--f-term); color:#e9fbff; text-shadow:1px 1px 0 #073b47; }
+
+/* Platinum window */
+.win { background:var(--plat-2); border:1px solid #111; box-shadow:inset 1px 1px 0 #fff, inset -1px -1px 0 var(--plat-4), 6px 6px 0 rgba(0,0,0,.35); }
+.win__bar { position:relative; height:24px; display:flex; align-items:center; justify-content:space-between; padding:0 6px; border-bottom:1px solid var(--plat-4); }
+.win__bar::before { content:""; position:absolute; left:26px; right:26px; top:6px; height:11px; background:repeating-linear-gradient(#fff 0 1px, var(--plat-4) 1px 2px); }
+.win__box { position:relative; z-index:1; width:14px; height:14px; border:1px solid #111; background:linear-gradient(135deg, #fff, var(--plat-3)); }
+.win__box--zoom::after { content:""; position:absolute; left:2px; top:2px; width:6px; height:6px; border:1px solid #111; }
+.win__title { position:relative; z-index:1; min-width:0; padding:0 10px; background:var(--plat-2); font:600 12px/24px var(--f-ui); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.win__body { padding:10px; box-shadow:inset 0 1px 0 #fff; }
+.screen { position:relative; aspect-ratio:16/9; background:#000; border:1px solid #111; box-shadow:0 0 0 1px #fff, 0 0 0 2px var(--plat-4); }
+.screen video { display:block; width:100%; height:100%; background:#000; }
+.screen video::cue { font:600 clamp(15px, 2.4vw, 22px)/1.35 'Bricolage Grotesque', system-ui, sans-serif; color:#fff; background:rgba(0,0,0,.72); }
+.win__foot { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:10px 12px; padding:14px 4px 4px; }
+.win__foot .meta { margin-right:auto; color:var(--plat-5); font-size:12px; }
+
+/* Platinum buttons */
+.btn { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 18px; border:1px solid #111; border-radius:6px; background:linear-gradient(#fafafa, #d6d6d6); box-shadow:inset 1px 1px 0 #fff, inset -1px -1px 0 #999; color:#111; font:600 13px var(--f-ui); text-decoration:none; white-space:nowrap; }
+.btn:hover { background:linear-gradient(#fff, #e4e4e4); }
+.btn:active { background:#3b3b3b; color:#fff; box-shadow:none; }
+.btn:focus-visible { outline:2px solid var(--plat-hi); outline-offset:3px; }
+.btn--default { margin:3px; box-shadow:inset 1px 1px 0 #fff, inset -1px -1px 0 #999, 0 0 0 2px var(--plat-2), 0 0 0 4px #111; }
+
+/* Find me: a Finder list */
+.finder { margin-top:28px; max-width:520px; }
+.finder .win__body { padding:0; background:#fff; }
+.finder ul { margin:0; padding:0; list-style:none; }
+.finder li + li { border-top:1px solid #e6e6e6; }
+.finder a { display:flex; justify-content:space-between; gap:12px; min-height:36px; align-items:center; padding:0 12px; text-decoration:none; }
+.finder a:hover, .finder a:focus-visible { background:var(--plat-hi); color:#fff; outline:none; }
+.finder small { color:var(--plat-5); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.finder a:hover small, .finder a:focus-visible small { color:#fff; }
+.finder__head { display:flex; justify-content:space-between; padding:4px 12px; border-bottom:1px solid var(--plat-4); background:var(--plat-1); color:var(--plat-5); font-size:11px; }
+footer { margin-top:28px; color:#cdeff5; font:400 12px var(--f-ui); }
+
+@media (max-width:560px) {
+  .win__foot { justify-content:stretch; }
+  .win__foot .meta { flex:1 1 100%; }
+  .win__foot .btn { flex:1 1 100%; }
+}
 </style>
 </head>
 <body>
+<header class="menubar">
+  <span class="menubar__l"><img src="../img/ui/offthecv.svg" width="16" height="16" alt=""><b>Sameep Rehlan</b><span>Application</span></span>
+  <a href="https://sameep.ai/?version=wispr">sameep.ai</a>
+</header>
 <main class="wrap">
-  <p class="kicker">Application · Wispr Flow growth team</p>
-  <h1>Hi team Wispr, I'm <em>Sameep.</em></h1>
-  <p class="lede">What I built for you, why I built it, and what voice changed. Three minutes.</p>
+  <h1>Hi team Wispr, I'm Sameep.</h1>
+  <p class="lede">What I built for you, why, and what voice changed.</p>
 
-  <div class="player" id="player">
-    <video id="vid" data-track="application" controls playsinline preload="metadata" poster="../video/application.jpg" src="../video/application-34cff70f.mp4">
-      <track kind="captions" src="../video/application.vtt" srclang="en" label="English" default>
-    </video>
-  </div>
+  <section class="win" aria-label="Application video">
+    <div class="win__bar"><span class="win__box" aria-hidden="true"></span><span class="win__title">Sameep Rehlan — Application.mov</span><span class="win__box win__box--zoom" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <div class="screen" id="player">
+        <video id="vid" data-track="application" controls playsinline preload="metadata" poster="../video/application.jpg" src="../video/application-34cff70f.mp4">
+          <track kind="captions" src="../video/application.vtt" srclang="en" label="English" default>
+        </video>
+      </div>
+      <div class="win__foot">
+        <span class="meta">1:49 · captions on</span>
+        <a class="btn" href="https://sameep.ai/make">Make your own</a>
+        <a class="btn btn--default" href="https://sameep.ai/?version=wispr">Open the portfolio</a>
+      </div>
+    </div>
+  </section>
 
-  <div class="cta">
-    <a class="btn main" href="https://sameep.ai/?version=wispr">▶ Open the portfolio</a>
-    <a class="btn" href="https://sameep.ai/make">Make your own</a>
-  </div>
-
-  <h2>Find me</h2>
-  <nav class="links">
-    <a href="https://www.linkedin.com/in/sameepr">LinkedIn <small>/in/sameepr</small></a>
-    <a href="https://www.instagram.com/sameep.ai">Instagram <small>@sameep.ai</small></a>
-    <a href="https://x.com/sameeeeep">X <small>@sameeeeep</small></a>
-    <a href="https://www.threads.net/@sameeeeeeep">Threads <small>@sameeeeeeep</small></a>
-    <a href="https://github.com/sameeeeeeep">GitHub <small>sameeeeeeep</small></a>
-    <a href="https://github.com/sameeeeeeep/sameep.ai">This site's code <small>MIT, on GitHub</small></a>
-    <a href="mailto:hello@sameep.ai">Email <small>hello@sameep.ai</small></a>
+  <nav class="win finder" aria-label="Find me">
+    <div class="win__bar"><span class="win__box" aria-hidden="true"></span><span class="win__title">Find me</span><span class="win__box win__box--zoom" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <div class="finder__head"><span>Name</span><span>Where</span></div>
+      <ul>
+        <li><a href="https://www.linkedin.com/in/sameepr">LinkedIn <small>/in/sameepr</small></a></li>
+        <li><a href="https://www.instagram.com/sameep.ai">Instagram <small>@sameep.ai</small></a></li>
+        <li><a href="https://x.com/sameeeeep">X <small>@sameeeeep</small></a></li>
+        <li><a href="https://www.threads.net/@sameeeeeeep">Threads <small>@sameeeeeeep</small></a></li>
+        <li><a href="https://github.com/sameeeeeeep">GitHub <small>sameeeeeeep</small></a></li>
+        <li><a href="https://github.com/sameeeeeeep/sameep.ai">This site's code <small>MIT, on GitHub</small></a></li>
+        <li><a href="mailto:hello@sameep.ai">Email <small>hello@sameep.ai</small></a></li>
+      </ul>
+    </div>
   </nav>
 
   <footer id="upd">sameep.ai/recording</footer>
