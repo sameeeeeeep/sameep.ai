@@ -411,6 +411,7 @@ function briefView(c, rerender, { go } = {}) {
       h('dt', 'Cost and effort'), h('dd', rich(c.budget || 'tbc')),
       h('dt', 'KPIs'), h('dd', ul(c.kpis || [])),
       c.example && [h('dt', 'Real example'), h('dd', rich(c.example))],
+      c.proto && [h('dt', 'Try the prototype'), h('dd', h('a', { href: c.proto.href, target: '_blank', rel: 'noopener' }, c.proto.t))],
       h('dt', 'Goal'), h('dd', rich(c.goal)),
       h('dt', 'Who for'), h('dd', rich(c.audience)),
       h('dt', 'The insight'), h('dd', rich(c.insight)),
@@ -419,7 +420,7 @@ function briefView(c, rerender, { go } = {}) {
     gbox('Second-order', secondOrder(c.so)));
 }
 function briefText(c) {
-  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? ['First 3 steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), c.example ? `Real example: ${c.example}` : '', '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
+  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? ['First 3 steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), c.example ? `Real example: ${c.example}` : '', c.proto ? `Try the prototype: https://sameep.ai${c.proto.href}` : '', '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
     `- Causes: ${c.so?.causes || ''}`, `- Could backfire: ${c.so?.backfire || ''}`, `- Compounds: ${c.so?.compounds || ''}`, `- Kill if: ${c.so?.kill || ''}`].join('\n').replace(/\s\[\d+(?:,\s*\d+)*\]/g, '');
 }
 function newCampaignForm(rerender) {
