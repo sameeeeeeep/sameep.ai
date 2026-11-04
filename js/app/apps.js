@@ -278,7 +278,7 @@ export function buildApps(ctx) {
         h('p', 'The subtitles in the podcast do what Flow does: you’ll see the raw version first, ums and all, then watch it clean itself up.'),
         h('p', 'Steering works the same way. Click into “Say it with Flow…”, hold your Flow key, and say where you want to go.'),
         h('p', 'Everything is original: the pixel icons, the modem noise (synthesised in your browser), the studio, the cast. No real logos were harmed.'),
-        h('p', 'Source: github.com/sameeeeeeep')));
+        h('p', 'Open source, MIT. ', h('a', { href: 'https://github.com/sameeeeeeep/sameep.ai', target: '_blank', rel: 'noopener' }, 'github.com/sameeeeeeep/sameep.ai ↗'))));
     } },
     { id: 'resume', label: 'Résumé.doc', icon: 'resume', open: async () => {
       const r = await alert({ icon: 'img/ui/stop.svg', title: 'Résumé.doc', message: 'This file format is no longer supported. Try talking instead.', buttons: [{ label: 'OK' }, { label: 'Talk instead', primary: true }] });

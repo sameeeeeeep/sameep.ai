@@ -12,12 +12,12 @@ try {
 export const VERSION = v === 'wispr' ? 'wispr' : 'default';
 export const isWispr = VERSION === 'wispr';
 
-// a line's text/audio for this version and host, honouring `h[host]` then `v` overrides
+// a line's text/audio (and, if the version has one, visual) for this version and host, honouring `h[host]` then `v` overrides
 // (a host override carries its own `v` variants)
 export function pick(line, host) {
   const src = (host && line.h?.[host]) || line;
   const o = src.v?.[VERSION] || {};
-  return { text: o.text ?? src.text, audio: o.audio ?? src.audio };
+  return { text: o.text ?? src.text, audio: o.audio ?? src.audio, ...(o.visual !== undefined && { visual: o.visual }) }; // a version may show its own visual
 }
 
 // who hosts the podcast: ?host=<id>, else the visitor's last pick (episode.json "hosts")
