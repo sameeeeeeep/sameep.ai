@@ -66,11 +66,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     askName: (q) => (pod ? pod.askName(q) : Promise.resolve('')),
     installing: false,
     openPodcast() {
-      if (ctx.installing) {
-        // on a phone the icon is the installer, so tapping it means "open it now"
-        if (isNarrow() && ctx.skipInstall) { ctx.skipInstall(); return; }
-        desk.notice('OFF THE CV is still installing. It opens by itself when it’s done.'); return;
-      }
+      // mid-install (or mid-guide), the icon still means "start it now"
+      if (ctx.installing) { ctx.startShow(); return; }
       if (ctx.launch) { ctx.launch(); return; }
       if (!pod) { desk.notice('The tape is still being recorded. Try again in a minute.'); return; }
       pod.win.el.hidden ? wm.win('podcast') : pod.win.focus();
@@ -78,7 +75,16 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     open(id) { apps.find((a) => a.id === id)?.open(); },
     setWallHour: (hr) => desk.setWall(hr),
     endCard: (fromIcon) => { endCard(wm, persona, () => pod, fromIcon); if (!fromIcon) ctx.afterShow?.(); },
-    tour: () => startTour({ area: desk.area, openPlayer: () => ctx.openJukebox() }),  // Help › Show me around, and the ? by the clock
+    tour: () => startTour({ area: desk.area, openPlayer: () => ctx.openJukebox(), onStart: () => ctx.startShow() }),  // Help › Show me around, and the ? by the clock
+    // "Start the show" works at any point: mid-guide, mid-install, after. The guide ends, the install
+    // finishes on the spot, and the show opens as soon as it can
+    startShow() {
+      ctx.wantShow = true;
+      endGuide();
+      if (ctx.installing) { ctx.skipInstall?.(); return; }
+      if (ctx.launch) { ctx.launch(); return; }
+      ctx.openPodcast();
+    },
     // the player's icon: bring it back after it's been closed (or open it for the first time on ?fast)
     openJukebox() {
       const w = wm.get('jukebox');
@@ -120,17 +126,22 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       desk.setInstalling(true);
       if (isNarrow()) desk.notice('OFF THE CV is installing. It only takes a moment.');
       // every visit: the guide plays while it installs and keeps going after; the Open countdown waits for it
-      tour = startTour({ area: desk.area, openPlayer: () => ctx.openJukebox() });
-      tour?.finished.then(() => { if (ctx.installing) ctx.skipInstall?.(); });  // skipped during the install: no need to wait
+      tour = startTour({ area: desk.area, openPlayer: () => ctx.openJukebox(), onStart: () => ctx.startShow() });
+      // when the guide is over (done or skipped) it leaves them to it: the install finishes quietly, the icon
+      // lands, and nothing opens by itself; they start the show when they want
+      let guideOver = false;
+      tour?.finished.then(() => { if (ctx.wantShow) return; guideOver = true; if (ctx.installing) ctx.skipInstall?.(); else ctx.stay?.(); });
       await installer(wm, { reduced, minMs: tour ? 13000 : 3000, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
       ctx.skipInstall = null;
       ctx.installing = false;
       desk.setInstalling(false);  // the icon lands on the desktop
       const ready = installed(wm, { onCount: desk.setBadge, hold: guideOn, layer: desk.area });
-      ctx.launch = ready.open;
+      ctx.launch = ready.open; ctx.stay = ready.stay;
+      if (ctx.wantShow) ready.open();
+      else if (guideOver) ready.stay();
       await ready.done;
       endGuide();  // opening the show ends the guide
-      ctx.launch = null;
+      ctx.launch = ctx.stay = null;
       await Promise.all([juke.fadeOut(), splash(desk.area, persona, { reduced })]);
       juke.win.close();
     } else await wait(reduced ? 0 : 500);

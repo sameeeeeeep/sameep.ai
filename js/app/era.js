@@ -732,7 +732,7 @@ export function installed(wm, { secs = 15, onCount, hold = () => false, layer } 
   onCount?.(n);
   const sync = () => {
     const h0 = hold();
-    if (h0 !== held) { held = h0; bar?.classList.toggle('is-held', held); if (w) line.replaceChildren(...(held ? ['Opens by itself ', left, ' s after the tour'] : ['Opens by itself in ', left, ' s'])); }
+    if (h0 !== held) { held = h0; bar?.classList.toggle('is-held', held); if (w) line.replaceChildren(...(held ? ['Open it whenever you’re ready.'] : ['Opens by itself in ', left, ' s'])); }
     return held;
   };
   sync();
@@ -741,5 +741,6 @@ export function installed(wm, { secs = 15, onCount, hold = () => false, layer } 
     n -= 1; left.textContent = String(Math.max(0, n)); onCount?.(Math.max(0, n));
     if (n <= 0) go();
   }, 1000);
-  return { open: () => go(), done: p.then(() => { clearInterval(t); t = 0; w?.close(); bar?.remove(); onCount?.(null); }) };
+  // stay(): what "Stay on the desktop" does, for when the guide ends: no window, no countdown, the icon waits
+  return { open: () => go(), stay: () => stop(), done: p.then(() => { clearInterval(t); t = 0; w?.close(); bar?.remove(); onCount?.(null); }) };
 }

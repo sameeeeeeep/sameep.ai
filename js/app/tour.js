@@ -31,20 +31,21 @@ function mainStops(phone) {
     // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
     { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing the shared folder of ’99. Skip a track, or pause it.` },
     { id: 'install', at: showEl, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
-      ? 'My portfolio, in my voice, is installing. It opens by itself; meanwhile, the rest.'
-      : 'My portfolio, in my voice, is ready. Open it any time. Meanwhile, the rest.') },
+      ? 'My portfolio, in my voice, is installing. Start the show any time; meanwhile, the rest.'
+      : 'My portfolio, in my voice, is ready. Start the show any time; meanwhile, the rest.') },
     phone
       ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work: folders, then the best bits on their own. Tap one.' }
       : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: the best bits up front, the rest in folders. Hover for details.' },
     phone
       ? { id: 'right', at: q('.is-moto .icon'), say: 'Further down, three games I made the ’99 way, then the real ones: Road Rash, DOOM and more.' }
       : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the toys. Three games I made the ’99 way, and the real ones: Road Rash, DOOM and more.' },
-    { id: 'steer', at: showEl, say: 'Steer the show: hold your Wispr Flow key and say where to go. Or type.', extra: pill },
     { id: 'crt', at: q('.menubar__crt'), say: 'The screen has looks. Here they are.', desktopOnly: true, crt: true },
     phone
-      ? { id: 'again', at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Replay this from Special › Show me around. Next, Back and Skip are on every bubble.' }
-      : { id: 'again', at: q('.menubar__help'), say: 'Replay this any time with ?. Next, Back and Skip are on every bubble.' },
+      ? { id: 'again', at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Replay this from Special › Show me around.' }
+      : { id: 'again', at: q('.menubar__help'), say: 'Replay this any time with ?.' },
     { id: 'gos', at: q('[data-card="folder-wispr"]'), say: 'The Wispr folder: a growth plan I started for your team, and two prototypes.', wisprOnly: true },
+    // last: Wispr is the remote. Then the guide is gone for good, and nothing opens by itself after it
+    { id: 'steer', at: showEl, say: 'Last thing: Wispr drives this. In the show, hold your Flow key and say where to go, like “something fun” or “Switchboard”. Over to you.', extra: pill },
   ];
 }
 function nextStops() {
@@ -60,7 +61,7 @@ function nextStops() {
   ];
 }
 
-export function startTour({ area, kind = 'main', openPlayer } = {}) {
+export function startTour({ area, kind = 'main', openPlayer, onStart } = {}) {
   current?.end();
   if (!document.getElementById('font-wispr')) document.head.append(h('link#font-wispr', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&family=Figtree:wght@400;600&display=swap' }));
   const phone = isNarrow(), glide = !phone && !reducedMotion();
@@ -75,8 +76,10 @@ export function startTour({ area, kind = 'main', openPlayer } = {}) {
   const back = h('button.gtour__btn', { type: 'button', onclick: () => go(i - 1) }, 'Back');
   const next = h('button.gtour__btn.is-primary', { type: 'button', onclick: () => go(i + 1) }, 'Next');
   const skip = h('button.gtour__btn.is-text', { type: 'button', onclick: () => end() }, 'Skip');
+  // Start the show: on every stop of the main guide, never disabled; it ends the guide and opens the show
+  const start = onStart && kind === 'main' ? h('button.gtour__btn.is-start', { type: 'button', onclick: () => { end(); onStart(); } }, 'Start the show') : null;
   const cap = h('div.gtour__cap', { role: 'dialog', 'aria-live': 'polite', 'aria-label': 'Desktop guide' },
-    text, extra, h('div.gtour__row', count, h('span.gtour__btns', skip, back, next)));
+    text, extra, h('div.gtour__row', count, h('span.gtour__btns', skip, back, next)), start && h('div.gtour__row.gtour__row--start', start));
   area.append(...[ghost, cap].filter(Boolean));
 
   let alive = true, i = -1, token = 0, paused = false, lit = [], crtFrom = null, opened = null, hovered = null, done, side = 'right';
