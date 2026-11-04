@@ -485,7 +485,7 @@ export class Podcast {
     if (!this.chapEl) return;
     this.#renderTabs();
     this.#renderProjects();
-    const cur = this.node?.chapter;
+    const cur = this.#mapChapter();
     this.chapEl.replaceChildren(...chapterMap(this.map, {
       visited: this.visited, currentChapter: cur, currentNode: this.nodeId, open: this.mapOpen,
       onGo: (to) => { this.chapDrawer.open = false; this.go(to, { from: 'chapter' }); },
@@ -498,15 +498,25 @@ export class Podcast {
     if (meta) meta.textContent = p.total ? `route ${p.done}/${p.total}${p.left && p.done < p.total ? ' · ≈ ' + mins(p.left) + ' left' : ''}` : '';
   }
 
+  // the map's chapter for where the show is: the node's own, or for nodes whose chapter isn't on the map
+  // (the intro after the cold open, the outro) the last map chapter it passed through
+  #mapChapter() {
+    const listed = new Set((this.ep.chapters || []).map((c) => this.ep.nodes[c.to]?.chapter));
+    const ch = this.node?.chapter;
+    if (listed.has(ch)) this.lastMapCh = ch;
+    return listed.has(ch) ? ch : this.lastMapCh || this.ep.nodes[this.ep.start]?.chapter;
+  }
+
   #markChapter() {
-    const label = this.node?.chapter;
+    const label = this.#mapChapter();
     // the map opens the chapter you're in (until you fold it yourself)
     if (label !== this.mapChapter) {
       this.mapChapter = label;
       this.mapOpen = (this.ep.chapters || []).find((c) => this.ep.nodes[c.to]?.chapter === label)?.to || null;
     }
     this.#renderChapters();
-    this.nodeLabel.textContent = label ? '· Now: ' + (this.node.title && this.node.title !== label ? `${label} · ${this.node.title}` : label) : '';
+    const own = this.node?.chapter;
+    this.nodeLabel.textContent = own ? '· Now: ' + (this.node.title && this.node.title !== own ? `${own} · ${this.node.title}` : own) : '';
   }
 
   #renderAudience(line) {

@@ -256,8 +256,9 @@ export function chapterMap(map, { visited, currentChapter, currentNode, open, on
         'aria-current': cur && !fold ? 'true' : null,
         onclick: () => (fold ? onToggle(c.to) : onGo(c.to)),
       },
-        h('span.chap__n', String(idx + 1).padStart(2, '0')),
-        h('span.chap__t', { title: c.label }, keepWhole(isHub(c.to) ? c.label : map.title(c.to) || c.label), onRoute && h('span.chap__route', { title: 'On the recommended route', 'aria-label': ', on the recommended route' })),
+        h('span.chap__n', heard && !cur ? { 'aria-label': `${idx + 1}, heard` } : null, heard && !cur ? '✓' : String(idx + 1).padStart(2, '0')),
+        h('span.chap__t', { title: c.label }, keepWhole(isHub(c.to) ? c.label : map.title(c.to) || c.label), onRoute && h('span.chap__route', { title: 'On the recommended route', 'aria-label': ', on the recommended route' }),
+          cur && h('span.chap__now', 'Now')),
         h('span.chap__m', isHub(c.to) ? '' : mins(map.chapterSec(c.to)))),
       expanded ? h('ul.cmap__subs', item(c.to, 'From the top', map.sec(c.to)), subs.map((s) => item(s, map.title(s), map.sec(s)))) : null);
   });

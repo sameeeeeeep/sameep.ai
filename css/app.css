@@ -940,6 +940,13 @@ input[type=range] { accent-color: var(--bondi); flex: 1; }
 .cmap__ch.is-current > .chap .chap__n { color: var(--ember); font-weight: 700; }
 .cmap__ch.is-current > .chap .chap__m { color: #333; }
 .cmap__ch.is-open:not(.is-current) { background: rgba(255,255,255,.55); }
+.chap__now { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding: 1px 6px 1px 5px; border-radius: 999px; background: #111; color: #fff; font: 700 10px/1.5 var(--f-ui); letter-spacing: .08em; text-transform: uppercase; vertical-align: 1px; }
+.chap__now::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--flame); animation: chap-now 1.4s ease-in-out infinite; }
+@keyframes chap-now { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .chap__now::before { animation: none; } }
+.cmap__ch.is-visited:not(.is-current) > .chap .chap__n { font-weight: 800; }
+.sub.is-now { background: #fff; color: #111; font-weight: 700; border-left-color: var(--flame); box-shadow: inset 2px 0 0 var(--flame); }
+.sub.is-now .sub__dot { background: var(--flame); border-color: var(--flame); }
 .cmap__subs { margin: -4px 0 0; padding: 0 0 10px 31px; list-style: none; display: grid; gap: 0; }
 .cmap__subs li { display: block; }
 .sub { width: 100%; display: grid; grid-template-columns: 7px minmax(0, 1fr) auto; column-gap: 9px; align-items: center; min-height: 30px; padding: 5px 6px 5px 8px; border: 0; border-left: 1px solid var(--plat-3); border-radius: 0; background: none; color: #4a4a4a; font: 400 12.5px/1.3 var(--f-head); text-align: left; cursor: pointer; }
