@@ -457,7 +457,6 @@ export function login(layer, persona, { reduced, stylise } = {}) {
         : team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c }));
       const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...people,
         { id: 'add', label: 'Add account', blurb: 'Name and a selfie', glyph: '+' }, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', glyph: '' }];
-      if (roster) { hintText = `All ${people.length} of the team are here`; if (!q) hint.textContent = hintText; }
       field.replaceChildren();
       bubbles = accounts.map((a) => {
         const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
