@@ -100,10 +100,6 @@ function buildDOM(root, reduced) {
             <span class="hero-sound__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="hero-sound__txt">Sound off</span>
           </button>
         </header>
-        <div class="hero-counter" aria-live="off">
-          <p class="hero-counter__num"><span>0</span></p>
-          <p class="hero-counter__label">applications</p>
-        </div>
         <footer class="hero-bottom">
           <div class="hero-cap" aria-live="polite">
             <p class="hero-cap__idx"><span class="hero-cap__n">01</span> / ${String(CAPS.length).padStart(2, '0')}</p>
@@ -120,7 +116,7 @@ function buildDOM(root, reduced) {
   track.style.setProperty('--hero-screens', String(reduced ? 7 : TOTAL + 1));
   return {
     track, stage: q('.hero-stage'), canvas: q('.hero-canvas'), fade: q('.hero-fade'),
-    counter: q('.hero-counter'), num: q('.hero-counter__num span'), cap: q('.hero-cap'),
+    cap: q('.hero-cap'),
     capN: q('.hero-cap__n'), capT: q('.hero-cap__txt'), skip: q('.hero-skip'), sound: q('.hero-sound'),
     soundTxt: q('.hero-sound__txt'), hint: q('.hero-hint'), prog: q('.hero-progress i'),
   };
@@ -525,7 +521,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   let lastP = 0;
 
   // ------------------------------------------------------------------ captions
-  let capIdx = -1, lastCount = -1, lastProgUI = -1, lastCounterVis = -1;
+  let capIdx = -1, lastProgUI = -1;
   function setCaption(i, sub = 0) {
     const k = CAPS.findIndex(([b, s]) => b === i && s === sub);
     if (k === capIdx) return;
@@ -559,17 +555,9 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     const e = loc('envelope'), o = loc('origami'), f = loc('flight'), c = loc('crumple');
     const s = loc('shred'), b = loc('burn'), d = loc('cd'), ins = loc('insert');
 
-    // ---- intro count / pile
+    // ---- intro pile
     const fillP = easeOutQuart(clamp(introT / 2.6));
     pile.setFill(fillP);
-    const count = Math.round(2000 * fillP);
-    if (count !== lastCount) { lastCount = count; dom.num.textContent = count.toLocaleString('en-US'); }
-    const counterVis = 1 - seg(p, G('pile', 0.75), G('envelope', 0.1));
-    if (counterVis !== lastCounterVis) {
-      lastCounterVis = counterVis;
-      dom.counter.style.opacity = counterVis.toFixed(3);
-      dom.counter.style.visibility = counterVis <= 0 ? 'hidden' : 'visible';
-    }
 
     if (DEBUG) PROF[0] += performance.now() - (PT = PT || performance.now()), PT = performance.now();
     if (full) {

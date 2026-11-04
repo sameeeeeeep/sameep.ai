@@ -56,7 +56,7 @@
 
 /* type:'link' — someone else's post: their cover, a play button and the source; the whole card opens the original */
 .mon__link { position: absolute; inset: 0; display: block; background: #000; color: var(--paper); text-decoration: none; }
-.mon__link img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mon__link img, .mon__link video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .mon__play { position: absolute; left: 50%; top: 44%; width: 44px; height: 44px; transform: translate(-50%, -50%); border: 2px solid var(--paper); border-radius: 50%; background: rgba(14,12,10,.78); box-shadow: 0 4px 14px rgba(0,0,0,.4); transition: border-color .2s, transform .2s var(--ease-out, ease-out); }
 .mon__play::after { content: ""; position: absolute; left: 54%; top: 50%; transform: translate(-50%, -50%); border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent var(--paper); }
 .mon__link:hover .mon__play, .mon__link:focus-visible .mon__play { border-color: var(--flame); transform: translate(-50%, -50%) scale(1.06); }

@@ -264,8 +264,13 @@ export class Monitor {
   #link(v) {
     const url = safeUrl(v.url, this.base);
     return h('a.mon__link', { href: url, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation(), 'aria-label': (v.title || 'Watch') + ' (opens ' + (v.source || 'the original post') + ')' },
-      h('img', { src: safeUrl(v.poster, this.base), alt: '', draggable: 'false' }),
-      h('span.mon__play', { 'aria-hidden': 'true' }),
+      v.video
+        // their clip itself: muted, looping, inline, with their cover as the poster (still cover only under reduced motion)
+        ? h('video', { muted: true, playsInline: true, loop: true, autoplay: !this.reduced, preload: this.reduced ? 'none' : 'auto', poster: safeUrl(v.poster, this.base), disablePictureInPicture: true, 'aria-hidden': 'true' },
+          v.webm && h('source', { src: safeUrl(v.webm, this.base), type: 'video/webm' }),
+          h('source', { src: safeUrl(v.video, this.base), type: 'video/mp4' }))
+        : h('img', { src: safeUrl(v.poster, this.base), alt: '', draggable: 'false' }),
+      !v.video && h('span.mon__play', { 'aria-hidden': 'true' }),
       h('span.mon__src', h('b', v.source || new URL(url, location.href).hostname), ' ↗'));
   }
 
@@ -403,7 +408,7 @@ export function resolveVisual(raw, work, base) {
     if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, size: raw.size, work: it.id };
     return resolveVisual({ ...raw, type: 'work' }, work, base);
   }
-  if (raw.type === 'link') return raw.url && raw.poster ? { ...raw, poster: abs(raw.poster) } : null;
+  if (raw.type === 'link') return raw.url && raw.poster ? { ...raw, poster: abs(raw.poster), video: raw.video && abs(raw.video), webm: raw.webm && abs(raw.webm) } : null;
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
   if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
   if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, size: raw.size, work: it?.id, cue: raw.cue } : null;
