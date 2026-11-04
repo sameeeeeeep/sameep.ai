@@ -31,7 +31,7 @@
   font: 400 28.2828px/32px var(--f-head); letter-spacing: 0; color: var(--paper, #f3eee2);
   -webkit-font-smoothing: none; text-shadow: 0 2px 0 rgba(15, 13, 11, .6);
 }
-.hero-mark__cd { display: block; width: 32px; height: 32px; image-rendering: pixelated; filter: drop-shadow(0 2px 0 rgba(15, 13, 11, .6)); }
+.hero-mark__cd { display: block; width: 32px; height: 32px; border-radius: 50%; filter: drop-shadow(0 2px 0 rgba(15, 13, 11, .6)); }
 .hero-mark__word { display: block; height: 32px; }
 .hero-mark__tld { color: var(--ember, #ff6c4c); }
 

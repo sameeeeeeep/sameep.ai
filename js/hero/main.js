@@ -95,7 +95,7 @@ function buildDOM(root, reduced) {
         <canvas class="hero-canvas" aria-hidden="true"></canvas>
         <div class="hero-fade" aria-hidden="true"></div>
         <header class="hero-top">
-          <p class="hero-mark" aria-label="sameep.ai"><img class="hero-mark__cd" src="img/ui/offthecv.svg" width="32" height="32" alt=""><span class="hero-mark__word" aria-hidden="true">sameep<span class="hero-mark__tld">.ai</span></span></p>
+          <p class="hero-mark" aria-label="sameep.ai"><img class="hero-mark__cd" src="img/ui/logo-cd-64.png" srcset="img/ui/logo-cd-64.png 1x, img/ui/logo-cd-128.png 2x" width="32" height="32" alt=""><span class="hero-mark__word" aria-hidden="true">sameep<span class="hero-mark__tld">.ai</span></span></p>
           <button class="hero-pill hero-sound" type="button" aria-pressed="false" aria-label="Sound">
             <span class="hero-sound__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="hero-sound__txt">Sound off</span>
           </button>
