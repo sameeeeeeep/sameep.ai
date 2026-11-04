@@ -53,3 +53,16 @@
 .mon__tap { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); min-height: 36px; padding: 0 16px; border: 1px solid var(--flame); border-radius: 999px; background: rgba(14,12,10,.86); color: var(--flame); font: 600 12px var(--f-ui); cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
 .mon__tap:hover, .mon__tap:focus-visible { background: #111; outline: none; }
 .mon[data-size="pip"] .mon__tap { display: none; }
+
+/* type:'link' — someone else's post: their cover, a play button and the source; the whole card opens the original */
+.mon__link { position: absolute; inset: 0; display: block; background: #000; color: var(--paper); text-decoration: none; }
+.mon__link img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mon__play { position: absolute; left: 50%; top: 44%; width: 44px; height: 44px; transform: translate(-50%, -50%); border: 2px solid var(--paper); border-radius: 50%; background: rgba(14,12,10,.78); box-shadow: 0 4px 14px rgba(0,0,0,.4); transition: border-color .2s, transform .2s var(--ease-out, ease-out); }
+.mon__play::after { content: ""; position: absolute; left: 54%; top: 50%; transform: translate(-50%, -50%); border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent var(--paper); }
+.mon__link:hover .mon__play, .mon__link:focus-visible .mon__play { border-color: var(--flame); transform: translate(-50%, -50%) scale(1.06); }
+.mon__link:focus-visible { outline: 2px solid var(--flame); outline-offset: -2px; }
+.mon__src { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 8px 5px; background: linear-gradient(transparent, rgba(0,0,0,.85)); font: 500 11px/1.3 var(--f-ui); color: #d8cfbd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mon__src b { color: var(--paper); font-weight: 700; }
+.mon[data-size="pip"] .mon__play { width: 34px; height: 34px; }
+.mon[data-size="pip"] .mon__play::after { border-width: 6px 0 6px 10px; }
+.mon[data-size="pip"] .mon__src { padding: 12px 6px 4px; font-size: 10px; letter-spacing: -.01em; }

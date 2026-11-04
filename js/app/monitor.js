@@ -39,6 +39,8 @@
 //              under the voice; follows the mute switch and the podcast's play/pause)
 //              | {type:'embed', work}  (the live product in a sandboxed iframe, inert until tapped; phones and low power get
 //                the project's shots instead)
+//              | {type:'link', poster, url, source, title}  (someone else's post: their cover and a play button that opens
+//                the official post in a new tab, the source cited under it; nothing of theirs is rehosted but the cover)
 //              | {type:'cards', title, items:[{to, title, blurb, thumb}], cue:{<clip file>:[[sec, i]]}} (one cue list per host's clip)
 //                (the menu: each card lights up as the line's audio reaches its cue; click one to go there)
 //              | 'none'
@@ -180,6 +182,8 @@ export class Monitor {
       this.screen.replaceChildren(this.#slides(v));
     } else if (v.type === 'embed') {
       this.screen.replaceChildren(this.#embed(v));
+    } else if (v.type === 'link') {
+      this.screen.replaceChildren(this.#link(v));
     } else if (v.type === 'cards') {
       this.screen.replaceChildren(this.#cards(v));
     } else return this.hide();
@@ -253,6 +257,15 @@ export class Monitor {
     clearInterval(this.soundT);
     this.soundT = null;
     this.onSound?.(false);
+  }
+
+  // someone else's post: the cover, a play button and the source, all one link to the official post
+  #link(v) {
+    const url = safeUrl(v.url, this.base);
+    return h('a.mon__link', { href: url, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation(), 'aria-label': (v.title || 'Watch') + ' (opens ' + (v.source || 'the original post') + ')' },
+      h('img', { src: safeUrl(v.poster, this.base), alt: '', draggable: 'false' }),
+      h('span.mon__play', { 'aria-hidden': 'true' }),
+      h('span.mon__src', h('b', v.source || new URL(url, location.href).hostname), ' ↗'));
   }
 
   // the menu as cards; the one being talked about lights up (cue times are per clip, so every host's take works)
@@ -385,6 +398,7 @@ export function resolveVisual(raw, work, base) {
     if (live) return { type: 'embed', src: abs(it.embed), title: raw.title || it.title, shots, size: raw.size, work: it.id };
     return resolveVisual({ ...raw, type: 'work' }, work, base);
   }
+  if (raw.type === 'link') return raw.url && raw.poster ? { ...raw, poster: abs(raw.poster) } : null;
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
   if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
   if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, size: raw.size, work: it?.id, cue: raw.cue } : null;

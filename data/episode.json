@@ -96,7 +96,16 @@
      "v": {
       "wispr": {
        "text": "Yeah, so, the brief literally said don't apply with a CV. They got two thousand applications, all CVs, all kind of the same, really difficult to differentiate. And Wispr destroyed a keyboard in their own campaign, so I thought, okay, I'll destroy the CV.",
-       "audio": "audio/clips/cold-open-02.mp3"
+       "audio": "audio/clips/cold-open-02.mp3",
+       "visual": {
+        "type": "link",
+        "size": "pip",
+        "key": "wispr-keyboard",
+        "poster": "img/press/wispr-keyboard-reel.webp",
+        "url": "https://www.instagram.com/wisprflow/reel/DePUykXpNZS/",
+        "source": "@wisprflow · Instagram",
+        "title": "Wispr Flow: the evolution of the keyboard"
+       }
       }
      }
     },
@@ -6882,7 +6891,16 @@
      "id": "meta-story-02",
      "who": "sameep",
      "text": "Wispr had this destroy-the-keyboard campaign that I found really funny. So I thought, okay. I'll destroy my CV.",
-     "audio": "audio/clips/meta-story-02.mp3"
+     "audio": "audio/clips/meta-story-02.mp3",
+     "visual": {
+      "type": "link",
+      "size": "pip",
+      "key": "wispr-keyboard",
+      "poster": "img/press/wispr-keyboard-reel.webp",
+      "url": "https://www.instagram.com/wisprflow/reel/DePUykXpNZS/",
+      "source": "@wisprflow · Instagram",
+      "title": "Wispr Flow: the evolution of the keyboard"
+     }
     },
     {
      "id": "meta-story-03",
