@@ -2,7 +2,7 @@
 
 **A portfolio you talk to: a CV burned onto a CD that boots a 90s iMac and plays a choose-your-own-adventure podcast you steer with your voice.**
 
-[**sameep.ai**](https://sameep.ai) · [the 3-minute application video](https://sameep.ai/recording) · [make your own](https://sameep.ai/make)
+[**sameep.ai**](https://sameep.ai) · [make your own](https://sameep.ai/make)
 
 <p align="center"><img src="docs/hero.gif" alt="The intro: a pile of CVs, one gets folded into a plane, crumpled, shredded, burned onto a CD, and the CD slides into a Bondi blue iMac" width="720"></p>
 
@@ -40,14 +40,9 @@ I'd never made a portfolio. A CV is one sheet in a pile of two thousand now, so 
 
 **Growth OS** (only in the Wispr version). A growth workspace I built for the Wispr team, behind an @wispr.ai sign-in: campaigns, creators, brand collabs, events and popups, a CRM, and the sources behind them.
 
-**And the rest.** Case-study folders for the things I've built (Nykaa Pink Box, Nailinit's launch with Khushi Kapoor, the Secret Slumber Party, Often and Trippy, Switchboard, Brew-bot the voice-run coffee machine, and more), a jukebox, a Read Me, a Trash you can't empty. Plus [/recording](https://sameep.ai/recording), my application video, and [/make](https://sameep.ai/make).
+**And the rest.** Case-study folders for the things I've built (Nykaa Pink Box, Nailinit's launch with Khushi Kapoor, the Secret Slumber Party, Often and Trippy, Switchboard, Brew-bot the voice-run coffee machine, and more), a jukebox, a Read Me, a Trash you can't empty. Plus [/make](https://sameep.ai/make).
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/recording.webp" alt="The application video page"></td>
-    <td width="50%"><img src="docs/make.webp" alt="The Make your own page"></td>
-  </tr>
-</table>
+<p align="center"><img src="docs/make.webp" alt="The Make your own page" width="520"></p>
 
 It works on a phone too:
 
@@ -61,7 +56,7 @@ The real numbers, straight from the logs (they're in [`data/build-stats.json`](d
 
 | | |
 |---|---|
-| Days | **7** (29 Oct to 4 Nov 2026) |
+| Days | **4** (Friday night, 30 Oct, to 4 Nov 2026) |
 | Claude Code sessions | **21**, up to **7** at once, plus 31 subagents |
 | Prompts from me | **191** |
 | Tool calls | **8,541** |
@@ -109,7 +104,6 @@ audio/  img/        voice clips, music, sound effects, sprites, sets, the iMac
 video/              project demo videos
 <project>/          one folder per case study (brewbot/, pinkbox/, often/, ...)
 growth-os/          Wispr Growth OS
-recording/          the application video page
 make/               the Make your own page
 skill/off-the-cv/   the Claude Code skill, its scripts and templates
 llms.txt            instructions for agents
@@ -128,12 +122,12 @@ Handy URL flags: `?skip` (straight to the iMac), `?mute`, `?fast` (skip the boot
 
 The **code** is [MIT](LICENSE). Fork it, take it apart, make your own. (The fine print is in [NOTICE.md](NOTICE.md).)
 
-The **content isn't**. My voice clone and the host voices, my face and likeness (including the pixel sprites of me), my CV, my case studies, the episode script and the photos and videos of my work are mine, and they're not licensed for reuse. If you fork it, swap them for your own. The skill does that for you.
+The **content isn't**. My voice clone, my face and likeness (including the pixel sprites of me), my CV, my case studies, the episode script and the photos and videos of my work are mine, and they're not licensed for reuse. If you fork it, swap them for your own. The skill does that for you.
 
 ## Credits
 
 - Made by Sameep Rehlan. Dictated with [Wispr Flow](https://wisprflow.ai), built with [Claude Code](https://claude.com/claude-code).
-- Voices: [Kyutai Pocket TTS](https://huggingface.co/kyutai/pocket-tts) via `pocket-tts-mlx`. Timings: whisper.
+- Voices: the hosts use preset voices from [Kyutai Pocket TTS](https://huggingface.co/kyutai/pocket-tts) via `pocket-tts-mlx`. Timings: whisper.
 - [Switchboard](https://github.com/sameeeeeeep/switchboard) lends your own Claude and the on-device voice engine to the Make your own page.
 - [three.js](https://threejs.org) (MIT), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (MIT), [JSZip](https://stuk.github.io/jszip/) (MIT).
 - Type from Google Fonts (SIL OFL): Jersey 10, Doto, Bricolage Grotesque, Spline Sans Mono, VT323, Patrick Hand.

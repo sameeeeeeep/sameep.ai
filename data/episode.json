@@ -7696,10 +7696,10 @@
      "audio": "audio/clips/meta-code-02.mp3",
      "visual": {
       "type": "stats",
-      "title": "By the numbers · 29 Oct – 4 Nov",
+      "title": "By the numbers · 30 Oct – 4 Nov",
       "kpis": [
        {
-        "n": 7,
+        "n": 4,
         "label": "days"
        },
        {
@@ -7727,10 +7727,6 @@
       "bars": {
        "title": "My prompts per day",
        "rows": [
-        [
-         "29 Oct",
-         6
-        ],
         [
          "30 Oct",
          26
