@@ -50,7 +50,7 @@ It works on a phone too:
 
 ## How it was built
 
-By voice, pretty much. I dictated the concept, the specs and most of the notes into **[Wispr Flow](https://wisprflow.ai)** and handed them to **Claude Code**, with a few sessions working in parallel off one plan. The podcast is drawn from those same dictations, which is why the AI version of me rambles the way I actually do.
+By voice, pretty much. I dictated the concept, the specs and most of the notes into **[Wispr Flow](https://wisprflow.ai)** and handed them to **[Emergent](https://emergent.sh)** and **Claude Code**, with a few sessions working in parallel off one plan. The podcast is drawn from those same dictations, which is why the AI version of me rambles the way I actually do.
 
 The real numbers, straight from the logs (they're in [`data/build-stats.json`](data/build-stats.json)):
 
@@ -79,7 +79,7 @@ At least 40% of the words in my prompts were spoken, not typed. That's a floor: 
 
 ## Make your own
 
-Say "make your own sameep.ai using my GitHub profile" to your Claude. That's the whole thing.
+Say "make your own sameep.ai using my GitHub profile" to your Claude or Emergent. That’s the whole thing.
 
 - **[sameep.ai/make](https://sameep.ai/make)** walks you through it.
 - **[`llms.txt`](llms.txt)** tells any agent how to build one.
@@ -126,7 +126,7 @@ The **content isn't**. My voice clone, my face and likeness (including the pixel
 
 ## Credits
 
-- Made by Sameep Rehlan. Dictated with [Wispr Flow](https://wisprflow.ai), built with [Claude Code](https://claude.com/claude-code).
+- Made by Sameep Rehlan. Dictated with [Wispr Flow](https://wisprflow.ai), built with [Emergent](https://emergent.sh) and [Claude Code](https://claude.com/claude-code).
 - Voices: the hosts use preset voices from [Kyutai Pocket TTS](https://huggingface.co/kyutai/pocket-tts) via `pocket-tts-mlx`. Timings: whisper.
 - [Switchboard](https://github.com/sameeeeeeep/switchboard) lends your own Claude and the on-device voice engine to the Make your own page.
 - [three.js](https://threejs.org) (MIT), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (MIT), [JSZip](https://stuk.github.io/jszip/) (MIT).

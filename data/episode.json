@@ -8131,7 +8131,7 @@
    "choices": [],
    "next": "outro",
    "title": "Make your own",
-   "blurb": "One sentence to your own Claude, through Wispr, and it builds yours."
+   "blurb": "One sentence to your own Claude or Emergent, through Wispr, and it builds yours."
   },
   "outro": {
    "chapter": "Outro",

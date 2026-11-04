@@ -90,9 +90,9 @@ def main():
     nodes["hub"] = {"chapter": "Menu", "title": "Menu", "blurb": "Pick a thread.", "lines": [
         L("hub", 1, "host", "Right. Back to the menu. Where to next?", look="front", visual={"type": "cards", "title": "The menu · tap one", "items": cards}),
     ], "choices": [dict(c, recommended=(c["to"] == "outro-make")) for c in choices]}
-    nodes["outro-make"] = {"chapter": "Make your own", "title": "Make your own", "blurb": "One sentence to your own Claude.", "lines": [
+    nodes["outro-make"] = {"chapter": "Make your own", "title": "Make your own", "blurb": "One sentence to your own Claude or Emergent.", "lines": [
         L("outro-make", 1, "host", "And now, the big question. Could anyone make one of these?"),
-        L("outro-make", 2, "guest", "Anyone. Open Wispr and tell your own Claude: make your own sameep.ai using your GitHub profile. The steps are at sameep.ai slash make.",
+        L("outro-make", 2, "guest", "Anyone. Open Wispr and tell your own Claude or Emergent: make your own sameep.ai using your GitHub profile. The steps are at sameep.ai slash make.",
           demo={"type": "link", "url": "https://sameep.ai/make", "title": "Make your own sameep.ai"}),
     ], "choices": [], "next": "outro"}
     gh = me.get("github")

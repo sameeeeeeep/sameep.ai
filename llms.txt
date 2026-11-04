@@ -81,6 +81,7 @@ A static site (plain HTML/JS, no build step, no server) that is the person's own
 
 ## How this one was built
 
+- Built by voice: dictated in Wispr Flow, built with Emergent and Claude Code.
 - Four days (Friday night, 30 Oct, to 4 Nov 2026), 21 Claude Code sessions running up to 7 at once, 191 prompts from Sameep,
   8,541 tool calls, 110 commits. 10,122 words dictated in Wispr Flow at an average of 129 wpm.
 - Every number comes from the real logs: https://sameep.ai/data/build-stats.json

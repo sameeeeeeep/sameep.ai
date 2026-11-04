@@ -478,7 +478,7 @@
   "outro-make": {
    "chapter": "Make your own",
    "title": "Make your own",
-   "blurb": "One sentence to your own Claude.",
+   "blurb": "One sentence to your own Claude or Emergent.",
    "lines": [
     {
      "id": "outro-make-01",
@@ -499,7 +499,7 @@
     {
      "id": "outro-make-02",
      "who": "guest",
-     "text": "Anyone. Open Wispr and tell your own Claude: make your own sameep.ai using your GitHub profile. The steps are at sameep.ai slash make.",
+     "text": "Anyone. Open Wispr and tell your own Claude or Emergent: make your own sameep.ai using your GitHub profile. The steps are at sameep.ai slash make.",
      "audio": "audio/clips/outro-make-02.mp3",
      "demo": {
       "type": "link",

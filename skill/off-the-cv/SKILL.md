@@ -100,7 +100,7 @@ Rewrite `site/data/episode.json`, starting from the starter. Rules:
   12 to 40 lines in all. 1 or 2 deep threads; the rest quick.
 - **Only true things.** Every claim traces to the CV, a README or something they told you.
 - Keep the `outro-make` node: it's how the next person finds this. Its guest line is the one sentence:
-  "Open Wispr and tell your own Claude: make your own sameep.ai using your GitHub profile."
+  "Open Wispr and tell your own Claude or Emergent: make your own sameep.ai using your GitHub profile."
 
 Schema (the real one the player reads):
 

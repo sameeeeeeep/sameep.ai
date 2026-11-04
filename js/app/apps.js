@@ -95,8 +95,8 @@ async function openBuiltWith(wm) {
   const top = Math.max(1, ...byDay.map(([, v]) => v));
   const day = (iso) => new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short' });
   w.body.replaceChildren(h('div.built',
-    h('p.built__t', `Built in ${days} days, by talking to Claude`),
-    h('p.built__s', `Claude Code did the building. Much of the talking went through Wispr Flow: ${Math.round((d.voice?.spokenShare || 0) * 100)}% of my prompt words, at least, were dictated.`),
+    h('p.built__t', `Built in ${days} days, by talking to Emergent and Claude`),
+    h('p.built__s', `Emergent and Claude Code did the building. Much of the talking went through Wispr Flow: ${Math.round((d.voice?.spokenShare || 0) * 100)}% of my prompt words, at least, were dictated.`),
     h('ul.built__tiles',
       tile(n(days), 'days'),
       tile(n(C.sessions), 'Claude sessions', `up to ${n(C.peakParallelSessions)} at once`),
@@ -275,7 +275,7 @@ export function buildApps(ctx) {
       w.body.append(h('div.simpletext',
         h('p', 'READ ME'),
         h('p', 'This site was talked into existence.'),
-        h('p', 'Every spec line, every “no, warmer”, every “scroll back and check it reverses” was dictated into Wispr Flow and handed to Claude as a prompt. The episode is drawn from the same dictation, so the AI version of me rambles the way I actually do.'),
+        h('p', 'Every spec line, every “no, warmer”, every “scroll back and check it reverses” was dictated into Wispr Flow and handed to Emergent and Claude as a prompt. The episode is drawn from the same dictation, so the AI version of me rambles the way I actually do.'),
         h('p', 'The subtitles in the podcast do what Flow does: you’ll see the raw version first, ums and all, then watch it clean itself up.'),
         h('p', 'Steering works the same way. Click into “Say it with Flow…”, hold your Flow key, and say where you want to go.'),
         h('p', 'Everything is original: the pixel icons, the modem noise (synthesised in your browser), the studio, the cast. No real logos were harmed.'),
@@ -293,7 +293,7 @@ export function buildApps(ctx) {
           h('p.about__title', 'OFF THE CV OS 8.6'),
           h('p.small', 'Built-in memory: 32 MB'),
           h('p.small', 'Largest unused block: your attention span'),
-          h('p.small', 'Built by voice with Wispr Flow and Claude. Fonts: Jersey 10, Doto, Spline Sans Mono, VT323, Patrick Hand.'),
+          h('p.small', 'Built by voice with Wispr Flow, Emergent and Claude. Fonts: Jersey 10, Doto, Spline Sans Mono, VT323, Patrick Hand.'),
           P.links.find((l) => l.kind === 'github') && h('a.btn', { href: P.links.find((l) => l.kind === 'github').url, target: '_blank', rel: 'noopener' }, 'Source on GitHub ↗'))));
     } },
     { id: 'trash', label: 'Trash', icon: 'trash', open() {

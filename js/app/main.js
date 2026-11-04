@@ -275,9 +275,9 @@ function buildDesktop(screen, persona) {
 }
 
 // ---------------------------------------------------------------------------
-// the one call to action, everywhere: say one sentence to your own Claude
+// the one call to action, everywhere: say one sentence to your own Claude or Emergent
 const MAKE_URL = 'https://sameep.ai/make';
-const MAKE_SAY = 'Use Wispr to tell your Claude to “make your own sameep.ai using your GitHub profile”';
+const MAKE_SAY = 'Use Wispr to tell your Claude or Emergent to “make your own sameep.ai using your GitHub profile”';
 function endCard(wm, persona, pod, fromIcon) {
   const others = persona.links.filter((l) => l.kind !== 'make');
   const L = wm.get('podcast')?.el.getBoundingClientRect();
@@ -286,7 +286,7 @@ function endCard(wm, persona, pod, fromIcon) {
   w.body.append(h('div.end',
     h('p.end__kicker', fromIcon ? 'One sentence' : 'That’s a wrap'),
     h('h2.end__title', 'Make your own.'),
-    h('p.end__lede', `This app isn’t only ${persona.shortName}’s. Use Wispr to tell your Claude:`),
+    h('p.end__lede', `This app isn’t only ${persona.shortName}’s. Use Wispr to tell your Claude or Emergent:`),
     h('p.end__say', { style: 'margin:0 0 14px;padding:10px 12px;border:2px solid currentColor;font:500 15px/1.4 "Spline Sans Mono",monospace' }, '“Make your own sameep.ai using your GitHub profile.”'),
     h('p.end__lede', 'It reads your GitHub, writes your episode in your voice, draws your pixel guest, and builds this same iMac for you.'),
     h('a.btn.btn--primary.btn--lg', { href: MAKE_URL, target: '_blank', rel: 'noopener' }, 'sameep.ai/make ↗'),

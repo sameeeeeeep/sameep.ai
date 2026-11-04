@@ -49,7 +49,7 @@ function nextStops() {
     { id: 'n-hello', at: () => null, say: 'Thanks for listening. Here’s where to go next.' },
     { id: 'n-work', at: q('[data-card="folder-growth"]'), say: 'Open any folder on the left for a project’s own page.' },
     { id: 'n-gos', at: q('[data-app="growthos"]'), say: 'Wispr Growth OS: the plan I’d start with.', wisprOnly: true },
-    { id: 'n-make', at: q('.is-switchboard .icon'), say: 'Make your own: say one sentence to your Claude.' },
+    { id: 'n-make', at: q('.is-switchboard .icon'), say: 'Make your own: say one sentence to your Claude or Emergent.' },
     { id: 'n-games', at: q('.is-moto .icon'), say: 'Or play one of mine: Moto Thappad, Samosa Snake, Rangoli Breakout.' },
     { id: 'n-juke', at: q('.win--juke, .win--island, .is-jukebox .icon'), say: `${PLAYER.name} is still here, if you want more ’99.` },
     { id: 'n-rec', at: q('[data-card="recording"]'), say: 'And the Recording: three minutes, the short version.', wisprOnly: true },
