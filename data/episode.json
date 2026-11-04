@@ -6813,7 +6813,7 @@
     {
      "id": "meta-why-03",
      "who": "sameep",
-     "text": "And I realised Claude already knows all my projects. My repos, my notes, all of it. So making the portfolio with Claude was going to be the easy part. I loved the brief, so I got a little extra creative.",
+     "text": "And I realised Claude already knows all my projects. My repos, my notes, all of it. So making the portfolio with Emergent and Claude was going to be the easy part. I loved the brief, so I got a little extra creative.",
      "audio": "audio/clips/meta-why-03.mp3"
     },
     {
@@ -7085,7 +7085,7 @@
   "meta-workflow": {
    "chapter": "How this was made",
    "title": "The workflow",
-   "blurb": "Think out loud with Wispr, turn it into a spec, let Claude build, review, repeat.",
+   "blurb": "Think out loud with Wispr, turn it into a spec, let Emergent and Claude build, review, repeat.",
    "lines": [
     {
      "id": "meta-workflow-01",
@@ -7116,7 +7116,7 @@
     {
      "id": "meta-workflow-03",
      "who": "sameep",
-     "text": "After that it's a loop. Claude builds, I look at it, I say what's off, out loud again, and it fixes. A few sessions running side by side, one on the voices, one on the faces, one on the hosts. My job was to keep reviewing and keep talking.",
+     "text": "After that it's a loop. Emergent and Claude build, I look at it, I say what's off, out loud again, and it fixes. A few sessions running side by side, one on the voices, one on the faces, one on the hosts. My job was to keep reviewing and keep talking.",
      "audio": "audio/clips/meta-workflow-03.mp3",
      "visual": {
       "type": "stats",
@@ -7124,7 +7124,7 @@
       "flow": {
        "rows": [
         {
-         "t": "Claude builds"
+         "t": "Emergent and Claude build"
         },
         {
          "t": "I look at it"
@@ -7667,7 +7667,7 @@
   "meta-code": {
    "chapter": "How this was made",
    "title": "The code",
-   "blurb": "Claude Code, steered by voice, in parallel sessions.",
+   "blurb": "Emergent and Claude Code, steered by voice, in parallel sessions.",
    "lines": [
     {
      "id": "meta-code-01",
@@ -7692,7 +7692,7 @@
     {
      "id": "meta-code-02",
      "who": "sameep",
-     "text": "Claude Code, mostly, with me steering it by voice. I'd dictate a messy brain dump with Wispr Flow, and Claude turns it into a plan and splits it across sessions: the burning CV, the app, the faces, the voices. They ran side by side, overnight, and Switchboard popped a card into my notch whenever something needed a decision.",
+     "text": "Emergent and Claude Code, mostly, with me steering it by voice. I'd dictate a messy brain dump with Wispr Flow, and Claude turns it into a plan and splits it across sessions: the burning CV, the app, the faces, the voices. They ran side by side, overnight, and Switchboard popped a card into my notch whenever something needed a decision.",
      "audio": "audio/clips/meta-code-02.mp3",
      "visual": {
       "type": "stats",
@@ -8097,7 +8097,7 @@
     {
      "id": "outro-make-02",
      "who": "sameep",
-     "text": "Anyone, that's the point. Open Wispr and tell your own Claude one sentence: make your own sameep.ai using your GitHub profile. It reads your repos, writes your episode in your voice, draws a pixel you, and builds this same iMac. The steps are at sameep.ai slash make.",
+     "text": "Anyone, that's the point. Open Wispr and tell your own Claude or Emergent one sentence: make your own sameep.ai using your GitHub profile. It reads your repos, writes your episode in your voice, draws a pixel you, and builds this same iMac. The steps are at sameep.ai slash make.",
      "messy": "Anyone, that's, that's the whole point. You open Wispr and you just tell your Claude, like, one sentence. Make your own sameep.ai using your GitHub profile. And it reads your repos, writes the episode in your voice, draws the little pixel you, builds the iMac. It's all at sameep.ai slash make.",
      "demo": {
       "type": "link",
@@ -8161,7 +8161,7 @@
     {
      "id": "outro-02",
      "who": "sameep",
-     "text": "Thanks for steering. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want one of these for yourself, it's one sentence to your Claude. The steps are at sameep.ai slash make.",
+     "text": "Thanks for steering. All the code is on GitHub, sameeeeeeep, with a lot of e's. And if you want one of these for yourself, it's one sentence to your Claude or Emergent. The steps are at sameep.ai slash make.",
      "audio": "audio/clips/outro-02-m.mp3",
      "look": "front"
     },
