@@ -407,6 +407,7 @@ function briefView(c, rerender, { go } = {}) {
     h('dl.dl',
       h('dt', 'The idea'), h('dd', rich(c.idea)),
       c.why && [h('dt', 'Why it works'), h('dd', rich(c.why))],
+      c.map?.length && [h('dt', 'What each mod captures'), h('dd', h('ul.ul', c.map.map((m) => h('li', h('strong', m.mod), ': ', m.job, h('span', { style: { opacity: 0.8, whiteSpace: 'nowrap' } }, ` (${m.state})`)))))],
       c.steps?.length && [h('dt', 'First 3 steps'), h('dd', h('ol.ul', c.steps.map((t) => h('li', rich(t)))))],
       h('dt', 'Cost and effort'), h('dd', rich(c.budget || 'tbc')),
       h('dt', 'KPIs'), h('dd', ul(c.kpis || [])),
@@ -428,7 +429,7 @@ function protoLink(p) {
   return li;
 }
 function briefText(c) {
-  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? ['First 3 steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), c.example ? `Real example: ${c.example}` : '', ...protosOf(c).map((p) => `Prototype: ${p.t}, https://sameep.ai${p.href}`), '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
+  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? ['First 3 steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), ...(c.map?.length ? ['What each mod captures:', ...c.map.map((m) => `- ${m.mod}: ${m.job} (${m.state})`)] : []), c.example ? `Real example: ${c.example}` : '', ...protosOf(c).map((p) => `Prototype: ${p.t}, https://sameep.ai${p.href}`), '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
     `- Causes: ${c.so?.causes || ''}`, `- Could backfire: ${c.so?.backfire || ''}`, `- Compounds: ${c.so?.compounds || ''}`, `- Kill if: ${c.so?.kill || ''}`].join('\n').replace(/\s\[\d+(?:,\s*\d+)*\]/g, '');
 }
 function newCampaignForm(rerender) {
