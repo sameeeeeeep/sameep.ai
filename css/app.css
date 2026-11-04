@@ -1457,6 +1457,11 @@ a.icon { text-decoration: none; }
 @keyframes lock-pulse { 50% { opacity: .35; } }
 .lock__mid { width: 100%; max-width: 1100px; min-height: 0; display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: 12px; }
 .lock__field { position: relative; width: 100%; height: 100%; min-height: 240px; }
+/* the lobby floats over the whole lock screen; only the clock block and the name box sit above it */
+.lock > .lock__mid > .lock__field { position: absolute; inset: 0; width: auto; height: auto; min-height: 0; z-index: 1; pointer-events: none; }
+.lock__field .lock__user:not(.is-gone) { pointer-events: auto; }
+.lock__top, .lock__bottom { position: relative; z-index: 2; }
+.lock__mid > .lock__bottom { grid-row: 2; }
 .lock__field[hidden], .lock__picked[hidden], .lock__add[hidden], .lock__bottom[hidden] { display: none; }
 .lock__user { position: absolute; left: 0; top: 0; width: calc(var(--bub, 54px) * 2); display: grid; justify-items: center; gap: 4px; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; will-change: transform; font-family: inherit; }
 .lock__user > * { transition: transform .25s var(--ease-out), opacity .3s; }
@@ -1485,7 +1490,7 @@ a.icon { text-decoration: none; }
 .lock__field .lock__user.is-gone > *, .lock__field .lock__user.is-gone .lock__role { opacity: 0; }
 /* the ppt.live lobby's own motion: each face bobs and tilts on its beat (show.html .gpill pbob),
    a newcomer pops in (ppop), and a picked face holds still while it turns green (.nbubble.here) */
-.lock__field { overflow: hidden; }  /* faces float in and out at the sides, clipped there */
+.lock__field { overflow: hidden; }  /* safety: every face is kept fully on screen anyway */
 .lock__field .lock__face { animation: lock-bob var(--d, 5s) ease-in-out var(--dl, 0s) infinite; will-change: transform; }
 .lock__field .lock__user.is-new .lock__face { animation: lock-pop .75s cubic-bezier(.2,1.6,.4,1) both, lock-bob var(--d, 5s) ease-in-out .75s infinite; }
 .lock__field .lock__user.is-picked .lock__face { animation-play-state: paused; }
