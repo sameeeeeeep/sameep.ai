@@ -9,7 +9,7 @@ import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { stylisePhoto } from './cast.js';
-import { jukebox, installer, installed, splash, login, FOLDERS, openFolder, openGames } from './era.js';
+import { jukebox, installer, installed, splash, login, FOLDERS, STARS, MY_GAMES, openFolder, openGames, openGame } from './era.js';
 import { fillUrl } from './demos.js';
 import { installCards } from './infocard.js';
 import { startTour, guideOn, endGuide } from './tour.js';
@@ -77,8 +77,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     open(id) { apps.find((a) => a.id === id)?.open(); },
     setWallHour: (hr) => desk.setWall(hr),
     endCard: (fromIcon) => { endCard(wm, persona, () => pod, fromIcon); if (!fromIcon) ctx.afterShow?.(); },
-    tour: () => startTour({ area: desk.area }),  // Help › Show me around, and the ? by the clock
-    // the jukebox icon: bring it back after it's been closed (or open it for the first time on ?fast)
+    tour: () => startTour({ area: desk.area, openPlayer: () => ctx.openJukebox() }),  // Help › Show me around, and the ? by the clock
+    // the player's icon: bring it back after it's been closed (or open it for the first time on ?fast)
     openJukebox() {
       const w = wm.get('jukebox');
       if (w) { if (w.el.classList.contains('is-shaded')) w.shade(false); w.focus(); return; }
@@ -87,15 +87,16 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   };
   const apps = buildApps(ctx);
   const pick = (ids) => ids.map((id) => apps.find((a) => a.id === id)).filter(Boolean);
-  // left: all the work, in five folders (Growth OS adds itself above them). right: the system, HD up top and
-  // Trash at the bottom, plus the 1999 toys, which aren't projects
+  // left: the work. Folders in the first column (Growth OS adds itself above them), the best of them out on
+  // the desktop in the second, so nothing good hides in a folder. right: the system (HD up top, Trash at the
+  // bottom) and the toys, then a column of games
   const folderApp = (f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) });
-  // projects on the left; the Fun folder sits on the right with the games and the toys
-  desk.renderProjects([...FOLDERS.filter((f) => f.id !== 'fun').map(folderApp), ...pick(['work']),
+  desk.renderProjects([...FOLDERS.map(folderApp), ...pick(['work'])],
     // the application extras: the Wispr version only (the pages stay reachable by URL)
-    ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])], []);
-  desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
-    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, folderApp(FOLDERS.find((f) => f.id === 'fun')), { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }, ...pick(['trash'])]);
+    [...STARS, ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])]);
+  desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
+    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, ...pick(['trash'])],
+  [...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), { id: 'games', label: 'More games', icon: 'proj-games', open: () => openGames(wm, { reduced }) }]);
   desk.renderMenus(ctx, apps);
   // hover (or first tap) on a project or folder: what it is, my part, one proof point, where it opens
   installCards({ area: desk.area, folders: FOLDERS, loadList: () => loadWork(persona).then((r) => r.list),
@@ -115,7 +116,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       desk.setInstalling(true);
       if (isNarrow()) desk.notice('OFF THE CV is installing. It only takes a moment.');
       // every visit: the guide plays while it installs and keeps going after; the Open countdown waits for it
-      tour = startTour({ area: desk.area });
+      tour = startTour({ area: desk.area, openPlayer: () => ctx.openJukebox() });
       tour?.finished.then(() => { if (ctx.installing) ctx.skipInstall?.(); });  // skipped during the install: no need to wait
       await installer(wm, { reduced, minMs: tour ? 8000 : 3000, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
       ctx.skipInstall = null;
@@ -131,7 +132,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     } else await wait(reduced ? 0 : 500);
     pod.open();
     // after the show (closed, cancelled or finished): a short "what's next" guide
-    const whatsNext = () => setTimeout(() => { if (!guideOn() && !document.querySelector('.lock')) startTour({ area: desk.area, kind: 'next' }); }, 900);
+    const whatsNext = () => setTimeout(() => { if (!guideOn() && !document.querySelector('.lock')) startTour({ area: desk.area, kind: 'next', openPlayer: () => ctx.openJukebox() }); }, 900);
     new MutationObserver(() => { if (pod.win?.el.hidden) whatsNext(); }).observe(pod.win.el, { attributes: true, attributeFilter: ['hidden'] });
     ctx.afterShow = whatsNext;
     const q = new URLSearchParams(location.search);
@@ -191,11 +192,11 @@ function buildDesktop(screen, persona) {
     // right edge: system icons (Mac OS put the disk top right and the Trash bottom right), then the fun stuff
     // in its own column; on a phone the fun stuff sits after the projects
     renderIcons(apps, fun = []) {
-      icons.replaceChildren(...apps.map((a) => h('li.is-' + a.id, appIcon(a))), ...fun.map((a, i) => h('li.is-fun' + (i ? '' : '.is-fun-first'), appIcon(a, 'icon--proj'))));
+      icons.replaceChildren(...apps.map((a) => h('li.is-' + a.id, appIcon(a))), ...fun.map((a, i) => h('li.is-fun.is-' + a.id + (i ? '' : '.is-fun-first'), appIcon(a, 'icon--proj'))));
     },
-    // projects: their own column on the left, each opens the real thing in a new tab
+    // projects: the folders, then the stars in a column of their own; each star opens the real thing in a new tab
     renderProjects(apps, list) {
-      const ul = h('ul.icons.icons--proj', { 'aria-label': 'Projects' }, ...apps.map((a) => h('li', appIcon(a))), ...list.map((p) => h('li', appIcon(p, 'icon--proj'))));
+      const ul = h('ul.icons.icons--proj', { 'aria-label': 'Projects' }, ...apps.map((a) => h('li', appIcon(a))), ...list.map((p, i) => h('li.is-star' + (i ? '' : '.is-star-first'), appIcon(p, 'icon--proj'))));
       home.append(ul);
     },
     // desktop: the icon appears when the install is done; phone: it sits there downloading, like an app

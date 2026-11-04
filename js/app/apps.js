@@ -5,6 +5,7 @@ import { sound } from './audio.js';
 import { renderSubtitle } from './subtitle.js';
 import { openDemo, fillUrl } from './demos.js';
 import { isWispr } from '../version.js';
+import { PLAYER } from './era.js';
 
 const FILLERS = /\b(um+|uh+|erm|like|you know|i mean|basically|kind of|sort of|actually|literally|so yeah|right\?)\b[,]?\s*/gi;
 
@@ -241,7 +242,7 @@ export function buildApps(ctx) {
       w.body.append(board, h('p.small', 'Multiplayer: 1 cursor (you). Drag to draw.'));
     } },
     { id: 'styleguide', label: 'Wispr Style Guide', icon: 'styleguide', open: () => openStyleGuide(wm) },
-    { id: 'jukebox', label: 'Jukebox ’99', icon: 'jukebox', open: () => ctx.openJukebox() },
+    { id: 'jukebox', label: PLAYER.name, icon: 'jukebox', open: () => ctx.openJukebox() },
     { id: 'switchboard', label: 'Make your own', icon: 'switchboard', open: () => ctx.endCard(true) },
     { id: 'sayhi', label: 'Say hi', icon: 'sayhi', open() {
       const w = wm.win('sayhi', { title: 'Say hi', width: 340 });

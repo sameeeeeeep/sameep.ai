@@ -7,6 +7,7 @@
 // Phones and reduced motion: no gliding cursor, the caption sits by a highlighted icon instead.
 import { h, clamp, isNarrow, reducedMotion } from './util.js';
 import { isWispr } from '../version.js';
+import { PLAYER } from './era.js';
 
 const STOP = Symbol('stop');
 const GLIDE = 1500;                                                  // one cursor move, eased (1.2–1.8 s)
@@ -27,11 +28,13 @@ function mainStops(phone) {
   return [
     { id: 'welcome', at: showEl, say: 'Welcome! My portfolio, in my voice, is ready. Open it any time. Meanwhile, a quick tour.' },
     phone
-      ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work, in folders: campaigns, products, events and tools. Tap one.' }
-      : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: campaigns, products, events and tools, in folders. Hover for details.' },
+      ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work: folders, then the best bits on their own. Tap one.' }
+      : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: the best bits up front, the rest in folders. Hover for details.' },
     phone
-      ? { id: 'right', at: q('[data-card="folder-fun"]'), say: 'Further down, the fun stuff: the jukebox, the style guide, games.' }
-      : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the fun stuff: the jukebox, the Wispr style guide, games and more.' },
+      ? { id: 'right', at: q('.is-moto .icon'), say: 'Further down, the toys, and three games I made the ’99 way.' }
+      : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the toys, and three games I made the ’99 way.' },
+    // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
+    { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing the shared folder of ’99. Skip a track, or pause it.` },
     { id: 'steer', at: showEl, say: 'Steer the show: hold your Wispr Flow key and say where to go. Or type.', extra: pill },
     { id: 'crt', at: q('.menubar__crt'), say: 'The screen has looks. Here they are.', desktopOnly: true, crt: true },
     phone
@@ -47,18 +50,20 @@ function nextStops() {
     { id: 'n-work', at: q('[data-card="folder-growth"]'), say: 'Open any folder on the left for a project’s own page.' },
     { id: 'n-gos', at: q('[data-app="growthos"]'), say: 'Wispr Growth OS: the plan I’d start with.', wisprOnly: true },
     { id: 'n-make', at: q('.is-switchboard .icon'), say: 'Make your own: say one sentence to your Claude.' },
-    { id: 'n-juke', at: q('.win--juke, .win--island, .is-jukebox .icon'), say: 'The jukebox is still here, if you want more ’99.' },
+    { id: 'n-games', at: q('.is-moto .icon'), say: 'Or play one of mine: Moto Thappad, Samosa Snake, Rangoli Breakout.' },
+    { id: 'n-juke', at: q('.win--juke, .win--island, .is-jukebox .icon'), say: `${PLAYER.name} is still here, if you want more ’99.` },
     { id: 'n-rec', at: q('[data-card="recording"]'), say: 'And the Recording: three minutes, the short version.', wisprOnly: true },
   ];
 }
 
-export function startTour({ area, kind = 'main' } = {}) {
+export function startTour({ area, kind = 'main', openPlayer } = {}) {
   current?.end();
   if (!document.getElementById('font-wispr')) document.head.append(h('link#font-wispr', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&family=Figtree:wght@400;600&display=swap' }));
   const phone = isNarrow(), glide = !phone && !reducedMotion();
   let stops = (kind === 'next' ? nextStops() : mainStops(phone)).filter((s) => (!s.wisprOnly || isWispr) && (!s.desktopOnly || !phone));
   if (kind === 'next') { stops = stops.filter((s) => !seenNext.has(s.id)); if (stops.length < 2) return null; }
-  stops = stops.filter((s) => s.id.endsWith('hello') || s.id === 'welcome' || s.at());  // count only stops that have something to point at
+  const keep = (s) => s.id.endsWith('hello') || s.id === 'welcome' || (s.open && openPlayer) || s.at();
+  stops = stops.filter(keep);  // count only stops that have something to point at
 
   const ghost = glide ? h('div.gtour__cursor', { 'aria-hidden': 'true' }) : null;
   if (ghost) ghost.innerHTML = ARROW;  // a fixed, local SVG string
@@ -123,7 +128,7 @@ export function startTour({ area, kind = 'main' } = {}) {
     if (!alive) return;
     tidy();
     if (k < 0) k = 0;
-    while (k < stops.length && !stops[k].id.endsWith('hello') && stops[k].id !== 'welcome' && !stops[k].at()) k++;  // gone since: skip it
+    while (k < stops.length && !keep(stops[k])) k++;  // gone since: skip it
     if (k >= stops.length) return end(true);
     const my = ++token; i = k;
     const s = stops[k];
@@ -132,10 +137,11 @@ export function startTour({ area, kind = 'main' } = {}) {
     back.disabled = k === 0;
     next.textContent = k === stops.length - 1 ? 'Done' : 'Next';
     try {
+      if (s.open && !s.at()) { openPlayer(); opened = s.at(); await wait(400, my); }
       const el = s.at();
       light(el);
       say(s.say, s.extra?.());
-      await moveTo(el, my);
+      await moveTo(el, my, GLIDE, s.dx ?? 0.5, s.dy ?? 0.5);
       if (s.peek && glide && el) await peek(el, my);
       else if (s.crt && el) await crtDemo(my);
       else await wait(holdFor(s.say), my);

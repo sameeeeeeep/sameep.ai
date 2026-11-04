@@ -1,4 +1,4 @@
-// era.js — the first minute on the desktop, as 1999 did it. A jukebox is already playing a song
+// era.js — the first minute on the desktop, as 1999 did it. The amp player is already playing a song
 // that every PC had in its shared folder; OFF THE CV installs in the background with an
 // installer that takes its time; when it's done the music fades out and the show launches itself.
 // Also: one desktop icon per project, each opening the real thing in a new tab.
@@ -126,7 +126,6 @@ export const FOLDERS = [
   ] },
   { id: 'fun', label: 'Fun', card: { what: 'Side quests and half-finished things', proof: 'MacCat’s cats led to wallpap’s, then psspss', thumb: 'video/wallpap-poster.webp', node: 'fun-intro' }, items: [
     { id: 'wallpap', label: 'wallpap', url: 'https://wallpap.live' },
-    { id: 'psspss', label: 'psspss', url: 'https://github.com/sameeeeeeep/psspss' },
     { id: 'agentbar', label: 'The Agent Bar', url: 'https://thelastprompt.ai/agentbreakroom/' },
     { id: 'maccat', label: 'MacCat', url: 'https://github.com/sameeeeeeep/maccat' },
     { id: 'bluetune', label: 'Bluetune', url: 'https://thelastprompt.ai/bluetune/' },
@@ -135,9 +134,22 @@ export const FOLDERS = [
   ] },
 ];
 
+// the best of the folders, out on the desktop where they can be seen (the folders keep the long tail).
+// psspss sits here on its own: it isn't a side quest any more
+const every = () => FOLDERS.flatMap((f) => f.items);
+const SHORT = { slumber: 'Slumber Party' };  // desktop labels get two short lines
+export const STARS = [
+  { id: 'psspss', label: 'psspss', url: 'https://github.com/sameeeeeeep/psspss' },
+  ...['slumber', 'diwali', 'pptlive', 'agentbar', 'wallpap'].map((id) => every().find((g) => g.id === id)).filter(Boolean),
+].map((g) => ({ ...g, label: SHORT[g.id] || g.label, card: g.id }));
+
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 // ---------------------------------------------------------------- the jukebox
+// a parody of the 1999 amp players: its own skin, a spectrum, a seek bar, and a Napster-ish line saying
+// which stranger you're "downloading" it from. The name lives here only, so renaming it is one line
+export const PLAYER = { name: 'Macster', ver: '2.99' };
+const PEERS = ['dilsedesi_99', 'bunty_rulez', 'xXmohitXx', 'chaiwala2k', 'juhu_gurl', 'dj_pappu', 'mp3king_delhi', 'rahul_4ever'];
 export function jukebox(wm, { reduced } = {}) {
   const narrow = isNarrow();
   // bottom left, just clear of the projects column; on a phone it hangs from the menu bar like a live activity
@@ -146,13 +158,13 @@ export function jukebox(wm, { reduced } = {}) {
   const x = col && area && !narrow ? col.right - area.left + 14 : 16;
   // audio only: the YouTube player is mounted invisibly (it has to be on screen to play); the LCD is the only UI
   const host = h('div.juke__host', { 'aria-hidden': 'true' });
-  const w = wm.win('jukebox', { title: 'Jukebox ’99', width: 320, x, y: 9999, className: 'win--juke' + (narrow ? ' win--island' : ''), sheet: false,
+  const w = wm.win('jukebox', { title: `${PLAYER.name} ${PLAYER.ver}`, width: 340, x, y: 9999, className: 'win--juke' + (narrow ? ' win--island' : ''), sheet: false,
     onClose: () => { host.remove(); layer?.classList.remove('has-island'); removeEventListener('message', onMsg); off?.(); clearInterval(timer); } });
   if (narrow) layer?.classList.add('has-island');
   const Q = shuffled(PLAYLIST);  // this visit's order: Next, Previous and auto-advance all follow it
   let i = 0;
   const src = `https://www.youtube-nocookie.com/embed/${Q[0].id}?autoplay=1&enablejsapi=1&controls=0&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&mute=${sound.on ? 0 : 1}&origin=${encodeURIComponent(location.origin)}`;
-  const frame = h('iframe.juke__vid', { src, title: 'Jukebox ’99 (audio)', allow: 'autoplay; encrypted-media', referrerpolicy: 'strict-origin-when-cross-origin', tabindex: '-1' });
+  const frame = h('iframe.juke__vid', { src, title: `${PLAYER.name} (audio)`, allow: 'autoplay; encrypted-media', referrerpolicy: 'strict-origin-when-cross-origin', tabindex: '-1' });
   const post = (msg) => { try { frame.contentWindow?.postMessage(JSON.stringify(msg), '*'); } catch { /* not ready */ } };
   const cmd = (func, args = []) => post({ event: 'command', func, args });
   const clock = h('span.juke__time', '0:00');
@@ -160,29 +172,34 @@ export function jukebox(wm, { reduced } = {}) {
   const track = h('span.juke__track');
   const marquee = h('div.juke__marquee', track);
   const status = h('p.juke__status');
+  const seekFill = h('i');
+  const seek = h('div.juke__seek', { 'aria-hidden': 'true' }, seekFill);
   const bars = h('div.juke__bars', { 'aria-hidden': 'true' }, Array.from({ length: 14 }, (_, k) => h('i', { style: { animationDelay: (-(k * 37) % 900) + 'ms' } })));
-  let t = 0, playing = true, timer = 0, live = false, lastGo = 0;
+  let t = 0, dur = 0, playing = true, timer = 0, live = false, lastGo = 0;
+  const paint = () => { clock.textContent = fmt(t); seekFill.style.transform = `scaleX(${dur ? Math.min(1, t / dur).toFixed(3) : 0})`; };
   // the clock ticks locally, and snaps to the player's own time whenever it reports one
-  const run = () => { clearInterval(timer); timer = setInterval(() => { if (playing) { t += 1; clock.textContent = fmt(t); } }, 1000); };
+  const run = () => { clearInterval(timer); timer = setInterval(() => { if (playing) { t += 1; paint(); } }, 1000); };
   const setPlaying = (on, label) => { playing = on; w.el.classList.toggle('is-playing', on); state.textContent = label || (on ? '▶' : '❚❚'); toggle.textContent = on ? '❚❚' : '▶'; toggle.setAttribute('aria-label', on ? 'Pause' : 'Play'); };
   const show = () => {
     const s = Q[i];
-    track.textContent = `${i + 1}. ${s.artist.toUpperCase()} - ${s.title.toUpperCase()} *** 1999 *** `.repeat(2);
-    status.textContent = `Now playing · ${i + 1} of ${Q.length} · ${fileOf(s)}`;
-    w.el.setAttribute('aria-label', `Jukebox ’99, now playing ${s.title} by ${s.artist}`);
+    track.textContent = `${i + 1}. ${s.artist.toUpperCase()} - ${s.title.toUpperCase()} *** ${PLAYER.name.toUpperCase()} *** `.repeat(2);
+    status.textContent = `${fileOf(s)} · from ${PEERS[(i * 5 + 3) % PEERS.length]} · ${(2.1 + ((i * 7) % 40) / 10).toFixed(1)} KB/s`;
+    w.el.setAttribute('aria-label', `${PLAYER.name}, now playing ${s.title} by ${s.artist}`);
   };
   const go = (n) => {
     i = (n + Q.length) % Q.length; lastGo = Date.now();
-    t = 0; clock.textContent = '0:00';
+    t = 0; dur = 0; paint();
     cmd('loadVideoById', [Q[i].id]);
     setPlaying(true); show(); sound.tick('click');
   };
   // the player can report one ending twice, and the old track's end can arrive just after a skip: ignore those
   const ended = (grace = 2500) => { if (Date.now() - lastGo > grace) go(i + 1); };
-  const next = () => go(i + 1), prev = () => (t > 3 ? (cmd('seekTo', [0, true]), t = 0, clock.textContent = '0:00') : go(i - 1));
+  const next = () => go(i + 1), prev = () => (t > 3 ? (cmd('seekTo', [0, true]), t = 0, paint()) : go(i - 1));
   const toggle = h('button.juke__toggle', { type: 'button', 'aria-label': 'Pause', onclick: (e) => { e.stopPropagation(); if (playing) { cmd('pauseVideo'); setPlaying(false); } else { cmd('playVideo'); setPlaying(true); } } }, '❚❚');
   const skip = h('button.juke__toggle.juke__skip', { type: 'button', 'aria-label': 'Next track', onclick: (e) => { e.stopPropagation(); next(); } }, '⏭');
   const btn = (txt, aria, fn) => h('button.juke__btn', { type: 'button', 'aria-label': aria, title: aria, onclick: (e) => { e.stopPropagation(); fn(); } }, txt);
+  const vol = h('input.juke__vol', { type: 'range', min: '0', max: '100', value: '100', 'aria-label': 'Volume', title: 'Volume' });
+  vol.addEventListener('input', () => cmd('setVolume', [+vol.value]));
   // the player talks back over postMessage: its time, and when a track ends (state 0) or can't play (onError)
   function onMsg(e) {
     if (e.source !== frame.contentWindow) return;
@@ -193,7 +210,9 @@ export function jukebox(wm, { reduced } = {}) {
     else if (d.event === 'onError') ended(300);  // blocked or removed upload: skip it
     else if (d.event === 'infoDelivery' && d.info) {
       if (d.info.playerState === 0) ended();
-      if (typeof d.info.currentTime === 'number' && d.info.currentTime > 0) { t = Math.floor(d.info.currentTime); clock.textContent = fmt(t); }
+      if (typeof d.info.duration === 'number' && d.info.duration > 0) dur = d.info.duration;
+      if (typeof d.info.currentTime === 'number' && d.info.currentTime > 0) t = Math.floor(d.info.currentTime);
+      paint();
     }
   }
   addEventListener('message', onMsg);
@@ -201,14 +220,16 @@ export function jukebox(wm, { reduced } = {}) {
   (layer || w.el).append(host);
   w.body.append(h('div.juke',
     h('div.juke__lcd',
-      h('div.juke__row', state, clock, h('span.juke__kbps', '128 kbps · 44 kHz · stereo')),
+      h('div.juke__row', state, clock, h('span.juke__kbps', h('b', '128'), ' kbps ', h('b', '44'), ' kHz ', h('em', 'stereo'))),
       marquee, bars, toggle, skip),
+    seek,
     h('div.juke__ctrl',
       btn('⏮', 'Previous track', prev),
       btn('▶', 'Play', () => { cmd('playVideo'); setPlaying(true); }),
       btn('❚❚', 'Pause', () => { cmd('pauseVideo'); setPlaying(false); }),
-      btn('■', 'Stop', () => { cmd('pauseVideo'); cmd('seekTo', [0, true]); t = 0; clock.textContent = '0:00'; setPlaying(false, '■'); }),
-      btn('⏭', 'Next track', next)),
+      btn('■', 'Stop', () => { cmd('pauseVideo'); cmd('seekTo', [0, true]); t = 0; paint(); setPlaying(false, '■'); }),
+      btn('⏭', 'Next track', next),
+      vol),
     status));
   show();
   w.el.classList.add('is-playing');
@@ -224,8 +245,8 @@ export function jukebox(wm, { reduced } = {}) {
     win: w,
     // the end of an era: volume down over a couple of seconds, then the tape stops
     async fadeOut(ms = 2600) {
-      const steps = 13;
-      for (let k = steps; k >= 0; k--) { cmd('setVolume', [Math.round((k / steps) * 100)]); await wait(ms / steps); }
+      const steps = 13, from = +vol.value;
+      for (let k = steps; k >= 0; k--) { cmd('setVolume', [Math.round((k / steps) * from)]); await wait(ms / steps); }
       cmd('pauseVideo');
       setPlaying(false, '■');
       clearInterval(timer);
@@ -271,7 +292,7 @@ export function installer(wm, { ready, minMs = 3000, reduced, onProgress, bindSk
   w?.body.append(h('div.inst',
     h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installing “OFF THE CV”'), h('p.inst__s', 'Items remaining to be installed: ', left))),
     doing, bar, file,
-    h('div.inst__row', h('span.inst__note', 'Projects are on the left, fun things and games on the right.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Skip'))));
+    h('div.inst__row', h('span.inst__note', 'My work is on the left. Toys and games are on the right.'), h('button.btn', { type: 'button', onclick: () => skip() }, 'Skip'))));
   return new Promise((resolve) => {
     const t0 = performance.now();
     const total = reduced ? 1500 : minMs;
@@ -327,8 +348,15 @@ export async function splash(layer, persona, { reduced } = {}) {
   el.remove();
 }
 
-// ---------------------------------------------------------------- the Games folder
-// 90s games that still run in a browser, each opening in a new tab
+// ---------------------------------------------------------------- the games
+// three I made in the spirit of '99 (js/app/games/*.js, each in its own window), then classics that still
+// run in a browser, each opening in a new tab
+const GAME_MODS = { moto: () => import('./games/moto.js'), snake: () => import('./games/snake.js'), breakout: () => import('./games/breakout.js') };
+export const MY_GAMES = [
+  { id: 'moto', label: 'Moto Thappad' },
+  { id: 'snake', label: 'Samosa Snake' },
+  { id: 'breakout', label: 'Rangoli Breakout' },
+];
 export const GAMES = [
   { id: 'minesweeper', label: 'Minesweeper', url: 'https://minesweeper.online/' },
   { id: 'solitaire', label: 'Solitaire', url: 'https://www.solitr.com/' },
@@ -339,7 +367,27 @@ export const GAMES = [
   { id: 'pacman', label: 'Pac-Man', url: 'https://www.google.com/logos/2010/pacman10-i.html' },
 ];
 
-export function openGames(wm) { openFolder(wm, { id: 'games', label: 'Games', items: GAMES }); }
+// one of mine in a window of its own; closing the window stops the game
+export async function openGame(wm, id, { reduced } = {}) {
+  const was = wm.get('game-' + id);
+  if (was) { was.focus(); return was; }
+  const m = await GAME_MODS[id]?.();
+  if (!m) return null;
+  let game = null;
+  const w = wm.win('game-' + id, { title: m.meta.title, width: m.meta.width, className: 'win--game', onClose: () => game?.destroy() });
+  const host = h('div.game', { tabindex: '0' });
+  w.body.append(host);
+  game = m.mount(host, { reduced, narrow: isNarrow() });
+  // the window was placed while it was empty: now the canvas is in, centre it on its real height
+  const layer = w.el.parentElement;
+  if (!isNarrow() && layer) requestAnimationFrame(() => { w.el.style.top = Math.max(12, (layer.clientHeight - w.el.offsetHeight) / 2) + 'px'; });
+  host.focus({ preventScroll: true });
+  return w;
+}
+
+export function openGames(wm, opts) {
+  openFolder(wm, { id: 'games', label: 'Games', items: [...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, opts) })), ...GAMES] });
+}
 
 // a Mac OS folder window: a grid of icons, each opening the real thing in a new tab
 export function openFolder(wm, f) {
@@ -349,10 +397,12 @@ export function openFolder(wm, f) {
   const at = area ? { x: (area.width - width) / 2 - 48 + n * 26, y: 48 + n * 26 } : {};
   const w = wm.win('folder-' + f.id, { title: f.label, width, className: 'win--folder', ...at });
   if (w.body.childElementCount) return;
-  w.body.append(h('p.folder__bar', `${f.items.length} items · each opens in a new tab`),
-    h('ul.folder__grid', f.items.map((g) => h('li', h('a.icon.icon--file', { href: g.url, target: '_blank', rel: 'noopener', dataset: { card: g.id }, onclick: () => sound.tick('click') },
-      h('img', { src: `img/ui/${g.icon || 'proj-' + g.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' }),
-      h('span.icon__label', g.label))))));
+  const img = (g) => h('img', { src: `img/ui/${g.icon || 'proj-' + g.id}.svg`, alt: '', width: 48, height: 48, draggable: 'false' });
+  const mine = f.items.filter((g) => g.open).length;
+  w.body.append(h('p.folder__bar', `${f.items.length} items · ` + (mine ? `${mine} play here, the rest open in a new tab` : 'each opens in a new tab')),
+    h('ul.folder__grid', f.items.map((g) => h('li', g.open
+      ? h('button.icon.icon--file', { type: 'button', onclick: () => { sound.tick('click'); g.open(); } }, img(g), h('span.icon__label', g.label))
+      : h('a.icon.icon--file', { href: g.url, target: '_blank', rel: 'noopener', dataset: { card: g.id }, onclick: () => sound.tick('click') }, img(g), h('span.icon__label', g.label))))));
 }
 
 // ---------------------------------------------------------------- the lock screen
