@@ -242,7 +242,6 @@ function entryGate() {
         <p class="gate__how">Better experienced with Sound On and on a Laptop.</p>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
-      <p class="gate__hint">Best with headphones. Works on your phone, even better on a bigger screen.</p>
     </div>`;
   document.body.append(g);
   document.documentElement.classList.add('is-gated');
