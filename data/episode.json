@@ -76,6 +76,16 @@
        "text": "Whoa, whoa, whoa! Ladies and gentlemen! You just watched a man's résumé get folded into a paper plane, thrown, crumpled, shredded, and set on fire! And now it's a CD! Ha! I can't. I can't. Give it up, folks!",
        "audio": "audio/clips/cold-open-01-kimmy.mp3"
       }
+     },
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-cv-cd",
+      "shots": [
+       "img/hero/cv-front.webp",
+       "img/objects/cd-blank.webp"
+      ],
+      "title": "The CV, now a CD"
      }
     },
     {
@@ -128,6 +138,15 @@
        "text": "And then you burned it. Onto a CD! Ha! Okay, okay. Explain yourself, buddy.",
        "audio": "audio/clips/cold-open-03-kimmy.mp3"
       }
+     },
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-cd",
+      "shots": [
+       "img/objects/cd-blank.webp"
+      ],
+      "title": "The CD"
      }
     },
     {
@@ -175,6 +194,15 @@
        "text": "A dial-up modem! Oh, I heard that screech. That's the sound of my mom picking up the other phone. Ha!",
        "audio": "audio/clips/cold-open-05-kimmy.mp3"
       }
+     },
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-imac",
+      "shots": [
+       "img/imac/imac-front.webp"
+      ],
+      "title": "The iMac G3"
      }
     },
     {
@@ -6754,6 +6782,16 @@
        "text": "Okay! How did all this come about? A grown man, a perfectly good CV, and a box of matches!",
        "audio": "audio/clips/meta-why-01-kimmy.mp3"
       }
+     },
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-cv-matches",
+      "shots": [
+       "img/hero/cv-front.webp",
+       "img/objects/matchbox.webp"
+      ],
+      "title": "A perfectly good CV, and a box of matches"
      }
     },
     {
@@ -7268,7 +7306,16 @@
      "id": "meta-podcast-02",
      "who": "sameep",
      "text": "I was going to talk about my experiences anyway, so why not make it a podcast. But a lot of people are going to do that. So, give it an edge. It comes off a CD, so it's a nineties podcast.",
-     "audio": "audio/clips/meta-podcast-02.mp3"
+     "audio": "audio/clips/meta-podcast-02.mp3",
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-cd",
+      "shots": [
+       "img/objects/cd-blank.webp"
+      ],
+      "title": "It comes off a CD"
+     }
     },
     {
      "id": "meta-podcast-03",
@@ -7964,7 +8011,18 @@
      "who": "sameep",
      "text": "Everyone's building with the same AI models now, so everything kind of looks the same. So I tried to stand out on every part of it. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you get to steer it.",
      "messy": "So everyone's building with the same model intelligence now, right, so the average looks the, the same. So I tried to differentiate on every aspect. A CV becomes a CD. A portfolio becomes an app. The app becomes a podcast. And you, you get to steer it.",
-     "audio": "audio/clips/meta-90s-02.mp3"
+     "audio": "audio/clips/meta-90s-02.mp3",
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-cv-cd-imac",
+      "shots": [
+       "img/hero/cv-front.webp",
+       "img/objects/cd-blank.webp",
+       "img/imac/imac-tray-open.webp"
+      ],
+      "title": "A CV becomes a CD"
+     }
     }
    ],
    "choices": [
@@ -8186,6 +8244,15 @@
        "text": "Before we get started: Sameep, tell the folks at home a little about yourself. Who are you, when you're not a compact disc?",
        "audio": "audio/clips/about-01-kimmy.mp3"
       }
+     },
+     "visual": {
+      "type": "shots",
+      "size": "pip",
+      "key": "obj-cd",
+      "shots": [
+       "img/objects/cd-blank.webp"
+      ],
+      "title": "The CD"
      }
     },
     {
