@@ -229,7 +229,7 @@ function wipNote(wip, jump) {
 // the OS's structure: eight sections down the side, each a few tabs; every module lives in exactly one
 const SECTIONS = [
   { id: 'plan', t: 'Plan', g: 'dash', art: 'mb-quiet-speed', line: 'The bet, month by month, and how we’d know it’s working.', tabs: [['home', 'Overview'], ['dash', 'Measures'], ['tracking', 'Tracking']] },
-  { id: 'campaigns', t: 'Campaigns', g: 'campaigns', art: 'ev-founder-dinner', line: 'Seven campaigns from December, on one board.', tabs: [['campaigns', 'All campaigns'], ['storyboards', 'Storyboards'], ['wrapped', 'Year in words']] },
+  { id: 'campaigns', t: 'Campaigns', g: 'campaigns', art: 'ev-founder-dinner', line: 'Five campaigns from December, on one board.', tabs: [['campaigns', 'All campaigns'], ['storyboards', 'Storyboards'], ['wrapped', 'Wispr Wrapped']] },
   { id: 'ideas', t: 'Ideas', g: 'ideas', art: 'mb-talking-voicenote', line: 'Untested ideas, each with the cheapest way to try it.', tabs: [['ideas', 'Idea bank'], ['brainstorm', 'Brainstorm']] },
   { id: 'brand', t: 'Brand', g: 'brand', art: 'guide-do-people', line: 'How Flow should look and sound in India.', tabs: [['guide', 'Guideline'], ['moodboards', 'Moodboards'], ['brand', 'Cool in India?']] },
   { id: 'social', t: 'Social', g: 'lincal', art: 'mb-desk-11pm', line: 'Founder posts, the posting calendar and channel numbers.', tabs: [['linkedin', 'Founder posts'], ['lincal', 'Calendar'], ['social', 'Numbers'], ['contests', 'Contests']] },
@@ -405,18 +405,21 @@ function briefView(c, rerender, { go } = {}) {
       h('div.row', { style: { marginTop: 0 } }, tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
         copyBtn(() => briefText(c), 'Copy brief'))),
     h('dl.dl',
+      c.why && [h('dt', 'Why it works'), h('dd', rich(c.why))],
+      c.steps?.length && [h('dt', 'First 3 steps'), h('dd', h('ol.ul', c.steps.map((t) => h('li', rich(t)))))],
+      c.example && [h('dt', 'Real example'), h('dd', rich(c.example))],
       h('dt', 'Goal'), h('dd', rich(c.goal)),
       h('dt', 'Who for'), h('dd', rich(c.audience)),
       h('dt', 'The insight'), h('dd', rich(c.insight)),
       h('dt', 'The idea'), h('dd', rich(c.idea)),
       h('dt', 'Channels'), h('dd', rich((c.channels || []).join(' · '))),
       h('dt', 'KPIs'), h('dd', ul(c.kpis || [])),
-      h('dt', 'Budget'), h('dd', rich(c.budget || 'tbc')),
+      h('dt', 'Cost and effort'), h('dd', rich(c.budget || 'tbc')),
       c.links?.length && [h('dt', 'Uses'), h('dd', c.links.map((l, i) => [i ? ' · ' : '', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go?.(l.mod); } }, l.t)]))]),
     gbox('Second-order', secondOrder(c.so)));
 }
 function briefText(c) {
-  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
+  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? ['First 3 steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), c.example ? `Real example: ${c.example}` : '', '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
     `- Causes: ${c.so?.causes || ''}`, `- Could backfire: ${c.so?.backfire || ''}`, `- Compounds: ${c.so?.compounds || ''}`, `- Kill if: ${c.so?.kill || ''}`].join('\n').replace(/\s\[\d+(?:,\s*\d+)*\]/g, '');
 }
 function newCampaignForm(rerender) {
