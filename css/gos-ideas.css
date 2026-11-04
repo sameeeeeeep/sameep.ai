@@ -167,3 +167,8 @@
 /* a kanban sitting on a Lumen box: white columns so they still read */
 .gos .gbox:not(.gbox--white) .gi-kan__col { background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
 .gos .gbox:not(.gbox--white) .gi-kan__card { background: var(--paper); }
+.gos .gi-kan__p { margin: 0; font: 400 13px/1.4 var(--sans); color: #45453c; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.gos .gi-test { margin: 0 0 18px; padding: 14px 18px; border-radius: 16px; background: #eef7f1; box-shadow: inset 0 0 0 1px #cfe8dc; }
+.gos .gi-test__k { margin: 0 0 4px; font: 600 11.5px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: #2f6b52; }
+.gos .gi-test__v { margin: 0; font: 400 16px/1.5 var(--sans); color: var(--vast); }
+.gos .brief > .note { color: #cfcfbd; } .gos .brief > .note a { color: #fff; }

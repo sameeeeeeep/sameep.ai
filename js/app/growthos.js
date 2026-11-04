@@ -8,7 +8,7 @@ import { flowClean } from './apps.js';
 import * as D from './growthos-data.js';
 import { extraModules } from './gos/index.js';
 import { loadCss, avatar, appHead, art } from './gos/kit.js';
-import { APPS, glyph } from './gos/apps.js';
+import { glyph } from './gos/apps.js';
 
 // ---------------------------------------------------------------- the gate
 // links from the plan data: http(s) only
@@ -226,54 +226,68 @@ function wipNote(wip, jump) {
   return box;
 }
 
+// the OS's structure: eight sections down the side, each a few tabs; every module lives in exactly one
+const SECTIONS = [
+  { id: 'plan', t: 'Plan', g: 'dash', art: 'mb-quiet-speed', line: 'The bet, month by month, and how we’d know it’s working.', tabs: [['home', 'Overview'], ['dash', 'Measures'], ['tracking', 'Tracking']] },
+  { id: 'campaigns', t: 'Campaigns', g: 'campaigns', art: 'ev-founder-dinner', line: 'Seven campaigns from December, on one board.', tabs: [['campaigns', 'All campaigns'], ['storyboards', 'Storyboards'], ['wrapped', 'Year in words']] },
+  { id: 'ideas', t: 'Ideas', g: 'ideas', art: 'mb-talking-voicenote', line: 'Untested ideas, each with the cheapest way to try it.', tabs: [['ideas', 'Idea bank'], ['brainstorm', 'Brainstorm']] },
+  { id: 'brand', t: 'Brand', g: 'brand', art: 'guide-do-people', line: 'How Flow should look and sound in India.', tabs: [['guide', 'Guideline'], ['moodboards', 'Moodboards'], ['brand', 'Cool in India?']] },
+  { id: 'social', t: 'Social', g: 'lincal', art: 'mb-desk-11pm', line: 'Founder posts, the posting calendar and channel numbers.', tabs: [['linkedin', 'Founder posts'], ['lincal', 'Calendar'], ['social', 'Numbers'], ['contests', 'Contests']] },
+  { id: 'creators', t: 'Creators', g: 'creators', art: 'ev-stream-desk', line: 'Who we’d work with, and where each conversation is.', tabs: [['creators', 'Creators'], ['infcal', 'Calendar'], ['connects', 'Outreach'], ['negotiate', 'Negotiation'], ['crm', 'Contacts']] },
+  { id: 'partners', t: 'Partners', g: 'partners', art: 'partners-handshake', line: 'Brands, programmes and products to team up with.', tabs: [['collabs', 'Brand collabs'], ['partners', 'Deals'], ['integrations', 'Integrations']] },
+  { id: 'events', t: 'Events', g: 'events', art: 'ev-mic-taping', line: 'Formats, run of show and the vendors behind them.', tabs: [['events', 'Formats'], ['eventlab', 'New formats'], ['runofshow', 'Run of show'], ['vendors', 'Vendors']] },
+];
+const secOf = (id) => SECTIONS.find((s) => s.tabs.some(([t]) => t === id));
+const PROTO = 'Prototype, not reviewed. A first draft of where I’d start, made before talking to anyone at Wispr. Some of these ideas are probably bad; read everything as a question.';
+
 function renderPlan(w, { name, start }) {
-  // an OS, not a document: a home screen of apps; each app opens full width with a bar to get back
   const page = h('article.gos__page', { tabindex: '-1' });
-  const where = h('span.gos__where');
-  const homeBtn = h('button.gos__homebtn', { type: 'button', 'aria-label': 'Home', onclick: () => showHome() });
-  homeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z"/></svg><span>Home</span>';
   const signOut = async () => { try { await api('/logout', { method: 'POST' }); } catch { /* signing out locally anyway */ } token.set(null); loaded = null; w.body.dataset.ready = ''; w.close(); };
   const reset = () => { if (confirm('Clear your edits in Growth OS on this device?')) { for (const k of Object.keys(localStorage)) if (k.startsWith('wgos.') && k !== TOKEN) localStorage.removeItem(k); location.reload(); } };
-  const top = h('div.gos__top', homeBtn, where, h('span.gos__sp'),
+  const top = h('div.gos__top', h('span.gos__sp'),
     wipNote(D.MORE.wip, (id) => go(id)),
     h('details.gos__menu', h('summary', { 'aria-label': 'Account' }, name ? name[0].toUpperCase() : '·'),
-      h('div.gos__menupop', h('p', name ? `Signed in as ${name}` : 'Signed in'), h('button', { type: 'button', onclick: reset }, 'Clear my edits'), h('button', { type: 'button', onclick: signOut }, 'Sign out'))));
-  const root = h('div.gos.gos--os', page);
+      h('div.gos__menupop', h('p', name ? `Signed in as ${name}` : 'Signed in'), h('button', { type: 'button', onclick: () => go('sources') }, 'Sources'), h('button', { type: 'button', onclick: reset }, 'Clear my edits'), h('button', { type: 'button', onclick: signOut }, 'Sign out'))));
+  const icon = (g, size = 20) => { const s = h('span.grail__ic'); s.innerHTML = glyph(g, size); return s; };
+  const railBtn = (id, label, g, onclick) => h('button.grail__b', { type: 'button', 'data-sec': id, onclick }, icon(g), h('span', label));
+  const rail = h('nav.grail', { 'aria-label': 'Sections' },
+    railBtn('home', 'Home', 'home', () => showHome()),
+    SECTIONS.map((s) => railBtn(s.id, s.t, s.g, () => go(s.tabs[0][0]))));
+  const mark = (id) => rail.querySelectorAll('.grail__b').forEach((b) => b.setAttribute('aria-current', String(b.dataset.sec === id)));
+  const root = h('div.gos.gos--os', rail, h('div.gos__main', h('p.gos-proto.gos-proto--bar', h('b', 'Prototype, not reviewed. '), PROTO.replace(/^Prototype, not reviewed\. /, '')), page));
   w.body.replaceChildren(root);
-  // one bar: the window's own title bar carries Home, where you are, the open tickets and your account
+  // the window's own title bar carries the open tickets and your account
   const bar = w.el.querySelector('.win__bar');
   bar.querySelector('.gos__top')?.remove();
   bar.append(top);
 
-  const counts = { campaigns: () => allCampaigns().filter((c) => statusOf(c) !== 'cut').length, creators: () => D.CREATORS.length, crm: () => crmRows().length, events: () => D.EVENTS.length, collabs: () => D.COLLABS.length };
-  const tile = (m, big) => {
-    const n = counts[m.id] ? counts[m.id]() : m.count?.();
-    const ic = h('span.gapp__ic', { style: { '--c': m.c } }); ic.innerHTML = glyph(m.id, big ? 30 : 26);
-    return h('button.gapp' + (big ? '.gapp--big' : ''), { type: 'button', onclick: () => go(m.id) }, ic,
-      h('span.gapp__t', m.label, n ? h('span.gapp__n', String(n)) : null), h('span.gapp__b', APPS[m.id]?.blurb || ''));
-  };
   function showHome() {
-    where.textContent = '';
-    top.classList.add('is-home');
+    mark('home');
     root.classList.remove('is-app');
-    const groups = GROUPS.filter(Boolean).map((g) => [g, MODULES.filter((m) => m.group === g)]).filter(([, ms]) => ms.length);
+    const soon = allCampaigns().filter((c) => c.art && statusOf(c) !== 'done').sort((a, b) => a.start.localeCompare(b.start)).slice(0, 4);
     page.replaceChildren(h('div.ghome',
       h('header.ghome__head',
         h('h2.ghome__hi', name ? `Hi ${name}.` : 'Hi.'),
-        h('p.ghome__sub', 'A growth plan for Wispr Flow in India, as apps you can use.'),
-        D.MORE.wip?.disclaimer && h('p.gos-proto', h('b', 'Prototype, not reviewed. '), 'A draft of where I’d start, built before talking to anyone at Wispr. Numbers are cited or marked sample.')),
-      h('div.ghome__start', ...['home', 'dash'].map((id) => mod(id)).filter(Boolean).map((m) => tile(m, true))),
-      ...groups.map(([g, ms]) => h('section.ghome__group', h('h3.ghome__g', g), h('div.ghome__grid', ms.map((m) => tile(m)))))));
+        h('p.ghome__sub', 'Wispr Flow in India, December to May. The plan, the campaigns and the people, in eight sections.')),
+      h('div.gsecs', SECTIONS.map((s) => h('button.gsec', { type: 'button', onclick: () => go(s.tabs[0][0]) },
+        art(s.art, '', { ratio: '16/10' }),
+        h('span.gsec__b', h('span.gsec__t', s.t), h('span.gsec__l', s.line), h('span.gsec__tabs', s.tabs.map(([, t]) => t).join(' · ')))))),
+      soon.length ? h('section.ghome__group', h('h3.ghome__g', 'Coming up'),
+        h('div.home-strip', soon.map((c) => h('button.ccard', { type: 'button', style: { '--c': tone(c.c) }, onclick: () => go('campaigns', { focus: c.id }) },
+          art(c.art, '', { ratio: '4/3' }), h('span.ccard__b', h('span.ccard__t', c.name), h('span.ccard__m', monthSpan(c), ' · ', statusOf(c))))))) : null));
     page.scrollTop = 0;
   }
   function go(id, opts = {}) {
     const m = mod(id);
     if (!m) return showHome();
-    where.textContent = m.label;
-    top.classList.remove('is-home');
+    const s = secOf(id);
+    mark(s?.id || '');
     root.classList.add('is-app');
     page.style.setProperty('--c', m.c);
-    page.replaceChildren(...[].concat(m.render(m, { go, ...opts })));
+    const tabsRow = s ? h('div.gsec-head',
+      h('h2.gsec-head__t', s.t),
+      s.tabs.length > 1 ? h('div.gtabs.gsec-tabs', { role: 'tablist' }, s.tabs.filter(([t]) => mod(t)).map(([t, label]) => h('button.gtab', { type: 'button', role: 'tab', 'aria-selected': String(t === id), onclick: () => go(t) }, label))) : null) : null;
+    page.replaceChildren(...[tabsRow, h('div.gsec-body', ...[].concat(m.render(m, { go, ...opts })))].filter(Boolean));
     page.scrollTop = 0;
     if (!opts.quiet) sound.tick('click');
     if (isNarrow()) page.focus({ preventScroll: true });

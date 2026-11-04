@@ -73,7 +73,8 @@ function ideasModule(m, { go, focus } = {}) {
             const k = ids.indexOf(id);
             return h('div.gi-kan__card',
               h('button.gi-kan__t', { type: 'button', onclick: () => openIdea(i) }, i.t),
-              h('p.gi-kan__meta', i.type, ' · ', i.effort),
+              h('p.gi-kan__p', rich(i.pitch)),
+              h('p.gi-kan__meta', campName(i.camp) || i.type, ' · effort ', i.effort),
               h('div.gi-kan__mv',
                 h('button.btn.btn--sm', { type: 'button', disabled: k === 0, 'aria-label': `Move ${i.t} back`, onclick: () => { setStage(i.id, ids[k - 1]); paint(); sound.tick('click'); } }, '←'),
                 h('button.btn.btn--sm', { type: 'button', disabled: k === ids.length - 1, 'aria-label': `Move ${i.t} forward`, onclick: () => { setStage(i.id, ids[k + 1]); paint(); sound.tick('click'); } }, '→')));
@@ -81,7 +82,7 @@ function ideasModule(m, { go, focus } = {}) {
       }));
     };
     paint();
-    return [wrap, h('p.note', 'Move ideas along with the arrows. Raw → shortlisted → in brainstorm → approved. Parked is for good ideas at the wrong time.')];
+    return [wrap, h('p.note', 'Nothing here is tested yet. Move ideas along with the arrows as the team decides; parked is for good ideas at the wrong time.')];
   }
 
   const view = [
@@ -109,6 +110,8 @@ function ideaCard(i, { onOpen, onChange, go }) {
       h('button.btn.btn--sm', { type: 'button', onclick: onOpen }, 'Open'),
       h('button.btn.btn--sm', { type: 'button', onclick: () => go('brainstorm', { idea: i.id }) }, 'Brainstorm')));
 }
+// the campaign an idea feeds, by name (campaigns come from the main plan)
+const campName = (id) => (id && (D.CAMPAIGNS || []).find((c) => c.id === id)?.name) || '';
 const typeColor = (t) => ({ Campaign: 'var(--fathom)', Event: 'var(--glow)', 'Product-led': 'var(--dawn)', Partnership: 'var(--signal)' }[t] || 'var(--line-2)');
 const effortName = (e) => ((X().efforts || []).find((x) => x[0] === e) || [e, e])[1];
 
@@ -126,6 +129,8 @@ function ideaBrief(i, go, rerender) {
         sb && h('button.btn.btn--sm', { type: 'button', onclick: () => go('storyboards', { board: sb.id }) }, 'Storyboard'),
         i.mine && h('button.btn.btn--sm', { type: 'button', onclick: () => { if (!confirm(`Remove “${i.t}” from the bank on this device?`)) return; S.v.added = S.v.added.filter((y) => y.id !== i.id); S.save(); rerender(); } }, 'Remove'))),
     h('p.lede', rich(i.pitch)),
+    i.test && h('section.gi-test', h('p.gi-test__k', 'Cheapest first test'), h('p.gi-test__v', rich(i.test))),
+    campName(i.camp) && h('p.note', 'Feeds the campaign ', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go('campaigns', { focus: i.camp }); } }, campName(i.camp)), '.'),
     b && b.ref && gbox('Where this comes from', h('p', rich(b.ref))),
     b && h('dl.dl',
       h('dt', 'Goal'), h('dd', rich(b.goal)),
@@ -140,7 +145,7 @@ function ideaBrief(i, go, rerender) {
 function ideaText(i) {
   const b = i.brief;
   return plain([
-    `${i.t} (${i.type}, effort ${i.effort}, ${stageName(i.stage)})`, '', i.pitch,
+    `${i.t} (${i.type}, effort ${i.effort}, ${stageName(i.stage)})`, '', i.pitch, ...(i.test ? ['', `First test: ${i.test}`] : []),
     ...(b ? ['', `Goal: ${b.goal}`, `Who for: ${b.audience}`, `Insight: ${b.insight}`, `Idea: ${b.idea}`, `Channels: ${(b.channels || []).join(', ')}`, 'KPIs:', ...(b.kpis || []).map((k) => '- ' + k), `Budget: ${b.budget}`] : []),
     '', 'Second-order', `- Causes: ${i.so?.causes || ''}`, `- Could backfire: ${i.so?.backfire || ''}`, `- Compounds: ${i.so?.compounds || ''}`, `- Kill if: ${i.so?.kill || ''}`,
   ].join('\n'));

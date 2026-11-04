@@ -59,14 +59,14 @@ export function download(name, text, type = 'text/csv') {
   document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 export const csv = (rows) => rows.map((r) => r.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
-// an app's header: its name and one line; anything longer folds into "About this app"
+// a module header: its name and one line; anything longer folds into "More"
 export function appHead(m, why, tools = []) {
   const text = why == null ? '' : String(why);
   const cut = text.search(/(?<=[.?!])\s+(?=[A-Z“"'(])/);
   const lead = cut > 0 ? text.slice(0, cut) : text, more = cut > 0 ? text.slice(cut).trim() : '';
   return h('header.gos__head', { style: { '--c': m.c } },
     h('div.gos__headt', h('h2.gos__title', m.label), lead && h('p.gos__why', rich(lead)),
-      more && h('details.gos__about', h('summary', 'About this app'), h('p', rich(more)))),
+      more && h('details.gos__about', h('summary', 'More'), h('p', rich(more)))),
     tools.length ? h('div.gos__tools', tools) : null);
 }
 export const head = (m, why, ...tools) => appHead(m, why, tools);
