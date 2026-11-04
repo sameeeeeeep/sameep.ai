@@ -2,7 +2,7 @@
 // that every PC had in its shared folder; OFF THE CV installs in the background with an
 // installer that takes its time; when it's done the music fades out and the show launches itself.
 // Also: one desktop icon per project, each opening the real thing in a new tab.
-import { h, wait, isNarrow } from './util.js';
+import { h, wait, isNarrow, clamp } from './util.js';
 import { sound } from './audio.js';
 import { presence } from '../presence.js';
 
@@ -454,40 +454,50 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       cruise(n, (left ? 0 : Math.PI) + (Math.random() - 0.5) * 0.9);
       vis(n, true); n.el.classList.remove('is-new'); void n.el.offsetWidth; n.el.classList.add('is-new');
     }
+    // smooth and organic: a slow sine wander steers each face (no per-frame noise), neighbours and walls
+    // push through soft forces on the velocity (no snapping), and the speed eases back to its cruise
+    let clock = 0;
     function step(dt) {                                                 // dt in seconds
-      const live = bubbles.filter((b) => b.on), gap = R * (q ? 2.25 : 2.6);
-      for (const b of live) {
-        if (b.leave) continue;                                          // leaving: straight out, no wandering
-        if (q) { b.vx += (W / 2 - b.x) * 2.2 * dt; b.vy += (H / 2 - b.y) * 2.2 * dt; b.vx *= 0.9; b.vy *= 0.9; continue; }  // matches glide in
-        // keep cruising at its own speed: a gentle turn now and then, never slowing to a stop
-        const a = Math.atan2(b.vy, b.vx) + (Math.random() - 0.5) * 0.6 * dt, cur = Math.hypot(b.vx, b.vy) || 1;
-        const sp = cur + (b.sp - cur) * Math.min(1, 1.5 * dt);
-        b.vx = Math.cos(a) * sp; b.vy = Math.sin(a) * sp;
-      }
-      // soft bounces off each other: push apart and swap a little momentum
+      clock += dt;
+      const live = bubbles.filter((b) => b.on), gap = R * (q ? 2.3 : 2.7);
+      const fx = new Map(live.map((b) => [b, [0, 0]]));
+      // neighbours: a soft spring that only acts inside the gap
       for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
-        const p = live[i], o = live[j], passing = p.leave || o.leave;  // a face on its way out still keeps its distance
-        const dx = o.x - p.x, dy = (o.y - p.y) * 0.85, d = Math.hypot(dx, dy) || 0.01;
-        if (d < gap) {
-          const nx = dx / d, ny = dy / d, push = (gap - d) * Math.min(1, 9 * dt);  // a firm nudge apart, not a shove
-          p.x -= nx * push * 0.5; p.y -= ny * push * 0.5; o.x += nx * push * 0.5; o.y += ny * push * 0.5;
-          const rel = (o.vx - p.vx) * nx + (o.vy - p.vy) * ny;
-          if (rel < 0 && !passing) { p.vx += rel * nx; p.vy += rel * ny; o.vx -= rel * nx; o.vy -= rel * ny; }
-        }
+        const p = live[i], o = live[j], dx = o.x - p.x, dy = (o.y - p.y) * 0.72, d = Math.hypot(dx, dy) || 0.01;  // a name sits under each face: more room up and down
+        if (d >= gap) continue;
+        const k = ((gap - d) / gap) ** 2 * 90, nx = dx / d, ny = dy / d;
+        fx.get(p)[0] -= nx * k; fx.get(p)[1] -= ny * k; fx.get(o)[0] += nx * k; fx.get(o)[1] += ny * k;
+        if (d < gap * 0.62) { const c = (gap * 0.62 - d) * 0.5; p.x -= nx * c * dt * 4; p.y -= ny * c * dt * 4; o.x += nx * c * dt * 4; o.y += ny * c * dt * 4; }  // real overlap: ease apart
       }
+      const top = R * 0.9, bottom = H - R * 1.45, margin = R * 1.2;
       for (const b of live) {
-        if (!q) { const v = Math.hypot(b.vx, b.vy), top = b.sp * 1.5; if (v > top) { b.vx *= top / v; b.vy *= top / v; } }  // bumps never speed it past a drift
+        const f = fx.get(b);
+        if (b.leave) { b.x += b.vx * dt; b.y += b.vy * dt; if (b.x < -1.2 * R || b.x > W + 1.2 * R || b.y < -R || b.y > H + R) { vis(b, false); b.leave = false; } continue; }
+        if (q) {                                                        // matches glide to the middle and settle
+          f[0] += (W / 2 - b.x) * 1.6; f[1] += (H / 2 - b.y) * 1.6;
+          b.vx = (b.vx + f[0] * dt) * Math.pow(0.12, dt); b.vy = (b.vy + f[1] * dt) * Math.pow(0.12, dt);
+        } else {
+          // soft walls: the nearer an edge, the harder it steers back (once the face is fully in)
+          if (!b.inside) { f[0] += (W / 2 - b.x) * 0.6; f[1] += (H / 2 - b.y) * 0.3; }  // a newcomer keeps coming in
+          else {
+            if (b.x < R + margin) f[0] += ((R + margin - b.x) / margin) * 60; if (b.x > W - R - margin) f[0] -= ((b.x - (W - R - margin)) / margin) * 60;
+            if (b.y < top + margin) f[1] += ((top + margin - b.y) / margin) * 60; if (b.y > bottom - margin) f[1] -= ((b.y - (bottom - margin)) / margin) * 60;
+          }
+          // a slow, smooth wander: the heading turns along two sines, different for every face
+          const ph = b.ph ?? (b.ph = Math.random() * 6.283), w = (Math.sin(clock * 0.35 + ph) * 0.5 + Math.sin(clock * 0.13 + ph * 2) * 0.35) * dt;
+          const c = Math.cos(w), s2 = Math.sin(w); [b.vx, b.vy] = [b.vx * c - b.vy * s2, b.vx * s2 + b.vy * c];
+          b.vx += f[0] * dt; b.vy += f[1] * dt;
+          const v = Math.hypot(b.vx, b.vy) || 0.01, want = b.sp, eased = v + (want - v) * Math.min(1, 0.9 * dt);
+          b.vx *= eased / v; b.vy *= eased / v;                         // never stops, never races
+        }
         b.x += b.vx * dt; b.y += b.vy * dt;
-        if (b.leave) { if (b.x < -1.2 * R || b.x > W + 1.2 * R || b.y < -R || b.y > H + R) { vis(b, false); b.leave = false; } continue; }
-        const inside = b.x > R && b.x < W - R && b.y > R * 0.9 && b.y < H - R * 1.45;
-        if (inside) b.inside = true;
+        if (b.x > R && b.x < W - R && b.y > top && b.y < bottom) b.inside = true;
         if (!b.inside) continue;                                         // a newcomer floats in before the walls count
-        if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx); } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx); }
-        if (b.y < R * 0.9) { b.y = R * 0.9; b.vy = Math.abs(b.vy); } if (b.y > H - R * 1.45) { b.y = H - R * 1.45; b.vy = -Math.abs(b.vy); }
+        b.x = clamp(b.x, R, W - R); b.y = clamp(b.y, top, bottom);       // safety only: the soft walls do the work
       }
     }
     function draw() { for (const b of bubbles) if (b.on) b.el.style.transform = `translate3d(${(b.x - R).toFixed(1)}px, ${(b.y - R).toFixed(1)}px, 0)`; }
-    const loop = (t) => { const dt = Math.min(0.1, (t - (last || t)) / 1000); last = t; if (!pick) step(dt); draw(); raf = requestAnimationFrame(loop); };
+    const loop = (t) => { const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; if (!pick) step(dt); draw(); raf = requestAnimationFrame(loop); };
     const ro = new ResizeObserver(() => { if (Math.abs(field.clientWidth - W) > 4 || Math.abs(field.clientHeight - H) > 4) place(); });
 
     // ---- typing filters: matches glide to the middle, the rest fade back
