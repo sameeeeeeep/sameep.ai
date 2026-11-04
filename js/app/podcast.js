@@ -169,6 +169,7 @@ export class Podcast {
       this.#ticks();
       if (!this.root.classList.contains('is-waiting')) { this.playing = true; this.#setPlayIcon(); this.#playLine(Math.min(li, this.lines.length - 1), 0); }
     }
+    this.#bedSync();
   }
 
   // the replaced puppet may still add its frame-bank canvas a moment later: keep only the current one's
@@ -1248,10 +1249,11 @@ export class Podcast {
   }
 
   #bedSync() {
-    const u = this.#abs(this.persona.music?.bed);
+    // a host can bring its own bed (episode.json hosts[].bed), else the persona's
+    const u = this.#abs(this.hosts.find((o) => o.id === this.hostId)?.bed || this.persona.music?.bed);
     if (!u) return;
     if (this.playing) {
-      if (!this.bed.src) this.bed.src = u;
+      if (this.bed.src !== u) this.bed.src = u;
       this.bed.play().catch(() => {});
     } else this.bed.pause();
   }
