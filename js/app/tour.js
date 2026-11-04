@@ -120,7 +120,8 @@ export function startTour({ area, kind = 'main' } = {}) {
   function say(line, more = null) { text.textContent = line; extra.replaceChildren(...(more ? [more] : [])); cap.classList.add('is-on'); }
 
   // leaving a stop puts things back: closes the folder it opened, hides the card, leaves the screen on Flat
-  const flat = () => { const crt = window.otcvCrt; if (!crt) return; (crt.set || crt.setMode || crt.preview).call(crt, 'flat'); };
+  // leave people on Flat, saved (they can switch with one click); the preview is only a fallback
+  const flat = () => { if (window.crtfx?.set) window.crtfx.set('flat'); else window.otcvCrt?.preview('flat'); };
   function tidy() {
     if (hovered) { hovered.dispatchEvent(new PointerEvent('pointerout', { bubbles: true, pointerType: 'mouse', relatedTarget: document.body })); hovered = null; }
     if (opened?.isConnected) opened.querySelector('.win__close')?.click();
