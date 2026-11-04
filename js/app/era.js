@@ -401,50 +401,106 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       });
       place();
     }
-    // physics: soft circles that push apart, bounce off the edges and wander a little
-    let W = 0, H = 0, R = 52, VY = 1.15, raf = 0, last = 0;
+    // motion, taken from the ppt.live lobby (show.html makePillWall + the .gpill pbob/ppop keyframes):
+    // every face keeps cruising across the screen at 16–36 px/s (ppt's lane speeds), bobbing and tilting
+    // on its own 4.2–7.2 s beat, and gently bounces off the edges and off each other. A few at a time:
+    // every few seconds one drifts off an edge and a new face floats in from another. Typing pulls the
+    // matches to the middle. Reduced motion: the same flow, slower, without the bob.
+    let W = 0, H = 0, R = 58, raf = 0, last = 0, rot = 0, cap = 12, q = '';
+    const SLOW = reduced ? 0.3 : 1;
+    const always = (b) => b.a.id === 'add' || b.a.id === 'guest' || b.a.own;  // never rotated out
+    const matches = (b) => b.a.id === 'add' || b.a.label.toLowerCase().split(' ').some((w) => w.startsWith(q));
+    const hash = (str) => { let x = 0; for (const c of str) x = (x * 31 + c.charCodeAt(0)) | 0; return Math.abs(x); };
+    function vis(b, on) { b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); }
+    function cruise(b, ang = Math.random() * Math.PI * 2) {
+      const i = hash(b.a.id), sp = (16 + ((i * 37) % 21)) * SLOW;       // ppt: speed = 16 + ((i*37) % 21) px/s
+      b.sp = sp; b.vx = Math.cos(ang) * sp; b.vy = Math.sin(ang) * sp * 0.7;
+      b.el.style.setProperty('--d', (4.2 + (i % 30) / 10) + 's');        // ppt: --d = 4.2 + (h%30)/10 s
+      b.el.style.setProperty('--dl', (-(i % 50) / 10) + 's');            // ppt: --dl = -(h%50)/10 s
+    }
+    // somewhere clear: the candidate point farthest from every face already showing
+    function spot() {
+      const live = bubbles.filter((b) => b.on); let best = null, far = -1;
+      for (let k = 0; k < 40; k++) {
+        const x = R + Math.random() * Math.max(1, W - 2 * R), y = R + Math.random() * Math.max(1, H - 2.4 * R);
+        const d = live.reduce((m, b) => Math.min(m, Math.hypot(b.x - x, b.y - y)), Infinity);
+        if (d > far) { far = d; best = [x, y]; }
+      }
+      return best || [W / 2, H / 2];
+    }
     function place() {
       W = field.clientWidth; H = field.clientHeight;
-      // a big lobby shrinks the bubbles so everyone fits
       const narrow = W < 500;
-      R = Math.round(Math.max(narrow ? 21 : 30, Math.min(narrow ? 42 : 54, Math.sqrt((W * H) / Math.max(1, bubbles.length)) / (narrow ? 2.9 : 2.4))));
+      R = narrow ? 40 : 58;
       field.style.setProperty('--bub', R + 'px');
-      field.classList.toggle('is-crowd', R < 40);
-      field.classList.toggle('is-tight', R < 30);  // a phone full of people: names only
-      VY = R < 40 ? 0.72 : 1.15;  // a name sits under each face, so crowded bubbles keep more room up and down
-      const n = bubbles.length, cols = Math.max(2, Math.min(n, Math.floor(W / (R * 2.3)))), rows = Math.ceil(n / cols), cw = Math.min(W / cols, R * 3.2);
-      bubbles.forEach((b, i) => { const r = Math.floor(i / cols), inRow = Math.min(cols, n - r * cols); b.x = W / 2 + ((i % cols) - (inRow - 1) / 2) * cw + (Math.random() - 0.5) * 20; b.y = (Math.floor(i / cols) + 0.5) * (H / Math.max(rows, 1)) + (Math.random() - 0.5) * 20; b.vx = (Math.random() - 0.5) * 0.4; b.vy = (Math.random() - 0.5) * 0.4; });
-      for (let k = 0; k < 120; k++) step(1, true);
+      cap = Math.max(narrow ? 5 : 6, Math.min(narrow ? 7 : 11, Math.floor((W * H) / ((R * 3.5) ** 2))));
+      bubbles.forEach((b) => { vis(b, false); b.leave = false; });
+      const fixed = bubbles.filter(always), rest = bubbles.filter((b) => !always(b)).sort(() => Math.random() - 0.5);  // a different few each visit
+      for (const b of [...fixed, ...rest.slice(0, Math.max(0, cap - fixed.length))]) { [b.x, b.y] = spot(); cruise(b); vis(b, true); }
+      if (q) filter();
       draw();
     }
-    function step(dt, settle) {
-      const live = bubbles.filter((b) => b.on);
+    // every few seconds one face drifts off an edge and a new one floats in from another (paused while typing)
+    function rotate() {
+      if (q || pick || document.hidden) return;
+      const out = bubbles.filter((b) => b.on && !b.leave && !always(b)), wait = bubbles.filter((b) => !b.on && !always(b));
+      if (!out.length || !wait.length) return;
+      const o = out[Math.floor(Math.random() * out.length)];
+      // leaves through the nearer side, ignoring the walls; the newcomer floats in from a side (never over the clock or the search box)
+      o.leave = true; o.vx = (o.x < W / 2 ? -1 : 1) * o.sp * 1.4; o.vy *= 0.3;
+      const n = wait[Math.floor(Math.random() * wait.length)], left = Math.random() < 0.5;
+      const x = left ? -R : W + R, y = R + Math.random() * Math.max(1, H - 2.6 * R);
+      n.x = x; n.y = y; n.leave = false; n.inside = false;
+      cruise(n, (left ? 0 : Math.PI) + (Math.random() - 0.5) * 0.9);
+      vis(n, true); n.el.classList.remove('is-new'); void n.el.offsetWidth; n.el.classList.add('is-new');
+    }
+    function step(dt) {                                                 // dt in seconds
+      const live = bubbles.filter((b) => b.on), gap = R * (q ? 2.25 : 2.6);
       for (const b of live) {
-        if (!settle) { b.vx += (Math.random() - 0.5) * 0.05 * dt; b.vy += (Math.random() - 0.5) * 0.05 * dt; }
-        if (live.length < bubbles.length) { b.vx += (W / 2 - b.x) * 0.0006 * dt; b.vy += (H / 2 - b.y) * 0.0006 * dt; }
+        if (b.leave) continue;                                          // leaving: straight out, no wandering
+        if (q) { b.vx += (W / 2 - b.x) * 2.2 * dt; b.vy += (H / 2 - b.y) * 2.2 * dt; b.vx *= 0.9; b.vy *= 0.9; continue; }  // matches glide in
+        // keep cruising at its own speed: a gentle turn now and then, never slowing to a stop
+        const a = Math.atan2(b.vy, b.vx) + (Math.random() - 0.5) * 0.6 * dt, cur = Math.hypot(b.vx, b.vy) || 1;
+        const sp = cur + (b.sp - cur) * Math.min(1, 1.5 * dt);
+        b.vx = Math.cos(a) * sp; b.vy = Math.sin(a) * sp;
       }
+      // soft bounces off each other: push apart and swap a little momentum
       for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
-        const p = live[i], q = live[j], dx = q.x - p.x, dy = (q.y - p.y) * VY, d = Math.hypot(dx, dy) || 0.01, min = R * 2.05;
-        if (d < min) { const f = ((min - d) / d) * 0.06 * dt; p.vx -= dx * f; p.vy -= dy * f; q.vx += dx * f; q.vy += dy * f; }
+        const p = live[i], o = live[j], passing = p.leave || o.leave;  // a face on its way out still keeps its distance
+        const dx = o.x - p.x, dy = (o.y - p.y) * 0.85, d = Math.hypot(dx, dy) || 0.01;
+        if (d < gap) {
+          const nx = dx / d, ny = dy / d, push = (gap - d) * Math.min(1, 9 * dt);  // a firm nudge apart, not a shove
+          p.x -= nx * push * 0.5; p.y -= ny * push * 0.5; o.x += nx * push * 0.5; o.y += ny * push * 0.5;
+          const rel = (o.vx - p.vx) * nx + (o.vy - p.vy) * ny;
+          if (rel < 0 && !passing) { p.vx += rel * nx; p.vy += rel * ny; o.vx -= rel * nx; o.vy -= rel * ny; }
+        }
       }
       for (const b of live) {
-        b.vx *= 0.94; b.vy *= 0.94;
-        const sp = Math.hypot(b.vx, b.vy), max = settle ? 6 : 0.9;
-        if (sp > max) { b.vx *= max / sp; b.vy *= max / sp; }
+        if (!q) { const v = Math.hypot(b.vx, b.vy), top = b.sp * 1.5; if (v > top) { b.vx *= top / v; b.vy *= top / v; } }  // bumps never speed it past a drift
         b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.leave) { if (b.x < -1.2 * R || b.x > W + 1.2 * R || b.y < -R || b.y > H + R) { vis(b, false); b.leave = false; } continue; }
+        const inside = b.x > R && b.x < W - R && b.y > R * 0.9 && b.y < H - R * 1.45;
+        if (inside) b.inside = true;
+        if (!b.inside) continue;                                         // a newcomer floats in before the walls count
         if (b.x < R) { b.x = R; b.vx = Math.abs(b.vx); } if (b.x > W - R) { b.x = W - R; b.vx = -Math.abs(b.vx); }
-        if (b.y < R * 0.9) { b.y = R * 0.9; b.vy = Math.abs(b.vy); } if (b.y > H - R * 1.1) { b.y = H - R * 1.1; b.vy = -Math.abs(b.vy); }
+        if (b.y < R * 0.9) { b.y = R * 0.9; b.vy = Math.abs(b.vy); } if (b.y > H - R * 1.45) { b.y = H - R * 1.45; b.vy = -Math.abs(b.vy); }
       }
     }
-    function draw() { for (const b of bubbles) b.el.style.transform = `translate(${(b.x - R).toFixed(1)}px, ${(b.y - R).toFixed(1)}px)`; }
-    const loop = (t) => { const dt = Math.min(3, (t - (last || t)) / 16.7); last = t; step(dt); draw(); raf = requestAnimationFrame(loop); };
+    function draw() { for (const b of bubbles) if (b.on) b.el.style.transform = `translate3d(${(b.x - R).toFixed(1)}px, ${(b.y - R).toFixed(1)}px, 0)`; }
+    const loop = (t) => { const dt = Math.min(0.1, (t - (last || t)) / 1000); last = t; if (!pick) step(dt); draw(); raf = requestAnimationFrame(loop); };
     const ro = new ResizeObserver(() => { if (Math.abs(field.clientWidth - W) > 4 || Math.abs(field.clientHeight - H) > 4) place(); });
 
-    // ---- typing filters
-    search.addEventListener('input', () => {
-      const q = search.value.trim().toLowerCase();
-      for (const b of bubbles) { b.on = !q || b.a.id === 'add' || b.a.label.toLowerCase().split(' ').some((w) => w.startsWith(q)); b.el.classList.toggle('is-gone', !b.on); }
-    });
+    // ---- typing filters: matches glide to the middle, the rest fade back
+    function filter() {
+      if (!q) { place(); return; }
+      const hit = bubbles.filter(matches).slice(0, cap + 1);
+      for (const b of bubbles) {
+        const on = hit.includes(b);
+        if (on && !b.on) { [b.x, b.y] = spot(); b.vx = b.vy = 0; b.leave = false; b.inside = true; }
+        vis(b, on);
+      }
+    }
+    search.addEventListener('input', () => { const was = q; q = search.value.trim().toLowerCase(); if (q !== was) filter(); });
     search.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
       e.preventDefault();
@@ -511,11 +567,12 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     const finish = async () => {
       if (!pick) return;
       el.classList.add('is-out');
-      clearInterval(clk); cancelAnimationFrame(raf); ro.disconnect(); stopHere();
+      clearInterval(clk); clearInterval(rot); cancelAnimationFrame(raf); ro.disconnect(); stopHere();
       sound.tick('open');
       await wait(reduced ? 0 : 450);
       el.remove();
       desk?.classList.remove('is-locked');
+      document.dispatchEvent(new Event('otcv:unlock'));  // the menu-bar clock catches up
       if (pick.id === 'guest') return resolve(null);
       // team members without an illustrated character come in as their photo, keeping their w- id (Growth OS)
       const character = pick.team ? { ...pick.team } : { id: pick.member ? pick.id : 'photo', label: pick.label, src: pick.src };
@@ -530,7 +587,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     build();
     if (team.length) fetch('data/wispr-team.json').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d?.team?.length && !pick) { roster = d.team; build(); } }).catch(() => {});
     ro.observe(field);
-    if (!reduced) raf = requestAnimationFrame(loop);
+    raf = requestAnimationFrame(loop);  // reduced motion: same flow, slower (SLOW), no bob
+    rot = setInterval(rotate, reduced ? 6000 : 3000);
     requestAnimationFrame(() => el.classList.add('is-on'));
   });
 }

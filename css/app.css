@@ -1364,6 +1364,14 @@ a.icon { text-decoration: none; }
 .gtour__skip { min-height: 28px; padding: 0 10px; border: 2px solid var(--vast); border-radius: 8px; background: var(--lumen); color: var(--vast); font: 600 12px/1 Figtree, var(--f-ui); cursor: pointer; }
 .gtour__skip:hover { background: #f0d7ff; box-shadow: 2px 2px 0 0 var(--vast); }
 .gtour__extra:empty { display: none; }
+.gtour__n { font: 600 10.5px/1 Figtree, var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: rgba(26,26,26,.5); }
+.gtour__btns { display: flex; gap: 6px; }
+.gtour__btn { min-height: 30px; padding: 0 10px; border: 2px solid var(--vast); border-radius: 8px; background: var(--lumen); color: var(--vast); font: 600 12px/1 Figtree, var(--f-ui); cursor: pointer; }
+.gtour__btn.is-primary { background: #f0d7ff; }
+.gtour__btn.is-text { border-color: transparent; background: none; color: rgba(26,26,26,.6); }
+.gtour__btn:disabled { opacity: .35; cursor: default; }
+.menubar__help { width: 22px; height: 22px; margin: 0 4px; padding: 0; border: 1px solid #111; border-radius: 50%; background: var(--plat-1); font: 700 12px/1 var(--f-ui); cursor: pointer; }
+@media (max-width: 760px) { .gtour__btn { min-height: 44px; min-width: 44px; padding: 0 12px; font-size: 13px; } .gtour__cap { width: calc(100% - 16px); } .menubar__help { display: none; } }
 .gtour__pill { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 12px 6px 8px; border-radius: 999px; background: #1a1a1a; color: #ffffeb; font: 600 11.5px/1.2 Figtree, var(--f-ui); width: max-content; max-width: 100%; }
 .gtour__wave { display: flex; align-items: center; gap: 2px; height: 16px; padding: 0 4px; }
 .gtour__wave i { width: 2px; height: 30%; border-radius: 2px; background: #ffffeb; animation: gtour-wave .6s ease-in-out infinite alternate; }
@@ -1468,6 +1476,22 @@ a.icon { text-decoration: none; }
 .lock__field.is-tight .lock__role { display: none; }
 .lock__field.is-tight .lock__name { font-size: 10.5px; }
 .lock__field.is-tight .lock__user { gap: 2px; }
+/* the lobby floats a few big faces at a time: name under the face, the role on hover or focus */
+.lock__field .lock__user > * { transition: transform .35s var(--ease-out), opacity .7s ease; }
+.lock__field .lock__role { opacity: 0; max-height: 0; overflow: hidden; transition: opacity .2s, max-height .2s; }
+.lock__field .lock__user:hover .lock__role, .lock__field .lock__user:focus-visible .lock__role { opacity: .85; max-height: 3em; }
+.lock__field .lock__user.is-add .lock__role, .lock__field .lock__user.is-guest .lock__role { opacity: .7; max-height: 3em; }
+.lock__field .lock__name { font-size: 13.5px; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
+.lock__field .lock__user.is-gone > *, .lock__field .lock__user.is-gone .lock__role { opacity: 0; }
+/* the ppt.live lobby's own motion: each face bobs and tilts on its beat (show.html .gpill pbob),
+   a newcomer pops in (ppop), and a picked face holds still while it turns green (.nbubble.here) */
+.lock__field { overflow: hidden; }  /* faces float in and out at the sides, clipped there */
+.lock__field .lock__face { animation: lock-bob var(--d, 5s) ease-in-out var(--dl, 0s) infinite; }
+.lock__field .lock__user.is-new .lock__face { animation: lock-pop .75s cubic-bezier(.2,1.6,.4,1) both, lock-bob var(--d, 5s) ease-in-out .75s infinite; }
+.lock__field .lock__user.is-picked .lock__face { animation-play-state: paused; }
+@keyframes lock-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
+@keyframes lock-pop { 0% { transform: scale(0) rotate(-24deg); } 70% { transform: scale(1.18) rotate(4deg); } 100% { transform: scale(1) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .lock__field .lock__face, .lock__field .lock__user.is-new .lock__face { animation: none; } }
 /* picked: your bubble goes green and you're in */
 .lock__user.is-picked .lock__face { box-shadow: 0 0 0 4px #3ddc84, 0 0 28px rgba(61,220,132,.75); transform: scale(1.12); }
 .lock__user.is-picked .lock__name { color: #3ddc84; }

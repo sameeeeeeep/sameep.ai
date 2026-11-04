@@ -12,7 +12,7 @@ import { stylisePhoto } from './cast.js';
 import { jukebox, installer, installed, splash, login, FOLDERS, openFolder, openGames } from './era.js';
 import { fillUrl } from './demos.js';
 import { installCards } from './infocard.js';
-import { startTour } from './tour.js';
+import { startTour, guideOn, endGuide } from './tour.js';
 import { loadWork } from './work.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
@@ -76,7 +76,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     },
     open(id) { apps.find((a) => a.id === id)?.open(); },
     setWallHour: (hr) => desk.setWall(hr),
-    endCard: (fromIcon) => endCard(wm, persona, () => pod, fromIcon),
+    endCard: (fromIcon) => { endCard(wm, persona, () => pod, fromIcon); if (!fromIcon) ctx.afterShow?.(); },
+    tour: () => startTour({ area: desk.area }),  // Help › Show me around, and the ? by the clock
     // the jukebox icon: bring it back after it's been closed (or open it for the first time on ?fast)
     openJukebox() {
       const w = wm.get('jukebox');
@@ -91,7 +92,8 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   const folderApp = (f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) });
   // projects on the left; the Fun folder sits on the right with the games and the toys
   desk.renderProjects([...FOLDERS.filter((f) => f.id !== 'fun').map(folderApp), ...pick(['work']),
-    { id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }], []);
+    // the application extras: the Wispr version only (the pages stay reachable by URL)
+    ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])], []);
   desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'styleguide', 'jukebox', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
     { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, folderApp(FOLDERS.find((f) => f.id === 'fun')), { id: 'games', label: 'Games', icon: 'proj-games', open: () => openGames(wm) }, ...pick(['trash'])]);
   desk.renderMenus(ctx, apps);
@@ -112,22 +114,26 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       ctx.installing = true;
       desk.setInstalling(true);
       if (isNarrow()) desk.notice('OFF THE CV is installing. It only takes a moment.');
-      // first visit: a ghost-cursor tour plays while it installs, and the install takes as long as the tour
+      // every visit: the guide plays while it installs and keeps going after; the Open countdown waits for it
       tour = startTour({ area: desk.area });
-      tour?.finished.then(() => { if (!tour.active) ctx.skipInstall?.(); });  // skipped: no need to wait out the tour's pace
-      await installer(wm, { reduced, minMs: tour ? (isNarrow() ? 14000 : 18000) : 3000, ready: tour?.finished, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
+      tour?.finished.then(() => { if (ctx.installing) ctx.skipInstall?.(); });  // skipped during the install: no need to wait
+      await installer(wm, { reduced, minMs: tour ? 8000 : 3000, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
       ctx.skipInstall = null;
       ctx.installing = false;
       desk.setInstalling(false);  // the icon lands on the desktop
-      const ready = installed(wm, { onCount: desk.setBadge, hold: () => !!tour?.active, layer: desk.area });
+      const ready = installed(wm, { onCount: desk.setBadge, hold: guideOn, layer: desk.area });
       ctx.launch = ready.open;
       await ready.done;
-      tour?.end();
+      endGuide();  // opening the show ends the guide
       ctx.launch = null;
       await Promise.all([juke.fadeOut(), splash(desk.area, persona, { reduced })]);
       juke.win.close();
     } else await wait(reduced ? 0 : 500);
     pod.open();
+    // after the show (closed, cancelled or finished): a short "what's next" guide
+    const whatsNext = () => setTimeout(() => { if (!guideOn() && !document.querySelector('.lock')) startTour({ area: desk.area, kind: 'next' }); }, 900);
+    new MutationObserver(() => { if (pod.win?.el.hidden) whatsNext(); }).observe(pod.win.el, { attributes: true, attributeFilter: ['hidden'] });
+    ctx.afterShow = whatsNext;
     const q = new URLSearchParams(location.search);
     if (q.has('debug') && q.get('seat')) pod.studioReady.then(() => pod.seatForQA(q.get('seat')));
     if (q.has('debug') && q.get('node')) {
@@ -222,8 +228,10 @@ function buildDesktop(screen, persona) {
     },
     renderMenus(ctx, apps) {
       const clock = h('span.menubar__clock');
-      const tick = () => { const d = new Date(); clock.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
-      tick(); setInterval(tick, 15000);
+      // the clock stands still while the lock screen is up, and catches up the moment you're in
+      const tick = () => { if (menubar.closest('.desk')?.classList.contains('is-locked')) return; const d = new Date(); clock.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+      tick(); setInterval(tick, 15000); document.addEventListener('otcv:unlock', tick);
+      const help = h('button.menubar__help', { type: 'button', 'aria-label': 'Show me around', title: 'Show me around', onclick: () => ctx.tour() }, '?');
       const soundBtn = h('button.menubar__sound', { type: 'button', 'aria-pressed': String(sound.on), 'aria-label': 'Sound', title: 'Sound on/off', onclick: () => sound.toggle() }, h('span.ico.ico--speaker'));
       const syncSound = (on) => { soundBtn.classList.toggle('is-off', !on); soundBtn.setAttribute('aria-pressed', String(on)); };
       syncSound(sound.on); sound.onChange(syncSound);
@@ -238,8 +246,8 @@ function buildDesktop(screen, persona) {
         { label: 'File', items: [['Open Podcast', () => ctx.openPodcast()], ['Change host…', () => { ctx.openPodcast(); pod()?.pickHost(); }], ['Open Wispr Flow', () => ctx.open('wispr')], ['-'], ['Close Window', () => document.querySelector('.win.is-front .win__close')?.click()]] },
         { label: 'Edit', items: [['Undo CV burning', null], ['Cut', null], ['Copy', null], ['Paste', null]] },
         { label: 'Podcast', items: [['Play / Pause', () => pod()?.toggle()], ['Skip', () => pod()?.skip()], ['Back', () => pod()?.back()], ['-'], ['Change my character…', () => { ctx.openPodcast(); pod()?.recast(); }]] },
-        { label: 'Special', items: [['Empty Trash', () => ctx.open('trash')], ['Make your own sameep.ai…', () => ctx.endCard(true)], ['Shut Down', () => ctx.endCard(true)]] },
-        { label: 'Help', items: [['Read Me', () => ctx.open('readme')], ['Résumé.doc', () => ctx.open('resume')]] },
+        { label: 'Special', items: [['Show me around', () => ctx.tour()], ['Empty Trash', () => ctx.open('trash')], ['Make your own sameep.ai…', () => ctx.endCard(true)], ['Shut Down', () => ctx.endCard(true)]] },
+        { label: 'Help', items: [['Show me around', () => ctx.tour()], ['-'], ['Read Me', () => ctx.open('readme')], ['Résumé.doc', () => ctx.open('resume')]] },
       ];
       let openMenu = null;
       const closeAll = () => { menubar.querySelectorAll('.menu.is-open').forEach((m) => { m.classList.remove('is-open'); m.querySelector('.menu__btn').setAttribute('aria-expanded', 'false'); }); openMenu = null; };
@@ -260,7 +268,7 @@ function buildDesktop(screen, persona) {
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
       // the way into Switchboard: always one click from anywhere in the app
       const make = h('a.menubar__make', { href: MAKE_URL, target: '_blank', rel: 'noopener', title: MAKE_SAY }, h('span', 'Make your own'), h('span', { 'aria-hidden': 'true' }, '↗'));
-      menubar.append(left, h('div.menubar__right', make, h('span.menubar__app', persona.showName), soundBtn, clock));
+      menubar.append(left, h('div.menubar__right', make, h('span.menubar__app', persona.showName), soundBtn, help, clock));
     },
   };
 }
