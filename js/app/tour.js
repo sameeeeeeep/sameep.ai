@@ -23,31 +23,20 @@ const showEl = () => document.querySelector('.win--install:not(.is-closing)') ||
 
 // every stop: what to point at, one short line, and anything it does while it's there
 function mainStops(phone) {
-  const q = (s) => () => document.querySelector(s);
-  const folder = (id) => q(`[data-card="folder-${id}"]`);
+  const q = (sel) => () => document.querySelector(sel);
   return [
-    { id: 'hello', at: () => null, say: 'Here’s the desktop. Watch, or use Next and Back.' },
-    { id: 'growth', at: folder('growth'), say: phone ? 'Growth work: launches, sales and campaigns I ran.' : 'On the left, my work. Growth: launches, sales and campaigns.' },
-    { id: 'peek', at: folder('growth'), say: 'Open a folder, then hover a project: what it is and my part.', desktopOnly: true, peek: true },
-    { id: 'switchboard', at: folder('switchboard'), say: 'Switchboard: run any app on your own Claude, plus its wrapps.' },
-    { id: 'tools', at: folder('tools'), say: 'Claude tools: small things that make Claude better at work.' },
-    { id: 'products', at: folder('products'), say: 'Products I built or co-founded, Trippy included.' },
-    { id: 'work', at: q('.icons--proj .icon:not([data-card]):not([data-app])'), say: 'Work: every project in one window, with videos.' },
-    { id: 'recording', at: q('[data-card="recording"]'), say: 'Recording: my three-minute application video.', wisprOnly: true },
-    { id: 'brewbot', at: q('[data-card="brewbot"]'), say: 'Brew-bot: a pour-over machine you run by voice.', wisprOnly: true },
-    { id: 'fun', at: folder('fun'), say: phone ? 'Fun things and side quests.' : 'On the right, fun things and side quests.' },
-    { id: 'games', at: q('.is-games .icon'), say: '1999 games, still playable in a browser.' },
-    { id: 'juke', at: q(phone ? '.win--island' : '.win--juke'), say: phone ? 'The jukebox: 60 songs from ’99. Tap ⏭ to skip.' : 'The jukebox: 60 songs from ’99. Skip, pause or roll it up.' },
-    { id: 'readme', at: q('.is-readme .icon'), say: 'Read Me: how this site was talked into existence.' },
-    { id: 'styleguide', at: q('.is-styleguide .icon'), say: 'Wispr’s brand, as I read it, on one page.' },
-    { id: 'built', at: q('.is-builtwith .icon'), say: 'Built with: the real numbers behind this build.' },
-    { id: 'make', at: q('.is-switchboard .icon'), say: 'Make your own: tell your Claude to build you one.' },
-    { id: 'menubar', at: q('.menubar__menus'), say: 'Up top: the Podcast menu, Help, and Special.', desktopOnly: true },
+    { id: 'welcome', at: showEl, say: 'Welcome! My portfolio, in my voice, is ready. Open it any time. Meanwhile, a quick tour.' },
+    phone
+      ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work, in folders: campaigns, products, events and tools. Tap one.' }
+      : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: campaigns, products, events and tools, in folders. Hover for details.' },
+    phone
+      ? { id: 'right', at: q('[data-card="folder-fun"]'), say: 'Further down, the fun stuff: the jukebox, the style guide, games.' }
+      : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the fun stuff: the jukebox, the Wispr style guide, games and more.' },
+    { id: 'steer', at: showEl, say: 'Steer the show: hold your Wispr Flow key and say where to go. Or type.', extra: pill },
     { id: 'crt', at: q('.menubar__crt'), say: 'The screen has looks. Here they are.', desktopOnly: true, crt: true },
-    { id: 'again', at: q('.menubar__help'), say: 'Press ? any time to see this tour again.', desktopOnly: true },
-    { id: 'show', at: showEl, say: 'And this is the show: a podcast about my work.' },
-    { id: 'steer', at: showEl, say: 'Steer it: hold your Wispr Flow key and say where to go. Or type.', extra: pill },
-    { id: 'hosts', at: showEl, say: 'Pick one of four hosts first. Switch any time.' },
+    phone
+      ? { id: 'again', at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Replay this from Special › Show me around. Next, Back and Skip are on every bubble.' }
+      : { id: 'again', at: q('.menubar__help'), say: 'Replay this any time with ?. Next, Back and Skip are on every bubble.' },
     { id: 'gos', at: q('[data-app="growthos"]'), say: 'Wispr Growth OS: a growth plan I started for your team.', wisprOnly: true },
   ];
 }
@@ -69,6 +58,7 @@ export function startTour({ area, kind = 'main' } = {}) {
   const phone = isNarrow(), glide = !phone && !reducedMotion();
   let stops = (kind === 'next' ? nextStops() : mainStops(phone)).filter((s) => (!s.wisprOnly || isWispr) && (!s.desktopOnly || !phone));
   if (kind === 'next') { stops = stops.filter((s) => !seenNext.has(s.id)); if (stops.length < 2) return null; }
+  stops = stops.filter((s) => s.id.endsWith('hello') || s.id === 'welcome' || s.at());  // count only stops that have something to point at
 
   const ghost = glide ? h('div.gtour__cursor', { 'aria-hidden': 'true' }) : null;
   if (ghost) ghost.innerHTML = ARROW;  // a fixed, local SVG string
@@ -133,7 +123,7 @@ export function startTour({ area, kind = 'main' } = {}) {
     if (!alive) return;
     tidy();
     if (k < 0) k = 0;
-    while (k < stops.length && !stops[k].id.endsWith('hello') && !stops[k].at()) k++;  // nothing to point at: skip it
+    while (k < stops.length && !stops[k].id.endsWith('hello') && stops[k].id !== 'welcome' && !stops[k].at()) k++;  // gone since: skip it
     if (k >= stops.length) return end(true);
     const my = ++token; i = k;
     const s = stops[k];
