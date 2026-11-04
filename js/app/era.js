@@ -74,8 +74,6 @@ const PLAYLIST = [
 ];
 // every visit gets its own shuffled order, so everyone walks in on a different song
 const shuffled = (list) => { const a = list.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
-// the filename it would have had in a 1999 shared folder
-const fileOf = (s) => (s.artist + '_-_' + s.title).toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9()._-]+/g, '_').replace(/_+/g, '_') + '.mp3';
 
 // projects on the desktop: the left column is five folders, every item opening a working page in a new tab.
 // Where a project has no public page, it gets a short one on this site (sameep.ai/<slug>/). Icon: img/ui/proj-<id>.svg
@@ -146,10 +144,9 @@ export const STARS = [
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 // ---------------------------------------------------------------- the jukebox
-// a parody of the 1999 amp players: its own skin, a spectrum, a seek bar, and a Napster-ish line saying
-// which stranger you're "downloading" it from. The name lives here only, so renaming it is one line
+// a parody of the 1999 amp players: its own skin, a spectrum, a seek bar, a track line. The name lives
+// here only, so renaming it is one line
 export const PLAYER = { name: 'Macster', ver: '2.99' };
-const PEERS = ['dilsedesi_99', 'bunty_rulez', 'xXmohitXx', 'chaiwala2k', 'juhu_gurl', 'dj_pappu', 'mp3king_delhi', 'rahul_4ever'];
 export function jukebox(wm, { reduced } = {}) {
   const narrow = isNarrow();
   // bottom left, just clear of the projects column; on a phone it hangs from the menu bar like a live activity
@@ -183,7 +180,7 @@ export function jukebox(wm, { reduced } = {}) {
   const show = () => {
     const s = Q[i];
     track.textContent = `${i + 1}. ${s.artist.toUpperCase()} - ${s.title.toUpperCase()} *** ${PLAYER.name.toUpperCase()} *** `.repeat(2);
-    status.textContent = `${fileOf(s)} · from ${PEERS[(i * 5 + 3) % PEERS.length]} · ${(2.1 + ((i * 7) % 40) / 10).toFixed(1)} KB/s`;
+    status.textContent = `Track ${i + 1} of ${Q.length} · ${s.artist}`;
     w.el.setAttribute('aria-label', `${PLAYER.name}, now playing ${s.title} by ${s.artist}`);
   };
   const go = (n) => {

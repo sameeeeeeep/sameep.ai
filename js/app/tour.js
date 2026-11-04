@@ -29,7 +29,7 @@ function mainStops(phone) {
     // first the room: the middle of the screen, then the music that's already on, then the show installing
     { id: 'w-hello', at: () => null, say: 'Welcome to 1999.' },
     // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
-    { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing the shared folder of ’99. Skip a track, or pause it.` },
+    { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}: 60 songs from ’99. Skip a track, or pause it.` },
     { id: 'install', at: showEl, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
       ? 'My portfolio, in my voice, is installing. Start the show any time; meanwhile, the rest.'
       : 'My portfolio, in my voice, is ready. Start the show any time; meanwhile, the rest.') },

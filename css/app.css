@@ -1362,7 +1362,7 @@ a.icon { text-decoration: none; }
 .juke__vol::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 14px; border: 1px solid #0b0b12; background: linear-gradient(#d6d6ea, #7a7a96); }
 .juke__vol::-moz-range-thumb { width: 12px; height: 14px; border: 1px solid #0b0b12; border-radius: 0; background: linear-gradient(#d6d6ea, #7a7a96); }
 .juke__status { margin: 0; padding: 5px 8px 8px; font-size: 10px; color: #8d90ad; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.juke__status::before { content: "⇣ "; color: #ffd84a; }
+.juke__status::before { content: "♪ "; color: #ffd84a; }
 
 /* my games: a window around the canvas (js/app/games/*.js draws everything inside .game) */
 .win--game .win__body { padding: 10px; background: #111; }
