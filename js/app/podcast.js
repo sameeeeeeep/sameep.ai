@@ -124,7 +124,6 @@ export class Podcast {
     if (first) track('welcome', { host: res.host, route: res.route, seat: vis?.character?.id, seatLabel: vis?.character?.label, name: vis?.name, login: !!visitor });
     if (res.route && res.route !== this.routeId) this.setRoute(res.route);
     if (vis) { this.visitor = vis; this.casted = true; this.#renderAudience(); }
-    if (first) this.#steerTip();
     const id = res.host;
     saveHost(id);
     this.hostChosen = true;
@@ -583,6 +582,7 @@ export class Podcast {
     const tok = ++this.token;
     this.li = i;
     markLine(this.nodeId, i, this.visited);
+    if (line.id === 'intro-03' && offset < 0.5) this.#steerTip(); // "you, in the audience, steer": try it now
     this.subCtl?.cancel();
     const who = this.speakers[line.who] ? line.who : (line.who === 'guest' ? this.guestKey : this.hostKey);
     this.activeKey = who;
@@ -797,14 +797,22 @@ export class Podcast {
   }
 
   // first-time guides at a fork: how to choose (first fork), then the project shortcut (a few in)
-  // first time the show starts: say plainly that it can be steered, before the first fork comes
+  // the line where the host says the audience steers: invite a go right then, under the say field.
+  // Whatever they do lands as "Got it, heading to …" (#ack), so they know it worked.
   #steerTip() {
     setTimeout(() => {
-      if (this.win.el.hidden) return;
-      coach.show('steer', this.sayForm, isWispr
-        ? '<b>You steer this show.</b> Tap <b>Up next</b> to skip ahead, pick a card when the host asks, or hold <b>fn</b> and say where to go: try “tell me about ppt.live”.'
-        : '<b>You steer this show.</b> Tap <b>Up next</b> to skip ahead, pick a card when the host asks, or type or say where to go: try “tell me about ppt.live”.', { place: 'top', ms: 12000 });
-    }, 5000);
+      if (this.win.el.hidden || this.lines[this.li]?.id !== 'intro-03') return;
+      coach.show('steer-try', this.sayForm, isWispr
+        ? 'Tap <b>Up next</b>, or hold <b>fn</b> and say where to go. Try “tell me about ppt.live”.'
+        : 'Tap <b>Up next</b>, or type or say where to go. Try “tell me about ppt.live”.', { title: 'Try it now', place: 'top', ms: 14000 });
+    }, this.reduced ? 0 : 900);
+  }
+
+  // a visible yes after the audience steers: "Got it, heading to ppt.live"
+  #ack(text) {
+    clearTimeout(this.ackT);
+    this.#msg([h('span.say__k', 'Got it'), ` ${text}`], 'go');
+    this.ackT = setTimeout(() => { if (this.sayMsg.firstChild?.textContent === 'Got it') this.#msg(''); }, 4500);
   }
 
   #tips() {
@@ -956,7 +964,7 @@ export class Podcast {
     const tick = () => {
       if (this.auto !== a) return;
       if (!live()) return this.#stopAuto(true);
-      if (a.left <= 0) { this.#stopAuto(); this.#pick(p.c, p.c.label); return; }
+      if (a.left <= 0) { this.#stopAuto(); this.#pick(p.c, p.c.label, false, false); return; }
       this.autoLine.replaceChildren(h('span.prim__n', `Up next in ${a.left}`), ' · ',
         h('button.prim__stay', { type: 'button', onclick: () => this.#stopAuto(true) }, 'Stay here'));
       a.left--;
@@ -1095,6 +1103,7 @@ export class Podcast {
     const it = m.item;
     if (it.choice) return this.#pick(it.choice, q, !this.rec);
     if (it.to) return this.#pick({ to: it.to, label: q }, q);
+    if (it.cmd === 'skip' || it.cmd === 'back') this.#ack(it.cmd === 'skip' ? 'skipping ahead.' : 'going back.');
     if (it.cmd === 'skip') this.skip();
     if (it.cmd === 'back') this.back();
     if (it.cmd === 'pause') this.pause();
@@ -1104,7 +1113,7 @@ export class Podcast {
   }
 
   // the audience picks: the card flashes, the host takes it from there
-  #pick(choice, said, gesture = false) {
+  #pick(choice, said, gesture = false, ack = true) {
     coach.done();
     track('choice', { from: this.nodeId, to: choice.to, how: said && (said !== choice.label || !this.node?.choices?.includes(choice)) ? 'voice' : gesture ? 'tap' : 'auto' });
     // a choice can carry a demo ("Open it" / "Show me here")
@@ -1126,9 +1135,13 @@ export class Podcast {
     this.root.querySelectorAll(`.card[data-i="${i}"], .chip[data-i="${i}"], .prim[data-i="${i}"], .more__item[data-i="${i}"]`).forEach((c) => c.classList.add('is-picked'));
     this.audBadge.classList.add('is-picked');
     setTimeout(() => this.audBadge.classList.remove('is-picked'), 900);
+    // the audience's own pick (a tap, or something typed or said) gets a "Got it"; the lean-back auto-play doesn't
+    ack = ack ? `heading to ${this.map.title(choice.to) || choice.label}.` : null;
+    if (ack) this.#ack(ack);
     setTimeout(() => {
       if (tok !== this.token) return;
       this.go(choice.to, { from: 'pick' });
+      if (ack) this.#ack(ack); // go() clears the field's message: put it back
     }, this.reduced ? 120 : 320);
   }
 
