@@ -8263,28 +8263,36 @@
      "look": "side",
      "visual": {
       "type": "stats",
-      "title": "Before now",
-      "steps": {
+      "title": "Where I've been",
+      "logos": {
        "rows": [
         {
-         "when": "First",
-         "t": "ShopClues",
-         "sub": "an online marketplace"
+         "src": "img/logos/shopclues.webp",
+         "name": "ShopClues"
         },
         {
-         "when": "2019–21",
-         "t": "Nykaa",
-         "sub": "the big sales: sale conversion +30%"
+         "src": "img/logos/nykaa.webp",
+         "name": "Nykaa"
         },
         {
-         "when": "2021–22",
-         "t": "Mosaic Wellness",
-         "sub": "platform product for three brands"
+         "src": "img/logos/mosaic.webp",
+         "name": "Mosaic Wellness"
         },
         {
-         "when": "2025–",
-         "t": "Often, then Nailinit",
-         "sub": "co-founder, then chief of staff"
+         "src": "img/logos/often.webp",
+         "name": "Often"
+        },
+        {
+         "src": "img/logos/nailinit.webp",
+         "name": "Nailinit"
+        },
+        {
+         "src": "img/logos/dot.webp",
+         "name": "DOT Media"
+        },
+        {
+         "src": "img/logos/slumber.webp",
+         "name": "Khushi's Secret Slumber Party"
         }
        ]
       }

@@ -33,7 +33,8 @@
 //              | {type:'stats', title, kpis:[{n|t, pre?, suf?, label}], bars:{title,rows:[[label,n]],log?,unit?}, funnel:{title,rows}}
 //                stats extras, any mix: grid:{n, icon:'cv'|'phone'|'glass'|'dot', hl:{n,label}, label} (a pictogram),
 //                steps:{rows:[{when,t,sub}]} (a timeline), flow:{rows:[{t,sub,hot}], loop} (a pipeline), tags:{rows},
-//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src|[src…],cap}, qr:{url,cap}, source
+//                checks:{rows}, news:[{pub, head, date, fact, url}] (press clippings), photo:{src|[src…],cap}, qr:{url,cap},
+//                logos:{title, rows:[{src, name}]} (a wall of logos), source
 //              | {type:'work', work}   (shots or recording, whichever the project has)
 //              video extras: layout:'side' (a tall 9:16 panel beside the studio), sound:true (its own audio, ducked
 //              under the voice; follows the mute switch and the podcast's play/pause)
@@ -359,6 +360,10 @@ export class Monitor {
         h('ol.stats__flow' + (f.hot ? '.is-hot' : ''), f.rows.map((s, i) => h('li', { class: s.hot ? 'is-hot' : '', style: { transitionDelay: (0.15 + k * 0.6 + i * 0.22) + 's' } }, s.t || s, s.sub && h('small', s.sub)))),
         f.loop && h('p.stats__loop', '↺ ' + f.loop)))));
     }
+    // a wall of logos on paper tiles, filling in one by one
+    if (v.logos) main.append(h('div.stats__chart.stats--logos', v.logos.title && h('p.stats__ct', v.logos.title),
+      h('ul.stats__logos', v.logos.rows.map((l, i) => h('li', { style: { transitionDelay: (0.1 + i * 0.12) + 's' }, title: l.name },
+        h('img', { src: safeUrl(l.src, this.base), alt: l.name, draggable: 'false' }))))));
     if (v.tags) main.append(h('div.stats__chart.stats--tags', v.tags.title && h('p.stats__ct', v.tags.title),
       h('ul.stats__tags', v.tags.rows.map((t, i) => h('li', { style: { transitionDelay: (0.1 + i * 0.06) + 's' } }, t)))));
     if (v.checks) main.append(h('div.stats__chart.stats--checks', v.checks.title && h('p.stats__ct', v.checks.title),

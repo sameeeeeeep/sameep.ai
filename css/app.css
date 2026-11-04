@@ -1262,6 +1262,12 @@ p.chooser__or { margin: 2px 0 -4px; }
 .stats__photo.is-set .stats__pics { display: grid; }
 .stats__photo.is-set .stats__pics img { grid-area: 1 / 1; opacity: 0; transition: opacity .6s; aspect-ratio: 4 / 3; }
 .stats__photo.is-set .stats__pics img.is-on { opacity: 1; }
+/* logo wall: each logo on its own paper tile */
+.stats__logos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 104px), 1fr)); gap: 8px; }
+.stats__logos li { display: grid; place-items: center; aspect-ratio: 2.2; padding: 10px 12px; border-radius: 5px; background: #f3eee2; opacity: 0; transform: translateY(4px); transition: opacity .4s, transform .4s var(--ease-out); }
+.stats__logos img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+.stats.is-on .stats__logos li { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .stats__logos li { transition: none; } }
 /* qr: scan to open, beside its address */
 .stats__qr { margin: 0; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .stats__qrcode { flex: none; display: block; width: clamp(140px, 26cqw, 260px); padding: 10px; border-radius: 6px; background: #fff; }
