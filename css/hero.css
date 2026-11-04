@@ -24,12 +24,15 @@
 .hero-bottom { bottom: calc(var(--g) + env(safe-area-inset-bottom, 0px)); align-items: flex-end; }
 .hero-top > *, .hero-bottom > * { pointer-events: auto; }
 
-/* the wordmark: "sameep.ai" in the site's pixel headline face, .ai in ember */
+/* the logo: the favicon's pixel CD at 1:1, then "sameep.ai" in Jersey 10 sized so one font pixel is exactly
+   2 CSS px (75/1400 em per font pixel, x1.32 size-adjust), which keeps every edge on the pixel grid at 1x and 2x */
 .hero-mark {
-  margin: 0; display: flex; align-items: baseline; white-space: nowrap;
-  font: 400 26px/1 var(--f-head); letter-spacing: .01em; color: var(--paper, #f3eee2);
-  -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; text-shadow: 0 1px 10px rgba(15, 13, 11, .55);
+  margin: 0; display: flex; align-items: center; gap: 10px; white-space: nowrap; height: 32px;
+  font: 400 28.2828px/32px var(--f-head); letter-spacing: 0; color: var(--paper, #f3eee2);
+  -webkit-font-smoothing: none; text-shadow: 0 2px 0 rgba(15, 13, 11, .6);
 }
+.hero-mark__cd { display: block; width: 32px; height: 32px; image-rendering: pixelated; filter: drop-shadow(0 2px 0 rgba(15, 13, 11, .6)); }
+.hero-mark__word { display: block; height: 32px; }
 .hero-mark__tld { color: var(--ember, #ff6c4c); }
 
 .hero-pill {
@@ -108,7 +111,6 @@
 .hero.is-end .hero-cap, .hero.is-end .hero-top, .hero.is-end .hero-skip { opacity: 0; transition: opacity .6s; }
 
 @media (max-width: 767px) {
-  .hero-mark { font-size: 23px; }
   .hero-bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
   .hero-cap { max-width: 100%; }
   .hero-cap__txt { font-size: clamp(22px, 7vw, 30px); }
