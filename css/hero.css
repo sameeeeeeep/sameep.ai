@@ -24,12 +24,11 @@
 .hero-bottom { bottom: calc(var(--g) + env(safe-area-inset-bottom, 0px)); align-items: flex-end; }
 .hero-top > *, .hero-bottom > * { pointer-events: auto; }
 
-/* the logo: the favicon's pixel CD at 1:1, then "sameep.ai" in Jersey 10 sized so one font pixel is exactly
-   2 CSS px (75/1400 em per font pixel, x1.32 size-adjust), which keeps every edge on the pixel grid at 1x and 2x */
+/* the logo: the favicon's pixel CD at 1:1, then "sameep.ai" in Righteous, a late-90s geometric display face */
 .hero-mark {
   margin: 0; display: flex; align-items: center; gap: 10px; white-space: nowrap; height: 32px;
-  font: 400 28.2828px/32px var(--f-head); letter-spacing: 0; color: var(--paper, #f3eee2);
-  -webkit-font-smoothing: none; text-shadow: 0 2px 0 rgba(15, 13, 11, .6);
+  font: 400 25px/32px "Righteous", var(--f-head); letter-spacing: 0; color: var(--paper, #f3eee2);
+  text-shadow: 0 2px 0 rgba(15, 13, 11, .6);
 }
 .hero-mark__cd { display: block; width: 32px; height: 32px; border-radius: 50%; filter: drop-shadow(0 2px 0 rgba(15, 13, 11, .6)); }
 .hero-mark__word { display: block; height: 32px; }
