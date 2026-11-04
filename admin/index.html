@@ -147,6 +147,19 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
   tr.detail td { padding: 10px; border-radius: 10px; margin-bottom: 8px; }
 }
 .m-only { display: none; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; margin: 0 -16px 16px; padding: 0 16px; scrollbar-width: none; border-bottom: 1px solid var(--line); }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { border: 0; background: none; padding: 10px 12px; font-size: 14px; color: var(--ink-2); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; min-height: 44px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+.funnel li { grid-template-columns: minmax(0, 1fr) auto auto; }
+.funnel .pct { color: var(--ink-3); font-size: 13px; min-width: 44px; text-align: right; }
+.tl { list-style: none; margin: 8px 0 0; padding: 0; font-size: 13px; max-height: 340px; overflow: auto; }
+.tl li { display: grid; grid-template-columns: 52px 76px minmax(0, 1fr); gap: 8px; padding: 3px 0; border-top: 1px dashed var(--line); }
+.tl .at { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.tl .k { color: var(--ink-2); }
+.tl .err { color: var(--bad); }
+.note { font-size: 13px; color: var(--ink-3); margin: 8px 0 0; }
+.big { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; }
 .foot { margin-top: 24px; font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 </style>
 </head>
@@ -160,8 +173,9 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
   const ls = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* private mode */ } } };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const pref = (() => { try { return JSON.parse(ls.get('otcv-dash') || '{}'); } catch { return {}; } })();
-  const state = { days: pref.days || 7, dev: !!pref.dev, wispr: !!pref.wispr, data: null, ep: null, open: new Set(), limit: 50 };
-  const savePref = () => ls.set('otcv-dash', JSON.stringify({ days: state.days, dev: state.dev, wispr: state.wispr }));
+  const state = { days: pref.days || 7, dev: !!pref.dev, wispr: !!pref.wispr, mine: !!pref.mine, tab: pref.tab || 'overview', data: null, ep: null, cf: null, open: new Set(), limit: 50 };
+  const savePref = () => ls.set('otcv-dash', JSON.stringify({ days: state.days, dev: state.dev, wispr: state.wispr, mine: state.mine, tab: state.tab }));
+  const TABS = [['overview', 'Overview'], ['wispr', 'Wispr'], ['podcast', 'Podcast'], ['audience', 'Audience'], ['opened', 'Opened'], ['visits', 'Visits'], ['cf', 'Cloudflare']];
 
   // the old login link: /admin#k=TOKEN (or /api/admin#k=…) keeps the token on this device, then drops it from the address bar
   const m = location.hash.match(/#k=([^&]+)/);
@@ -211,15 +225,32 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
     const t = ls.get(TOKEN);
     try {
       const [r, ep] = await Promise.all([
-        fetch(`${API}/data?days=${state.days}`, { credentials: 'same-origin', headers: t ? { authorization: 'Bearer ' + t } : {} }),
+        fetch(`${API}/data?days=${state.days}${state.mine ? '&mine=1' : ''}`, { credentials: 'same-origin', headers: t ? { authorization: 'Bearer ' + t } : {} }),
         state.ep || fetch('/data/episode.json').then((x) => (x.ok ? x.json() : null)).catch(() => null),
       ]);
       state.ep = ep;
       if (r.status === 401) { if (t) ls.set(TOKEN, null); return lock(); }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       state.data = await r.json();
+      // this browser and network are Sameep's: their visits drop out of the numbers (past ones too, for this browser)
+      if (!sessionStorage.getItem('otcv-me')) {
+        sessionStorage.setItem('otcv-me', '1');
+        fetch(API + '/me', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json', ...(t ? { authorization: 'Bearer ' + t } : {}) }, body: JSON.stringify({ vid: ls.get('otcv-vid') }) })
+          .then(() => load()).catch(() => {});
+      }
       render();
+      if (state.tab === 'cf') loadCf();
     } catch (e) { app.innerHTML = `<div class="lock"><p class="msg">Couldn’t load: ${esc(e.message)}</p></div>`; }
+  }
+
+  async function loadCf() {
+    if (state.cf?.days === state.days) return;
+    const t = ls.get(TOKEN);
+    try {
+      const r = await fetch(`${API}/cf?days=${state.days}`, { credentials: 'same-origin', headers: t ? { authorization: 'Bearer ' + t } : {} });
+      state.cf = { days: state.days, ...(await r.json()) };
+    } catch (e) { state.cf = { days: state.days, error: e.message }; }
+    if (state.tab === 'cf') render();
   }
 
   // ---------------------------------------------------------------- helpers
@@ -289,13 +320,37 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
   }
 
   // ---------------------------------------------------------------- render
+  const card = (id, span, h, body) => `<section class="card ${span}" aria-labelledby="h-${id}"><h2 id="h-${id}">${h}</h2>${body}</section>`;
+  const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+  const clock = (s) => { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const ms = (x) => { x = Number(x) || 0; return x ? (x < 1000 ? x + ' ms' : (x / 1000).toFixed(1) + ' s') : '—'; };
+  const hostOf = (x) => { x = String(x || ''); return x.startsWith('/') ? x : x.replace(/^www\./, ''); };
+
+  // the funnel: each step is a share of everyone who arrived
+  function funnel(all) {
+    const steps = [
+      ['Arrived', all.length],
+      ['Entered (past the gate)', all.filter((v) => v.gate || v.heroDone || v.nodes.length).length],
+      ['Reached the iMac', all.filter((v) => v.heroDone || v.login || v.welcome || v.nodes.length).length],
+      ['Logged in on the lock screen', all.filter((v) => v.login).length],
+      ['Picked a host', all.filter((v) => v.welcome || v.nodes.length).length],
+      ['Heard a chapter', all.filter((v) => v.nodes.length).length],
+      ['Heard 5+ chapters', all.filter((v) => v.nodes.length >= 5).length],
+      ['Finished the podcast', all.filter((v) => v.ended).length],
+    ];
+    const top = steps[0][1] || 1;
+    return `<ul class="rows funnel">${steps.map(([l, n], i) => `<li><span class="lbl">${l}</span><span class="num">${n}</span><span class="pct">${i ? pct(n, top) : ''}</span><span class="meter"><i style="width:${(n / top) * 100}%"></i></span></li>`).join('')}</ul>`;
+  }
+
+  const TL = { gate: 'Gate', resume: 'Resumed', intro: 'Intro', autoplay: 'Autoplay', imac: 'iMac', host: 'Host', login: 'Lock screen', chapter: 'Chapter', choice: 'Choice', switch: 'Host switch', end: 'End', make: 'Make own', away: 'Left tab', page: 'Page', window: 'Window', icon: 'Icon', link: 'Link out', video: 'Recording', error: 'Error' };
+  const tlLabel = (e) => e.k === 'chapter' ? title(e.s) : e.k === 'host' || e.k === 'switch' ? hostName(e.s) : e.k === 'choice' ? e.s.replace(/^([\w.-]+)/, (m) => title(m)) : e.s;
+
   function render() {
     const d = state.data, all = filtered();
-    const live = (state.data?.visits || []).filter((v) => state.dev || v.site === 'live');
-    const visitors = new Set(all.map((v) => v.vid)).size;
-    const wisprVisits = live.filter(isWispr);
-    const finished = all.filter((v) => v.ended).length;
-    const rec = all.filter(watched).length;
+    const live = (d.visits || []).filter((v) => state.dev || v.site === 'live');
+    const human = all.filter((v) => v.browser !== 'Bot');
+    const visitors = new Set(human.map((v) => v.vid)).size;
+    const wisprVisits = live.filter((v) => v.browser !== 'Bot' && isWispr(v));
     const here = (d.here || []).filter((h) => state.dev || h.site === 'live');
     const bySid = new Map(d.visits.map((v) => [v.sid, v]));
 
@@ -303,88 +358,173 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
     const folks = new Map();
     for (const v of wisprVisits) {
       const name = teammate(v) || (v.login?.as === 'guest' ? 'Guest (Wispr link)' : v.login?.as === 'own' ? 'Own account (Wispr link)' : 'Didn’t log in (Wispr link)');
-      const f = folks.get(name) || { name, team: !!teammate(v), visits: [], };
+      const f = folks.get(name) || { name, team: !!teammate(v), visits: [] };
       f.visits.push(v); folks.set(name, f);
     }
     const folkList = [...folks.values()].sort((a, b) => (b.team - a.team) || (Math.max(...b.visits.map((v) => v.last)) - Math.max(...a.visits.map((v) => v.last))));
     const folkCard = (f) => {
       const vs = f.visits, last = Math.max(...vs.map((v) => v.last)), first = Math.min(...vs.map((v) => v.start));
       const best = vs.reduce((a, b) => (reach(b) > reach(a) ? b : a));
-      const vid = vs.filter((v) => v.video).reduce((a, v) => Math.max(a, v.video.max, v.video.played ? 1 : 0), -1);
+      const vid = vs.filter((v) => v.video).reduce((a, v) => Math.max(a, Number(v.video.max) || 0, v.video.played ? 1 : 0), -1);
       const gos = vs.some((v) => v.growthOpen);
-      const time = vs.reduce((a, v) => a + (v.duration || 0), 0);
+      const time = vs.reduce((a, v) => a + (Number(v.duration) || 0), 0);
+      const listened = vs.reduce((a, v) => a + v.nodes.reduce((x, n) => x + (Number(n.s) || 0), 0), 0);
       const places = [...new Set(vs.map(place).filter((p) => p !== '—'))].join(' · ') || '—';
+      const kit = [...new Set(vs.map((v) => [v.browser, v.os, v.device].filter(Boolean).join(' · ')).filter(Boolean))].join('; ') || '—';
       return `<div class="folk"><h3>${esc(f.name)}</h3><div class="small muted">${vs.length} visit${vs.length > 1 ? 's' : ''} · last ${esc(when(last))}${vs.length > 1 ? ' · first ' + esc(when(first)) : ''}</div>
         <div class="prog" title="How far into the podcast"><i style="width:${reach(best)}%"></i></div>
-        <dl><dt>Podcast</dt><dd>${esc(far(best))}</dd>
+        <dl><dt>Podcast</dt><dd>${esc(far(best))}${listened ? ` · ${mins(listened)} listened` : ''}</dd>
         <dt>Recording</dt><dd>${vid < 0 ? '<span class="no">Not watched</span>' : vid >= 100 ? '<span class="yes">Watched to the end</span>' : `<span class="yes">Played</span>${vid > 1 ? ' · ' + (Number(vid) || 0) + '%' : ''}`}</dd>
         <dt>Growth OS</dt><dd>${gos ? '<span class="yes">Opened</span>' : '<span class="no">Not opened</span>'}</dd>
-        <dt>Time</dt><dd class="num">${mins(time)}</dd><dt>From</dt><dd>${esc(places)}</dd></dl></div>`;
+        <dt>Time</dt><dd class="num">${mins(time)}</dd><dt>From</dt><dd>${esc(places)}</dd><dt>On</dt><dd>${esc(kit)}</dd></dl></div>`;
     };
     const glog = (d.growth || []).filter((g) => state.dev || g.site === 'live');
     const signins = glog.filter((g) => g.kind === 'signin' || g.kind === 'signin_link');
+    const codes = glog.filter((g) => g.kind === 'code_sent').length;
     const wisprSign = glog.filter((g) => g.domain === 'wispr.ai');
-    const gSummary = glog.length ? `${signins.length} sign-in${signins.length === 1 ? '' : 's'}, ${glog.filter((g) => g.kind === 'code_sent').length} code${glog.filter((g) => g.kind === 'code_sent').length === 1 ? '' : 's'} sent · by domain: ${count(glog.filter((g) => g.domain).map((g) => g.domain)).map(([k, n]) => `${esc(k)} ×${n}`).join(', ') || '—'}${wisprSign.length ? ` · last wispr.ai ${esc(when(wisprSign[0].ts))}` : ''}` : 'No Growth OS sign-ins yet';
+    const gSummary = glog.length ? `${signins.length} sign-in${signins.length === 1 ? '' : 's'}, ${codes} code${codes === 1 ? '' : 's'} sent · by domain: ${count(glog.filter((g) => g.domain).map((g) => g.domain)).map(([k, n]) => `${esc(k)} ×${n}`).join(', ') || '—'}${wisprSign.length ? ` · last wispr.ai ${esc(when(wisprSign[0].ts))}` : ''}` : 'No Growth OS sign-ins yet';
     const anyTeam = folkList.some((f) => f.team);
+    const folksHtml = folkList.length ? `<div class="folks">${folkList.map(folkCard).join('')}</div>` : '<p class="empty">Nobody from the Wispr link yet in this range.</p>';
 
-    // chapters: how many visits reached each, and where the unfinished ones stopped
-    const reached = count(all.flatMap((v) => [...new Set(v.nodes.map((n) => n.id))]));
-    const dropped = count(all.filter((v) => v.nodes.length && !v.ended).map((v) => v.nodes[v.nodes.length - 1].id));
-    const opened = count(all.flatMap((v) => [...new Set([...v.icons, ...v.windows.map((w) => w + ' (window)'), ...projectPages(v).map((p) => p + ' (page)')])]));
-    const refs = count(all.map((v) => v.ref || '(direct)'));
-    const countries = count(all.map((v) => v.country));
-    const c = chart(all);
+    const c = chart(human);
+    const tabs = `<div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${state.tab === k}">${l}</button>`).join('')}</div>`;
+    let body = '';
+
+    if (state.tab === 'overview') {
+      body = `<div class="kpis">
+          <div class="kpi"><b class="num">${human.length}</b><span>Visits</span></div>
+          <div class="kpi"><b class="num">${visitors}</b><span>People</span></div>
+          <div class="kpi is-wispr"><b class="num">${folkList.filter((f) => f.team).length}</b><span>Wispr teammates</span></div>
+          <div class="kpi"><b class="num">${human.filter((v) => v.ended).length}</b><span>Finished podcast</span></div>
+          <div class="kpi"><b class="num">${human.filter(watched).length}</b><span>Watched recording</span></div>
+          <div class="kpi"><b class="num">${mins(median(human.map((v) => Number(v.duration) || 0)))}</b><span>Median visit</span></div>
+        </div>
+        ${card('wispr', 's12', 'Wispr folks', `<p class="small muted" style="margin:-6px 0 12px">${anyTeam ? '' : 'No teammate has logged in yet · '}${gSummary}</p>${folksHtml}`)}
+        ${card('day', 's8', 'Visits per day', c.html)}
+        ${card('here', 's4', 'Here now', `<div class="here"><span class="dot ${here.length ? 'on' : ''}"></span><b class="num" style="font-size:24px">${here.length}</b><span class="muted small">in the last 90 seconds</span></div>
+          ${here.length ? `<ul class="herelist">${here.map((h) => { const v = bySid.get(h.sid); return `<li>${v ? `${esc(teammate(v) || place(v))} · ${esc(v.device || '')}${isWispr(v) ? ' · <span class="pill w">Wispr</span>' : ''}<div class="small muted">${esc(far(v))}</div>` : '<span class="muted">Someone (no events yet)</span>'}</li>`; }).join('')}</ul>` : ''}`)}
+        ${card('fun', 's6', 'How far people get', funnel(human))}
+        ${card('ref', 's6', 'Where they came from', rows(count(human.map((v) => v.ref ? hostOf(v.ref) : v.utm ? 'tag: ' + v.utm : '(direct or app)')), { max: 10 }))}`;
+    }
+
+    if (state.tab === 'wispr') {
+      const wv = human.filter(isWispr);
+      body = `${card('wispr', 's12', 'Wispr folks', `<p class="small muted" style="margin:-6px 0 12px">${gSummary}</p>${folksHtml}`)}
+        ${card('wfun', 's6', 'Wispr link: how far they get', funnel(wv))}
+        ${card('glog', 's6', 'Growth OS sign-ins', glog.length ? `<ul class="rows">${glog.slice(0, 20).map((g) => `<li><span class="lbl">${esc({ code_sent: 'Code sent', signin: 'Signed in (code)', signin_link: 'Signed in (link)', plan_open: 'Opened the plan' }[g.kind] || g.kind)} · ${esc(g.domain || '—')}</span><span class="small muted">${esc(when(g.ts))}</span></li>`).join('')}</ul>` : '<p class="empty">No sign-ins yet</p>')}`;
+    }
+
+    if (state.tab === 'podcast') {
+      const lis = new Map();
+      // grouped by chapter title: a few chapters share one (the two menus)
+      for (const v of human) for (const n of v.nodes) { const k = title(n.id), x = lis.get(k) || []; x.push(Number(n.s) || 0); lis.set(k, x); }
+      const listen = [...lis].map(([k, xs]) => [k, xs.length, median(xs)]).sort((a, b) => b[1] - a[1]);
+      const reached = count(human.flatMap((v) => [...new Set(v.nodes.map((n) => n.id))]));
+      const dropped = count(human.filter((v) => v.nodes.length && !v.ended).map((v) => title(v.nodes[v.nodes.length - 1].id)));
+      const hosts = count(human.map((v) => v.welcome?.host).filter(Boolean));
+      const routes = count(human.map((v) => v.welcome?.route).filter(Boolean));
+      const ch = human.flatMap((v) => v.choices.filter((x) => x.how !== 'auto'));
+      const total = human.reduce((a, v) => a + v.nodes.reduce((x, n) => x + (Number(n.s) || 0), 0), 0);
+      body = `<div class="kpis">
+          <div class="kpi"><b class="num">${human.filter((v) => v.nodes.length).length}</b><span>Listened</span></div>
+          <div class="kpi"><b class="num">${mins(total)}</b><span>Total listening</span></div>
+          <div class="kpi"><b class="num">${mins(median(human.filter((v) => v.nodes.length).map((v) => v.nodes.reduce((x, n) => x + (Number(n.s) || 0), 0))))}</b><span>Median per listener</span></div>
+          <div class="kpi"><b class="num">${ch.length}</b><span>Choices made</span></div>
+          <div class="kpi"><b class="num">${pct(ch.filter((x) => x.how === 'voice').length, ch.length)}</b><span>By voice</span></div>
+          <div class="kpi"><b class="num">${human.reduce((a, v) => a + v.switches.length, 0)}</b><span>Host switches</span></div>
+        </div>
+        ${card('fun2', 's6', 'Funnel', funnel(human))}
+        ${card('drop', 's6', 'Where people stopped', rows(dropped, { cls: 'drop', empty: 'Nobody stopped mid-podcast yet' }))}
+        ${card('lis', 's12', 'Chapters: listeners and median time', listen.length ? `<ul class="rows">${listen.slice(0, 25).map(([k, n, m]) => `<li><span class="lbl">${esc(k)}</span><span class="num">${n} · ${mins(m)}</span><span class="meter"><i style="width:${(n / listen[0][1]) * 100}%"></i></span></li>`).join('')}</ul>` : '<p class="empty">No chapters played yet</p>')}
+        ${card('hosts', 's6', 'Hosts picked', rows(hosts, { fmt: hostName, empty: 'No host picked yet' }))}
+        ${card('routes', 's6', 'Length picked', rows(routes, { empty: 'No length picked yet' }))}`;
+    }
+
+    if (state.tab === 'audience') {
+      const hours = Array.from({ length: 24 }, (_, h) => [h, human.filter((v) => new Date(v.start).getHours() === h).length]);
+      const hmax = Math.max(1, ...hours.map((x) => x[1]));
+      const perf = human.map((v) => v.perf).filter(Boolean);
+      const errs = count(human.flatMap((v) => v.errors.map((e) => `${e.msg || 'error'}${e.src ? ' · ' + e.src + (e.line ? ':' + e.line : '') : ''}`)));
+      body = `<div class="kpis">
+          <div class="kpi"><b class="num">${visitors}</b><span>People</span></div>
+          <div class="kpi"><b class="num">${human.filter((v) => v.returning).length}</b><span>Return visits</span></div>
+          <div class="kpi"><b class="num">${pct(human.filter((v) => v.device === 'phone').length, human.length)}</b><span>On a phone</span></div>
+          <div class="kpi"><b class="num">${ms(median(perf.map((p) => p.load)))}</b><span>Median page load</span></div>
+          <div class="kpi"><b class="num">${human.filter((v) => v.errors.length).length}</b><span>Visits with errors</span></div>
+          <div class="kpi"><b class="num">${all.filter((v) => v.browser === 'Bot').length}</b><span>Bots (hidden)</span></div>
+        </div>
+        ${card('geo', 's4', 'Countries', rows(count(human.map((v) => v.country)), { empty: 'No location yet' }))}
+        ${card('city', 's4', 'Cities', rows(count(human.map((v) => v.city && [v.city, v.country].join(', '))), { empty: 'No location yet' }))}
+        ${card('dev', 's4', 'Devices', rows(count(human.map((v) => v.device))))}
+        ${card('br', 's4', 'Browsers', rows(count(human.map((v) => v.browser)), { empty: 'Recorded from 4 Nov' }))}
+        ${card('os', 's4', 'Systems', rows(count(human.map((v) => v.os)), { empty: 'Recorded from 4 Nov' }))}
+        ${card('vp', 's4', 'Screen sizes', rows(count(human.map((v) => v.vp)), { empty: 'Recorded from 4 Nov' }))}
+        ${card('lang', 's4', 'Languages', rows(count(human.map((v) => v.lang)), { empty: 'Recorded from 4 Nov' }))}
+        ${card('refs', 's4', 'Referrers', rows(count(human.map((v) => (v.ref ? hostOf(v.ref) : '(direct or app)')))))}
+        ${card('utm', 's4', 'Campaign tags', rows(count(human.map((v) => v.utm)), { empty: 'No ?utm_ or ?via= links used yet' }))}
+        ${card('entry', 's6', 'Landing pages', rows(count(human.map((v) => v.entry || '/'))))}
+        ${card('hour', 's6', 'Time of day (your clock)', `<ul class="rows">${hours.filter((x) => x[1]).map(([h, n]) => `<li><span class="lbl">${String(h).padStart(2, '0')}:00</span><span class="num">${n}</span><span class="meter"><i style="width:${(n / hmax) * 100}%"></i></span></li>`).join('') || '<p class="empty">Nothing yet</p>'}</ul>`)}
+        ${card('err', 's12', 'Script errors visitors hit', rows(errs, { cls: 'drop', max: 12, empty: 'No errors recorded (tracked from 4 Nov)' }))}`;
+    }
+
+    if (state.tab === 'opened') {
+      const time = new Map();
+      for (const v of human) for (const [p, s] of Object.entries(v.pageTime || {})) { const x = time.get(p) || []; x.push(Number(s) || 0); time.set(p, x); }
+      body = `${card('icons', 's6', 'Desktop icons', rows(count(human.flatMap((v) => [...new Set(v.icons)])), { max: 15, empty: 'No icons opened yet' }))}
+        ${card('wins', 's6', 'Windows', rows(count(human.flatMap((v) => [...new Set(v.windows)])), { max: 15, empty: 'No windows opened yet' }))}
+        ${card('pages', 's6', 'Pages: visits and median time', human.some((v) => v.pages.length) ? `<ul class="rows">${count(human.flatMap((v) => [...new Set(strs(v.pages))])).slice(0, 15).map(([p, n]) => `<li><span class="lbl">${esc(p)}</span><span class="num">${n}${time.get(p) ? ' · ' + mins(median(time.get(p))) : ''}</span></li>`).join('')}</ul>` : '<p class="empty">No pages yet</p>')}
+        ${card('out', 's6', 'Links out', rows(count(human.flatMap((v) => [...new Set(v.links.map(hostOf))])), { max: 15, empty: 'No links clicked yet' }))}
+        ${card('rec', 's12', 'The recording', (() => { const r = human.filter((v) => v.video); return r.length ? `<ul class="rows funnel">${[['Opened the page', r.length], ['Pressed play', r.filter((v) => v.video.played).length], ['Got to 50%', r.filter((v) => v.video.max >= 50).length], ['Watched to the end', r.filter((v) => v.video.done).length]].map(([l, n]) => `<li><span class="lbl">${l}</span><span class="num">${n}</span><span class="pct">${pct(n, r.length)}</span><span class="meter"><i style="width:${(n / r.length) * 100}%"></i></span></li>`).join('')}</ul>` : '<p class="empty">Nobody has opened /recording yet</p>'; })())}`;
+    }
+
+    if (state.tab === 'visits') {
+      body = card('v', 's12', 'Visits', all.length ? `<table><thead><tr><th>Time</th><th>Place</th><th>Device</th><th>Version</th><th>Wispr teammate</th><th>How far</th><th>Time on site</th></tr></thead><tbody>
+          ${all.slice(0, state.limit).map((v) => `<tr class="v" data-sid="${esc(v.sid)}" aria-expanded="${state.open.has(v.sid)}">
+            <td data-k="time">${esc(when(v.start))}${v.version === 'wispr' ? ' <span class="pill w m-only">Wispr</span>' : ''}${v.returning ? ' <span class="pill">back</span>' : ''}${v.site !== 'live' ? ' <span class="pill dev">dev</span>' : ''}${v.owner ? ' <span class="pill">you</span>' : ''}${v.browser === 'Bot' ? ' <span class="pill">bot</span>' : ''}</td>
+            <td data-k="place" class="${place(v) === '—' ? 'is-empty' : ''}">${esc(place(v))}</td><td data-k="device">${esc([v.device, v.browser].filter(Boolean).join(' · ') || '—')}</td>
+            <td data-k="version">${v.version === 'wispr' ? '<span class="pill w">Wispr</span>' : '<span class="pill">Default</span>'}</td>
+            <td data-k="who" class="${teammate(v) ? '' : 'is-empty'}">${teammate(v) ? esc(teammate(v)) : '<span class="muted">—</span>'}</td>
+            <td data-k="far">${esc(far(v))}${watched(v) ? ' · <span class="yes">recording</span>' : ''}${v.growthOpen ? ' · <span class="yes">Growth OS</span>' : ''}${v.errors.length ? ' · <span class="err" style="color:var(--bad)">errors</span>' : ''}</td>
+            <td data-k="dur" class="num">${mins(Number(v.duration) || 0)}</td></tr>
+            ${state.open.has(v.sid) ? `<tr class="detail"><td colspan="7"><div class="det">${detail(v)}</div></td></tr>` : ''}`).join('')}
+          </tbody></table>${all.length > state.limit ? `<button class="ghost more" type="button" data-act="more">Show ${Math.min(50, all.length - state.limit)} more of ${all.length - state.limit}</button>` : ''}` : '<p class="empty">No visits in this range.</p>');
+    }
+
+    if (state.tab === 'cf') {
+      const f = state.cf;
+      const cfrows = (xs, fmt = (k) => k) => (xs?.length ? `<ul class="rows">${xs.slice(0, 12).map(([k, n]) => `<li><span class="lbl">${esc(fmt(k))}</span><span class="num">${Number(n) || 0}</span><span class="meter"><i style="width:${((Number(n) || 0) / (Number(xs[0][1]) || 1)) * 100}%"></i></span></li>`).join('')}</ul>` : '<p class="empty">Nothing yet</p>');
+      body = !f || f.days !== state.days ? card('cf', 's12', 'Cloudflare Web Analytics', '<p class="empty">Loading…</p>')
+        : f.error ? card('cf', 's12', 'Cloudflare Web Analytics', `<p class="empty">Couldn’t load: ${esc(f.error)}</p>`)
+        : `<div class="kpis">
+            <div class="kpi"><b class="num">${Number(f.views) || 0}</b><span>Page views</span></div>
+            <div class="kpi"><b class="num">${Number(f.visits) || 0}</b><span>Visits</span></div>
+            <div class="kpi"><b class="num">${ms(f.speed?.pageLoadTimeP50 / 1000)}</b><span>Median load</span></div>
+            <div class="kpi"><b class="num">${ms(f.speed?.pageLoadTimeP90 / 1000)}</b><span>Slowest 10% load</span></div>
+            <div class="kpi"><b class="num">${ms(f.speed?.firstContentfulPaintP50 / 1000)}</b><span>First paint</span></div>
+            <div class="kpi"><b class="num">${f.days}d</b><span>Range (max 30)</span></div>
+          </div>
+          ${card('cfp', 's6', 'Pages', cfrows(f.paths))}
+          ${card('cfr', 's6', 'Referrers', cfrows(f.refs))}
+          ${card('cfc', 's4', 'Countries', cfrows(f.countries))}
+          ${card('cfb', 's4', 'Browsers', cfrows(f.browsers))}
+          ${card('cfo', 's4', 'Systems', cfrows(f.oses))}
+          ${card('cfd', 's6', 'Per day', cfrows(f.perDay))}
+          ${card('cfdv', 's6', 'Devices', cfrows(f.devices))}
+          <p class="note s12" style="grid-column:span 12">Cloudflare counts every page load that runs its beacon, bots filtered out, but it can’t tell your own visits apart, so these include you. The other tabs leave you out.</p>`;
+    }
 
     app.innerHTML = `<div class="wrap">
       <div class="top"><h1>sameep.ai visits</h1><div class="small muted">Updated ${esc(new Date(d.now).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }))}</div></div>
       <div class="bar">
         <div class="seg" role="group" aria-label="Range">${[[1, 'Today'], [7, '7 days'], [30, '30 days'], [90, '90 days']].map(([n, l]) => `<button type="button" data-days="${n}" aria-pressed="${state.days === n}">${l}</button>`).join('')}</div>
         <label class="tog"><input type="checkbox" data-f="wispr" ${state.wispr ? 'checked' : ''}> Wispr only</label>
+        <label class="tog"><input type="checkbox" data-f="mine" ${state.mine ? 'checked' : ''}> Include my visits</label>
         <label class="tog"><input type="checkbox" data-f="dev" ${state.dev ? 'checked' : ''}> Include local tests</label>
         <button class="ghost" type="button" data-act="refresh">Refresh</button>
       </div>
-      <div class="grid">
-        <div class="kpis">
-          <div class="kpi"><b class="num">${all.length}</b><span>Visits</span></div>
-          <div class="kpi"><b class="num">${visitors}</b><span>People</span></div>
-          <div class="kpi is-wispr"><b class="num">${folkList.filter((f) => f.team).length}</b><span>Wispr teammates</span></div>
-          <div class="kpi"><b class="num">${finished}</b><span>Finished podcast</span></div>
-          <div class="kpi"><b class="num">${rec}</b><span>Watched recording</span></div>
-          <div class="kpi"><b class="num">${mins(median(all.map((v) => v.duration)))}</b><span>Median visit</span></div>
-        </div>
-
-        <section class="card s12" aria-labelledby="h-wispr">
-          <div class="wispr-head"><h2 id="h-wispr">Wispr folks</h2><span class="small muted">${anyTeam ? '' : 'No teammate has logged in yet · '}${gSummary}</span></div>
-          ${folkList.length ? `<div class="folks">${folkList.map(folkCard).join('')}</div>` : '<p class="empty">Nobody from the Wispr link yet in this range.</p>'}
-        </section>
-
-        <section class="card s8" aria-labelledby="h-day"><h2 id="h-day">Visits per day</h2>${c.html}</section>
-        <section class="card s4" aria-labelledby="h-here"><h2 id="h-here">Here now</h2>
-          <div class="here"><span class="dot ${here.length ? 'on' : ''}"></span><b class="num" style="font-size:24px">${here.length}</b><span class="muted small">in the last 90 seconds</span></div>
-          ${here.length ? `<ul class="herelist">${here.map((h) => { const v = bySid.get(h.sid); return `<li>${v ? `${esc(teammate(v) || place(v))} · ${esc(v.device || '')}${isWispr(v) ? ' · <span class="pill w">Wispr</span>' : ''}<div class="small muted">${esc(far(v))}</div>` : '<span class="muted">Someone (no events yet)</span>'}</li>`; }).join('')}</ul>` : ''}
-        </section>
-
-        <section class="card s4" aria-labelledby="h-ch"><h2 id="h-ch">Top chapters</h2>${rows(reached, { fmt: title, empty: 'No chapters played yet' })}</section>
-        <section class="card s4" aria-labelledby="h-drop"><h2 id="h-drop">Where people stopped</h2>${rows(dropped, { fmt: title, cls: 'drop', empty: 'Nobody stopped mid-podcast yet' })}</section>
-        <section class="card s4" aria-labelledby="h-proj"><h2 id="h-proj">Opened</h2>${rows(opened, { empty: 'No icons or pages opened yet' })}</section>
-        <section class="card s6" aria-labelledby="h-ref"><h2 id="h-ref">Referrers</h2>${rows(refs)}</section>
-        <section class="card s6" aria-labelledby="h-geo"><h2 id="h-geo">Countries</h2>${rows(countries, { empty: 'No location yet (added 4 Nov)' })}</section>
-
-        <section class="card s12" aria-labelledby="h-v"><h2 id="h-v">Visits</h2>
-          ${all.length ? `<table><thead><tr><th>Time</th><th>Place</th><th>Device</th><th>Version</th><th>Wispr teammate</th><th>How far</th><th>Time on site</th></tr></thead><tbody>
-          ${all.slice(0, state.limit).map((v) => `<tr class="v" data-sid="${esc(v.sid)}" aria-expanded="${state.open.has(v.sid)}">
-            <td data-k="time">${esc(when(v.start))}${v.version === 'wispr' ? ' <span class="pill w m-only">Wispr</span>' : ''}${v.returning ? ' <span class="pill">back</span>' : ''}${v.site !== 'live' ? ' <span class="pill dev">dev</span>' : ''}</td>
-            <td data-k="place" class="${place(v) === '—' ? 'is-empty' : ''}">${esc(place(v))}</td><td data-k="device">${esc(v.device || '—')}</td>
-            <td data-k="version">${v.version === 'wispr' ? '<span class="pill w">Wispr</span>' : '<span class="pill">Default</span>'}</td>
-            <td data-k="who" class="${teammate(v) ? '' : 'is-empty'}">${teammate(v) ? esc(teammate(v)) : '<span class="muted">—</span>'}</td>
-            <td data-k="far">${esc(far(v))}${watched(v) ? ' · <span class="yes">recording</span>' : ''}${v.growthOpen ? ' · <span class="yes">Growth OS</span>' : ''}</td>
-            <td data-k="dur" class="num">${mins(v.duration)}</td></tr>
-            ${state.open.has(v.sid) ? `<tr class="detail"><td colspan="7"><div class="det">${detail(v)}</div></td></tr>` : ''}`).join('')}
-          </tbody></table>${all.length > state.limit ? `<button class="ghost more" type="button" data-act="more">Show ${Math.min(50, all.length - state.limit)} more of ${all.length - state.limit}</button>` : ''}` : '<p class="empty">No visits in this range.</p>'}
-        </section>
-      </div>
-      <div class="foot"><span>Sameep only. Locked with your PIN for 7 days on this device.</span>
-        <button class="ghost" type="button" data-act="notrack">${ls.get(NOTRACK) ? 'Track this browser again' : 'Stop tracking this browser'}</button>
+      ${tabs}
+      <div class="grid">${body}</div>
+      <div class="foot"><span>Sameep only. Locked with your PIN for 7 days on this device. Your visits are left out (${Number(d.myBrowsers) || 0} browser${Number(d.myBrowsers) === 1 ? '' : 's'}, your network, and the Claude app’s browser). Unlock this page once in each other browser you use, phone included.</span>
         <button class="ghost" type="button" data-act="logout">Lock</button></div>
     </div>`;
 
@@ -401,19 +541,14 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
 
   function detail(v) {
     const p = [];
-    p.push(`<p><b>Arrived</b> ${esc(new Date(v.start).toLocaleString())} from ${esc(v.ref || 'a direct link')} · ${esc([v.city, v.region, v.country].filter(Boolean).join(', ') || 'unknown place')} · ${esc(v.device || '')}, ${esc(v.power || '')} power</p>`);
-    if (v.gate) p.push(`<p><b>Gate</b> ${esc(v.gate)} · intro ${Math.round(v.hero)}%${v.heroDone ? ' (done)' : ''}</p>`);
-    if (v.login) p.push(`<p><b>Lock screen</b> ${v.login.as === 'team' ? esc(teammate(v)) : v.login.as === 'own' ? 'made their own account' : 'guest'}</p>`);
+    p.push(`<p><b>Arrived</b> ${esc(new Date(v.start).toLocaleString())} from ${esc(v.ref || 'a direct link')}${v.utm ? ' · tag ' + esc(v.utm) : ''} on ${esc(v.entry || '/')} · ${esc([v.city, v.region, v.country].filter(Boolean).join(', ') || 'unknown place')}</p>`);
+    p.push(`<p><b>Device</b> ${esc([v.device, v.browser, v.os, v.vp, v.lang].filter(Boolean).join(' · ') || '—')}, ${esc(v.power || '')} power${v.perf ? ` · page load ${ms(v.perf.load)}` : ''}</p>`);
     if (v.welcome) p.push(`<p><b>Host</b> ${esc(hostName(v.welcome.host))} · ${esc(v.welcome.route || 'standard')} length${v.switches.length ? ' · switched to ' + v.switches.map((s) => esc(hostName(s))).join(', ') : ''}</p>`);
-    if (v.nodes.length) p.push(`<p><b>Chapters</b> ${v.nodes.map((n) => esc(title(n.id))).join(' → ')}${v.ended ? ' → <span class="yes">end</span>' : ''}</p>`);
-    if (v.choices.length) p.push(`<p><b>Choices</b> ${v.choices.filter((x) => x.how !== 'auto').length} picked (${v.choices.filter((x) => x.how === 'voice').length} by voice)</p>`);
+    if (v.nodes.length) p.push(`<p><b>Chapters</b> ${v.nodes.map((n) => `${esc(title(n.id))} <span class="muted">${mins(Number(n.s) || 0)}</span>`).join(' → ')}${v.ended ? ' → <span class="yes">end</span>' : ''}</p>`);
     if (v.video) p.push(`<p><b>Recording</b> ${v.video.done ? 'watched to the end' : v.video.played ? `played, got to ${Number(v.video.max) || 0}% (${mins(Number(v.video.secs) || 0)})` : 'opened, not played'}</p>`);
-    if (v.windows.length) p.push(`<p><b>Windows</b> ${v.windows.map(esc).join(', ')}</p>`);
-    if (v.icons.length) p.push(`<p><b>Icons</b> ${v.icons.map(esc).join(', ')}</p>`);
-    if (projectPages(v).length) p.push(`<p><b>Pages</b> ${projectPages(v).map(esc).join(', ')}</p>`);
-    if (v.links.length) p.push(`<p><b>Links</b> ${v.links.map(esc).join(', ')}</p>`);
-    if (v.make) p.push(`<p><b>Make your own</b> clicked ${Number(v.make) || 0}×</p>`);
+    if (v.errors.length) p.push(`<p><b style="color:var(--bad)">Errors</b> ${v.errors.map((e) => esc(`${e.msg} (${e.src}${e.line ? ':' + e.line : ''})`)).join('; ')}</p>`);
     p.push(`<p class="muted">On site ${mins(Number(v.duration) || 0)}${v.seen ? `, ${mins(Number(v.seen) || 0)} with the tab in view` : ''}</p>`);
+    if (v.timeline?.length) p.push(`<ol class="tl">${v.timeline.map((e) => `<li><span class="at">${clock((e.t - v.start) / 1000)}</span><span class="k${e.k === 'error' ? ' err' : ''}">${esc(TL[e.k] || e.k)}</span><span>${esc(tlLabel(e))}</span></li>`).join('')}</ol>`);
     return p.join('');
   }
 
@@ -421,16 +556,16 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
     const b = e.target.closest('button, tr.v');
     if (!b) return;
     if (b.dataset.days) { state.days = Number(b.dataset.days); savePref(); return load(); }
+    if (b.dataset.tab) { state.tab = b.dataset.tab; savePref(); render(); if (state.tab === 'cf') loadCf(); return; }
     if (b.matches('tr.v')) { const s = b.dataset.sid; state.open.has(s) ? state.open.delete(s) : state.open.add(s); return render(); }
     const act = b.dataset.act;
     if (act === 'refresh') return load();
     if (act === 'more') { state.limit += 50; return render(); }
-    if (act === 'notrack') { ls.set(NOTRACK, ls.get(NOTRACK) ? null : '1'); return render(); }
     if (act === 'logout') { await fetch(API + '/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); ls.set(TOKEN, null); state.data = null; return lock(); }
   });
   app.addEventListener('change', (e) => {
     const f = e.target.dataset?.f;
-    if (f) { state[f] = e.target.checked; savePref(); render(); }
+    if (f) { state[f] = e.target.checked; savePref(); if (f === 'mine') load(); else render(); }
   });
   // keep "here now" fresh while the page is open
   setInterval(() => { if (state.data && !document.hidden) load(); }, 60000);

@@ -30,7 +30,15 @@ function device() {
 function ref() {
   try { const h = new URL(document.referrer).hostname; return h && h !== location.hostname ? h : null; } catch { return null; }
 }
-const meta = { vid, sid, site: LIVE ? 'live' : 'dev', version: VERSION, power: POWER, device: device(), ref: ref(), path: location.pathname.slice(0, 64) };
+// campaign tags from the link (utm_source/medium/campaign, or ?via= / ?ref=), kept for the rest of the tab
+function utm() {
+  const u = new URLSearchParams(location.search);
+  const tag = [u.get('utm_source') || u.get('via') || u.get('ref'), u.get('utm_medium'), u.get('utm_campaign')].filter(Boolean).join('/').slice(0, 80);
+  if (tag) ss('otcv-utm', tag);
+  return tag || ss('otcv-utm') || null;
+}
+const meta = { vid, sid, site: LIVE ? 'live' : 'dev', version: VERSION, power: POWER, device: device(), ref: ref(), path: location.pathname.slice(0, 64),
+  vp: `${innerWidth}x${innerHeight}`, lang: (navigator.language || '').slice(0, 12), utm: utm() };
 
 function flush() {
   clearTimeout(timer); timer = 0;
@@ -71,6 +79,18 @@ addEventListener('visibilitychange', () => { if (document.hidden) away(); else s
 addEventListener('pagehide', () => { if (shownAt) away(); });
 
 track('page', { path: meta.path });
+
+// how fast the page came up for them (navigation timing), once it has loaded
+addEventListener('load', () => setTimeout(() => {
+  const n = performance.getEntriesByType?.('navigation')?.[0];
+  if (n) track('perf', { ttfb: Math.round(n.responseStart), load: Math.round(n.loadEventEnd || performance.now()) });
+}, 0), { once: true });
+
+// script errors visitors hit (a broken show for a Wispr teammate is worth knowing about): message + file, 5 per page
+let errs = 0;
+const oops = (msg, src, line) => { if (errs++ < 5) track('error', { msg: String(msg || 'error').slice(0, 80), src: String(src || '').split('/').pop().split('?')[0].slice(0, 48), line: Number(line) || 0 }); };
+addEventListener('error', (e) => { if (e.message) oops(e.message, e.filename, e.lineno); });
+addEventListener('unhandledrejection', (e) => oops(e.reason?.message || e.reason, e.reason?.stack?.match(/\/([\w.-]+\.js)/)?.[1], 0));
 
 // where a link goes: a path on this site, else the other site's host
 const dest = (a) => { try { const u = new URL(a.href, location.href); return u.origin === location.origin ? u.pathname : u.hostname; } catch { return null; } };
