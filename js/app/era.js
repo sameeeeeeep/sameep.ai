@@ -349,20 +349,29 @@ export async function splash(layer, persona, { reduced } = {}) {
 }
 
 // ---------------------------------------------------------------- the games
-// three I made in the spirit of '99 (js/app/games/*.js, each in its own window), then classics that still
-// run in a browser, each opening in a new tab
+// three I made in the spirit of '99 (js/app/games/*.js, each in its own window), then the classics
 const GAME_MODS = { moto: () => import('./games/moto.js'), snake: () => import('./games/snake.js'), breakout: () => import('./games/breakout.js') };
 export const MY_GAMES = [
   { id: 'moto', label: 'Moto Thappad' },
   { id: 'snake', label: 'Samosa Snake' },
   { id: 'breakout', label: 'Rangoli Breakout' },
 ];
+// the real ones, out on the desktop: each plays in the browser on the Internet Archive (emulated, nothing to
+// install) and opens in a new tab. Icons are drawn here, not the box art
+const IA = (id) => `https://archive.org/details/${id}`;
+export const CLASSICS = [
+  { id: 'roadrash', label: 'Road Rash', url: IA('sg_Road_Rash_1991_Electronic_Arts_EU-US_en') },
+  { id: 'doom', label: 'DOOM', url: IA('msdos_DOOM_1993') },
+  { id: 'prince', label: 'Prince of Persia', url: IA('msdos_Prince_of_Persia_1990') },
+  { id: 'simcity', label: 'SimCity', url: IA('msdos_SimCity_1989') },
+  { id: 'darkforces', label: 'Dark Forces', url: IA('star-wars-dark-forces_201612') },
+];
+// the folder: the classics above plus a few more that still run in a browser
 export const GAMES = [
+  ...CLASSICS,
   { id: 'minesweeper', label: 'Minesweeper', url: 'https://minesweeper.online/' },
   { id: 'solitaire', label: 'Solitaire', url: 'https://www.solitr.com/' },
   { id: 'skifree', label: 'SkiFree', url: 'https://basicallydan.github.io/skifree.js/' },
-  { id: 'doom', label: 'DOOM', url: 'https://playclassic.games/games/first-person-shooter-dos-games-online/play-doom-online/' },
-  { id: 'prince', label: 'Prince of Persia', url: 'https://playclassic.games/games/run-and-gun-dos-games-online/play-prince-of-persia-online/' },
   { id: 'tetris', label: 'Tetris', url: 'https://tetris.com/play-tetris' },
   { id: 'pacman', label: 'Pac-Man', url: 'https://www.google.com/logos/2010/pacman10-i.html' },
 ];

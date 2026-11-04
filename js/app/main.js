@@ -9,7 +9,7 @@ import { loadPersona } from './persona.js';
 import { buildApps } from './apps.js';
 import { Podcast } from './podcast.js';
 import { stylisePhoto } from './cast.js';
-import { jukebox, installer, installed, splash, login, FOLDERS, STARS, MY_GAMES, openFolder, openGames, openGame } from './era.js';
+import { jukebox, installer, installed, splash, login, FOLDERS, STARS, MY_GAMES, CLASSICS, openFolder, openGames, openGame } from './era.js';
 import { fillUrl } from './demos.js';
 import { installCards } from './infocard.js';
 import { startTour, guideOn, endGuide } from './tour.js';
@@ -89,14 +89,15 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   const pick = (ids) => ids.map((id) => apps.find((a) => a.id === id)).filter(Boolean);
   // left: the work. Folders in the first column (Growth OS adds itself above them), the best of them out on
   // the desktop in the second, so nothing good hides in a folder. right: the system (HD up top, Trash at the
-  // bottom) and the toys, then a column of games
+  // bottom) and the toys, then a column of games: mine, and the classics
   const folderApp = (f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) });
   desk.renderProjects([...FOLDERS.map(folderApp), ...pick(['work'])],
     // the application extras: the Wispr version only (the pages stay reachable by URL)
     [...STARS, ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])]);
   desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
-    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, ...pick(['trash'])],
-  [...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), { id: 'games', label: 'More games', icon: 'proj-games', open: () => openGames(wm, { reduced }) }]);
+    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, { id: 'games', label: 'More games', icon: 'proj-games', open: () => openGames(wm, { reduced }) }, ...pick(['trash'])],
+  // the games column: mine (in a window), then the classics (a new tab each)
+  [...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), ...CLASSICS]);
   desk.renderMenus(ctx, apps);
   // hover (or first tap) on a project or folder: what it is, my part, one proof point, where it opens
   installCards({ area: desk.area, folders: FOLDERS, loadList: () => loadWork(persona).then((r) => r.list),

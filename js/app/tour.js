@@ -31,8 +31,8 @@ function mainStops(phone) {
       ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work: folders, then the best bits on their own. Tap one.' }
       : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: the best bits up front, the rest in folders. Hover for details.' },
     phone
-      ? { id: 'right', at: q('.is-moto .icon'), say: 'Further down, the toys, and three games I made the ’99 way.' }
-      : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the toys, and three games I made the ’99 way.' },
+      ? { id: 'right', at: q('.is-moto .icon'), say: 'Further down, three games I made the ’99 way, then the real ones: Road Rash, DOOM and more.' }
+      : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the toys. Three games I made the ’99 way, and the real ones: Road Rash, DOOM and more.' },
     // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
     { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing the shared folder of ’99. Skip a track, or pause it.` },
     { id: 'steer', at: showEl, say: 'Steer the show: hold your Wispr Flow key and say where to go. Or type.', extra: pill },
