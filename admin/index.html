@@ -317,7 +317,7 @@ tr.detail td { background: var(--bg); font-size: 13px; color: var(--ink-2); }
       return `<div class="folk"><h3>${esc(f.name)}</h3><div class="small muted">${vs.length} visit${vs.length > 1 ? 's' : ''} · last ${esc(when(last))}${vs.length > 1 ? ' · first ' + esc(when(first)) : ''}</div>
         <div class="prog" title="How far into the podcast"><i style="width:${reach(best)}%"></i></div>
         <dl><dt>Podcast</dt><dd>${esc(far(best))}</dd>
-        <dt>Recording</dt><dd>${vid < 0 ? '<span class="no">Not watched</span>' : vid >= 100 ? '<span class="yes">Watched to the end</span>' : `<span class="yes">Played</span>${vid > 1 ? ' · ' + vid + '%' : ''}`}</dd>
+        <dt>Recording</dt><dd>${vid < 0 ? '<span class="no">Not watched</span>' : vid >= 100 ? '<span class="yes">Watched to the end</span>' : `<span class="yes">Played</span>${vid > 1 ? ' · ' + (Number(vid) || 0) + '%' : ''}`}</dd>
         <dt>Growth OS</dt><dd>${gos ? '<span class="yes">Opened</span>' : '<span class="no">Not opened</span>'}</dd>
         <dt>Time</dt><dd class="num">${mins(time)}</dd><dt>From</dt><dd>${esc(places)}</dd></dl></div>`;
     };

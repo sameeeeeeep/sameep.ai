@@ -298,14 +298,16 @@
     "front-mid",
     "front-open",
     "front-wide",
-    "front-oo"
+    "front-oo",
+    "front-blink"
    ],
    "closeup": [
     "cu-front-closed",
     "cu-front-mid",
     "cu-front-open",
     "cu-front-wide",
-    "cu-front-oo"
+    "cu-front-oo",
+    "cu-front-blink"
    ],
    "_": "a visitor-picked host (episode.json hosts) in the host seat: still frames with drawn mouth shapes, lip-synced from data/visemes.json; no talking-video bank yet",
    "set": "drawingroom"
