@@ -89,4 +89,4 @@ A static site (plain HTML/JS, no build step, no server) that is the person's own
 
 - Make your own: https://sameep.ai/make
 - Skill: https://sameep.ai/skill/off-the-cv/SKILL.md
-- Source: https://github.com/sameeeeeeep/sameep.ai
+- Source: https://github.com/sameeeeeeep/sameep.ai (MIT for the code; Sameep's voice clones, likeness and personal content are not licensed for reuse)
