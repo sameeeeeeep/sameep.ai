@@ -284,11 +284,13 @@ details.cf > summary::-webkit-details-marker { display: none; }
     if (!state.data) app.innerHTML = `<div class="wrap" aria-busy="true"><h1>sameep.ai visits</h1><p class="muted small">Loading…</p>${'<div class="skel"></div>'.repeat(3)}<div class="skel" style="width:60%"></div></div>`;
     else setLive();
     try {
-      const [r, ep] = await Promise.all([
+      const [r, ep, team] = await Promise.all([
         fetch(`${API}/data?days=${state.days * 2}`, { credentials: 'same-origin', headers: auth() }),
         state.ep || fetch('/data/episode.json').then((x) => (x.ok ? x.json() : null)).catch(() => null),
+        ROSTER.size ? null : fetch('/data/wispr-team.json').then((x) => (x.ok ? x.json() : null)).catch(() => null),
       ]);
       state.ep = ep;
+      for (const m of team?.team || []) ROSTER.set(m.id, m.name);
       if (r.status === 401) { if (ls.get(TOKEN)) ls.set(TOKEN, null); state.data = null; return lock(); }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const fresh = await r.json();
@@ -346,8 +348,13 @@ details.cf > summary::-webkit-details-marker { display: none; }
   const kit = (v) => v.os === 'iOS' ? (v.device === 'tablet' ? 'iPad' : 'iPhone') : v.os === 'Android' ? (v.device === 'tablet' ? 'Android tablet' : 'Android phone')
     : v.os === 'macOS' ? 'Mac' : v.os === 'Windows' ? 'Windows PC' : v.os === 'ChromeOS' ? 'Chromebook' : v.os === 'Linux' ? 'Linux' : v.device ? cap(v.device) : '';
   // the lock-screen pick; failing that, a w- seat in the podcast (same person, the login event just didn't arrive)
-  const teammate = (v) => (v.login?.as === 'team' ? v.login.name || cap(v.login.id?.replace(/^w-/, '') || '')
-    : /^w-[\w-]+$/.test(v.welcome?.seat || '') ? cap(v.welcome.seat.slice(2)) : null);
+  // a teammate is their roster id (data/wispr-team.json, ~140 people, some sharing a first name: "Adam H.", "Adam S."),
+  // named as the roster names them now, so a rename never splits one person in two
+  const ROSTER = new Map();
+  const teamId = (v) => (v.login?.as === 'team' ? v.login.id || null : /^w-[\w-]+$/.test(v.welcome?.seat || '') ? v.welcome.seat : null);
+  const teammate = (v) => { const id = teamId(v); if (v.login?.as !== 'team' && !id) return null;
+    return ROSTER.get(id) || v.login?.name || cap((id || '').replace(/^w-/, '').replace(/-(\w)$/, (_, c) => ' ' + c.toUpperCase() + '.')); };
+  const teamKey = (v) => { const id = teamId(v); return id ? 'team:' + id : teammate(v) ? 'team:' + teammate(v).toLowerCase() : null; };
   const strs = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []);
   const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || strs(v.pages).some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
   const projectPages = (v) => strs(v.pages).filter((p) => p !== '/' && p !== '/index.html' && !p.startsWith('/admin') && !p.startsWith('/api'));
@@ -392,8 +399,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
   let keyOf = (v) => 'vid:' + v.vid;
   function makeKeys(all) {
     const team = new Map();
-    for (const v of all) { const t = teammate(v); if (t && !team.has(v.vid)) team.set(v.vid, 'team:' + t.toLowerCase()); }
-    keyOf = (v) => { const t = teammate(v); return t ? 'team:' + t.toLowerCase() : team.get(v.vid) || 'vid:' + v.vid; };
+    for (const v of all) { const t = teamKey(v); if (t && !team.has(v.vid)) team.set(v.vid, t); }
+    keyOf = (v) => teamKey(v) || team.get(v.vid) || 'vid:' + v.vid;
   }
   function people(list) {
     const by = new Map();

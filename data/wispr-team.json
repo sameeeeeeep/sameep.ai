@@ -1,6 +1,6 @@
 {
- "_about": "The Wispr Flow team on the ?version=wispr lock screen. One entry per person: first name, role, a public profile photo (stylised) and where it came from. Edit freely; ids starting w- unlock Wispr Growth OS. Entries with a persona.json wisprTeam match also sit in the audience as their illustrated character.",
- "updated": "2026-11-04",
+ "_about": "The Wispr Flow team on the ?version=wispr lock screen. One entry per person: first name (plus a last initial when two share it), role, a public profile photo (stylised) and where it came from. Edit freely; ids starting w- unlock Wispr Growth OS. Entries with a persona.json wisprTeam match also sit in the audience as their illustrated character.",
+ "updated": "2026-11-05",
  "team": [
   {
    "id": "w-tanay",
@@ -28,16 +28,14 @@
    "name": "Rohan",
    "role": "Leads India growth",
    "photo": "img/characters/w-rohan-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/rohan-kochhar-93721115b/"
   },
   {
    "id": "w-shivam",
-   "name": "Shivam",
+   "name": "Shivam B.",
    "role": "India growth",
    "photo": "img/characters/w-shivam-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/shivambhotika/"
   },
   {
    "id": "w-vasundhara",
@@ -48,59 +46,52 @@
   },
   {
    "id": "w-vishal",
-   "name": "Vishal",
+   "name": "Vishal S.",
    "role": "Customer success",
    "photo": "img/characters/w-vishal-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/vishal-shetty-0692348b/"
   },
   {
    "id": "w-meghna",
    "name": "Meghna",
    "role": "Customer success",
    "photo": "img/characters/w-meghna-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/meghna-prakash-40063716b/"
   },
   {
    "id": "w-deepansh",
    "name": "Deepansh",
    "role": "Webflow developer",
    "photo": "img/characters/w-deepansh-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/deepansh-madhwani-950605262/"
   },
   {
    "id": "w-sitansu",
    "name": "Sitansu",
    "role": "QA",
    "photo": "img/characters/w-sitansu-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/sitansu-kar-18bb1581/"
   },
   {
    "id": "w-suraj",
    "name": "Suraj",
    "role": "AI engineer",
    "photo": "img/characters/w-suraj-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/suraj-kumar-2b27033a2/"
   },
   {
    "id": "w-raushan",
    "name": "Raushan",
    "role": "Wispr India",
    "photo": "img/characters/w-raushan-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/raushantiwari24/"
   },
   {
    "id": "w-adarsh",
    "name": "Adarsh",
    "role": "Writer",
    "photo": "img/characters/w-adarsh-thumb.webp",
-   "source": null,
-   "note": "From the earlier team research (photo in build/wispr-team/src); add the public URL it came from."
+   "source": "https://www.linkedin.com/in/adarsh-bhatt/"
   },
   {
    "id": "w-daniel-mccallum",
@@ -125,7 +116,7 @@
   },
   {
    "id": "w-ethan-carlson",
-   "name": "Ethan",
+   "name": "Ethan C.",
    "role": "Product Engineering Lead",
    "photo": "img/team/ethan-carlson.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/ethan-carlson"
@@ -134,7 +125,7 @@
    "id": "w-malhar-s",
    "name": "Malhar",
    "role": "Head of Growth Product",
-   "photo": null,
+   "photo": "img/characters/w-malhar-s-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/malhar-s"
   },
   {
@@ -155,21 +146,21 @@
    "id": "w-gavin-jimerson",
    "name": "Gavin",
    "role": "Member of Technical Staff",
-   "photo": null,
+   "photo": "img/characters/w-gavin-jimerson-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/gavin-jimerson"
   },
   {
    "id": "w-alice-shen",
    "name": "Alice",
    "role": "Member of Technical Staff",
-   "photo": null,
+   "photo": "img/characters/w-alice-shen-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/alice-shen"
   },
   {
    "id": "w-hari-rajaraman",
    "name": "Hari",
    "role": "Member of Technical Staff",
-   "photo": null,
+   "photo": "img/characters/w-hari-rajaraman-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/hari-rajaraman"
   },
   {
@@ -190,14 +181,14 @@
    "id": "w-josh-benson",
    "name": "Josh",
    "role": "Software Engineer",
-   "photo": null,
+   "photo": "img/characters/w-josh-benson-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/josh-benson"
   },
   {
    "id": "w-saujas-nandi",
    "name": "Saujas",
    "role": "Software Engineer",
-   "photo": null,
+   "photo": "img/characters/w-saujas-nandi-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/saujas-nandi"
   },
   {
@@ -218,7 +209,7 @@
    "id": "w-calvin-carpenter",
    "name": "Calvin",
    "role": "Technical Support Engineer",
-   "photo": null,
+   "photo": "img/characters/w-calvin-carpenter-thumb.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/calvin-carpenter"
   },
   {
@@ -234,6 +225,744 @@
    "role": "Technical Support Engineer",
    "photo": "img/team/jason-scot.webp",
    "source": "https://theorg.com/org/wispr-flow/org-chart/jason-scot"
+  },
+  {
+   "id": "w-aaron",
+   "name": "Aaron",
+   "role": "Computer science",
+   "photo": "img/characters/w-aaron-thumb.webp",
+   "source": "https://www.linkedin.com/in/aaron-chan-58abba247/"
+  },
+  {
+   "id": "w-abhinav",
+   "name": "Abhinav",
+   "role": "Wispr AI",
+   "photo": "img/characters/w-abhinav-thumb.webp",
+   "source": "https://www.linkedin.com/in/abhinav96/"
+  },
+  {
+   "id": "w-abigail",
+   "name": "Abigail",
+   "role": "Product Design Lead",
+   "photo": "img/characters/w-abigail-thumb.webp",
+   "source": "https://www.linkedin.com/in/abigailreadey/"
+  },
+  {
+   "id": "w-adam-h",
+   "name": "Adam H.",
+   "role": "GTM",
+   "source": "https://www.linkedin.com/in/adheg/"
+  },
+  {
+   "id": "w-adam-s",
+   "name": "Adam S.",
+   "role": "Analytics",
+   "photo": "img/characters/w-adam-s-thumb.webp",
+   "source": "https://www.linkedin.com/in/adam-sullivan/"
+  },
+  {
+   "id": "w-aditya",
+   "name": "Aditya",
+   "role": "ML",
+   "photo": "img/characters/w-aditya-thumb.webp",
+   "source": "https://www.linkedin.com/in/adityagourav/"
+  },
+  {
+   "id": "w-ajil",
+   "name": "Ajil",
+   "role": "GenAI research",
+   "photo": "img/characters/w-ajil-thumb.webp",
+   "source": "https://www.linkedin.com/in/ajiljalal/"
+  },
+  {
+   "id": "w-akhil",
+   "name": "Akhil",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-akhil-thumb.webp",
+   "source": "https://www.linkedin.com/in/1akhil-pandey/"
+  },
+  {
+   "id": "w-alex",
+   "name": "Alex",
+   "role": "RevOps",
+   "photo": "img/characters/w-alex-thumb.webp",
+   "source": "https://www.linkedin.com/in/alexsjaffe/"
+  },
+  {
+   "id": "w-allegra",
+   "name": "Allegra",
+   "role": "Computational linguist",
+   "photo": "img/characters/w-allegra-thumb.webp",
+   "source": "https://www.linkedin.com/in/allegra-molinaro/"
+  },
+  {
+   "id": "w-andrew",
+   "name": "Andrew",
+   "role": "Operations & HR",
+   "photo": "img/characters/w-andrew-thumb.webp",
+   "source": "https://www.linkedin.com/in/andrew-baskin-6553b4b1/"
+  },
+  {
+   "id": "w-angela",
+   "name": "Angela",
+   "role": "Recruiting",
+   "photo": "img/characters/w-angela-thumb.webp",
+   "source": "https://www.linkedin.com/in/angelal12/"
+  },
+  {
+   "id": "w-ankur",
+   "name": "Ankur",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-ankur-thumb.webp",
+   "source": "https://www.linkedin.com/in/ankur-gandhe/"
+  },
+  {
+   "id": "w-anna-b",
+   "name": "Anna B.",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-anna-b-thumb.webp",
+   "source": "https://www.linkedin.com/in/aebjorklund/"
+  },
+  {
+   "id": "w-anna-k",
+   "name": "Anna K.",
+   "role": "Voicepilled",
+   "source": "https://www.linkedin.com/in/aklaussen/"
+  },
+  {
+   "id": "w-anna-l",
+   "name": "Anna L.",
+   "role": "Wispr Flow",
+   "photo": "img/characters/w-anna-l-thumb.webp",
+   "source": "https://www.linkedin.com/in/anna-li-73953728a/"
+  },
+  {
+   "id": "w-annabel",
+   "name": "Annabel",
+   "role": "Math + CS",
+   "photo": "img/characters/w-annabel-thumb.webp",
+   "source": "https://www.linkedin.com/in/ma-annabel/"
+  },
+  {
+   "id": "w-annabelle",
+   "name": "Annabelle",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-annabelle-thumb.webp",
+   "source": "https://www.linkedin.com/in/annabelleju/"
+  },
+  {
+   "id": "w-anthony",
+   "name": "Anthony",
+   "role": "Narrative & Brand Video Director",
+   "photo": "img/characters/w-anthony-thumb.webp",
+   "source": "https://www.linkedin.com/in/anthony-troli-22372466/"
+  },
+  {
+   "id": "w-aparna",
+   "name": "Aparna",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-aparna-thumb.webp",
+   "source": "https://www.linkedin.com/in/aparna-khare-1b01a215/"
+  },
+  {
+   "id": "w-ariya",
+   "name": "Ariya",
+   "role": "Chief Scientist",
+   "photo": "img/characters/w-ariya-thumb.webp",
+   "source": "https://www.linkedin.com/in/ariya-rastrow-4ab149b/"
+  },
+  {
+   "id": "w-arpit",
+   "name": "Arpit",
+   "role": "Growth",
+   "photo": "img/characters/w-arpit-thumb.webp",
+   "source": "https://www.linkedin.com/in/arpit-das-9566a7214/"
+  },
+  {
+   "id": "w-ashley",
+   "name": "Ashley",
+   "role": "Enterprise",
+   "photo": "img/characters/w-ashley-thumb.webp",
+   "source": "https://www.linkedin.com/in/ashley-rintoul-609281100/"
+  },
+  {
+   "id": "w-atharva",
+   "name": "Atharva",
+   "role": "AI",
+   "photo": "img/characters/w-atharva-thumb.webp",
+   "source": "https://www.linkedin.com/in/atharva-sindwani/"
+  },
+  {
+   "id": "w-beejoli",
+   "name": "Beejoli",
+   "role": "Head of PR and Corporate Comms",
+   "photo": "img/characters/w-beejoli-thumb.webp",
+   "source": "https://www.linkedin.com/in/beejoli/"
+  },
+  {
+   "id": "w-ben-a",
+   "name": "Ben A.",
+   "role": "People & technology",
+   "photo": "img/characters/w-ben-a-thumb.webp",
+   "source": "https://www.linkedin.com/in/ben-ryan-alv/"
+  },
+  {
+   "id": "w-ben-j",
+   "name": "Ben J.",
+   "role": "Explorer of edge conditions",
+   "photo": "img/characters/w-ben-j-thumb.webp",
+   "source": "https://www.linkedin.com/in/ben-jones-1031298b/"
+  },
+  {
+   "id": "w-brian",
+   "name": "Brian",
+   "role": "GTM",
+   "photo": "img/characters/w-brian-thumb.webp",
+   "source": "https://www.linkedin.com/in/brian-kerrigan-146532115/"
+  },
+  {
+   "id": "w-camren",
+   "name": "Camren",
+   "role": "Technical Support Engineer",
+   "photo": "img/characters/w-camren-thumb.webp",
+   "source": "https://www.linkedin.com/in/camrenmccall/"
+  },
+  {
+   "id": "w-carolyn",
+   "name": "Carolyn",
+   "role": "VP of Product Marketing",
+   "photo": "img/characters/w-carolyn-thumb.webp",
+   "source": "https://www.linkedin.com/in/carolynlhsu/"
+  },
+  {
+   "id": "w-chanel",
+   "name": "Chanel",
+   "role": "Executive Assistant",
+   "photo": "img/characters/w-chanel-thumb.webp",
+   "source": "https://www.linkedin.com/in/chanel-y-a7986622a/"
+  },
+  {
+   "id": "w-chiajung",
+   "name": "Chia-Jung",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-chiajung-thumb.webp",
+   "source": "https://www.linkedin.com/in/chia-jung-chang-mit/"
+  },
+  {
+   "id": "w-christine",
+   "name": "Christine",
+   "role": "New products engineering",
+   "photo": "img/characters/w-christine-thumb.webp",
+   "source": "https://www.linkedin.com/in/cwang314/"
+  },
+  {
+   "id": "w-christopher-d",
+   "name": "Christopher D.",
+   "role": "Data science & ML",
+   "photo": "img/characters/w-christopher-d-thumb.webp",
+   "source": "https://www.linkedin.com/in/christopher-donahue-11839820/"
+  },
+  {
+   "id": "w-christopher-l",
+   "name": "Christopher L.",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-christopher-l-thumb.webp",
+   "source": "https://www.linkedin.com/in/christopherliu2/"
+  },
+  {
+   "id": "w-clayton",
+   "name": "Clayton",
+   "role": "GTM",
+   "photo": "img/characters/w-clayton-thumb.webp",
+   "source": "https://www.linkedin.com/in/claytonbradshaw/"
+  },
+  {
+   "id": "w-constanza",
+   "name": "Constanza",
+   "role": "Founding PM",
+   "photo": "img/characters/w-constanza-thumb.webp",
+   "source": "https://www.linkedin.com/in/constanzahasselmann/"
+  },
+  {
+   "id": "w-dan",
+   "name": "Dan",
+   "role": "CRO",
+   "photo": "img/characters/w-dan-thumb.webp",
+   "source": "https://www.linkedin.com/in/dmillersmith/"
+  },
+  {
+   "id": "w-david",
+   "name": "David",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-david-thumb.webp",
+   "source": "https://www.linkedin.com/in/david-estrada-arias/"
+  },
+  {
+   "id": "w-dominic",
+   "name": "Dominic",
+   "role": "Head of Social",
+   "photo": "img/characters/w-dominic-thumb.webp",
+   "source": "https://www.linkedin.com/in/dominicbair/"
+  },
+  {
+   "id": "w-eduardo",
+   "name": "Eduardo",
+   "role": "Creator Programs Lead",
+   "photo": "img/characters/w-eduardo-thumb.webp",
+   "source": "https://www.linkedin.com/in/eduardo-sanchez-ubanell/"
+  },
+  {
+   "id": "w-ella",
+   "name": "Ella",
+   "role": "Workplace experience",
+   "photo": "img/characters/w-ella-thumb.webp",
+   "source": "https://www.linkedin.com/in/ella-parashis/"
+  },
+  {
+   "id": "w-eric-g",
+   "name": "Eric G.",
+   "role": "UX engineering lead",
+   "photo": "img/characters/w-eric-g-thumb.webp",
+   "source": "https://www.linkedin.com/in/ericgelinas/"
+  },
+  {
+   "id": "w-eric-z",
+   "name": "Eric Z.",
+   "role": "Performance Marketing",
+   "photo": "img/characters/w-eric-z-thumb.webp",
+   "source": "https://www.linkedin.com/in/eric-zaworski/"
+  },
+  {
+   "id": "w-erica",
+   "name": "Erica",
+   "role": "Recruiting",
+   "photo": "img/characters/w-erica-thumb.webp",
+   "source": "https://www.linkedin.com/in/ericaekane/"
+  },
+  {
+   "id": "w-ethan-k",
+   "name": "Ethan K.",
+   "role": "Wispr Flow",
+   "photo": "img/characters/w-ethan-k-thumb.webp",
+   "source": "https://www.linkedin.com/in/ethankiang/"
+  },
+  {
+   "id": "w-fabian",
+   "name": "Fabian",
+   "role": "European Evangelist",
+   "photo": "img/characters/w-fabian-thumb.webp",
+   "source": "https://www.linkedin.com/in/fabian-dittrich/"
+  },
+  {
+   "id": "w-faizan",
+   "name": "Faizan",
+   "role": "Data analytics engineer",
+   "photo": "img/characters/w-faizan-thumb.webp",
+   "source": "https://www.linkedin.com/in/ifaizankhan/"
+  },
+  {
+   "id": "w-farshad",
+   "name": "Farshad",
+   "role": "Analytics & strategy",
+   "photo": "img/characters/w-farshad-thumb.webp",
+   "source": "https://www.linkedin.com/in/farshadmiraftab/"
+  },
+  {
+   "id": "w-gabrielle",
+   "name": "Gabrielle",
+   "role": "Enterprise",
+   "photo": "img/characters/w-gabrielle-thumb.webp",
+   "source": "https://www.linkedin.com/in/gabrielle-d-b6074279/"
+  },
+  {
+   "id": "w-ganesh",
+   "name": "Ganesh",
+   "role": "Voice-computer interfaces",
+   "photo": "img/characters/w-ganesh-thumb.webp",
+   "source": "https://www.linkedin.com/in/ganramstyle/"
+  },
+  {
+   "id": "w-haley",
+   "name": "Haley",
+   "role": "Enterprise",
+   "photo": "img/characters/w-haley-thumb.webp",
+   "source": "https://www.linkedin.com/in/haley-sayres-1138113b/"
+  },
+  {
+   "id": "w-hannah",
+   "name": "Hannah",
+   "role": "Cultural Partnerships Lead",
+   "photo": "img/characters/w-hannah-thumb.webp",
+   "source": "https://www.linkedin.com/in/hannahpeale/"
+  },
+  {
+   "id": "w-hazel",
+   "name": "Hazel",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-hazel-thumb.webp",
+   "source": "https://www.linkedin.com/in/hazelhxzhang/"
+  },
+  {
+   "id": "w-hugh",
+   "name": "Hugh",
+   "role": "Customer experience",
+   "photo": "img/characters/w-hugh-thumb.webp",
+   "source": "https://www.linkedin.com/in/hugh-goldstein/"
+  },
+  {
+   "id": "w-jacob",
+   "name": "Jacob",
+   "role": "Celebrity Partnerships",
+   "photo": "img/characters/w-jacob-thumb.webp",
+   "source": "https://www.linkedin.com/in/shwirtz/"
+  },
+  {
+   "id": "w-jamie",
+   "name": "Jamie",
+   "role": "AI Ops",
+   "photo": "img/characters/w-jamie-thumb.webp",
+   "source": "https://www.linkedin.com/in/jamiegollogly/"
+  },
+  {
+   "id": "w-jenny-p",
+   "name": "Jenny P.",
+   "role": "Customer Engagement Manager",
+   "source": "https://www.linkedin.com/in/jennypura/"
+  },
+  {
+   "id": "w-jenny-s",
+   "name": "Jenny S.",
+   "role": "Executive Evangelist",
+   "photo": "img/characters/w-jenny-s-thumb.webp",
+   "source": "https://www.linkedin.com/in/jenniferstojkovic/"
+  },
+  {
+   "id": "w-jonathan",
+   "name": "Jonathan",
+   "role": "Enterprise",
+   "photo": "img/characters/w-jonathan-thumb.webp",
+   "source": "https://www.linkedin.com/in/jonathan-bell-964a953/"
+  },
+  {
+   "id": "w-julian",
+   "name": "Julian",
+   "role": "Technical Support Engineer",
+   "photo": "img/characters/w-julian-thumb.webp",
+   "source": "https://www.linkedin.com/in/julianwallsca/"
+  },
+  {
+   "id": "w-kari",
+   "name": "Kari",
+   "role": "GTM",
+   "photo": "img/characters/w-kari-thumb.webp",
+   "source": "https://www.linkedin.com/in/karischarf/"
+  },
+  {
+   "id": "w-katie",
+   "name": "Katie",
+   "role": "Product design",
+   "photo": "img/characters/w-katie-thumb.webp",
+   "source": "https://www.linkedin.com/in/katie-beale-33017344/"
+  },
+  {
+   "id": "w-kimberly",
+   "name": "Kimberly",
+   "role": "Creative and brand",
+   "photo": "img/characters/w-kimberly-thumb.webp",
+   "source": "https://www.linkedin.com/in/kimberlyfred/"
+  },
+  {
+   "id": "w-ky",
+   "name": "Ky",
+   "role": "GTM",
+   "photo": "img/characters/w-ky-thumb.webp",
+   "source": "https://www.linkedin.com/in/kykocur/"
+  },
+  {
+   "id": "w-lyndall",
+   "name": "Lyndall",
+   "role": "Chief of Staff",
+   "photo": "img/characters/w-lyndall-thumb.webp",
+   "source": "https://www.linkedin.com/in/lyndallschreiner/"
+  },
+  {
+   "id": "w-mallorie",
+   "name": "Mallorie",
+   "role": "GTM",
+   "photo": "img/characters/w-mallorie-thumb.webp",
+   "source": "https://www.linkedin.com/in/malloriesaia/"
+  },
+  {
+   "id": "w-manvi",
+   "name": "Manvi",
+   "role": "Product",
+   "photo": "img/characters/w-manvi-thumb.webp",
+   "source": "https://www.linkedin.com/in/manvi-kottakota/"
+  },
+  {
+   "id": "w-mark",
+   "name": "Mark",
+   "role": "Engineering",
+   "photo": "img/characters/w-mark-thumb.webp",
+   "source": "https://www.linkedin.com/in/bennettwmark/"
+  },
+  {
+   "id": "w-mateus",
+   "name": "Mateus",
+   "role": "iOS developer",
+   "photo": "img/characters/w-mateus-thumb.webp",
+   "source": "https://www.linkedin.com/in/mateuscalisto/"
+  },
+  {
+   "id": "w-molisha",
+   "name": "Molisha",
+   "role": "Chief of Staff",
+   "photo": "img/characters/w-molisha-thumb.webp",
+   "source": "https://www.linkedin.com/in/molishashah/"
+  },
+  {
+   "id": "w-nathan",
+   "name": "Nathan",
+   "role": "Research scientist",
+   "source": "https://www.linkedin.com/in/nathan-klapoetke-0a8b2125/"
+  },
+  {
+   "id": "w-paige",
+   "name": "Paige",
+   "role": "Founding Sales",
+   "photo": "img/characters/w-paige-thumb.webp",
+   "source": "https://www.linkedin.com/in/paigehaefer/"
+  },
+  {
+   "id": "w-parth",
+   "name": "Parth",
+   "role": "Agent Engineer",
+   "photo": "img/characters/w-parth-thumb.webp",
+   "source": "https://www.linkedin.com/in/parthdsi/"
+  },
+  {
+   "id": "w-prayrit",
+   "name": "Prayrit",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-prayrit-thumb.webp",
+   "source": "https://www.linkedin.com/in/prayrit-prash-jain-19abb632/"
+  },
+  {
+   "id": "w-rahul",
+   "name": "Rahul",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-rahul-thumb.webp",
+   "source": "https://www.linkedin.com/in/rahul-manchanda-a838baaa/"
+  },
+  {
+   "id": "w-raihan",
+   "name": "Raihan",
+   "role": "AI Growth",
+   "photo": "img/characters/w-raihan-thumb.webp",
+   "source": "https://www.linkedin.com/in/raihan111/"
+  },
+  {
+   "id": "w-rajan",
+   "name": "Rajan",
+   "role": "UGC creator",
+   "photo": "img/characters/w-rajan-thumb.webp",
+   "source": "https://www.linkedin.com/in/rajanhulait/"
+  },
+  {
+   "id": "w-rajat",
+   "name": "Rajat",
+   "role": "Engineering leader",
+   "photo": "img/characters/w-rajat-thumb.webp",
+   "source": "https://www.linkedin.com/in/rajat-dixit-398a9216/"
+  },
+  {
+   "id": "w-ramon",
+   "name": "Ramon",
+   "role": "Software Engineer",
+   "photo": "img/characters/w-ramon-thumb.webp",
+   "source": "https://www.linkedin.com/in/ramonhonorio/"
+  },
+  {
+   "id": "w-ray",
+   "name": "Ray",
+   "role": "Speech AI research",
+   "photo": "img/characters/w-ray-thumb.webp",
+   "source": "https://www.linkedin.com/in/ray-huang-0929644a/"
+  },
+  {
+   "id": "w-rob",
+   "name": "Rob",
+   "role": "Product",
+   "photo": "img/characters/w-rob-thumb.webp",
+   "source": "https://www.linkedin.com/in/robertsolomon1/"
+  },
+  {
+   "id": "w-sammantha",
+   "name": "Sammantha",
+   "role": "Customer insight",
+   "photo": "img/characters/w-sammantha-thumb.webp",
+   "source": "https://www.linkedin.com/in/sammyates/"
+  },
+  {
+   "id": "w-sarah",
+   "name": "Sarah",
+   "role": "Marketing & brand design",
+   "photo": "img/characters/w-sarah-thumb.webp",
+   "source": "https://www.linkedin.com/in/sarahyching/"
+  },
+  {
+   "id": "w-sarthak",
+   "name": "Sarthak",
+   "role": "AI Agents",
+   "photo": "img/characters/w-sarthak-thumb.webp",
+   "source": "https://www.linkedin.com/in/sarthak-malhotra/"
+  },
+  {
+   "id": "w-sean",
+   "name": "Sean",
+   "role": "Building",
+   "photo": "img/characters/w-sean-thumb.webp",
+   "source": "https://www.linkedin.com/in/seancaseycampbell/"
+  },
+  {
+   "id": "w-shama",
+   "name": "Shama",
+   "role": "Applied AI Evangelist",
+   "photo": "img/characters/w-shama-thumb.webp",
+   "source": "https://www.linkedin.com/in/shamahyder/"
+  },
+  {
+   "id": "w-shaun",
+   "name": "Shaun",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-shaun-thumb.webp",
+   "source": "https://www.linkedin.com/in/shaun-joseph-a88b8359/"
+  },
+  {
+   "id": "w-shivam-m",
+   "name": "Shivam M.",
+   "role": "Marketing funnels",
+   "photo": "img/characters/w-shivam-m-thumb.webp",
+   "source": "https://www.linkedin.com/in/shivammeet/"
+  },
+  {
+   "id": "w-shruthi",
+   "name": "Shruthi",
+   "role": "Engineering",
+   "photo": "img/characters/w-shruthi-thumb.webp",
+   "source": "https://www.linkedin.com/in/shruthi-murthy-abb731/"
+  },
+  {
+   "id": "w-shubh",
+   "name": "Shubh",
+   "role": "Wispr AI",
+   "photo": "img/characters/w-shubh-thumb.webp",
+   "source": "https://www.linkedin.com/in/patnishubh/"
+  },
+  {
+   "id": "w-sihao",
+   "name": "Sihao",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-sihao-thumb.webp",
+   "source": "https://www.linkedin.com/in/sihao-ben-lu/"
+  },
+  {
+   "id": "w-simion",
+   "name": "Simion",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-simion-thumb.webp",
+   "source": "https://www.linkedin.com/in/simion-agavriloaei/"
+  },
+  {
+   "id": "w-steven",
+   "name": "Steven",
+   "role": "Enterprise AI deployment",
+   "photo": "img/characters/w-steven-thumb.webp",
+   "source": "https://www.linkedin.com/in/stevenjmoran/"
+  },
+  {
+   "id": "w-sumit",
+   "name": "Sumit",
+   "role": "Lead Engineer",
+   "photo": "img/characters/w-sumit-thumb.webp",
+   "source": "https://www.linkedin.com/in/sumit-oberoi-bb577298/"
+  },
+  {
+   "id": "w-sydney",
+   "name": "Sydney",
+   "role": "Lifecycle marketing",
+   "photo": "img/characters/w-sydney-thumb.webp",
+   "source": "https://www.linkedin.com/in/sydney-devries/"
+  },
+  {
+   "id": "w-tim",
+   "name": "Tim",
+   "role": "Enterprise",
+   "photo": "img/characters/w-tim-thumb.webp",
+   "source": "https://www.linkedin.com/in/timkotyuk/"
+  },
+  {
+   "id": "w-tuan",
+   "name": "Tuan",
+   "role": "Puzzles and building",
+   "photo": "img/characters/w-tuan-thumb.webp",
+   "source": "https://www.linkedin.com/in/minhtuantran/"
+  },
+  {
+   "id": "w-tyler",
+   "name": "Tyler",
+   "role": "Customer experience",
+   "photo": "img/characters/w-tyler-thumb.webp",
+   "source": "https://www.linkedin.com/in/tylerromaine/"
+  },
+  {
+   "id": "w-vishal-j",
+   "name": "Vishal J.",
+   "role": "Wispr Flow",
+   "photo": "img/characters/w-vishal-j-thumb.webp",
+   "source": "https://www.linkedin.com/in/heyvishaljain/"
+  },
+  {
+   "id": "w-walfre",
+   "name": "Walfre",
+   "role": "Enterprise voice adoption",
+   "photo": "img/characters/w-walfre-thumb.webp",
+   "source": "https://www.linkedin.com/in/walfre-cruz/"
+  },
+  {
+   "id": "w-wilson",
+   "name": "Wilson",
+   "role": "Technical Support Engineer",
+   "photo": "img/characters/w-wilson-thumb.webp",
+   "source": "https://www.linkedin.com/in/wilson-morton/"
+  },
+  {
+   "id": "w-zach",
+   "name": "Zach",
+   "role": "GTM",
+   "photo": "img/characters/w-zach-thumb.webp",
+   "source": "https://www.linkedin.com/in/zachbeattie/"
+  },
+  {
+   "id": "w-zachary",
+   "name": "Zachary",
+   "role": "Member of Technical Staff",
+   "photo": "img/characters/w-zachary-thumb.webp",
+   "source": "https://www.linkedin.com/in/zachary-walravens-9b0139133/"
+  },
+  {
+   "id": "w-zhdan",
+   "name": "Zhdan",
+   "role": "Product design",
+   "photo": "img/characters/w-zhdan-thumb.webp",
+   "source": "https://www.linkedin.com/in/zhdanphilippov/"
+  },
+  {
+   "id": "w-zoheb",
+   "name": "Zoheb",
+   "role": "Technical Support Engineer",
+   "photo": "img/characters/w-zoheb-thumb.webp",
+   "source": "https://www.linkedin.com/in/zoheb-khan-a8979325b/"
   }
  ]
 }

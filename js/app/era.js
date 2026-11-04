@@ -435,7 +435,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 
     const field = h('div.lock__field', { role: 'listbox', 'aria-label': 'Accounts' });
     const search = h('input.lock__search', { type: 'text', placeholder: team.length ? 'Type your name, or tap your face' : 'Type your name', 'aria-label': 'Your name', autocomplete: 'off', spellcheck: false, enterkeyhint: 'go' });
-    const hint = h('p.lock__hint', team.length ? 'Or add your own account' : 'Add your own account, or come in as a guest');
+    let hintText = team.length ? 'Or add your own account' : 'Add your own account, or come in as a guest';
+    const hint = h('p.lock__hint', hintText);
     const pickView = h('div.lock__picked', { hidden: true });
     const addView = h('form.lock__add', { hidden: true });
     const el = h('div.lock', { role: 'dialog', 'aria-label': 'Log in' },
@@ -444,13 +445,19 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 
     // ---- bubbles
     let bubbles = [];
-    const face = (a) => h('span.lock__face', a.src ? h('img', { src: a.src, alt: '', width: 96, height: 96 }) : h('span.lock__glyph', { 'aria-hidden': 'true' }, a.glyph ?? (a.label || '?')[0].toUpperCase()));
+    // photos load the first time a face is shown (the team is ~140 people, a dozen on screen at once);
+    // a teammate with no public photo gets their initials on a colour of their own
+    const initials = (s) => s.split(/[\s.-]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+    const face = (a) => a.src ? h('span.lock__face', h('img', { dataset: { src: a.src }, alt: '', width: 96, height: 96, decoding: 'async' }))
+      : a.member ? h('span.lock__face.lock__face--ini', { style: `--hue:${hash(a.id) % 360}` }, h('span.lock__glyph', { 'aria-hidden': 'true' }, initials(a.label)))
+      : h('span.lock__face', h('span.lock__glyph', { 'aria-hidden': 'true' }, a.glyph ?? (a.label || '?')[0].toUpperCase()));
     function build() {
       // a teammate with an illustrated character (persona.json) also takes that seat in the audience
       const people = roster ? roster.map((m) => { const c = team.find((t) => t.id === m.id); return { id: m.id, label: m.name, blurb: m.role, src: m.photo || c?.thumb || null, team: c || null, member: true }; })
         : team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c }));
       const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...people,
         { id: 'add', label: 'Add account', blurb: 'Name and a selfie', glyph: '+' }, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', glyph: '' }];
+      if (roster) { hintText = `All ${people.length} of the team are here`; if (!q) hint.textContent = hintText; }
       field.replaceChildren();
       bubbles = accounts.map((a) => {
         const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
@@ -468,9 +475,9 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     let W = 0, H = 0, R = 58, raf = 0, last = 0, rot = 0, cap = 12, q = '';
     const SLOW = reduced ? 0.3 : 1;
     const always = (b) => b.a.id === 'add' || b.a.id === 'guest' || b.a.own;  // never rotated out
-    const matches = (b) => b.a.id === 'add' || b.a.label.toLowerCase().split(' ').some((w) => w.startsWith(q));
+    const matches = (b) => { const l = b.a.label.toLowerCase(); return l.startsWith(q) || l.split(' ').some((w) => w.startsWith(q)); };
     const hash = (str) => { let x = 0; for (const c of str) x = (x * 31 + c.charCodeAt(0)) | 0; return Math.abs(x); };
-    function vis(b, on) { b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); }
+    function vis(b, on) { if (on) { const img = b.el.querySelector('img[data-src]'); if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); } } b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); }
     function cruise(b, ang = Math.random() * Math.PI * 2) {
       const i = hash(b.a.id), sp = (16 + ((i * 37) % 21)) * SLOW;       // ppt: speed = 16 + ((i*37) % 21) px/s
       b.sp = sp; b.vx = Math.cos(ang) * sp; b.vy = Math.sin(ang) * sp * 0.7;
@@ -530,7 +537,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     let clock = 0;
     function step(dt) {                                                 // dt in seconds
       clock += dt;
-      const live = bubbles.filter((b) => b.on), gap = R * (q ? 2.3 : 2.7);
+      const live = bubbles.filter((b) => b.on), gap = R * (q ? 2.2 : 2.7);
       const fx = new Map(live.map((b) => [b, [0, 0]]));
       for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
         const p = live[i], o = live[j], dx = o.x - p.x, dy = (o.y - p.y) * 0.72, d = Math.hypot(dx, dy) || 0.01;  // a name sits under each face: more room up and down
@@ -542,8 +549,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       const lo = R, hi = H - R * FOOT, margin = R * 1.1;
       for (const b of live) {
         const f = fx.get(b);
-        if (q) {                                                        // matches glide to the middle and settle
-          f[0] += (W / 2 - b.x) * 1.6; f[1] += (H / 2 - b.y) * 1.6;
+        if (q) {                                                        // matches glide to their slot in the middle and settle
+          f[0] += ((b.tx ?? W / 2) - b.x) * 1.6; f[1] += ((b.ty ?? H / 2) - b.y) * 1.6;
         } else {
           // soft walls at the screen edges
           if (b.x < R + margin) f[0] += ((R + margin - b.x) / margin) * 60; if (b.x > W - R - margin) f[0] -= ((b.x - (W - R - margin)) / margin) * 60;
@@ -580,13 +587,25 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 
     // ---- typing filters: matches glide to the middle, the rest fade back
     function filter() {
-      if (!q) { place(); return; }
-      const hit = bubbles.filter(matches).slice(0, cap + 1);
+      if (!q) { hint.textContent = hintText; place(); return; }
+      const all = bubbles.filter((b) => b.a.id !== 'add' && matches(b)), hit = [...all.slice(0, cap), ...bubbles.filter((b) => b.a.id === 'add')];
+      hint.textContent = all.length > cap ? `${all.length - cap} more match, keep typing` : all.length ? hintText : 'Not here? Add your own account';
       for (const b of bubbles) {
         const on = hit.includes(b);
         if (on && !b.on) { [b.x, b.y] = spot(); b.vx = b.vy = 0; }
         vis(b, on);
       }
+      slots(hit);
+    }
+    // a tidy grid between the clock and the name box, so a dozen Annas never pile up on one another
+    function slots(list) {
+      const top = zones[0] ? zones[0].b + R : R, bot = (zones[1] ? zones[1].t : H) - R * FOOT, sx = R * 2.5, sy = R * (1 + FOOT) + 14;
+      const cols = Math.max(1, Math.min(list.length, Math.floor((W - R) / sx))), rows = Math.ceil(list.length / cols);
+      const y0 = Math.max(top, (top + bot) / 2 - ((rows - 1) * sy) / 2);
+      list.forEach((b, i) => {
+        const r = Math.floor(i / cols), inRow = Math.min(cols, list.length - r * cols), c = i % cols;
+        b.tx = W / 2 + (c - (inRow - 1) / 2) * sx; b.ty = Math.min(bot, y0 + r * sy);
+      });
     }
     search.addEventListener('input', () => { const was = q; q = search.value.trim().toLowerCase(); if (q !== was) filter(); });
     search.addEventListener('keydown', (e) => {
