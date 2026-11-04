@@ -26,15 +26,19 @@ const showEl = () => document.querySelector('.win--install:not(.is-closing)') ||
 function mainStops(phone) {
   const q = (sel) => () => document.querySelector(sel);
   return [
-    { id: 'welcome', at: showEl, say: 'Welcome! My portfolio, in my voice, is ready. Open it any time. Meanwhile, a quick tour.' },
+    // first the room: the middle of the screen, then the music that's already on, then the show installing
+    { id: 'w-hello', at: () => null, say: 'Welcome to 1999.' },
+    // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
+    { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing the shared folder of ’99. Skip a track, or pause it.` },
+    { id: 'install', at: showEl, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
+      ? 'My portfolio, in my voice, is installing. It opens by itself; meanwhile, the rest.'
+      : 'My portfolio, in my voice, is ready. Open it any time. Meanwhile, the rest.') },
     phone
       ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work: folders, then the best bits on their own. Tap one.' }
       : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: the best bits up front, the rest in folders. Hover for details.' },
     phone
       ? { id: 'right', at: q('.is-moto .icon'), say: 'Further down, three games I made the ’99 way, then the real ones: Road Rash, DOOM and more.' }
       : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the toys. Three games I made the ’99 way, and the real ones: Road Rash, DOOM and more.' },
-    // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
-    { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing the shared folder of ’99. Skip a track, or pause it.` },
     { id: 'steer', at: showEl, say: 'Steer the show: hold your Wispr Flow key and say where to go. Or type.', extra: pill },
     { id: 'crt', at: q('.menubar__crt'), say: 'The screen has looks. Here they are.', desktopOnly: true, crt: true },
     phone
@@ -62,7 +66,7 @@ export function startTour({ area, kind = 'main', openPlayer } = {}) {
   const phone = isNarrow(), glide = !phone && !reducedMotion();
   let stops = (kind === 'next' ? nextStops() : mainStops(phone)).filter((s) => (!s.wisprOnly || isWispr) && (!s.desktopOnly || !phone));
   if (kind === 'next') { stops = stops.filter((s) => !seenNext.has(s.id)); if (stops.length < 2) return null; }
-  const keep = (s) => s.id.endsWith('hello') || s.id === 'welcome' || (s.open && openPlayer) || s.at();
+  const keep = (s) => s.id.endsWith('hello') || s.id === 'install' || (s.open && openPlayer) || s.at();
   stops = stops.filter(keep);  // count only stops that have something to point at
 
   const ghost = glide ? h('div.gtour__cursor', { 'aria-hidden': 'true' }) : null;
@@ -93,12 +97,13 @@ export function startTour({ area, kind = 'main', openPlayer } = {}) {
   const A = () => area.getBoundingClientRect();
   const box = (el) => { const a = A(), r = el.getBoundingClientRect(); return { x: r.left - a.left, y: r.top - a.top, w: r.width, h: r.height }; };
   function light(...els) { lit.forEach((e) => e.classList.remove('is-tour-lit')); lit = els.filter(Boolean); lit.forEach((e) => e.classList.add('is-tour-lit')); }
-  function placeCap(x, y, near) {
+  function placeCap(x, y, near, center = false) {
     const a = A(), cw = cap.offsetWidth, ch = cap.offsetHeight;
     let cx, cy;
     if (!ghost) {
       if (near) { cx = near.x + near.w / 2 - cw / 2; cy = near.y + near.h + 10; if (cy + ch > a.height - 8) cy = near.y - ch - 10; }
       else { cx = (a.width - cw) / 2; cy = a.height * 0.3; }
+    } else if (!near && center) { cx = (a.width - cw) / 2; cy = y + 30;  // nothing to point at: the caption sits centred under the arrow
     } else { cx = side === 'left' ? x - cw - 16 : x + 22; cy = y + 16; if (side === 'right' && cx + cw > a.width - 10) cx = x - cw - 14; if (side === 'left' && cx < 10) cx = x + 22; }
     cap.style.left = clamp(cx, 8, Math.max(8, a.width - cw - 8)) + 'px';
     cap.style.top = clamp(cy, 8, Math.max(8, a.height - ch - 8)) + 'px';
@@ -106,9 +111,9 @@ export function startTour({ area, kind = 'main', openPlayer } = {}) {
   async function moveTo(el, my, ms = GLIDE, dx = 0.5, dy = 0.5) {
     const a = A();
     if (el && !glide) el.scrollIntoView?.({ block: 'nearest' });
-    const b = el ? box(el) : { x: a.width * 0.42, y: a.height * 0.38, w: 0, h: 0 };
+    const b = el ? box(el) : { x: a.width * 0.5, y: a.height * 0.36, w: 0, h: 0 };  // nothing to point at: the middle
     const x = b.x + b.w * dx, y = b.y + b.h * dy;
-    if (ghost) { ghost.style.transitionDuration = ms + 'ms'; ghost.style.transform = `translate(${x}px, ${y}px)`; placeCap(x, y); await wait(ms, my); }
+    if (ghost) { ghost.style.transitionDuration = ms + 'ms'; ghost.style.transform = `translate(${x}px, ${y}px)`; placeCap(x, y, null, !el); await wait(ms, my); }
     else placeCap(x, y, el ? b : null);
   }
   const press = async (my) => { if (!ghost) return; ghost.classList.add('is-press'); await wait(160, my); ghost.classList.remove('is-press'); };
@@ -140,11 +145,12 @@ export function startTour({ area, kind = 'main', openPlayer } = {}) {
       if (s.open && !s.at()) { openPlayer(); opened = s.at(); await wait(400, my); }
       const el = s.at();
       light(el);
-      say(s.say, s.extra?.());
+      const line = typeof s.say === 'function' ? s.say() : s.say;
+      say(line, s.extra?.());
       await moveTo(el, my, GLIDE, s.dx ?? 0.5, s.dy ?? 0.5);
       if (s.peek && glide && el) await peek(el, my);
       else if (s.crt && el) await crtDemo(my);
-      else await wait(holdFor(s.say), my);
+      else await wait(holdFor(line), my);
       go(k + 1);
     } catch (e) { if (e !== STOP) { console.warn('[tour]', e); end(); } }
   }

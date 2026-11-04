@@ -119,7 +119,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       // every visit: the guide plays while it installs and keeps going after; the Open countdown waits for it
       tour = startTour({ area: desk.area, openPlayer: () => ctx.openJukebox() });
       tour?.finished.then(() => { if (ctx.installing) ctx.skipInstall?.(); });  // skipped during the install: no need to wait
-      await installer(wm, { reduced, minMs: tour ? 8000 : 3000, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
+      await installer(wm, { reduced, minMs: tour ? 13000 : 3000, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
       ctx.skipInstall = null;
       ctx.installing = false;
       desk.setInstalling(false);  // the icon lands on the desktop
