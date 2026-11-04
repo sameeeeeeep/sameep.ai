@@ -95,7 +95,7 @@ function buildDOM(root, reduced) {
         <canvas class="hero-canvas" aria-hidden="true"></canvas>
         <div class="hero-fade" aria-hidden="true"></div>
         <header class="hero-top">
-          <p class="hero-mark" aria-label="sameep.ai"><img class="hero-mark__cd" src="img/ui/logo-cd-64.png" srcset="img/ui/logo-cd-64.png 1x, img/ui/logo-cd-128.png 2x" width="32" height="32" alt=""><span class="hero-mark__word" aria-hidden="true">sameep<span class="hero-mark__tld">.ai</span></span></p>
+          <p class="hero-mark" aria-label="sameep.ai"><img class="hero-mark__cd" src="img/ui/offthecv.svg" width="32" height="32" alt=""><span class="hero-mark__word" aria-hidden="true">sameep<span class="hero-mark__tld">.ai</span></span></p>
           <button class="hero-pill hero-sound" type="button" aria-pressed="false" aria-label="Sound">
             <span class="hero-sound__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="hero-sound__txt">Sound off</span>
           </button>
@@ -220,6 +220,12 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     const dir = { ArrowDown: 1, PageDown: 1, ' ': e.shiftKey ? -1 : 1, ArrowUp: -1, PageUp: -1 }[e.key];
     if (dir && go(dir)) e.preventDefault();
   };
+  const onClick = (e) => {   // a click (or tap) anywhere on the story steps it forward, like one scroll
+    if (e.button !== 0 || !inHero() || gBusy || hands?.busy || hands?.justDragged?.()) return;
+    if (e.target.closest?.('a, button, input, textarea, select, label, [contenteditable], [role="button"], dialog, .autoplay')) return;
+    if (getSelection?.().toString()) return;
+    go(1);
+  };
   const onSettle = () => {   // scrollbar drags and anything else: settle to the nearest pose
     clearTimeout(gIdle);
     if (gBusy || !inHero() || hands?.busy) return;
@@ -234,7 +240,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     const m = on && groovesOn ? addEventListener : removeEventListener;
     m('wheel', onWheel, { passive: false }); m('touchstart', onTouchStart, { passive: true });
     m('touchmove', onTouchMove, { passive: false }); m('touchend', onTouchEnd, { passive: true });
-    m('keydown', onKey); m('scroll', onSettle, { passive: true });
+    m('keydown', onKey); m('click', onClick); m('scroll', onSettle, { passive: true });
     if (!on) { cancelAnimationFrame(gAnim); clearTimeout(gAuto); }
     else arm(IDLE_MS);
   };

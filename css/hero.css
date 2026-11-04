@@ -30,9 +30,14 @@
   font: 400 25px/32px "Righteous", var(--f-head); letter-spacing: 0; color: var(--paper, #f3eee2);
   text-shadow: 0 2px 0 rgba(15, 13, 11, .6);
 }
-.hero-mark__cd { display: block; width: 32px; height: 32px; border-radius: 50%; filter: drop-shadow(0 2px 0 rgba(15, 13, 11, .6)); }
+.hero-mark__cd { display: block; width: 32px; height: 32px; image-rendering: pixelated; filter: drop-shadow(0 2px 0 rgba(15, 13, 11, .6)); }
 .hero-mark__word { display: block; height: 32px; }
-.hero-mark__tld { color: var(--ember, #ff6c4c); }
+/* ".ai" in the CD's own stripes */
+.hero-mark__tld {
+  color: transparent; text-shadow: none;
+  background: linear-gradient(90deg, #ffd23f, var(--tangerine, #ff8a1f) 30%, var(--strawberry, #ff4f7b) 55%, var(--grape, #7b4fd6) 78%, #3ec7dc);
+  -webkit-background-clip: text; background-clip: text;
+}
 
 .hero-pill {
   appearance: none; border: 1px solid rgba(243, 238, 226, .22); background: rgba(15, 13, 11, .42);
