@@ -111,7 +111,7 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
   <header class="hero">
     <p class="kick">My $3,000 setup</p>
     <h1>Brew-bot</h1>
-    <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $920, and any Claude can run it.</p>
+    <p class="lede">Say “brew recipe A1” and it doses, grinds, heats and pours a pour-over. It’s built from parts you can buy, costs about $1,040 in parts, and any Claude can run it.</p>
   </header>
   <section class="win win--demo">
     <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Brew-bot — make a cup</span><button class="win__snd" id="snd" type="button" aria-pressed="true">Sound on</button><span class="win__shade" aria-hidden="true"></span></div>
@@ -130,7 +130,7 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
   <section class="win ">
     <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">How it works</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-      <p>A plain gooseneck kettle sits in a hinged cradle, and the Pi is its thermostat: a probe in the water and a smart plug on its base. A geared motor tips it to pour while the dripper turns and a rail moves the spout in and out, so the water spirals. Three hoppers dose beans by weight into a grinder. A scale under the cup runs the whole pour, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
+      <p>A Stagg EKG Pro kettle sits in a hinged cradle, and a small "dial bot" turns and presses its dial to set the temperature, the way your hand would. A geared motor tips it to pour while the dripper turns and a rail moves the spout in and out, so the water spirals. Three hoppers dose beans by weight into a grinder. A scale under the cup runs the whole pour, and a small connector lets any Claude call <code>brew(recipe="A1")</code>.</p>
       <p>The full blueprint is below: drawings, wiring, the control loops, safety, the software, the build steps and every part.</p>
     </div>
   </section>
@@ -178,7 +178,7 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
         <li><b>Baratza Encore ESP</b>, on Shelly plug 1. It grinds until its power draw drops to idle, which means the beans are gone.</li>
         <li><b>MGN12 rail</b>, 300 mm, belt-driven by a NEMA 17. It moves the kettle in and out to draw the spiral.</li>
         <li><b>Carriage and cradle</b> hanging from the rail.</li>
-        <li><b>Gooseneck kettle with its base</b>, both fixed in the cradle so they tilt together. A probe goes in through the lid.</li>
+        <li><b>Stagg EKG Pro and its base</b>, fixed in the cradle so they tilt together. The dial bot clips to the base, and a probe goes in through the lid.</li>
         <li><b>Hinge and tilt motor</b> (see the side view).</li>
         <li><b>V60 or Origami dripper</b> on a fixed ring above the server.</li>
         <li><b>Turntable</b>: a 6-inch lazy-susan bearing, belt-driven, spinning the server and dripper at 30–40 rpm.</li>
@@ -215,28 +215,29 @@ footer{color:#fff;opacity:.8;text-align:center;font:500 12px var(--f-ui);padding
         </g>
       </svg></div>
       <p>The kettle and its power base are clamped in an aluminium L-cradle, so they tilt together and the base contact never breaks. The hinge sits under the spout side, in front of the kettle's centre of mass. That means gravity always pulls the cradle back upright: the motor has to hold every degree of tilt, and if power drops the kettle falls back to 0°. It can't spill toward the cup.</p>
-      <p>Torque: a full 0.9 L kettle with its base weighs about 1.6 kg, and its centre of mass sits at most about 6 cm from the pivot. That needs about 9.5 kg·cm. A 17HS19 motor through a 100:1 planetary gearbox gives over 30 kg·cm, so there's about 3× margin. A printed hard stop at 40° stops it ever tipping past a full pour.</p>
+      <p>Torque: a full Stagg with its base and the dial bot weighs about 2.4 kg, and its centre of mass sits at most about 6 cm from the pivot. That needs about 15 kg·cm. A 17HS19 motor through a 100:1 planetary gearbox gives over 30 kg·cm, so there's about 2× margin. A printed hard stop at 40° stops it ever tipping past a full pour.</p>
     </div>
   </section>
   <section class="win ">
-    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Temperature — how the Pi sets “93 °C”</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Temperature — the dial bot</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-      <p><b>The honest problem:</b> no smart kettle you can buy today lets another device set its temperature. Fellow's kettles only listen to Fellow's app. The older Stagg EKG+ was reverse-engineered over Bluetooth (the <a href="https://pypi.org/project/fellow-stagg-ble/">fellow-stagg-ble</a> library can set its target temperature), but it's discontinued, and the current EKG Pro is only <a href="https://community.home-assistant.io/t/ble-reverse-engineering-a-fellow-stagg-ekg-pro-kettle/863026">partly cracked</a>.</p>
-      <p><b>So the Pi becomes the kettle's thermostat.</b> Use a plain electric gooseneck with a mechanical switch and a boil cut-off. Leave its switch on, and put its base on Shelly plug 2. A food-safe DS18B20 probe sits in a stainless sleeve through the lid, 2 cm above the bottom. The Pi reads it every 0.75 s and switches the plug:</p>
-      <pre class="code">target = 93                                   # from brew(recipe="A1")
-loop every 0.75 s:
-    t = probe.read()
-    if t &lt; target - 3:      kettle(on)          # full power
-    elif t &lt; target - 0.5:  pulse(2 s on, 6 s off)  # creep up, no overshoot
-    else:                   kettle(off)         # hold: it loses ~1 °C a minute
-    if t &gt; 101 or rising &gt; 3 °C/s:  kettle(off); abort("boil-dry")
-
-kettle(on) = GET http://shelly-kettle.local/rpc/Switch.Set?id=0&amp;on=true&amp;toggle_after=10</pre>
-      <p>Two details make this safe and accurate:</p>
+      <p>The kettle is a <b>Fellow Stagg EKG Pro</b>, which already holds any temperature from 40 to 100 °C to within a degree. It has no API, but it has one dial on its base: <b>turn</b> to set the temperature, <b>quick-press</b> to switch on or off (<a href="https://cdn.shopify.com/s/files/1/0057/6235/1219/files/StaggEKGPro_GTKYG_v6_112322.pdf">Fellow's guide</a>). So the Pi works that dial the way a hand would, with a small printed "dial bot" clipped to the base:</p>
       <ul class="dots">
-        <li><b><code>toggle_after=10</code></b> tells the Shelly to switch itself off after 10 seconds unless the Pi renews the command. If the Pi crashes, the kettle turns off on its own.</li>
-        <li><b>Because the Pi stops below boiling</b>, the kettle's boil cut-off never trips, so the next "on" works. The cut-off stays in place as a second safety. The probe holds within ±1 °C, and the pour won't start unless the reading is in range.</li>
+        <li><b>Turn:</b> a 28BYJ-48 geared stepper with a silicone O-ring wheel pressed against the dial's knurled edge. The wheel grips it like a thumb.</li>
+        <li><b>Press:</b> an MG90S servo with a felt-tipped arm over the dial's centre.</li>
+        <li><b>Check:</b> the Pi's own DS18B20 probe in a steel sleeve through the lid. The kettle does the heating, and the probe confirms it.</li>
       </ul>
+      <pre class="code">set_temp(93):                         # from brew(recipe="A1")
+    if kettle is off: press()          # quick press → on, screen lights
+    turn(-70 clicks)                   # spin to the bottom: it clamps at 40 °C, a known zero
+    turn(+(93 - 40) clicks)            # 1 click = 1 °C (calibrated once in °C mode)
+    wait until probe ≥ 92 °C           # usually 3-4 min from cold
+    if probe settles 1–2 °C off:  turn(±1) and re-check
+
+# safety: the base is on Shelly plug 2 with toggle_after=10, renewed while brewing
+# if the Pi stops, the kettle loses power in 10 s and wakes up off</pre>
+      <p>Two settings are made once by hand in the kettle's menu: Celsius, and hold for 60 minutes. Between brews the bot leaves the kettle holding at the last temperature, so a second cup at the same temperature is ready straight away.</p>
+      <p><b>If you'd rather not touch the dial:</b> remove the dial bot and let the Pi switch a plain gooseneck on and off by its probe (±1 °C, using the same plug). The rest of the build stays the same.</p>
     </div>
   </section>
   <section class="win ">
@@ -273,7 +274,7 @@ pour_to(g):
   <section class="win ">
     <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Wiring</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
-  <p class="sub">One Raspberry Pi 5 runs everything; the probe in the kettle is on GPIO4. Motors get 12 V through the emergency-stop loop. Mains only goes through the two Shelly plugs. Common ground.</p>
+  <p class="sub">One Raspberry Pi 5 runs everything; the probe in the kettle is on GPIO4. The dial bot's 28BYJ-48 runs through a ULN2003 on GPIO9/10/11/14, and both servos (dial press, dose tip) are on a PCA9685 on the I²C bus at 0x40. Motors get 12 V through the emergency-stop loop. Mains only goes through the two Shelly plugs. Common ground.</p>
   <div class="schem">
     <svg viewBox="0 0 1000 560" role="img" aria-label="Wiring schematic: Raspberry Pi 5 GPIO to load cells, stepper drivers, auger drivers, probe, cup sensor, e-stop, and Wi-Fi smart plugs" font-family="Spline Sans Mono, monospace" font-size="12">
       <g fill="var(--card)" stroke="var(--ink)" stroke-width="1.5">
@@ -293,13 +294,13 @@ pour_to(g):
         <text x="52" y="224" font-weight="600">DS18B20 water probe</text><text x="52" y="246" fill="var(--muted)">1-Wire GPIO4 · 4.7 kΩ→3V3</text>
         <text x="52" y="304" font-weight="600">VL53L0X cup sensor</text><text x="52" y="326" fill="var(--muted)">I²C SDA GPIO2 · SCL GPIO3</text>
         <text x="52" y="394" font-weight="600">DRV8833 ×2 · 3 augers</text><text x="52" y="414" fill="var(--muted)">A1 GPIO12/16 · A2 GPIO20/21</text><text x="52" y="434" fill="var(--muted)">A3 GPIO7/8 · VM 6 V (buck)</text>
-        <text x="52" y="494" font-weight="600">E-stop (NC) · SG90 servo</text><text x="52" y="516" fill="var(--muted)">E-stop GPIO18 · servo GPIO10</text>
+        <text x="52" y="494" font-weight="600">E-stop (NC) · SG90 servo</text><text x="52" y="516" fill="var(--muted)">E-stop GPIO18 · servos on PCA9685</text>
         <text x="742" y="54" font-weight="600">TMC2209 · tilt (PG100)</text><text x="742" y="76" fill="var(--muted)">STEP GPIO17 · DIR GPIO27</text>
         <text x="742" y="134" font-weight="600">TMC2209 · turntable</text><text x="742" y="156" fill="var(--muted)">STEP GPIO22 · DIR GPIO23</text>
         <text x="742" y="214" font-weight="600">TMC2209 · spout rail</text><text x="742" y="236" fill="var(--muted)">STEP GPIO24 · DIR GPIO25</text>
         <text x="742" y="314" font-weight="600">EN (all drivers)</text><text x="742" y="336" fill="var(--muted)">GPIO26 · high = motors off</text>
         <text x="742" y="404" font-weight="600">Shelly 1 · grinder</text><text x="742" y="426" fill="var(--muted)">/rpc/Switch.Set?on=true</text>
-        <text x="742" y="494" font-weight="600">Shelly 2 · kettle power</text><text x="742" y="516" fill="var(--muted)">Pi thermostat · toggle_after</text>
+        <text x="742" y="494" font-weight="600">Shelly 2 · kettle base</text><text x="742" y="516" fill="var(--muted)">hard kill · toggle_after</text>
       </g>
       <g fill="none" stroke="var(--accent)" stroke-width="2">
         <path d="M270 62 H340 V200 H400"/><path d="M270 142 H330 V220 H400"/><path d="M270 232 H400"/><path d="M270 312 H330 V260 H400"/><path d="M270 412 H340 V300 H400"/><path d="M270 502 H360 V340 H400"/>
@@ -326,7 +327,7 @@ pour_to(g):
       <ul class="dots">
         <li><b>No cup, no pour.</b> The cup cell has to read inside the known tare window and the time-of-flight sensor has to see the server. Either one failing cancels the brew.</li>
         <li><b>Overflow:</b> every brew stops at target + 5%, there's an absolute ceiling of 450 g, and a stream that misses the cup stops within 2 s.</li>
-        <li><b>Boil-dry:</b> the Pi cuts power above 101 °C or when the temperature rises faster than 3 °C/s (an empty kettle heats far faster). The kettle's own cut-off is the backstop.</li>
+        <li><b>Boil-dry:</b> the Stagg has its own empty-kettle cut-off. The Pi also cuts the base's power if its probe reads above 101 °C.</li>
         <li><b>The Pi dies:</b> both plugs switch themselves off within 10 s (<code>toggle_after</code>), the motor drivers disable, and gravity tips the kettle upright.</li>
         <li><b>Hands:</b> a mushroom emergency stop cuts 12 V to every motor in hardware, and the Pi sees it on GPIO18. Mains only goes through the two certified plugs, behind an RCCB socket.</li>
         <li><b>Strangers:</b> the connector needs a bearer token, allows one brew per person every 10 minutes and one brew at a time, and <code>cancel()</code> always works.</li>
@@ -343,6 +344,7 @@ brewbot/
   hw/steppers.py   TMC2209 STEP/DIR via lgpio, accel ramps, EN on GPIO26
   hw/augers.py     DRV8833 PWM, dose loop
   hw/probe.py      DS18B20 on 1-Wire (/sys/bus/w1)
+  hw/dialbot.py    28BYJ-48 turn + MG90S press on the kettle dial (PCA9685)
   hw/shelly.py     HTTP RPC Switch.Set / Switch.GetStatus (watts)
   brew.py          the recipe → dose → grind → heat → bloom → pulses state machine
   server.py        MCP connector + status page (download below)</pre>
@@ -354,19 +356,19 @@ brewbot/
       <ol class="steps">
         <li><b>Saturday 1, frame and scales.</b> Cut and bolt the 2020 frame: 600 × 450 × 300 mm. Mount the 5 kg cell under the turntable plate and the 1 kg cell under the dose cup. Calibrate both with a 500 g weight and check the drift over 10 minutes is under 0.3 g.</li>
         <li><b>Sunday 1, beans.</b> Print the hoppers, augers and dose cup. Wire the N20 motors to the DRV8833s and the servo to GPIO10. Put the grinder on Shelly 1 and set its dial to 15. Test 20 doses of 18 g: each should land within ±0.2 g.</li>
-        <li><b>Saturday 2, water.</b> Build the cradle and hinge, and fit the hard stop at 40°. Put the kettle base on Shelly 2 and the probe through the lid. Tune the heat loop: from 25 °C to 93 °C with under 1 °C of overshoot. Then fit the rail and turntable.</li>
+        <li><b>Saturday 2, water.</b> Build the cradle and hinge, and fit the hard stop at 40°. Put the kettle base on Shelly 2, fit the dial bot and the probe. Calibrate clicks per °C, then run 10 set-and-check cycles from 80 to 96 °C: each should settle within 1 °C. Then fit the rail and turntable.</li>
         <li><b>Sunday 2, pour and safety.</b> Tune the flow loop until pulses hold 5 g/s ±0.5. Wire the emergency stop and the cup sensor, and test each failure on purpose: pull the cup mid-pour, kill the Pi, run the kettle empty. Then run <code>server.py</code> with <code>BREWBOT_HW=1</code> and add it to Claude.</li>
       </ol>
     </div>
   </section>
   <section class="win win--flush">
-    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Parts.txt: about $920</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Parts.txt: about $1,038</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
       <p class="sub">Prices checked November 2026. "est." means a generic part at a typical price.</p>
       <div class="tblwrap"><table class="tbl">
         <thead><tr><th>#</th><th>Part</th><th>Model</th><th>Price</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td>Electric gooseneck kettle, 0.8 L, plain on/off with boil cut-off<span class="why">The Pi is its thermostat. Any plain gooseneck with a mechanical switch works.</span></td><td class="sku">Hario V60 Buono electric (non-variable)</td><td>$80 est.</td></tr>
+          <tr><td>1</td><td><a href="https://fellowproducts.com">Fellow Stagg EKG Pro</a> 0.9 L<span class="why">Holds 40–100 °C itself; the dial bot sets it. India: Timemore Fish Smart Pro 900 ml, ₹12,899.</span></td><td class="sku">EKG Pro</td><td>$179.95</td></tr>
           <tr><td>2</td><td><a href="https://www.seattlecoffeegear.com/collections/grinders/products/baratza-encore-esp-coffee-and-espresso-grinder">Baratza Encore ESP</a> grinder</td><td class="sku">ZCG495</td><td>$199.95</td></tr>
           <tr><td>3</td><td><a href="https://www.raspberrypi.com/products/raspberry-pi-5/">Raspberry Pi 5</a> 4 GB + 27 W PSU + 32 GB card + case</td><td class="sku">Pi 5 4GB</td><td>$90</td></tr>
           <tr><td>4</td><td>SparkFun load-cell amplifier ×2</td><td class="sku">SEN-13879</td><td>$22</td></tr>
@@ -380,6 +382,10 @@ brewbot/
           <tr><td>12</td><td>Gear motors ×3 (augers)</td><td class="sku">N20 6 V 100 rpm</td><td>$15 est.</td></tr>
           <tr><td>13</td><td>Dual motor drivers ×2</td><td class="sku">Pololu DRV8833 #2130</td><td>$10 est.</td></tr>
           <tr><td>14</td><td>Micro servo (tips the dose cup)</td><td class="sku">SG90</td><td>$3 est.</td></tr>
+          <tr><td>14a</td><td>Dial bot: geared stepper + driver (turns the kettle dial)</td><td class="sku">28BYJ-48 + ULN2003</td><td>$4 est.</td></tr>
+          <tr><td>14b</td><td>Dial bot: metal-gear servo (presses the dial)</td><td class="sku">MG90S</td><td>$5 est.</td></tr>
+          <tr><td>14c</td><td>16-channel servo board (I²C)</td><td class="sku">PCA9685</td><td>$6 est.</td></tr>
+          <tr><td>14d</td><td>Silicone O-rings for the dial wheel + felt pads</td><td class="sku"></td><td>$3 est.</td></tr>
           <tr><td>15</td><td>12 → 6 V buck converter</td><td class="sku">LM2596</td><td>$3 est.</td></tr>
           <tr><td>16</td><td>Waterproof temperature probe + 4.7 kΩ</td><td class="sku">Adafruit DS18B20 #381</td><td>$10 est.</td></tr>
           <tr><td>17</td><td>Stainless 6 mm probe sleeve + silicone lid grommet<span class="why">Keeps the probe food-safe and in the same spot every brew.</span></td><td class="sku">thermowell</td><td>$8 est.</td></tr>
@@ -394,7 +400,7 @@ brewbot/
           <tr><td>26</td><td>Hario V60 02 ceramic + Range Server 600 ml + 100 filters</td><td class="sku">VDC-02 · VCF-02-100W</td><td>$52 est.</td></tr>
           <tr><td>27</td><td>Origami Dripper M + wave filters</td><td class="sku">Origami M</td><td>$40 est.</td></tr>
           <tr><td>28</td><td>GPIO screw-terminal breakout, wire, ferrules</td><td class="sku"></td><td>$25 est.</td></tr>
-          <tr class="total"><td></td><td>One Brew-bot</td><td></td><td>$920</td></tr>
+          <tr class="total"><td></td><td>One Brew-bot</td><td></td><td>$1,038</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -402,16 +408,33 @@ brewbot/
   <section class="win win--flush">
     <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">What the $3,000 buys</span><span class="win__shade" aria-hidden="true"></span></div>
     <div class="win__body">
+      <p class="sub" style="padding:10px 12px 0;margin:0 0 8px">One Brew-bot for the whole office, with what it needs to run every day.</p>
       <div class="tblwrap"><table class="tbl"><tbody>
-        <tr><td>Brew-bot #1, for my desk</td><td>$920</td></tr>
-        <tr><td>Brew-bot #2, for the office and events ("brew one for the room")</td><td>$920</td></tr>
-        <tr><td>Acaia Pearl S, the display scale people see</td><td>$220</td></tr>
-        <tr><td>A year of Riverdale: 20 g a day is about 29 bags at ₹760</td><td>$250</td></tr>
-        <tr><td>Spares: a second kettle, load cells, drivers</td><td>$150</td></tr>
+        <tr><td>Brew-bot (parts above)</td><td>$1,038</td></tr>
+        <tr><td>Raspberry Pi Touch Display 2 on the rig: the queue, who's brewing, the live stage</td><td>$60</td></tr>
+        <tr><td>Auto-refill: a 5 L filter tank and a pump that tops the kettle up 400 ml after every brew</td><td>$75</td></tr>
+        <tr><td>Acrylic splash guard and front doors</td><td>$120</td></tr>
+        <tr><td>12 glass servers and cups</td><td>$60</td></tr>
+        <tr><td>Spares: load cells, drivers, servos, filters</td><td>$150</td></tr>
+        <tr><td>4 months of beans for the office: Riverdale and Attikan, about 6 cups a day</td><td>$315</td></tr>
+        <tr><td>Friday-night bartender pilot (see below): SO-101 arm kit + 4 drink pumps and a bottle rack</td><td>$639</td></tr>
         <tr><td>10% buffer</td><td>$246</td></tr>
-        <tr><td>Shipping and Indian import duty on the US parts</td><td>$294</td></tr>
+        <tr><td>Shipping and Indian import duty on the US parts</td><td>$297</td></tr>
         <tr class="total"><td>Total</td><td>$3,000</td></tr>
       </tbody></table></div>
+    </div>
+  </section>
+  <section class="win ">
+    <div class="win__bar"><span class="win__close" aria-hidden="true"></span><span class="win__stripes"></span><span class="win__title">Proposal — Friday nights: the bartender arm</span><span class="win__shade" aria-hidden="true"></span></div>
+    <div class="win__body">
+      <p>Same rig, same connector, a second job. On Friday evenings, "brew recipe F2" makes a Negroni.</p>
+      <ul class="dots">
+        <li><b>The arm doesn't lift bottles.</b> A full bottle weighs 1.2 kg, and arms in this price range carry about 500 g. Spirits and mixers sit on a rack with four food-grade peristaltic pumps, each dosing by millilitre. That's the same kind of pump people use for precise dosing.</li>
+        <li><b>The arm does the theatre.</b> An <a href="https://www.hackster.io/news/hugging-face-launches-the-so-101-an-upgraded-low-cost-3d-printable-autonomous-robot-arm-532360f441eb">SO-101</a> (open source, about $500 as a complete kit, roughly 500 g payload) places a glass under the pumps, stirs, drops the garnish and slides the drink across. With a second "leader" arm you teach it each move by doing it once, using Hugging Face's LeRobot.</li>
+        <li><b>Recipes:</b> F1 Old Fashioned, F2 Negroni, F3 a no-alcohol spritz. The pour stops by weight on the same 5 kg cell.</li>
+        <li><b>Rules built into the connector:</b> drinks only unlock on Fridays after 6 pm with an admin token, one drink per person every 30 minutes, and no cup means no pour.</li>
+        <li><b>Later:</b> a <a href="https://ufactory.cc/lite-6-collaborative-robot">UFactory Lite 6</a> (from $2,999, 600 g payload, ±0.5 mm) could shake a light shaker too. That's a separate ask, not part of this $3,000.</li>
+      </ul>
     </div>
   </section>
   <section class="win ">
