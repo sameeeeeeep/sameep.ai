@@ -9,127 +9,189 @@
 <!-- Sameep's private dashboard. The same file is served at sameep.ai/admin (GitHub Pages) and sameep.ai/api/admin
      (the analytics Worker bundles it). No data or PIN in here: everything comes from /api/admin/data after the PIN
      (checked by the Worker, analytics/src/admin-auth.js) or the old token link (#k=<ADMIN_TOKEN>).
-     One scroll, read top to bottom like a briefing: who came, how far they got, then the breakdowns. -->
+     Laid out like Plausible / Fathom: KPIs against the period before (each one picks the chart), breakdown panels where
+     any row filters the whole page, goals with a rate, the funnel, then the people themselves (PostHog's persons view). -->
 <style>
 :root {
   color-scheme: light;
   --bg: #f4f3ef; --card: #fcfcfb; --line: #e3e1da; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8983;
-  --accent: #2a78d6; --wispr: #eb6834; --good: #1a7f37; --bad: #c62828; --chip: #ecebe5; --bondi: #0f8f9c;
-  --mine: #f2e6b8; --series-1: #2a78d6; --series-2: #eb6834;
+  --accent: #2a78d6; --bar: #2a78d61f; --wispr: #e0612a; --good: #1a7f37; --bad: #c62828; --chip: #ecebe5; --bondi: #0f8f9c;
+  --mine: #f2e6b8;
 }
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) {
     color-scheme: dark;
     --bg: #111110; --card: #1a1a19; --line: #2c2c2a; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
-    --accent: #3987e5; --wispr: #e0703f; --good: #4caf6a; --bad: #ef6b6b; --chip: #262624; --bondi: #33b5c2;
-    --mine: #3a3420; --series-1: #3987e5; --series-2: #d95926;
+    --accent: #3987e5; --bar: #3987e529; --wispr: #e0703f; --good: #4caf6a; --bad: #ef6b6b; --chip: #262624; --bondi: #33b5c2;
+    --mine: #3a3420;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #111110; --card: #1a1a19; --line: #2c2c2a; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
-  --accent: #3987e5; --wispr: #e0703f; --good: #4caf6a; --bad: #ef6b6b; --chip: #262624; --bondi: #33b5c2;
-  --mine: #3a3420; --series-1: #3987e5; --series-2: #d95926;
+  --accent: #3987e5; --bar: #3987e529; --wispr: #e0703f; --good: #4caf6a; --bad: #ef6b6b; --chip: #262624; --bondi: #33b5c2;
+  --mine: #3a3420;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-html { scroll-padding-top: 120px; }
-@media (max-width: 520px) { html { scroll-padding-top: 12px; } }
-body { background: var(--bg); color: var(--ink); font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
-.wrap { max-width: 920px; margin: 0 auto; padding: 16px 16px 64px; }
-h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
-h2 { font-size: 20px; margin: 0; letter-spacing: -0.015em; }
-h3 { font: 600 11px/1.2 ui-monospace, "SF Mono", Menlo, monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); margin: 0 0 8px; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 14px 16px 64px; }
+h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; white-space: nowrap; }
+.lbl-s { font: 600 11px/1.2 ui-monospace, "SF Mono", Menlo, monospace; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); }
 .muted { color: var(--ink-3); }
-.small { font-size: 13px; }
+.small { font-size: 12.5px; }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 .num { font-variant-numeric: tabular-nums; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.empty { color: var(--ink-3); margin: 0; padding: 10px 0; }
 
 /* lock */
 .lock { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
 .lock form, .lock .box { width: 100%; max-width: 320px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px 24px; text-align: center; }
 .lock h1 { margin-bottom: 4px; font-size: 20px; }
-.lock p { margin: 0 0 20px; color: var(--ink-2); font-size: 14px; }
+.lock p { margin: 0 0 20px; color: var(--ink-2); }
 .pin { width: 100%; font-size: 32px; letter-spacing: 0.5em; text-align: center; padding: 12px 0 12px 0.5em; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); outline: none; }
 .pin:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 .go { margin-top: 14px; width: 100%; min-height: 46px; border: 0; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 600; }
 .go:disabled { opacity: 0.4; cursor: default; }
-.msg { min-height: 20px; margin-top: 12px; font-size: 14px; color: var(--bad); }
+.msg { min-height: 20px; margin-top: 12px; color: var(--bad); }
+.skel { height: 14px; border-radius: 6px; background: var(--chip); margin: 12px 0; }
 
-/* header: a Platinum title bar, lightly */
-.head { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); margin: 0 -16px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
-.titlebar { display: flex; align-items: center; gap: 10px; }
-.stripes { flex: 1; height: 11px; min-width: 16px; background: repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 3px); border-radius: 2px; }
-.live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
-.live button { border: 0; background: none; padding: 4px; margin: -4px; color: var(--ink-3); border-radius: 6px; min-width: 28px; min-height: 28px; }
-.live button:hover { color: var(--ink); }
-.live.err { color: var(--bad); }
+/* header */
+.head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.titlebar { display: flex; align-items: center; gap: 10px; flex: 1 1 260px; min-width: 0; }
+.stripes { flex: 1; height: 11px; min-width: 12px; background: repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 3px); border-radius: 2px; }
+.here { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); white-space: nowrap; border: 0; background: none; padding: 4px 6px; border-radius: 8px; }
+.here:hover { background: var(--chip); }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); flex: none; display: inline-block; }
 .dot.on { background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent); animation: pulse 2s infinite; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--good) 6%, transparent); } }
 @media (prefers-reduced-motion: reduce) { .dot.on { animation: none; } }
-@media (max-width: 520px) { .head { position: static; } .seg button { padding: 5px 9px; } }
-.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.live { font-size: 12px; color: var(--ink-3); white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.live.err { color: var(--bad); }
+.live button { border: 0; background: none; color: inherit; min-width: 28px; min-height: 28px; border-radius: 6px; }
+.live button:hover { color: var(--ink); background: var(--chip); }
 .seg { display: inline-flex; background: var(--chip); border-radius: 999px; padding: 3px; }
-.seg button { border: 0; background: none; padding: 5px 11px; border-radius: 999px; font-size: 13px; color: var(--ink-2); min-height: 32px; white-space: nowrap; }
+.seg button { border: 0; background: none; padding: 5px 10px; border-radius: 999px; font-size: 13px; color: var(--ink-2); min-height: 30px; white-space: nowrap; }
 .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 0.1); font-weight: 600; }
 .seg.who button[aria-pressed="true"][data-view="mine"] { background: var(--mine); }
 .seg b { font-weight: 500; color: var(--ink-3); margin-left: 4px; }
-.jump { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin: 8px -16px -10px; padding: 0 12px; }
-.jump::-webkit-scrollbar { display: none; }
-.jump a { font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 8px 8px 9px; white-space: nowrap; }
-.jump a:hover { color: var(--ink); }
-.banner { margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: var(--mine); font-size: 14px; }
+.banner { margin-top: 12px; padding: 9px 14px; border-radius: 12px; background: var(--mine); }
 
-/* sections */
-section { margin-top: 28px; }
-.sec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
-.sec-h p { margin: 0; font-size: 13px; color: var(--ink-3); }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-width: 0; }
-.cols { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-@media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+/* filters */
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0 0; }
+.chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 4px 10px; font-size: 12.5px; color: var(--ink-2); min-height: 30px; white-space: nowrap; }
+.chip:hover { color: var(--ink); border-color: var(--ink-3); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.fpill { display: inline-flex; align-items: center; gap: 6px; background: color-mix(in srgb, var(--accent) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 12.5px; max-width: 100%; }
+.fpill > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fpill b { font-weight: 600; }
+.fpill button { flex: none; border: 0; background: none; width: 24px; height: 24px; border-radius: 50%; color: var(--ink-2); }
+.fpill button:hover { background: var(--chip); color: var(--ink); }
+@media (max-width: 520px) { .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; } .filters::-webkit-scrollbar { display: none; } .filters > * { flex: none; } }
+.clear { border: 0; white-space: nowrap; background: none; color: var(--ink-3); font-size: 12.5px; text-decoration: underline; padding: 4px; }
 
-/* briefing */
-.brief { margin-top: 18px; font-size: 17px; line-height: 1.55; }
-.brief p { margin: 0 0 8px; }
-.brief p:last-child { margin: 0; }
-.brief b { font-weight: 650; }
-.brief .t { color: var(--wispr); font-weight: 650; }
-.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
-@media (max-width: 640px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
-.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.kpi b { display: block; font-size: 26px; line-height: 1.1; font-weight: 650; letter-spacing: -0.02em; }
-.kpi span { font-size: 13px; color: var(--ink-2); }
-.kpi.w { border-color: color-mix(in srgb, var(--wispr) 50%, var(--line)); }
+/* KPIs + chart: one card, like Plausible's top graph */
+.top { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.kpis { display: grid; grid-template-columns: repeat(6, 1fr); border-bottom: 1px solid var(--line); }
+@media (max-width: 860px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 520px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+.kpi { border: 0; background: none; text-align: left; padding: 12px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: -1px; position: relative; }
+.kpi:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.kpi[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); }
+.kpi .lbl-s { display: block; margin-bottom: 4px; }
+.kpi b { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; }
 .kpi.w b { color: var(--wispr); }
+.delta { font-size: 12px; margin-left: 6px; white-space: nowrap; font-weight: 600; }
+.delta.up { color: var(--good); } .delta.down { color: var(--bad); } .delta.flat { color: var(--ink-3); font-weight: 500; }
+.chartbox { padding: 14px 14px 10px; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart .axis { fill: var(--ink-3); font-size: 11px; }
+.chart .grid-l { stroke: var(--line); stroke-width: 1; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-3); margin-bottom: 6px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 8px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%); opacity: 0; transition: opacity .1s; z-index: 2; }
 
-/* people */
-.people { list-style: none; margin: 0; padding: 0; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
-.people > li + li { border-top: 1px solid var(--line); }
-.person { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 14px 16px; }
-.person:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
-.p-top { display: flex; align-items: baseline; gap: 8px; }
-.p-name { font-weight: 650; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.p-when { margin-left: auto; font-size: 13px; color: var(--ink-3); white-space: nowrap; flex: none; }
-.p-sub { font-size: 13px; color: var(--ink-3); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.p-bot { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 13px; color: var(--ink-2); }
-.p-bot .far { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.p-bot .t { flex: none; font-variant-numeric: tabular-nums; color: var(--ink-3); }
-.steps { display: inline-grid; grid-template-columns: repeat(7, 1fr); gap: 3px; width: 112px; flex: none; }
+/* the Wispr strip */
+.team { margin-top: 12px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.team::-webkit-scrollbar { display: none; }
+.mate { flex: none; text-align: left; border: 1px solid color-mix(in srgb, var(--wispr) 40%, var(--line)); background: var(--card); border-radius: 12px; padding: 8px 12px; min-width: 150px; }
+.mate:hover { border-color: var(--wispr); }
+.mate b { display: block; color: var(--wispr); font-size: 14px; }
+.mate span { font-size: 12px; color: var(--ink-3); }
+
+/* panels */
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px 14px; min-width: 0; }
+.panel.wide { grid-column: 1 / -1; }
+.ptabs { display: flex; gap: 14px; border-bottom: 1px solid var(--line); margin: 0 0 8px; overflow-x: auto; scrollbar-width: none; }
+.ptabs::-webkit-scrollbar { display: none; }
+.ptabs button, .ptabs span { border: 0; background: none; padding: 4px 0 8px; margin-bottom: -1px; border-bottom: 2px solid transparent; white-space: nowrap;
+  font: 600 11px/1.2 ui-monospace, "SF Mono", Menlo, monospace; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); }
+.ptabs button { min-height: 30px; }
+.ptabs button[aria-selected="true"], .ptabs span { color: var(--ink); border-bottom-color: var(--ink); }
+.thead, .row { display: grid; grid-template-columns: minmax(0, 1fr) 56px 64px; gap: 8px; align-items: center; }
+.thead { font-size: 11.5px; color: var(--ink-3); padding: 2px 0 6px; }
+.thead span:not(:first-child), .row .n { text-align: right; }
+.row { width: 100%; border: 0; background: none; text-align: left; padding: 0; min-height: 32px; margin: 2px 0; position: relative; border-radius: 6px; }
+.row .bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--bar); border-radius: 6px; pointer-events: none; }
+.row .l { position: relative; padding: 6px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .n { position: relative; font-variant-numeric: tabular-nums; }
+.row .r { color: var(--ink-3); }
+button.row:hover .l { text-decoration: underline; text-underline-offset: 2px; }
+button.row:hover .bar { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+.morebtn { border: 0; background: none; color: var(--ink-3); font-size: 12.5px; padding: 6px 0 0; }
+.morebtn:hover { color: var(--ink); }
+
+/* goals + funnel */
+.goals .thead, .goals .row { grid-template-columns: minmax(0, 1fr) 52px 52px 48px; }
+@media (max-width: 520px) { .goals .thead, .goals .row, .thead, .row { gap: 4px; grid-template-columns: minmax(0, 1fr) 46px 58px; } .goals .thead, .goals .row { grid-template-columns: minmax(0, 1fr) 44px 44px 42px; } }
+.fsteps { list-style: none; margin: 0; padding: 0; }
+.fsteps li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; padding: 7px 0; border-top: 1px solid var(--line); }
+.fsteps li:first-child { border-top: 0; padding-top: 2px; }
+.fsteps .meter { grid-column: 1 / -1; height: 14px; background: var(--chip); border-radius: 4px; overflow: hidden; }
+.fsteps .meter i { display: block; height: 100%; background: var(--bondi); border-radius: 4px; }
+.fsteps .sub { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); }
+.fsteps .sub.big { color: var(--bad); font-weight: 600; }
+
+/* people table */
+.ptable { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.ptable .ph { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; padding: 12px 14px 8px; }
+.ptable .ph h2 { margin: 0; font-size: 16px; }
+.pcols, .prow { display: grid; grid-template-columns: minmax(0, 2.2fr) 92px minmax(0, 1fr) 96px minmax(0, 1.6fr) 60px; gap: 10px; align-items: center; padding: 0 14px; }
+.pcols { font-size: 11.5px; color: var(--ink-3); padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.pcols span:last-child, .prow .t { text-align: right; }
+.prow { width: 100%; border: 0; background: none; text-align: left; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.prow:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.prow .nm { min-width: 0; }
+.prow .nm b { font-weight: 650; }
+.prow .nm .s, .prow .src { font-size: 12.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.prow .when { font-size: 13px; color: var(--ink-2); }
+.prow .far { font-size: 12.5px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prow .t { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.steps { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
 .steps i { height: 6px; border-radius: 2px; background: var(--chip); }
 .steps i.on { background: var(--accent); }
-.team .steps i.on { background: var(--wispr); }
-.pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--ink-2); vertical-align: 2px; white-space: nowrap; flex: none; }
-.pill.w { background: color-mix(in srgb, var(--wispr) 18%, transparent); color: var(--wispr); }
+.is-team .steps i.on { background: var(--wispr); }
+@media (max-width: 760px) {
+  .pcols { display: none; }
+  .prow { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; }
+  .prow .nm { grid-column: 1; } .prow .when { grid-column: 2; grid-row: 1; text-align: right; font-size: 12.5px; color: var(--ink-3); }
+  .prow .src { display: none; }
+  .prow .steps { grid-column: 1; width: 112px; } .prow .t { grid-column: 2; grid-row: 2; }
+  .prow .far { grid-column: 1 / -1; }
+}
+.pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--ink-2); vertical-align: 1px; white-space: nowrap; margin-left: 4px; }
+.pill.w { background: color-mix(in srgb, var(--wispr) 16%, transparent); color: var(--wispr); }
 .pill.here { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
 .pill.dev { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
-.pdet { padding: 0 16px 16px; font-size: 14px; }
-.visit { border-top: 1px dashed var(--line); padding-top: 12px; margin-top: 4px; }
-.visit + .visit { margin-top: 12px; }
+.pdet { padding: 2px 14px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 60%, var(--card)); }
+.visit { padding-top: 12px; }
+.visit + .visit { border-top: 1px dashed var(--line); margin-top: 12px; }
 .visit .vh { font-weight: 600; font-size: 13px; margin-bottom: 6px; }
-.visit dl { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 4px 10px; margin: 0; font-size: 13px; }
+.visit dl { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 4px 10px; margin: 0; font-size: 13px; }
 .visit dt { color: var(--ink-3); }
 .visit dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
 .chain span + span::before { content: " → "; color: var(--ink-3); }
@@ -140,43 +202,18 @@ details.tlx summary { cursor: pointer; color: var(--ink-3); }
 .tl { list-style: none; margin: 6px 0 0; padding: 0; max-height: 320px; overflow: auto; }
 .tl li { display: grid; grid-template-columns: 46px 80px minmax(0, 1fr); gap: 8px; padding: 3px 0; border-top: 1px dashed var(--line); }
 .tl .at { color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.tl .k { color: var(--ink-2); }
 .tl .err { color: var(--bad); }
-.listfoot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; font-size: 13px; color: var(--ink-3); }
-.ghost { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 12px; font-size: 13px; color: var(--ink-2); min-height: 36px; }
+.pfoot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; font-size: 12.5px; color: var(--ink-3); }
+.ghost { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; color: var(--ink-2); min-height: 32px; }
 .ghost:hover { color: var(--ink); }
-
-/* rows and funnel */
-.rows { margin: 0; padding: 0; list-style: none; }
-.rows li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.rows li:first-child { border-top: 0; padding-top: 0; }
-.rows .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rows .meter { grid-column: 1 / -1; height: 4px; border-radius: 4px; background: var(--chip); overflow: hidden; }
-.rows .meter i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
-.rows .meter i.grey { background: var(--ink-3); }
-.empty { color: var(--ink-3); font-size: 14px; margin: 0; }
-.funnel li { grid-template-columns: minmax(0, 1fr) auto 52px 64px; align-items: baseline; }
-.funnel .pct { color: var(--ink-3); font-size: 13px; text-align: right; }
-.funnel .drop { font-size: 12px; text-align: right; color: var(--ink-3); }
-.funnel .drop.big { color: var(--bad); font-weight: 600; }
-.funnel .meter i { background: var(--bondi); }
-
-/* chart */
-.chart { position: relative; }
-.chart svg { display: block; width: 100%; height: 160px; overflow: visible; }
-.chart .axis { fill: var(--ink-3); font-size: 11px; }
-.chart .grid-l { stroke: var(--line); stroke-width: 1; }
-.legend { display: flex; gap: 14px; font-size: 13px; color: var(--ink-2); margin-bottom: 8px; flex-wrap: wrap; }
-.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
-.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 8px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%); opacity: 0; transition: opacity .1s; z-index: 2; }
-.mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
-.mini div { font-size: 13px; color: var(--ink-2); }
-.mini b { display: block; font-size: 20px; color: var(--ink); font-weight: 650; }
-details.cf > summary { cursor: pointer; list-style: none; }
+.mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 4px 0 12px; }
+.mini div { font-size: 12.5px; color: var(--ink-3); }
+.mini b { display: block; font-size: 18px; color: var(--ink); font-weight: 650; }
+details.cf { margin-top: 12px; }
+details.cf > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
 details.cf > summary::-webkit-details-marker { display: none; }
-.foot { margin-top: 32px; font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
-.foot span { max-width: 60ch; }
-.skel { height: 14px; border-radius: 6px; background: var(--chip); margin: 10px 0; }
+.foot { margin-top: 24px; font-size: 12.5px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.foot span { max-width: 64ch; }
 </style>
 </head>
 <body>
@@ -185,15 +222,17 @@ details.cf > summary::-webkit-details-marker { display: none; }
 (() => {
   const API = '/api/admin';
   const TOKEN = 'otcv-admin';
+  const DAY = 86400000;
   try { localStorage.removeItem('otcv-notrack'); } catch { /* the old sticky opt-out: this browser's visits now send, marked as Sameep's */ }
   const app = document.getElementById('app');
   const ls = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch { /* private mode */ } } };
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const pref = (() => { try { return JSON.parse(ls.get('otcv-dash') || '{}'); } catch { return {}; } })();
   // view: 'real' (visitors, never Sameep) or 'mine' (only his own test runs); the two never mix
-  const state = { days: pref.days || 7, dev: !!pref.dev, view: pref.view === 'mine' ? 'mine' : 'real', fun: 'all', data: null, ep: null, cf: null,
-    open: new Set(), limit: 25, hidden: false, fetchedAt: 0, failed: false, busy: false };
-  const savePref = () => ls.set('otcv-dash', JSON.stringify({ days: state.days, dev: state.dev, view: state.view }));
+  const state = { days: [1, 7, 30, 90].includes(pref.days) ? pref.days : 7, dev: !!pref.dev, view: pref.view === 'mine' ? 'mine' : 'real',
+    metric: pref.metric || 'people', tab: {}, more: new Set(),
+    filters: [], data: null, ep: null, cf: null, cfOpen: false, open: new Set(), limit: 25, hidden: false, fetchedAt: 0, failed: false, busy: false };
+  const savePref = () => ls.set('otcv-dash', JSON.stringify({ days: state.days, dev: state.dev, view: state.view, metric: state.metric }));
 
   // the old login link: /admin#k=TOKEN (or /api/admin#k=…) keeps the token on this device, then drops it from the address bar
   const m = location.hash.match(/#k=([^&]+)/);
@@ -238,7 +277,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     };
   }
 
-  // ---------------------------------------------------------------- load
+  // ---------------------------------------------------------------- load: this period and the one before it, in one go
   async function load() {
     if (state.busy) return;
     state.busy = true;
@@ -246,7 +285,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     else setLive();
     try {
       const [r, ep] = await Promise.all([
-        fetch(`${API}/data?days=${state.days}`, { credentials: 'same-origin', headers: auth() }),
+        fetch(`${API}/data?days=${state.days * 2}`, { credentials: 'same-origin', headers: auth() }),
         state.ep || fetch('/data/episode.json').then((x) => (x.ok ? x.json() : null)).catch(() => null),
       ]);
       state.ep = ep;
@@ -257,7 +296,6 @@ details.cf > summary::-webkit-details-marker { display: none; }
       const sig = (x) => JSON.stringify([x.days, x.visits?.length, (x.visits || []).reduce((a, v) => Math.max(a, v.last), 0), x.here?.length, x.growth?.length]);
       const same = state.data && sig(state.data) === sig(fresh);
       state.data = fresh; state.fetchedAt = Date.now(); state.failed = false;
-      if (same) { state.busy = false; return setLive(); }
       // this browser and network are Sameep's: their visits go to "My tests" (past ones too, for this browser)
       if (!sessionStorage.getItem('otcv-me')) {
         sessionStorage.setItem('otcv-me', '1');
@@ -265,9 +303,10 @@ details.cf > summary::-webkit-details-marker { display: none; }
           .then(() => { state.busy = false; load(); }).catch(() => {});
       }
       state.busy = false;
+      if (same) return setLive();
       render();
     } catch (e) {
-      state.failed = true;
+      state.failed = true; state.busy = false;
       if (state.data) setLive();
       else app.innerHTML = `<div class="lock"><div class="box"><h1>Couldn’t load</h1><p>${esc(e.message)}. Offline, or the Worker is down.</p><button class="go" type="button" data-act="refresh">Try again</button></div></div>`;
     } finally { state.busy = false; }
@@ -296,115 +335,187 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const d = new Date(t), today = new Date(); today.setHours(0, 0, 0, 0);
     const hm = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
     if (t >= today.getTime()) return 'today ' + hm;
-    if (t >= today.getTime() - 86400000) return 'yesterday ' + hm;
+    if (t >= today.getTime() - DAY) return 'yesterday ' + hm;
     return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + ', ' + hm;
   };
   const cname = (() => { let dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch { /* old browser */ } return (c) => (c && dn ? dn.of(c) : c) || ''; })();
   const place = (v) => v.city || cname(v.country) || '';
   const placeLong = (v) => [v.city, v.region, cname(v.country)].filter(Boolean).join(', ');
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
   // the device in words: iPhone, Mac, Android phone …
   const kit = (v) => v.os === 'iOS' ? (v.device === 'tablet' ? 'iPad' : 'iPhone') : v.os === 'Android' ? (v.device === 'tablet' ? 'Android tablet' : 'Android phone')
-    : v.os === 'macOS' ? 'Mac' : v.os === 'Windows' ? 'Windows PC' : v.os === 'ChromeOS' ? 'Chromebook' : v.os === 'Linux' ? 'Linux' : v.device || '';
-  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+    : v.os === 'macOS' ? 'Mac' : v.os === 'Windows' ? 'Windows PC' : v.os === 'ChromeOS' ? 'Chromebook' : v.os === 'Linux' ? 'Linux' : v.device ? cap(v.device) : '';
   // the lock-screen pick; failing that, a w- seat in the podcast (same person, the login event just didn't arrive)
   const teammate = (v) => (v.login?.as === 'team' ? v.login.name || cap(v.login.id?.replace(/^w-/, '') || '')
     : /^w-[\w-]+$/.test(v.welcome?.seat || '') ? cap(v.welcome.seat.slice(2)) : null);
   const strs = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []);
   const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || strs(v.pages).some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
-  const watched = (v) => v.video && (v.video.played || v.video.max > 0);
   const projectPages = (v) => strs(v.pages).filter((p) => p !== '/' && p !== '/index.html' && !p.startsWith('/admin') && !p.startsWith('/api'));
-  const listened = (v) => v.nodes.reduce((x, n) => x + (Number(n.s) || 0), 0);
   const active = (v) => Number(v.active ?? v.duration) || 0;
   const isBot = (v) => v.browser === 'Bot';
   const SELF = /^(localhost|127\.0\.0\.1|(www\.)?sameep\.ai)$/;  // not a referrer worth naming
   const hostOf = (x) => { x = String(x || ''); return x.startsWith('/') ? x : x.replace(/^www\./, ''); };
-  const count = (arr) => { const mp = new Map(); for (const x of arr) if (x) mp.set(x, (mp.get(x) || 0) + 1); return [...mp].sort((a, b) => b[1] - a[1]); };
   const median = (xs) => { const s = xs.filter((x) => x > 0).sort((a, b) => a - b); return s.length ? s[Math.floor(s.length / 2)] : 0; };
   const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
   const plural = (n, w, ws = w + 's') => `${n} ${n === 1 ? w : ws}`;
   const clock = (s) => { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
   const ms = (x) => { x = Number(x) || 0; return x ? (x < 1000 ? x + ' ms' : (x / 1000).toFixed(1) + ' s') : '—'; };
-  const rows = (list, { fmt = (k) => k, cls = '', max = 8, empty = 'Nothing yet', val = (n) => n } = {}) => {
-    if (!list.length) return `<p class="empty">${empty}</p>`;
-    const top = list[0][1];
-    return `<ul class="rows">${list.slice(0, max).map(([k, n, ...x]) => `<li><span class="lbl" title="${esc(fmt(k))}">${esc(fmt(k))}</span><span class="num">${esc(val(n, ...x))}</span><span class="meter"><i class="${cls}" style="width:${(n / top) * 100}%"></i></span></li>`).join('')}</ul>`;
-  };
 
   // the journey, one step per stage of the site: how far a visit got
   const STAGES = ['Arrived', 'Entered', 'Reached the iMac', 'Logged in', 'Picked a host', 'Listened', 'Finished'];
   const stage = (v) => v.ended ? 6 : v.nodes.length ? 5 : v.welcome ? 4 : v.login ? 3 : v.heroDone ? 2 : (v.gate || v.hero > 0) ? 1 : 0;
   const far = (v) => v.ended ? 'Finished the podcast' : v.nodes.length ? `${plural(new Set(v.nodes.map((n) => n.id)).size, 'chapter')}, left at “${title(v.nodes[v.nodes.length - 1].id)}”`
     : v.welcome ? `Picked ${hostName(v.welcome.host)}, didn’t play` : v.login ? 'Logged in, then left' : v.heroDone ? 'Left at the iMac'
-    : v.gate ? `Left in the intro (${Math.round(v.hero)}%)` : projectPages(v).length ? `Project pages: ${projectPages(v).slice(0, 2).join(', ')}` : 'Left on the first screen';
+    : v.gate ? `Left in the intro (${Math.round(v.hero)}%)` : projectPages(v).length ? `Pages: ${projectPages(v).slice(0, 2).join(', ')}` : 'Left on the first screen';
+  const srcOf = (v) => (v.ref && !SELF.test(v.ref) ? hostOf(v.ref) : v.utm ? 'tag: ' + v.utm : 'Direct / none');
 
-  // which visits this view shows: real visitors or Sameep's own tests, live site unless local tests are on
-  const scoped = () => (state.data?.visits || []).filter((v) => (state.dev || v.site === 'live') && (state.view === 'mine' ? v.owner : !v.owner));
+  // ---------------------------------------------------------------- dimensions: what a row can be, and what filters on it
+  // each returns the values a visit has (a list: a visit hears many chapters)
+  const DIMS = {
+    src: ['Source', (v) => [srcOf(v)]], tag: ['Campaign', (v) => [v.utm]], entry: ['Landing page', (v) => [v.entry || '/']],
+    version: ['Version', (v) => [v.version === 'wispr' ? 'Wispr link' : 'Default']],
+    city: ['City', (v) => [v.city && [v.city, cname(v.country)].filter(Boolean).join(', ')]], country: ['Country', (v) => [cname(v.country)]],
+    kit: ['Device', (v) => [kit(v)]], browser: ['Browser', (v) => [v.browser]], vp: ['Screen', (v) => [v.vp]],
+    stopped: ['Stopped at', (v) => [v.nodes.length && !v.ended ? title(v.nodes[v.nodes.length - 1].id) : null]], chapter: ['Heard', (v) => [...new Set(v.nodes.map((n) => title(n.id)))]],
+    host: ['Host', (v) => [v.welcome && hostName(v.welcome.host)]], route: ['Length', (v) => [v.welcome?.route]],
+    win: ['Opened', (v) => [...new Set([...v.windows, ...v.icons])]], link: ['Link out', (v) => [...new Set(v.links.map(hostOf))]], page: ['Page', (v) => projectPages(v)],
+    error: ['Error', (v) => v.errors.map((e) => `${e.msg || 'error'}${e.src ? ' · ' + e.src : ''}`)],
+  };
+  const vals = (k, v) => DIMS[k][1](v).filter(Boolean);
+  // quick segments, like saved filters
+  const hereSids = () => new Set((state.data?.here || []).map((h) => h.sid).filter(Boolean));
+  const SEGS = { wispr: ['Wispr link', isWispr], team: ['Teammates', (v) => !!teammate(v)], listened: ['Listened', (v) => v.nodes.length > 0],
+    phone: ['On a phone', (v) => v.device === 'phone'], back: ['Returning', (v) => v.returning], here: ['Here now', (v) => hereSids().has(v.sid)] };
+  const passes = (v) => state.filters.every((f) => (f.k === 'seg' ? SEGS[f.v][1](v) : vals(f.k, v).includes(f.v)));
 
-  // people: a Wispr teammate is one person across devices (by name); anyone else is one browser (visitor id)
+  // ---------------------------------------------------------------- people: a teammate is one person across devices; anyone else one browser
+  let keyOf = (v) => 'vid:' + v.vid;
+  function makeKeys(all) {
+    const team = new Map();
+    for (const v of all) { const t = teammate(v); if (t && !team.has(v.vid)) team.set(v.vid, 'team:' + t.toLowerCase()); }
+    keyOf = (v) => { const t = teammate(v); return t ? 'team:' + t.toLowerCase() : team.get(v.vid) || 'vid:' + v.vid; };
+  }
   function people(list) {
     const by = new Map();
-    for (const v of list) {
-      const t = teammate(v), key = t ? 'team:' + t.toLowerCase() : 'vid:' + v.vid;
-      const p = by.get(key) || { key, team: t, visits: [] };
-      p.visits.push(v); if (t) p.team = t; by.set(key, p);
-    }
-    // a browser that logged in as a teammate once is that teammate on its other visits too
-    const teamOfVid = new Map();
-    for (const p of by.values()) if (p.team) for (const v of p.visits) teamOfVid.set(v.vid, p.key);
-    for (const [k, p] of [...by]) if (!p.team && teamOfVid.has(p.visits[0].vid)) { by.get(teamOfVid.get(p.visits[0].vid)).visits.push(...p.visits); by.delete(k); }
-    const hereSids = new Set((state.data?.here || []).map((h) => h.sid).filter(Boolean));
+    for (const v of list) { const k = keyOf(v), p = by.get(k) || { key: k, visits: [] }; p.visits.push(v); by.set(k, p); }
+    const here = hereSids();
     return [...by.values()].map((p) => {
       const vs = p.visits.sort((a, b) => b.start - a.start), v0 = vs[0];
+      const t = p.key.startsWith('team:') ? vs.map(teammate).find(Boolean) || cap(p.key.slice(5)) : null;
       const best = vs.reduce((a, b) => (stage(b) > stage(a) || (stage(b) === stage(a) && b.nodes.length > a.nodes.length) ? b : a));
-      const who = p.team || (v0.login?.as === 'own' ? 'Own account' : v0.login?.as === 'guest' ? 'Guest' : 'Someone');
+      const who = v0.login?.as === 'own' ? 'Own account' : v0.login?.as === 'guest' ? 'Guest' : 'Someone';
       const where = place(vs.find(place) || v0);
-      return { ...p, name: p.team ? p.team : where ? `${who} in ${where}` : `${who}, place unknown`,
+      return { ...p, team: t, name: t || (where ? `${who} in ${where}` : `${who}, place unknown`), v0,
         last: Math.max(...vs.map((v) => v.last)), best, stage: stage(best), active: vs.reduce((a, v) => a + active(v), 0),
-        here: vs.some((v) => hereSids.has(v.sid)), wispr: vs.some(isWispr), back: vs.some((v) => v.returning) || vs.length > 1,
-        bot: vs.every(isBot), bounce: vs.every((v) => v.bounce), dev: vs.every((v) => v.site !== 'live'),
-        sub: [p.team ? place(vs.find(place) || v0) : '', kit(v0), v0.browser && !['Chrome', 'Safari', 'Firefox', 'Edge', 'Other'].includes(v0.browser) ? v0.browser : '',
-          v0.ref ? 'from ' + hostOf(v0.ref) : v0.utm ? 'tag ' + v0.utm : '', vs.length > 1 ? plural(vs.length, 'visit') : ''].filter(Boolean).join(' · ') };
+        here: vs.some((v) => here.has(v.sid)), wispr: vs.some(isWispr), back: vs.some((v) => v.returning) || vs.length > 1,
+        bounce: vs.every((v) => v.bounce) };
     }).sort((a, b) => (b.here - a.here) || (b.last - a.last));
   }
 
-  // ---------------------------------------------------------------- chart: visits per day, Wispr stacked on top
-  function chart(list) {
-    const days = state.days, DAY = 86400000;
-    const start = new Date(); start.setHours(0, 0, 0, 0);
-    const buckets = Array.from({ length: days }, (_, i) => ({ t: start.getTime() - (days - 1 - i) * DAY, other: 0, wispr: 0 }));
-    for (const v of list) {
-      const i = Math.floor((v.start - buckets[0].t) / DAY);
-      if (i >= 0 && i < days) buckets[i][isWispr(v) ? 'wispr' : 'other']++;
-    }
-    const max = Math.max(1, ...buckets.map((b) => b.other + b.wispr));
-    const nice = max <= 4 ? max : Math.ceil(max / 5) * 5;
-    const W = 1000, H = 160, padB = 22, padL = 26, plotH = H - padB - 8, bw = (W - padL) / days, gap = Math.min(6, bw * 0.25);
-    const y = (n) => (n / nice) * plotH;
-    const fmtD = (t) => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-    let bars = '';
-    buckets.forEach((b, i) => {
-      const x = padL + i * bw + gap / 2, w = Math.max(1, bw - gap), base = H - padB;
-      const ho = y(b.other), hw = y(b.wispr);
-      const seg = (bottom, h, fill) => { const r = Math.min(4, w / 2, h); return `<path d="M${x},${bottom} v${-(h - r)} q0,${-r} ${r},${-r} h${w - 2 * r} q${r},0 ${r},${r} v${h - r} z" fill="${fill}" />`; };
-      if (b.other) bars += seg(base, ho, 'var(--series-1)');
-      if (b.wispr) bars += seg(base - ho - (b.other ? 2 : 0), hw, 'var(--series-2)');
-      bars += `<rect class="hit" data-i="${i}" x="${padL + i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent" />`;
-    });
-    const step = days <= 7 ? 1 : days <= 30 ? 5 : 15;
-    const labels = buckets.map((b, i) => (i % step === 0 || i === days - 1) && (i === days - 1 || days - 1 - i >= step / 2) ? `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${days <= 7 ? new Date(b.t).toLocaleDateString(undefined, { weekday: 'short' }) : fmtD(b.t)}</text>` : '').join('');
-    const grid = [0, nice / 2, nice].filter((n, i, a) => a.indexOf(n) === i && Number.isInteger(n)).map((n) => `<line class="grid-l" x1="${padL}" x2="${W}" y1="${H - padB - y(n)}" y2="${H - padB - y(n)}" /><text class="axis" x="${padL - 6}" y="${H - padB - y(n) + 4}" text-anchor="end">${n}</text>`).join('');
-    return { html: `<div class="legend"><span><i style="background:var(--series-1)"></i>Everyone else</span><span><i style="background:var(--series-2)"></i>Wispr link or recording</span></div>
-      <div class="chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Visits per day">${grid}${bars}${labels}</svg><div class="tip"></div></div>`, buckets, W, fmtD };
+  // ---------------------------------------------------------------- the KPIs (each also a chart metric): [id, label, value(people), kind, lower is better]
+  const KPIS = [
+    ['people', 'People', (ps) => ps.length, 'n'],
+    ['team', 'Wispr teammates', (ps) => ps.filter((p) => p.team).length, 'n'],
+    ['bounce', 'Bounce rate', (ps) => (ps.length ? ps.filter((p) => p.bounce).length / ps.length : null), '%', true],
+    ['imac', 'Reached the iMac', (ps) => (ps.length ? ps.filter((p) => p.stage >= 2).length / ps.length : null), '%'],
+    ['listened', 'Listened', (ps) => (ps.length ? ps.filter((p) => p.stage >= 5).length / ps.length : null), '%'],
+    ['time', 'Time in view', (ps) => median(ps.filter((p) => !p.bounce).map((p) => p.active)), 's'],
+  ];
+  const fmtK = (kind, x) => (x == null ? '—' : kind === '%' ? Math.round(x * 100) + '%' : kind === 's' ? mins(x) : String(Math.round(x)));
+  function delta(kind, cur, prev, inverse) {
+    if (cur == null || prev == null) return '';
+    let d, txt;
+    if (kind === '%') { d = Math.round((cur - prev) * 100); txt = `${Math.abs(d)} pt${Math.abs(d) === 1 ? '' : 's'}`; }
+    else if (!prev) return cur ? '<span class="delta flat">new</span>' : '';
+    else { d = Math.round(((cur - prev) / prev) * 100); txt = Math.abs(d) + '%'; }
+    if (!d) return '<span class="delta flat">same</span>';
+    const good = inverse ? d < 0 : d > 0;
+    return `<span class="delta ${good ? 'up' : 'down'}" title="vs ${state.days === 1 ? 'yesterday' : 'the ' + state.days + ' days before'}">${d > 0 ? '↑' : '↓'} ${txt}</span>`;
   }
 
-  // the funnel: each step as a share of everyone who arrived, and how many it lost (the biggest loss in red)
-  function funnel(list) {
-    const n = STAGES.map((_, i) => list.filter((v) => stage(v) >= i).length);
-    if (!n[0]) return '<p class="empty">Nobody in this range yet.</p>';
-    const drops = n.map((x, i) => (i ? n[i - 1] - x : 0)), worst = Math.max(...drops);
-    return `<ul class="rows funnel">${STAGES.map((l, i) => `<li><span class="lbl">${l}</span><span class="num">${n[i]}</span><span class="pct">${i ? pct(n[i], n[0]) : ''}</span>
-      <span class="drop${drops[i] && drops[i] === worst ? ' big' : ''}">${drops[i] ? '−' + drops[i] : ''}</span><span class="meter"><i style="width:${(n[i] / n[0]) * 100}%"></i></span></li>`).join('')}</ul>
-      <p class="small muted" style="margin:10px 0 0">−N: how many stopped right before that step. Red: the biggest drop.</p>`;
+  // ---------------------------------------------------------------- chart: the picked KPI per day (per hour for Today), the period before as ghost bars
+  function chart(cur, prev, from) {
+    const hourly = state.days === 1, n = hourly ? 24 : state.days, step = hourly ? 3600000 : DAY;
+    const k = KPIS.find((x) => x[0] === state.metric) || KPIS[0];
+    const bucket = (list, base) => Array.from({ length: n }, (_, i) => { const lo = base + i * step; return list.filter((v) => v.start >= lo && v.start < lo + step); });
+    const a = bucket(cur, from).map((vs) => (vs.length ? k[2](people(vs)) : null)), b = bucket(prev, from - n * step).map((vs) => (vs.length ? k[2](people(vs)) : null));
+    const max = Math.max(k[3] === '%' ? 0.1 : 1, ...a.map((x) => x || 0), ...b.map((x) => x || 0));
+    const nice = k[3] === '%' ? Math.min(1, Math.ceil(max * 10) / 10) : k[3] === 's' ? Math.ceil(max / 60) * 60 || 60 : max <= 4 ? max : Math.ceil(max / 5) * 5;
+    const W = Math.max(300, Math.min(1068, document.documentElement.clientWidth - 62)), H = 170, padB = 22, padL = 40, plotH = H - padB - 8, bw = (W - padL) / n, gap = Math.min(8, bw * 0.28);
+    const y = (x) => ((x || 0) / nice) * plotH;
+    const lab = (i) => { const t = from + i * step; return hourly ? String(new Date(t).getHours()).padStart(2, '0') + ':00' : n <= 7 ? new Date(t).toLocaleDateString(undefined, { weekday: 'short' }) : new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }); };
+    const every = Math.max(1, Math.ceil(n / Math.floor((W - padL) / 44)));  // a label every ~44 px
+    let svg = '';
+    for (let i = 0; i < n; i++) {
+      const x = padL + i * bw + gap / 2, w = Math.max(1, bw - gap), base = H - padB;
+      const bar = (h, fill, op) => { const r = Math.min(3, w / 2, h); return h > 0 ? `<path d="M${x},${base} v${-(h - r)} q0,${-r} ${r},${-r} h${w - 2 * r} q${r},0 ${r},${r} v${h - r} z" fill="${fill}" opacity="${op}" />` : ''; };
+      svg += bar(y(b[i]), 'var(--ink-3)', 0.25) + bar(y(a[i]) * 0.999, 'var(--accent)', 0.9);
+      svg += `<rect class="hit" data-i="${i}" x="${padL + i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent" />`;
+      if (i % every === 0 || i === n - 1) svg += `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${esc(hourly ? lab(i).slice(0, 2) : lab(i))}</text>`;
+    }
+    const grid = [0, nice / 2, nice].map((g) => `<line class="grid-l" x1="${padL}" x2="${W}" y1="${H - padB - y(g)}" y2="${H - padB - y(g)}" /><text class="axis" x="${padL - 6}" y="${H - padB - y(g) + 4}" text-anchor="end">${esc(fmtK(k[3], g))}</text>`).join('');
+    return { html: `<div class="legend"><span><i style="background:var(--accent)"></i>${esc(k[1])}, ${hourly ? 'today by hour' : 'per day'}</span><span><i style="background:var(--ink-3);opacity:.45"></i>${hourly ? 'Yesterday' : 'The ' + n + ' days before'}${prev.length ? '' : ': no data'}</span></div>
+      <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(k[1])} over time">${grid}${svg}</svg><div class="tip"></div></div>`,
+      tip: (i) => `<b>${esc(lab(i))}</b> · ${esc(k[1])} ${esc(fmtK(k[3], a[i]))} <span style="opacity:.7">· before ${esc(fmtK(k[3], b[i]))}</span>`, W };
+  }
+
+  // ---------------------------------------------------------------- a breakdown panel: tabs, rows that filter the page, People and the share who listened
+  // the second column: the share who listened, except where everyone in the list listened by definition
+  const listenedRate = ['Listened', (g) => pct(g.stages.filter((x) => x >= 5).length, g.stages.length), (g) => g.stages.filter((x) => x >= 5).length];
+  const finishedRate = ['Finished', (g) => pct(g.stages.filter((x) => x >= 6).length, g.stages.length), (g) => g.stages.filter((x) => x >= 6).length];
+  const COL2 = {
+    stopped: ['Of stops', (g, all) => pct(g.stages.length, all), (g) => 0],
+    chapter: ['Median', (g) => mins(median(g.secs)), (g) => median(g.secs)],
+    host: finishedRate, route: finishedRate,
+  };
+  function breakdown(list, k) {
+    const by = new Map();
+    for (const v of list) for (const x of vals(k, v)) {
+      const g = by.get(x) || { who: new Map(), secs: [] }, pk = keyOf(v);
+      g.who.set(pk, Math.max(g.who.get(pk) ?? 0, stage(v)));
+      if (k === 'chapter') for (const n of v.nodes) if (title(n.id) === x) g.secs.push(Number(n.s) || 0);
+      by.set(x, g);
+    }
+    const col = COL2[k] || listenedRate;
+    const rows = [...by].map(([x, g]) => { g.stages = [...g.who.values()]; return [x, g.who.size, g, col[2](g)]; });
+    const total = rows.reduce((a, r) => a + r[1], 0);
+    return { col, total, rows: rows.sort((a, b) => b[1] - a[1] || b[3] - a[3]) };
+  }
+  function panel(id, tabs, list, { wide = false, empty = 'Nothing yet.' } = {}) {
+    const k = tabs.some(([t]) => t === state.tab[id]) ? state.tab[id] : tabs[0][0];
+    const { col, total, rows: all } = breakdown(list, k), max = state.more.has(id) ? 50 : 8, rs = all.slice(0, max), top = rs[0]?.[1] || 1;
+    const f = state.filters.find((x) => x.k === k);
+    return `<section class="panel${wide ? ' wide' : ''}"><div class="ptabs" role="tablist">${tabs.map(([t, l]) => `<button type="button" role="tab" data-ptab="${id}:${t}" aria-selected="${t === k}">${esc(l)}</button>`).join('')}</div>
+      ${rs.length ? `<div class="thead"><span>${esc(DIMS[k][0])}${f ? ' · filtered' : ''}</span><span>People</span><span>${esc(col[0])}</span></div>
+      ${rs.map(([x, n, g]) => `<button type="button" class="row" data-fk="${k}" data-fv="${esc(x)}" aria-pressed="${f?.v === x}" title="${f?.v === x ? 'Remove this filter' : 'Filter the page to ' + esc(DIMS[k][0].toLowerCase()) + ': ' + esc(x)}"><span class="bar" style="width:${(n / top) * 100}%"></span><span class="l">${esc(x)}</span><span class="n">${n}</span><span class="n r">${esc(col[1](g, total))}</span></button>`).join('')}
+      ${all.length > 8 ? `<button type="button" class="morebtn" data-more="${id}">${state.more.has(id) ? 'Show fewer' : `Show all ${Math.min(50, all.length)}`}</button>` : ''}` : `<p class="empty">${empty}</p>`}</section>`;
+  }
+
+  // goals: what counts as a win on this site, with how many people, how many times, and the share of everyone
+  const uniq = (v) => new Set(v.nodes.map((n) => n.id)).size;
+  const GOALS = [
+    // the same tests as the funnel's stages, so the two always agree
+    ['Past the gate', (v) => (stage(v) >= 1 ? 1 : 0)], ['Reached the iMac', (v) => (stage(v) >= 2 ? 1 : 0)],
+    ['Teammate login', (v) => (teammate(v) ? 1 : 0)], ['Picked a host', (v) => (stage(v) >= 4 ? 1 : 0)],
+    ['Heard a chapter', uniq], ['Heard 5+ chapters', (v) => (uniq(v) >= 5 ? 1 : 0)],
+    ['Chose by voice', (v) => v.choices.filter((c) => c.how === 'voice').length], ['Finished the podcast', (v) => (v.ended ? 1 : 0)],
+    ['Played the recording', (v) => (v.video?.played ? 1 : 0)], ['Opened Growth OS', (v) => (v.growthOpen ? 1 : 0)],
+    ['Make your own', (v) => v.make || 0], ['Link out', (v) => v.links.length],
+  ];
+  function goals(list, total) {
+    const rs = GOALS.map(([l, f]) => { const who = new Set(); let n = 0; for (const v of list) { const c = f(v); if (c) { who.add(keyOf(v)); n += c; } } return [l, who.size, n]; });
+    const top = Math.max(1, ...rs.map((r) => r[1]));
+    return `<section class="panel goals"><div class="ptabs"><span>Goals</span></div><div class="thead"><span>Goal</span><span>People</span><span>Times</span><span>Rate</span></div>
+      ${rs.map(([l, n, t]) => `<div class="row"><span class="bar" style="width:${(n / top) * 100}%"></span><span class="l">${esc(l)}</span><span class="n">${n}</span><span class="n r">${t}</span><span class="n r">${pct(n, total)}</span></div>`).join('')}</section>`;
+  }
+
+  // the funnel: people at each stage, the share who carried on from the step before, the biggest loss in red
+  function funnel(ps) {
+    const n = STAGES.map((_, i) => ps.filter((p) => p.stage >= i).length);
+    if (!n[0]) return '<section class="panel"><div class="ptabs"><span>Funnel</span></div><p class="empty">Nobody in this range yet.</p></section>';
+    const lost = n.map((x, i) => (i ? n[i - 1] - x : 0)), worst = Math.max(...lost);
+    return `<section class="panel"><div class="ptabs"><span>Funnel · people</span></div><ul class="fsteps">${STAGES.map((l, i) => `<li><span>${l}</span><span class="num"><b>${n[i]}</b> <span class="muted">${i ? pct(n[i], n[0]) : ''}</span></span>
+      <span class="meter"><i style="width:${(n[i] / n[0]) * 100}%"></i></span>${i && n[i - 1] ? `<span class="sub${lost[i] && lost[i] === worst ? ' big' : ''}">${pct(n[i], n[i - 1])} carried on${lost[i] ? ` · ${lost[i]} stopped before this` : ''}</span>` : ''}</li>`).join('')}</ul></section>`;
   }
 
   const TL = { gate: 'Gate', resume: 'Resumed', intro: 'Intro', autoplay: 'Autoplay', imac: 'iMac', host: 'Host', login: 'Lock screen', chapter: 'Chapter', choice: 'Choice', switch: 'Host switch', end: 'End', make: 'Make own', away: 'Left tab', page: 'Page', window: 'Window', icon: 'Icon', link: 'Link out', video: 'Recording', error: 'Error' };
@@ -414,13 +525,13 @@ details.cf > summary::-webkit-details-marker { display: none; }
   function visitHtml(v) {
     const d = [];
     const dd = (k, x) => x && d.push(`<dt>${k}</dt><dd>${x}</dd>`);
-    dd('Arrived', `${esc(new Date(v.start).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }))} · ${esc(v.ref ? 'from ' + hostOf(v.ref) : 'direct or an app')}${v.utm ? ' · tag ' + esc(v.utm) : ''}${v.entry && v.entry !== '/' ? ' · on ' + esc(v.entry) : ''}`);
+    dd('Arrived', `${esc(new Date(v.start).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }))} · ${esc(srcOf(v) === 'Direct / none' ? 'direct or an app' : 'from ' + srcOf(v))}${v.entry && v.entry !== '/' ? ' · on ' + esc(v.entry) : ''}`);
     dd('Where', esc([placeLong(v) || 'Unknown place', [kit(v), v.browser].filter(Boolean).join(' · '), v.vp].filter(Boolean).join(' · ')));
     dd('Got to', `${esc(STAGES[stage(v)])}${v.version === 'wispr' ? ' · Wispr link' : ''}${v.login ? ` · lock screen: ${esc(v.login.as === 'team' ? v.login.name : v.login.as)}` : ''}`);
     if (v.welcome) dd('Podcast', `${esc(hostName(v.welcome.host))}, ${esc(v.welcome.route || 'standard')} length${v.switches.length ? ' · switched to ' + v.switches.map((s) => esc(hostName(s))).join(', ') : ''}`);
     if (v.nodes.length) dd('Heard', `<span class="chain">${v.nodes.map((n) => `<span>${esc(title(n.id))} <span class="muted">${mins(Number(n.s) || 0)}</span></span>`).join('')}${v.ended ? '<span class="yes">the end</span>' : ''}</span>`);
     const picks = v.choices.filter((c) => c.how !== 'auto');
-    if (picks.length) dd('Chose', `${picks.map((c) => esc(title(c.to)) + (c.how === 'voice' ? ' <span class="muted">(voice)</span>' : '')).join(', ')}`);
+    if (picks.length) dd('Chose', picks.map((c) => esc(title(c.to)) + (c.how === 'voice' ? ' <span class="muted">(voice)</span>' : '')).join(', '));
     if (v.windows.length || v.icons.length) dd('Opened', esc([...new Set([...v.windows, ...v.icons])].join(', ')));
     if (v.links.length) dd('Links out', esc(v.links.map(hostOf).join(', ')));
     if (projectPages(v).length) dd('Pages', esc(projectPages(v).join(', ')));
@@ -430,132 +541,83 @@ details.cf > summary::-webkit-details-marker { display: none; }
     if (v.errors.length) dd('Errors', `<span class="bad">${v.errors.map((e) => esc(`${e.msg} (${e.src}${e.line ? ':' + e.line : ''})`)).join('; ')}</span>`);
     dd('Time', `${mins(active(v))} in view${v.duration > active(v) + 60 ? ` <span class="muted">(tab open ${mins(v.duration)})</span>` : ''}${v.perf ? ` · page load ${ms(v.perf.load)}` : ''}`);
     const tl = v.timeline?.length ? `<details class="tlx"><summary>Full timeline · ${plural(v.timeline.length, 'event')}</summary><ol class="tl">${v.timeline.map((e) => `<li><span class="at">${clock((e.t - v.start) / 1000)}</span><span class="k${e.k === 'error' ? ' err' : ''}">${esc(TL[e.k] || e.k)}</span><span>${esc(tlLabel(e))}</span></li>`).join('')}</ol></details>` : '';
-    return `<div class="visit"><div class="vh">${esc(ago(v.start))}${v.returning ? ' <span class="pill">back</span>' : ''}${v.site !== 'live' ? ' <span class="pill dev">local test</span>' : ''}${isBot(v) ? ' <span class="pill">bot</span>' : ''}</div><dl>${d.join('')}</dl>${tl}</div>`;
+    return `<div class="visit"><div class="vh">${esc(ago(v.start))}${v.returning ? ' <span class="pill">back</span>' : ''}${v.site !== 'live' ? ' <span class="pill dev">local test</span>' : ''}</div><dl>${d.join('')}</dl>${tl}</div>`;
   }
 
-  function personHtml(p) {
-    const open = state.open.has(p.key);
-    return `<li class="${p.team ? 'team' : ''}"><button class="person" type="button" data-p="${esc(p.key)}" aria-expanded="${open}">
-      <div class="p-top"><span class="p-name">${esc(p.name)}</span>${p.team ? '<span class="pill w">Wispr</span>' : p.wispr ? '<span class="pill w">Wispr link</span>' : ''}${p.here ? '<span class="pill here">here now</span>' : ''}${p.back ? '<span class="pill">back</span>' : ''}${p.bot ? '<span class="pill">bot</span>' : ''}
-        <span class="p-when">${esc(ago(p.last))}</span></div>
-      ${p.sub ? `<div class="p-sub">${esc(p.sub)}</div>` : ''}
-      <div class="p-bot"><span class="steps" role="img" aria-label="Got to: ${esc(STAGES[p.stage])}">${STAGES.map((_, i) => `<i class="${i <= p.stage ? 'on' : ''}"></i>`).join('')}</span>
-        <span class="far">${esc(far(p.best))}</span><span class="t">${mins(p.active)}</span></div></button>
-      ${open ? `<div class="pdet">${p.visits.slice(0, 10).map(visitHtml).join('')}${p.visits.length > 10 ? `<p class="small muted">and ${p.visits.length - 10} older</p>` : ''}</div>` : ''}</li>`;
-  }
-
-  // ---------------------------------------------------------------- the briefing: the answer in two or three sentences
-  function briefing(ps, list) {
-    const range = state.days === 1 ? 'Today' : `In the last ${state.days} days`;
-    const real = ps.filter((p) => !p.bot && !p.bounce);
-    if (!list.filter((v) => !isBot(v)).length) return `<p>${range}: nobody yet${state.view === 'mine' ? ' (no test runs of yours)' : ''}.</p>`;
-    const team = real.filter((p) => p.team), wisprLink = real.filter((p) => !p.team && p.wispr);
-    const out = [];
-    out.push(`<p>${range}, ${state.view === 'mine' ? `you tested as <b>${plural(real.length, 'person', 'people')}</b>` : `<b>${plural(real.length, 'person', 'people')}</b> looked around`}${ps.length > real.length ? ` <span class="muted">(+${ps.length - real.length} bounced or bots)</span>` : ''}.</p>`);
-    out.push(team.length ? `<p>Wispr: ${team.slice(0, 6).map((p) => `<span class="t">${esc(p.name)}</span> <span class="muted">(${esc(p.best.nodes.length ? plural(new Set(p.best.nodes.map((n) => n.id)).size, 'chapter') : STAGES[p.stage].toLowerCase())}, ${esc(ago(p.last))})</span>`).join(', ')}${team.length > 6 ? ` and ${team.length - 6} more` : ''}.${wisprLink.length ? ` ${plural(wisprLink.length, 'other person', 'others')} on the Wispr link didn’t log in as a teammate.` : ''}</p>`
-      : `<p>No Wispr teammate has logged in yet${wisprLink.length ? `; ${plural(wisprLink.length, 'person', 'people')} opened the Wispr link` : ''}.</p>`);
-    const heard = real.filter((p) => p.stage >= 5).length, fin = real.filter((p) => p.stage >= 6).length;
-    const refs = count(list.filter((v) => !isBot(v) && v.ref && !SELF.test(v.ref)).map((v) => hostOf(v.ref)));
-    out.push(`<p>${heard ? `<b>${heard}</b> listened to the podcast${fin ? `, <b>${fin}</b> to the end` : ', nobody to the end'}` : 'Nobody listened to the podcast yet'}.${refs[0]?.[1] > 1 ? ` Top referrer: <b>${esc(refs[0][0])}</b> (${plural(refs[0][1], 'visit')}).` : ''}</p>`);
-    const here = ps.filter((p) => p.here);
-    if (here.length) out.push(`<p><span class="dot on"></span> Here now: ${here.map((p) => `<b>${esc(p.name)}</b>`).join(', ')}.</p>`);
-    return out.join('');
+  const pid = (k) => 'p-' + k.replace(/\W/g, '_');
+  function personRow(p) {
+    const open = state.open.has(p.key), v0 = p.v0;
+    return `<button class="prow${p.team ? ' is-team' : ''}" type="button" data-p="${esc(p.key)}" id="${esc(pid(p.key))}" aria-expanded="${open}">
+        <span class="nm"><b>${esc(p.name)}</b>${p.team ? '<span class="pill w">Wispr</span>' : p.wispr ? '<span class="pill w">Wispr link</span>' : ''}${p.here ? '<span class="pill here">here now</span>' : ''}${p.back ? '<span class="pill">back</span>' : ''}${p.bounce ? '<span class="pill">bounced</span>' : ''}
+          <span class="s">${esc([p.team ? place(v0) : '', kit(v0), p.visits.length > 1 ? plural(p.visits.length, 'visit') : ''].filter(Boolean).join(' · '))}</span></span>
+        <span class="when">${esc(ago(p.last))}</span>
+        <span class="src">${esc(srcOf(v0))}${v0.browser && !['Chrome', 'Safari', 'Firefox', 'Edge', 'Other'].includes(v0.browser) ? ' · ' + esc(v0.browser) : ''}</span>
+        <span class="steps" role="img" aria-label="Got to: ${esc(STAGES[p.stage])}">${STAGES.map((_, i) => `<i class="${i <= p.stage ? 'on' : ''}"></i>`).join('')}</span>
+        <span class="far">${esc(far(p.best))}</span>
+        <span class="t">${mins(p.active)}</span></button>
+      ${open ? `<div class="pdet">${p.visits.slice(0, 10).map(visitHtml).join('')}${p.visits.length > 10 ? `<p class="small muted">and ${p.visits.length - 10} older</p>` : ''}</div>` : ''}`;
   }
 
   // ---------------------------------------------------------------- render
   function render() {
-    const d = state.data, list = scoped(), human = list.filter((v) => !isBot(v));
-    const ps = people(list);
-    const shown = ps.filter((p) => state.hidden || (!p.bot && !p.bounce));
-    const hiddenBots = ps.filter((p) => p.bot).length, hiddenQuick = ps.filter((p) => !p.bot && p.bounce).length;
-    // the counts on the switch: people who did something, in each view
-    const all = (d.visits || []).filter((v) => state.dev || v.site === 'live');
-    const nOf = (mine) => people(all.filter((v) => !!v.owner === mine)).filter((p) => !p.bot && !p.bounce).length;
-    const nReal = state.view === 'real' ? ps.filter((p) => !p.bot && !p.bounce).length : nOf(false), nMine = state.view === 'mine' ? ps.filter((p) => !p.bot && !p.bounce).length : nOf(true);
-    const real = ps.filter((p) => !p.bot && !p.bounce);
-    const fl = state.fun === 'wispr' ? human.filter(isWispr) : human;
-
-    // podcast
-    const lis = new Map();
-    for (const v of human) for (const n of v.nodes) { const k = title(n.id), x = lis.get(k) || []; x.push(Number(n.s) || 0); lis.set(k, x); }
-    const listen = [...lis].map(([k, xs]) => [k, xs.length, median(xs)]).sort((a, b) => b[1] - a[1]);
-    const stopped = count(human.filter((v) => v.nodes.length && !v.ended).map((v) => title(v.nodes[v.nodes.length - 1].id)));
-    const ch = human.flatMap((v) => v.choices.filter((x) => x.how !== 'auto'));
-    const listeners = human.filter((v) => v.nodes.length);
-
-    // Growth OS sign-ins (by email domain; not tied to a visitor, so not split by view)
-    const glog = (d.growth || []).filter((g) => state.dev || g.site === 'live');
-    const glogHtml = glog.length ? `<ul class="rows">${glog.slice(0, 12).map((g) => `<li><span class="lbl">${esc({ code_sent: 'Code sent', signin: 'Signed in (code)', signin_link: 'Signed in (link)', plan_open: 'Opened the plan' }[g.kind] || g.kind)} · ${esc(g.domain || '—')}</span><span class="small muted">${esc(ago(g.ts))}</span></li>`).join('')}</ul>` : '<p class="empty">No Growth OS sign-ins yet.</p>';
-    const rec = human.filter((v) => v.video);
-    const errs = count(human.flatMap((v) => v.errors.map((e) => `${e.msg || 'error'}${e.src ? ' · ' + e.src + (e.line ? ':' + e.line : '') : ''}`)));
-    const c = chart(human);
+    const d = state.data;
+    // the period: since midnight for Today, else the last N days (today included); the same length before it for the comparison
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const from = today.getTime() - (state.days - 1) * DAY, span = state.days * DAY;
+    const live = (v) => state.dev || v.site === 'live';
+    const scope = (d.visits || []).filter((v) => live(v) && (state.view === 'mine' ? v.owner : !v.owner) && !isBot(v));
+    makeKeys(scope);
+    const cur = scope.filter((v) => v.start >= from && passes(v)), prev = scope.filter((v) => v.start >= from - span && v.start < from && passes(v));
+    const ps = people(cur), pps = people(prev);
+    const bots = (d.visits || []).filter((v) => v.start >= from && isBot(v) && live(v)).length;
+    const shown = ps.filter((p) => state.hidden || !p.bounce), quick = ps.length - ps.filter((p) => !p.bounce).length;
+    const nOf = (mine) => people((d.visits || []).filter((v) => v.start >= from && live(v) && !!v.owner === mine && !isBot(v))).length;
+    const here = people(scope.filter((v) => hereSids().has(v.sid)));
+    const c = chart(cur, prev, from);
+    const team = ps.filter((p) => p.team);
+    const segOn = (k) => state.filters.some((f) => f.k === 'seg' && f.v === k);
+    const fLabel = (f) => `${esc(DIMS[f.k][0])} is <b>${esc(f.v)}</b>`;
 
     app.innerHTML = `<div class="wrap">
       <header class="head">
-        <div class="titlebar"><h1>sameep.ai visits</h1><span class="stripes" aria-hidden="true"></span><span class="live" aria-live="polite"></span></div>
-        <div class="controls">
-          <div class="seg" role="group" aria-label="Range">${[[1, 'Today'], [7, '7d'], [30, '30d'], [90, '90d']].map(([n, l]) => `<button type="button" data-days="${n}" aria-pressed="${state.days === n}" aria-label="${n === 1 ? 'Today' : 'Last ' + n + ' days'}">${l}</button>`).join('')}</div>
-          <div class="seg who" role="group" aria-label="Whose visits"><button type="button" data-view="real" aria-pressed="${state.view === 'real'}">Visitors<b>${nReal}</b></button><button type="button" data-view="mine" aria-pressed="${state.view === 'mine'}">My tests<b>${nMine}</b></button></div>
-        </div>
-        <nav class="jump" aria-label="Sections"><a href="#people">People</a><a href="#funnel">Funnel</a><a href="#podcast">Podcast</a><a href="#sources">Sources</a><a href="#opened">Opened</a><a href="#health">Health</a><a href="#cf">Cloudflare</a></nav>
+        <div class="titlebar"><h1>sameep.ai visits</h1><span class="stripes" aria-hidden="true"></span>
+          <button class="here" type="button" data-seg="here" aria-pressed="${segOn('here')}" title="Show only who's on the site now"><span class="dot ${here.length ? 'on' : ''}"></span>${here.length ? plural(here.length, 'person', 'people') + ' here now' : 'Nobody here now'}</button>
+          <span class="live" aria-live="polite"></span></div>
+        <div class="seg who" role="group" aria-label="Whose visits"><button type="button" data-view="real" aria-pressed="${state.view === 'real'}">Visitors<b>${nOf(false)}</b></button><button type="button" data-view="mine" aria-pressed="${state.view === 'mine'}">My tests<b>${nOf(true)}</b></button></div>
+        <div class="seg" role="group" aria-label="Range">${[[1, 'Today'], [7, '7d'], [30, '30d'], [90, '90d']].map(([n, l]) => `<button type="button" data-days="${n}" aria-pressed="${state.days === n}" aria-label="${n === 1 ? 'Today' : 'Last ' + n + ' days'}">${l}</button>`).join('')}</div>
       </header>
-      ${state.view === 'mine' ? `<div class="banner"><b>Your own test runs only</b> (this browser, ${plural(Number(d.myBrowsers) || 0, 'registered browser')}, your network, the Claude app). They never count in Visitors.</div>` : ''}
+      ${state.view === 'mine' ? `<div class="banner"><b>Your own test runs only</b>: this browser, ${plural(Number(d.myBrowsers) || 0, 'registered browser')}, your network and the Claude app. They never count in Visitors.</div>` : ''}
+      <div class="filters">${state.filters.filter((f) => f.k !== 'seg').map((f) => `<span class="fpill"><span>${fLabel(f)}</span><button type="button" data-unf="${esc(f.k + '|' + f.v)}" aria-label="Remove filter">×</button></span>`).join('')}
+        ${Object.entries(SEGS).filter(([k]) => k !== 'here' || segOn('here')).map(([k, [l]]) => `<button type="button" class="chip" data-seg="${k}" aria-pressed="${segOn(k)}">${esc(l)}</button>`).join('')}
+        ${state.filters.length ? '<button type="button" class="clear" data-act="clear">Clear filters</button>' : '<span class="small muted">or tap any row below to filter</span>'}</div>
 
-      <div class="brief">${briefing(ps, list)}</div>
-      <div class="kpis">
-        <div class="kpi"><b class="num">${real.length}</b><span>People</span></div>
-        <div class="kpi w"><b class="num">${real.filter((p) => p.team).length}</b><span>Wispr teammates</span></div>
-        <div class="kpi"><b class="num">${real.filter((p) => p.stage >= 5).length}</b><span>Heard the podcast</span></div>
-        <div class="kpi"><b class="num">${mins(median(real.map((p) => p.active)))}</b><span>Median time in view</span></div>
+      <div class="top">
+        <div class="kpis">${KPIS.map(([k, l, f, kind, inv]) => { const a = f(ps), b = pps.length ? f(pps) : null; return `<button type="button" class="kpi${k === 'team' ? ' w' : ''}" data-metric="${k}" aria-pressed="${state.metric === k}" title="Chart ${esc(l.toLowerCase())}"><span class="lbl-s">${l}</span><b class="num">${esc(fmtK(kind, a))}</b>${delta(kind, a, b, inv)}</button>`; }).join('')}</div>
+        <div class="chartbox">${c.html}</div>
       </div>
 
-      <section id="people"><div class="sec-h"><h2>People</h2><p>Newest first · tap for their visits</p></div>
-        ${shown.length ? `<ul class="people">${shown.slice(0, state.limit).map(personHtml).join('')}</ul>` : '<div class="card"><p class="empty">Nobody in this range yet.</p></div>'}
-        <div class="listfoot">${shown.length > state.limit ? `<button class="ghost" type="button" data-act="more">Show ${Math.min(25, shown.length - state.limit)} more of ${shown.length - state.limit}</button>` : ''}
-          ${hiddenBots + hiddenQuick ? `<span>${state.hidden ? 'Including' : 'Hiding'} ${[hiddenQuick && plural(hiddenQuick, 'bounce') + ' (under 5 s, did nothing)', hiddenBots && plural(hiddenBots, 'bot')].filter(Boolean).join(' and ')}</span><button class="ghost" type="button" data-act="hidden">${state.hidden ? 'Hide them' : 'Show them'}</button>` : ''}</div>
+      ${team.length ? `<div class="team" aria-label="Wispr teammates">${team.map((p) => `<button type="button" class="mate" data-jump="${esc(p.key)}"><b>${esc(p.name)}</b><span>${esc(p.best.nodes.length ? plural(uniq(p.best), 'chapter') : STAGES[p.stage])} · ${esc(ago(p.last))}</span></button>`).join('')}</div>` : ''}
+
+      <div class="panels">
+        ${panel('src', [['src', 'Sources'], ['tag', 'Campaigns'], ['entry', 'Landing'], ['version', 'Version']], cur, { empty: 'No visits yet.' })}
+        ${panel('loc', [['city', 'Cities'], ['country', 'Countries']], cur, { empty: 'No location yet.' })}
+        ${panel('dev', [['kit', 'Devices'], ['browser', 'Browsers'], ['vp', 'Screens']], cur)}
+        ${panel('pod', [['stopped', 'Stopped at'], ['chapter', 'Chapters'], ['host', 'Hosts'], ['route', 'Length']], cur, { empty: 'Nobody listened yet.' })}
+        ${funnel(ps)}
+        ${goals(cur, ps.length)}
+        ${panel('open', [['win', 'Windows & icons'], ['link', 'Links out'], ['page', 'Pages'], ['error', 'Errors']], cur, { wide: true, empty: 'Nothing here yet.' })}
+      </div>
+
+      <section class="ptable" id="people"><div class="ph"><h2>People</h2><span class="small muted">${plural(ps.length, 'person', 'people')}${state.filters.length ? ' matching the filters' : ''} · newest first · tap one for every visit</span></div>
+        <div class="pcols"><span>Person</span><span>Last seen</span><span>Source</span><span>Got to</span><span>Where they stopped</span><span>In view</span></div>
+        ${shown.length ? shown.slice(0, state.limit).map(personRow).join('') : `<p class="empty" style="padding:12px 14px">${ps.length ? 'Only bounces here: show them below.' : 'Nobody matches. Change the range or clear a filter.'}</p>`}
+        <div class="pfoot">${shown.length > state.limit ? `<button class="ghost" type="button" data-act="more">Show ${Math.min(25, shown.length - state.limit)} more of ${shown.length - state.limit}</button>` : ''}
+          ${quick ? `<span>${state.hidden ? 'Showing' : 'Hiding'} ${plural(quick, 'bounce')} (under 5 s, did nothing)${bots ? `; ${plural(bots, 'bot visit')} always left out` : ''}</span><button class="ghost" type="button" data-act="hidden">${state.hidden ? 'Hide them' : 'Show them'}</button>` : bots ? `<span>${plural(bots, 'bot visit')} left out</span>` : ''}</div>
       </section>
 
-      <section id="funnel"><div class="sec-h"><h2>How far they get</h2>
-          <div class="seg" role="group" aria-label="Funnel for"><button type="button" data-fun="all" aria-pressed="${state.fun === 'all'}">Everyone</button><button type="button" data-fun="wispr" aria-pressed="${state.fun === 'wispr'}">Wispr link</button></div></div>
-        <div class="card">${funnel(fl)}</div>
-        <div class="card" style="margin-top:12px"><h3>Visits per day</h3>${c.html}</div>
-      </section>
+      <details class="cf panel" ${state.cfOpen ? 'open' : ''}><summary><span class="lbl-s">Cloudflare · every page load, you included</span><span class="small muted">${state.cfOpen ? 'Hide' : 'Show'}</span></summary><div id="cfbody" style="margin-top:10px">${cfHtml()}</div></details>
 
-      <section id="podcast"><div class="sec-h"><h2>The podcast</h2><p>${listeners.length ? `${plural(listeners.length, 'listener')} · median ${mins(median(listeners.map(listened)))} each · ${pct(ch.filter((x) => x.how === 'voice').length, ch.length)} of choices by voice` : 'Nobody has listened yet'}</p></div>
-        <div class="cols">
-          <div class="card"><h3>Where they stopped</h3>${rows(stopped, { cls: 'grey', empty: 'Nobody stopped mid-podcast yet.' })}</div>
-          <div class="card"><h3>Chapters · listeners · median time</h3>${rows(listen, { max: 10, empty: 'No chapters played yet.', val: (n, med) => `${n} · ${mins(med)}` })}</div>
-          <div class="card"><h3>Hosts picked</h3>${rows(count(human.map((v) => v.welcome?.host)), { fmt: hostName, empty: 'No host picked yet.' })}</div>
-          <div class="card"><h3>Length picked · host switches</h3>${rows(count(human.map((v) => v.welcome?.route)), { empty: 'No length picked yet.' })}<p class="small muted" style="margin:10px 0 0">${plural(human.reduce((a, v) => a + v.switches.length, 0), 'host switch', 'host switches')}</p></div>
-        </div>
-      </section>
-
-      <section id="sources"><div class="sec-h"><h2>Where they came from</h2></div>
-        <div class="cols">
-          <div class="card"><h3>Referrers and tags</h3>${rows(count(human.map((v) => (v.ref ? hostOf(v.ref) : v.utm ? 'tag: ' + v.utm : 'Direct or an app'))), { max: 8 })}</div>
-          <div class="card"><h3>Cities</h3>${rows(count(human.map((v) => [v.city, cname(v.country)].filter(Boolean).join(', '))), { empty: 'No location yet.' })}</div>
-          <div class="card"><h3>Devices</h3>${rows(count(human.map((v) => [kit(v), v.browser].filter(Boolean).join(' · '))))}</div>
-          <div class="card"><h3>Landing pages</h3>${rows(count(human.map((v) => v.entry || '/')))}</div>
-        </div>
-      </section>
-
-      <section id="opened"><div class="sec-h"><h2>What they opened</h2></div>
-        <div class="cols">
-          <div class="card"><h3>Windows and icons</h3>${rows(count(human.flatMap((v) => [...new Set([...v.windows, ...v.icons])])), { max: 10, empty: 'Nothing opened yet.' })}</div>
-          <div class="card"><h3>Links out</h3>${rows(count(human.flatMap((v) => [...new Set(v.links.map(hostOf))])), { max: 10, empty: 'No links clicked yet.' })}</div>
-          <div class="card"><h3>The recording</h3>${rec.length ? rows([['Opened /recording', rec.length], ['Pressed play', rec.filter((v) => v.video.played).length], ['Got to 50%', rec.filter((v) => v.video.max >= 50).length], ['Watched to the end', rec.filter((v) => v.video.done).length]], { val: (n) => `${n} · ${pct(n, rec.length)}` }) : '<p class="empty">Nobody has opened /recording yet.</p>'}</div>
-          <div class="card"><h3>Growth OS sign-ins (all, by email domain)</h3>${glogHtml}</div>
-        </div>
-      </section>
-
-      <section id="health"><div class="sec-h"><h2>Health</h2></div>
-        <div class="card"><div class="mini"><div><b class="num">${ms(median(human.map((v) => v.perf?.load || 0)))}</b>Median page load</div><div><b class="num">${human.filter((v) => v.errors.length).length}</b>Visits with errors</div><div><b class="num">${pct(human.filter((v) => v.device === 'phone').length, human.length)}</b>On a phone</div></div>
-          <h3>Script errors visitors hit</h3>${rows(errs, { cls: 'grey', max: 8, empty: 'No errors.' })}</div>
-      </section>
-
-      <section id="cf"><details class="cf card" ${state.cfOpen ? 'open' : ''}><summary><div class="sec-h" style="margin:0"><h2>Cloudflare</h2><p>Every page load, you included · tap to load</p></div></summary><div id="cfbody" style="margin-top:12px">${cfHtml()}</div></details></section>
-
-      <div class="foot"><span>Sameep only: unlocked with your PIN for 7 days on this device. Your visits go to “My tests”: unlock once in each browser you use, phone included. <label><input type="checkbox" data-f="dev" ${state.dev ? 'checked' : ''}> Include localhost runs</label></span>
+      <div class="foot"><span>Sameep only: unlocked with your PIN for 7 days on this device. Unlock once in each browser you use, phone included, so your runs land in “My tests”. <label><input type="checkbox" data-f="dev" ${state.dev ? 'checked' : ''}> Include localhost runs</label></span>
         <button class="ghost" type="button" data-act="logout">Lock</button></div>
     </div>`;
     setLive();
@@ -563,12 +625,12 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const svg = app.querySelector('.chart svg'), tip = app.querySelector('.tip');
     svg?.addEventListener('pointermove', (e) => {
       const r = e.target.closest?.('.hit'); if (!r) { tip.style.opacity = 0; return; }
-      const b = c.buckets[r.dataset.i], box = svg.getBoundingClientRect(), x = (Number(r.getAttribute('x')) + Number(r.getAttribute('width')) / 2) / c.W * box.width;
-      tip.innerHTML = `<b>${esc(c.fmtD(b.t))}</b> · ${plural(b.other + b.wispr, 'visit')}${b.wispr ? ` (${b.wispr} Wispr)` : ''}`;
-      tip.style.left = Math.min(box.width - 60, Math.max(60, x)) + 'px'; tip.style.top = '24px'; tip.style.opacity = 1;
+      const box = svg.getBoundingClientRect(), x = (Number(r.getAttribute('x')) + Number(r.getAttribute('width')) / 2) / c.W * box.width;
+      tip.innerHTML = c.tip(Number(r.dataset.i));
+      tip.style.left = Math.min(box.width - 90, Math.max(90, x)) + 'px'; tip.style.top = '20px'; tip.style.opacity = 1;
     });
     svg?.addEventListener('pointerleave', () => { tip.style.opacity = 0; });
-    app.querySelector('details.cf')?.addEventListener('toggle', (e) => { state.cfOpen = e.target.open; if (e.target.open) loadCf(); });
+    app.querySelector('details.cf')?.addEventListener('toggle', (e) => { if (state.cfOpen === e.target.open) return; state.cfOpen = e.target.open; e.target.querySelector('summary .muted').textContent = e.target.open ? 'Hide' : 'Show'; if (e.target.open) loadCf(); });
     if (state.cfOpen) loadCf();
   }
 
@@ -576,29 +638,43 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const f = state.cf;
     if (!f || f.days !== state.days || f.loading) return '<p class="empty">Loading…</p>';
     if (f.error) return `<p class="empty">Couldn’t load: ${esc(f.error)}</p>`;
-    const cfrows = (xs) => rows((xs || []).map(([k, n]) => [k, Number(n) || 0]), { max: 8 });
+    const cfrows = (xs) => { const r = (xs || []).slice(0, 8), top = Number(r[0]?.[1]) || 1; return r.length ? r.map(([k, n]) => `<div class="row"><span class="bar" style="width:${(Number(n) / top) * 100}%"></span><span class="l">${esc(k)}</span><span class="n">${Number(n) || 0}</span><span></span></div>`).join('') : '<p class="empty">Nothing yet.</p>'; };
     return `<div class="mini"><div><b class="num">${Number(f.views) || 0}</b>Page views</div><div><b class="num">${Number(f.visits) || 0}</b>Visits</div><div><b class="num">${ms(f.speed?.pageLoadTimeP50 / 1000)}</b>Median load</div></div>
-      <div class="cols"><div><h3>Pages</h3>${cfrows(f.paths)}</div><div><h3>Referrers</h3>${cfrows(f.refs)}</div><div><h3>Countries</h3>${cfrows(f.countries)}</div><div><h3>Devices</h3>${cfrows(f.devices)}</div></div>
+      <div class="panels" style="margin-top:0"><div><div class="ptabs"><span>Pages</span></div>${cfrows(f.paths)}</div><div><div class="ptabs"><span>Referrers</span></div>${cfrows(f.refs)}</div><div><div class="ptabs"><span>Countries</span></div>${cfrows(f.countries)}</div><div><div class="ptabs"><span>Devices</span></div>${cfrows(f.devices)}</div></div>
       <p class="small muted" style="margin:12px 0 0">Cloudflare counts every page load that runs its beacon, bots filtered out, but can’t tell your visits apart (max 30 days).</p>`;
   }
 
-  // "Updated 12 s ago", ticking; red when the last refresh failed
+  // "Live" / "2 min ago", ticking; red when the last refresh failed
   function setLive() {
     const el = app.querySelector('.live'); if (!el) return;
     const s = Math.round((Date.now() - state.fetchedAt) / 1000);
     el.classList.toggle('err', state.failed);
-    el.innerHTML = `<span class="dot ${state.failed ? '' : 'on'}"></span>${state.busy ? 'Updating…' : state.failed ? 'Couldn’t refresh' : s < 10 ? 'Live' : `Updated ${s < 60 ? s + ' s' : Math.round(s / 60) + ' min'} ago`}<button type="button" data-act="refresh" aria-label="Refresh now">↻</button>`;
+    el.innerHTML = `${state.busy ? 'Updating…' : state.failed ? 'Couldn’t refresh' : s < 45 ? 'Live' : `Updated ${Math.round(s / 60)} min ago`}<button type="button" data-act="refresh" aria-label="Refresh now">↻</button>`;
   }
 
+  // one value per dimension, like Plausible; segments stack
+  const toggleFilter = (k, v) => {
+    const i = state.filters.findIndex((f) => f.k === k && f.v === v);
+    if (i >= 0) state.filters.splice(i, 1);
+    else { if (k !== 'seg') state.filters = state.filters.filter((f) => f.k !== k); state.filters.push({ k, v }); }
+    state.limit = 25; state.open.clear(); render();
+  };
   app.addEventListener('click', async (e) => {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.days) { state.days = Number(b.dataset.days); state.limit = 25; savePref(); return load(); }
     if (b.dataset.view) { state.view = b.dataset.view; state.limit = 25; state.open.clear(); savePref(); return render(); }
-    if (b.dataset.fun) { state.fun = b.dataset.fun; return render(); }
+    if (b.dataset.metric) { state.metric = b.dataset.metric; savePref(); return render(); }
+    if (b.dataset.ptab) { const [id, t] = b.dataset.ptab.split(':'); state.tab[id] = t; return render(); }
+    if (b.dataset.more) { const id = b.dataset.more; state.more.has(id) ? state.more.delete(id) : state.more.add(id); return render(); }
+    if (b.dataset.fk) return toggleFilter(b.dataset.fk, b.dataset.fv);
+    if (b.dataset.seg) return toggleFilter('seg', b.dataset.seg);
+    if (b.dataset.unf != null) { const i = b.dataset.unf.indexOf('|'); return toggleFilter(b.dataset.unf.slice(0, i), b.dataset.unf.slice(i + 1)); }
+    if (b.dataset.jump) { state.open.add(b.dataset.jump); state.hidden = true; render(); return document.getElementById(pid(b.dataset.jump))?.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     if (b.dataset.p) { const k = b.dataset.p; state.open.has(k) ? state.open.delete(k) : state.open.add(k); return render(); }
     const act = b.dataset.act;
     if (act === 'refresh') return load();
+    if (act === 'clear') { state.filters = []; state.limit = 25; return render(); }
     if (act === 'more') { state.limit += 25; return render(); }
     if (act === 'hidden') { state.hidden = !state.hidden; return render(); }
     if (act === 'logout') { await fetch(API + '/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); ls.set(TOKEN, null); state.data = null; return lock(); }
@@ -606,6 +682,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
   app.addEventListener('change', (e) => {
     if (e.target.dataset?.f === 'dev') { state.dev = e.target.checked; savePref(); render(); }
   });
+  let rw = innerWidth;
+  addEventListener('resize', () => { if (state.data && Math.abs(innerWidth - rw) > 40) { rw = innerWidth; render(); } });
   // live: refetch every 30 s while the page is in view (and right away when it comes back), tick the label every 5 s
   setInterval(() => { if (state.data && !document.hidden) load(); }, 30000);
   setInterval(() => { if (state.data) setLive(); }, 5000);
