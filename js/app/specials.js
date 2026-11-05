@@ -23,7 +23,7 @@ export function specialInfo(sp, base) {
   if (!cache.has(sp.slug)) {
     const u = specialUrls(sp, base);
     // the poster and captions are only looked for once the video itself is up
-    cache.set(sp.slug, head(u.video).then((ok) => Promise.all([ok, ok && head(u.poster), ok && head(u.vtt), ok && u.page ? head(u.page) : false])).then(([ok, poster, vtt, page]) => {
+    cache.set(sp.slug, head(u.video).then((ok) => Promise.all([ok, ok && head(u.poster), ok && head(u.vtt), u.page ? head(u.page) : false])).then(([ok, poster, vtt, page]) => {
       const info = { ok, poster: poster ? u.poster : null, vtt: vtt ? u.vtt : null, page: page ? u.page : null, video: u.video, sec: sp.sec || null };
       if (!ok || info.sec) return info;
       // the length, from the file's own metadata
