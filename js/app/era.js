@@ -702,39 +702,43 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 // on a phone there's no window: the icon wears a badge counting down (onCount), and tapping it opens the show
 export function installed(wm, { secs = 15, onCount, hold = () => false, layer } = {}) {
   // The install is done: Open goes straight in; otherwise a visible countdown opens the show by itself.
-  // "Stay on the desktop" cancels it, and then the icon just waits to be opened. The countdown holds
-  // while hold() is true (the desktop tour is showing), so it never cuts the tour short.
+  // "Stay on the desktop" cancels it, and then the icon just waits to be opened. While hold() is true (the
+  // desktop tour is showing) nothing is drawn at all: no window, no bar, no badge, no frozen number. The
+  // guide's own "Start the show" does that job, and when the guide ends main.js calls stay() or open().
+  // Only if the hold lifts some other way does the window (or the phone's bar) appear and really count.
   let go;
   const p = new Promise((r) => { go = r; });
   const narrow = isNarrow();
   const left = h('b', String(secs));
-  const line = h('p.inst__doing', 'Opens by itself in ', left, ' s');
-  let n = secs, t = 0, held = false;
+  let n = secs, t = 0, w = null, bar = null, stopped = false;
   const stop = (fromClose) => {
+    stopped = true;
     clearInterval(t); t = 0;
     onCount?.(null);
     if (fromClose !== true) w?.close();
     bar?.remove();
   };
   const btns = () => [h('button.btn', { type: 'button', onclick: () => stop() }, narrow ? 'Not yet' : 'Stay on the desktop'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open')];
-  const w = narrow ? null : wm.win('installed', { title: 'Installer', width: 420, y: 40, className: 'win--install', sheet: false, onClose: () => { if (t) stop(true); } });
-  w?.body.append(h('div.inst',
-    h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is on your desktop. Open its icon any time.'))),
-    line,
-    h('div.inst__row.inst__row--end', ...btns())));
-  // phone: no window, so a small bar under the grid does the same job as the badge on the icon
-  const bar = narrow ? h('div.inst-bar', { role: 'status' }, h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 28, height: 28 }), h('p', h('b', 'OFF THE CV'), ' opens in ', left, ' s'), ...btns()) : null;
-  if (bar) (layer || document.querySelector('.desk__area'))?.append(bar);
-  sound.tick('pick');
-  onCount?.(n);
-  const sync = () => {
-    const h0 = hold();
-    if (h0 !== held) { held = h0; bar?.classList.toggle('is-held', held); if (w) line.replaceChildren(...(held ? ['Open it whenever you’re ready.'] : ['Opens by itself in ', left, ' s'])); }
-    return held;
+  const draw = () => {
+    if (w || bar || stopped) return;
+    if (!narrow) {
+      w = wm.win('installed', { title: 'Installer', width: 420, y: 40, className: 'win--install', sheet: false, onClose: () => { if (t) stop(true); } });
+      w.body.append(h('div.inst',
+        h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is on your desktop. Open its icon any time.'))),
+        h('p.inst__doing', 'Opens by itself in ', left, ' s'),
+        h('div.inst__row.inst__row--end', ...btns())));
+    } else {
+      // phone: no window, so a small bar under the grid does the same job as the badge on the icon
+      bar = h('div.inst-bar', { role: 'status' }, h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 28, height: 28 }), h('p', h('b', 'OFF THE CV'), ' opens in ', left, ' s'), ...btns());
+      (layer || document.querySelector('.desk__area'))?.append(bar);
+    }
+    sound.tick('pick');
+    onCount?.(n);
   };
-  sync();
+  if (!hold()) draw();
   t = setInterval(() => {
-    if (sync()) return;
+    if (stopped || hold()) return;
+    if (!w && !bar) { draw(); return; }  // drawn the moment the hold lifts; counts from the next second
     n -= 1; left.textContent = String(Math.max(0, n)); onCount?.(Math.max(0, n));
     if (n <= 0) go();
   }, 1000);
