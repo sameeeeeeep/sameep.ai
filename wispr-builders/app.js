@@ -28,7 +28,7 @@
       tag: 'A second cursor that shows you where to click',
       say: ['walk me through exporting a frame in Figma', 'how do I add a page number in Pages'],
       body: 'Guru points at the control you need, shows the step beside it, and moves on when you click it. When a long Claude turn finishes, Guru gives you a card to dictate your reply into.' },
-    { id: 'wispr-video', clip: 'video', clipAlt: 'A cut of the sameep.ai launch film, made in Wispr Video', name: 'Wispr Video', key: 'video', page: '/wispr-editor/',
+    { id: 'wispr-video', clip: 'video-real', clipAlt: 'Wispr Video on the Mac: the teleprompter follows what Flow types, then Claude cuts the pauses (stand-in camera and voice)', name: 'Wispr Video', key: 'video', page: '/wispr-editor/',
       tag: 'A video editor you talk to',
       say: ['cut the silences', 'highlight the product name', 'export 9:16'],
       body: 'Video gives you a teleprompter that follows you as you read, word-timed captions, and edits you say out loud. It exports 9:16, 4:5, and 16:9.',
