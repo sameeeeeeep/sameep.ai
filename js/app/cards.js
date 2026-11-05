@@ -10,7 +10,7 @@ export const MORE_CARDS = {
   hd: { title: 'Macintosh HD', what: 'About this computer, and the source code', proof: 'Built by voice with Wispr Flow, Emergent and Claude', opens: HERE, icon: 'hd' },
   wispr: { title: 'Wispr Flow', what: 'Type the way you talk, and watch it clean up', proof: 'This whole site was built by talking into the real one', opens: HERE, icon: 'wispr' },
   jukebox: { title: 'Macster', what: 'A ’99 amp player: 60 songs, 48 English and 12 Hindi pop', proof: 'A new shuffle every visit', opens: HERE, icon: 'jukebox' },
-  styleguide: { title: 'Wispr Style Guide', what: 'My read of Wispr Flow’s brand: logo, colour, type, voice', proof: 'Sampled from wisprflow.ai, Nov 2026', opens: HERE, icon: 'styleguide' },
+  styleguide: { title: 'Wispr Style Guide', what: 'My read of Wispr Flow’s brand: colour, type, voice', proof: 'Sampled from wisprflow.ai, Nov 2026', opens: HERE, icon: 'styleguide' },
   builtwith: { title: 'Built with', what: 'The real build numbers: days, Claude sessions, prompts, words dictated', proof: 'Counted from the transcripts, Wispr Flow’s history and git', opens: HERE, icon: 'builtwith' },
   readme: { title: 'Read Me.txt', what: 'How this site was talked into existence', proof: 'Every spec line was dictated into Wispr Flow', opens: HERE, icon: 'readme' },
   resume: { title: 'Résumé.doc', what: 'My CV. The file format is no longer supported.', proof: 'Try talking instead: it opens the show', opens: HERE, icon: 'resume' },

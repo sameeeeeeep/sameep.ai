@@ -58,21 +58,18 @@ function openStyleGuide(wm) {
     h('div.guide__page',
       h('p.guide__kicker', 'Wispr Flow · brand notes, as I read them'),
       h('h2.guide__title', 'Don’t type, just speak.'),
-      h('p.guide__lede', 'I spent an evening on wisprflow.ai until I could hear it. This is my read of the brand, not the official book. Correct me in the interview.'),
-      sec('1', 'Logo',
-        h('div.guide__marks', h('span.guide__mark', 'Flow'), h('span.guide__mark.is-dark', 'Flow')),
-        list('guide__list', ['Ink on paper or paper on ink. Nothing in between.', 'Give it room. The page is mostly empty on purpose.', 'No gradients, no outlines, no stretching. (The rainbow label on my desktop icon is 1999 talking. I wouldn’t ship it.)'])),
-      sec('2', 'Colour',
+      h('p.guide__lede', 'I spent an evening on wisprflow.ai until I could hear it. This is my read of the brand, not the official book.'),
+      sec('1', 'Colour',
         h('ul.guide__swatches', WISPR.map(([n, hex, note]) => h('li', h('i', { style: { background: hex } }), h('b', n), h('code', hex.toUpperCase()), h('span', note)))),
         h('p.guide__note', 'Mostly Lumen and Vast. The warm ones are seasoning.')),
-      sec('3', 'Type',
+      sec('2', 'Type',
         h('p.guide__serif', 'You have a way with words.'),
         h('p.guide__spec', 'EB Garamond · headlines. A serif that sounds like a person, not a product.'),
         h('p.guide__sans', 'Speak at the speed you think, in every app.'),
         h('p.guide__spec', 'Figtree · body and buttons. Gets out of the way.')),
-      sec('4', 'Voice and tone',
+      sec('3', 'Voice and tone',
         list('guide__list', ['Write it the way you’d say it out loud.', 'Short lines. One idea each.', 'Confident, never loud. The product is quiet, so is the brand.', 'Lead with the feeling (it’s fast, it’s effortless), then the proof (4x faster than typing).'])),
-      sec('5', 'Do’s and don’ts',
+      sec('4', 'Do’s and don’ts',
         h('div.guide__dd',
           h('div', h('p.guide__do', 'Do'), list('guide__list', ['Warm paper, lots of air', 'Real people, mid-sentence', 'Plain words', 'Privacy said simply: your voice stays yours'])),
           h('div', h('p.guide__dont', 'Don’t'), list('guide__list', ['Robot blue, glowing waveforms', '“AI-powered transcription solutions”', 'Exclamation marks', 'Shouting the speed. Show it.'])))),
@@ -127,6 +124,7 @@ export function buildApps(ctx) {
     { id: 'work', label: 'Work', icon: 'folder', open: () => openWork(wm, P) },
     { id: 'wispr', label: 'Wispr Flow', icon: 'wispr', className: 'icon--wispr', open() {
       const w = wm.win('wispr', { title: 'Wispr Flow', width: 460, className: 'win--wispr' });
+      if (w.body.childElementCount) { w.focus(); return; }
       const ta = h('textarea.field.field--area', { rows: 3, 'aria-label': 'Type the way you talk' }, 'so um I think the the CV is like kind of dead and uh voice is basically the new keyboard you know');
       const out = h('p.wf__out', { 'aria-live': 'polite' });
       const go = h('button.btn.btn--primary', { type: 'button', onclick: () => { const raw = ta.value; renderSubtitle(out, { text: flowClean(raw) || '…', messy: raw }); sound.tick('pick'); } }, 'Flow it');
