@@ -9,7 +9,7 @@ import { h, isNarrow } from '../app/util.js';
 const PAGES = {
   // Wispr Growth OS (growth-os/): the rail of sections, Campaigns first, the home grid, your account
   growthos: { ready: '.grail', area: '.desk__area', label: 'Growth OS guide', steps: [
-    { at: '.grail', dx: 0.5, dy: 0.25, say: isNarrow() ? 'Eight sections along the top, from Plan to Events. Home brings you back here.' : 'Eight sections down the side, from Plan to Events. Home brings you back here.' },
+    { at: '.grail', dx: 0.5, dy: 0.25, under: isNarrow() ? '.ghome__head' : null, say: isNarrow() ? 'Eight sections along the top, from Plan to Events. Home brings you back here.' : 'Eight sections down the side, from Plan to Events. Home brings you back here.' },
     { at: '.grail__b[data-sec="campaigns"]', say: 'Campaigns is a good first stop: five of them, on one board.' },
     { at: '.gsecs', dx: 0.5, dy: 0.2, say: 'Or start anywhere: each card says what’s inside.' },
     { at: '.gos__menu summary', say: 'Your account and the sources live up here. Have a wander.' },

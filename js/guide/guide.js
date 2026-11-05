@@ -169,6 +169,7 @@ export function askFeedback({ area = document.body, where = 'site' } = {}) {
 //   action  { label, run(api) }: one primary button on that step (“Open Growth OS”)
 //   enter   async, before the step: open what it needs; leave(): put it back
 //   place   'above' | 'left': put the caption there (when it fits) instead of beside the thing
+//   under   a selector the caption must not cover: it sits just below that element
 //   centre  true: if `at` isn't there, say it from the middle of the screen rather than skip the step
 //   holder  a function → the window this guide is about: when it closes, the guide ends with it
 //   layer   where the arrow and caption are drawn, when it isn't `area` (the desktop: over the menu bar too)
@@ -211,13 +212,16 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
   const box = (el) => { const a = A(), r = el.getBoundingClientRect(); return { x: r.left - a.left, y: r.top - a.top, w: r.width, h: r.height }; };
   const light = (el) => { lit?.classList.remove('is-tour-lit'); lit = el || null; lit?.classList.add('is-tour-lit'); };
 
-  function placeCap(x, y, near, place) {
+  function placeCap(x, y, near, place, under) {
     const a = A(), cw = cap.offsetWidth, ch = cap.offsetHeight;
     let cx, cy;
     const G = 14;
     // never over the menu bar (the desktop draws the guide over it): cards start below it
     const T = 8 + (mount.querySelector?.(':scope > .menubar')?.offsetHeight || 0);
-    if (!near) { cx = (a.width - cw) / 2; cy = ghost ? y + 30 : a.height * 0.3; }
+    // the step names something the caption must not cover (a phone's greeting under the top rail): below it
+    const u = under && document.querySelector(under);
+    if (near && u) { const ub = box(u); cx = near.x + near.w / 2 - cw / 2; cy = ub.y + ub.h + 10; }
+    else if (!near) { cx = (a.width - cw) / 2; cy = ghost ? y + 30 : a.height * 0.3; }
     // the step asks: above a wide thing (a field along the bottom), or to its left (a side column at the window's edge)
     else if (place === 'above' && near.y - G - ch >= T) { cx = x - 24; cy = near.y - G - ch; }
     else if (place === 'left' && near.x - G - cw >= 8) { cx = near.x - G - cw; cy = clamp(y - 20, near.y, near.y + Math.max(0, near.h - ch)); }
@@ -240,7 +244,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     const b = el ? box(el) : { x: a.width * 0.5, y: a.height * 0.36, w: 0, h: 0 };
     const x = b.x + b.w * (s?.dx ?? 0.5), y = b.y + b.h * (s?.dy ?? 0.5);
     if (ghost) { ghost.style.transitionDuration = ms + 'ms'; ghost.style.transform = `translate(${x}px, ${y}px)`; }
-    placeCap(x, y, el ? b : null, s?.place);
+    placeCap(x, y, el ? b : null, s?.place, s?.under);
   }
   const reflow = () => { if (alive && i >= 0) point(here, list[i], 0); };
 
