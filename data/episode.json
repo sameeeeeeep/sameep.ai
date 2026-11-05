@@ -159,21 +159,13 @@
      "visual": {
       "type": "shots",
       "shots": [
+       "img/press/nero-burn.svg",
        "img/objects/cd-blank.webp",
        "img/imac/imac-tray-open.webp"
       ],
       "title": "The CV, burned onto a CD, into the iMac",
       "cue": {
-       "cold-open-04.mp3": [
-        [
-         0,
-         0
-        ],
-        [
-         10.3,
-         1
-        ]
-       ]
+       "cold-open-04.mp3": [[0, 0], [7.4, 1], [10.3, 2]]
       }
      }
     },
