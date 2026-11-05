@@ -215,7 +215,8 @@ export class Monitor {
 
   #slides(v) {
     const wrap = h('div.mon__slides');
-    const imgs = v.shots.map((s, i) => h('img', { src: s, alt: `${v.title || 'Screenshot'} ${i + 1}`, loading: i ? 'lazy' : 'eager', draggable: 'false', class: i ? '' : 'is-on' }));
+    // an SVG shot may be animated (the Nero burn): a fresh URL each time restarts its clock with the line
+    const imgs = v.shots.map((s, i) => h('img', { src: /\.svg$/i.test(s) ? `${s}?t=${Date.now()}` : s, alt: `${v.title || 'Screenshot'} ${i + 1}`, loading: i ? 'lazy' : 'eager', draggable: 'false', class: i ? '' : 'is-on' }));
     wrap.append(...imgs);
     if (v.cue && imgs.length > 1) {
       this.#cued(v.cue, (i) => { if (i < 0) return; imgs.forEach((im, k) => im.classList.toggle('is-on', k === i)); });

@@ -975,13 +975,13 @@
      },
      "visual": {
       "type": "shots",
-      "size": "pip",
       "key": "obj-cv-cd",
       "shots": [
-       "img/hero/cv-front.webp",
+       "img/press/nero-burn.svg",
        "img/objects/cd-blank.webp"
       ],
-      "title": "The CV, now a CD"
+      "title": "The CV, burned onto a CD",
+      "cue": {"cold-open-01.mp3": [[0, 0], [13.6, 1]], "cold-open-01-k56.mp3": [[0, 0], [9.0, 1]], "cold-open-01-gus.mp3": [[0, 0], [10.2, 1]], "cold-open-01-kimmy.mp3": [[0, 0], [11.6, 1]]}
      }
     },
     {
@@ -1055,7 +1055,6 @@
      "visual": {
       "type": "shots",
       "shots": [
-       "img/press/nero-burn.svg",
        "img/objects/cd-blank.webp",
        "img/imac/imac-tray-open.webp"
       ],
@@ -1067,12 +1066,8 @@
          0
         ],
         [
-         7.4,
-         1
-        ],
-        [
          10.3,
-         2
+         1
         ]
        ]
       }

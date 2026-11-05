@@ -100,32 +100,6 @@ function buildDOM(root, reduced) {
             <span class="hero-sound__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="hero-sound__txt">Sound off</span>
           </button>
         </header>
-        <div class="hero-burn" aria-hidden="true">
-          <div class="hero-burn__bar"><i class="hero-burn__box"></i><span>Burning sameep_cv.iso</span></div>
-          <div class="hero-burn__splash">
-            <svg class="hero-burn__logo" viewBox="0 0 48 48" width="40" height="40">
-            <defs>
-            <linearGradient id="hbnf" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b3120a"/><stop offset=".45" stop-color="#ff5a12"/><stop offset=".8" stop-color="#ffb21c"/><stop offset="1" stop-color="#fff1a0"/></linearGradient>
-            <radialGradient id="hbnd" cx=".38" cy=".34" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#cfd3da"/><stop offset="1" stop-color="#7c818c"/></radialGradient>
-            <linearGradient id="hbns" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fe3ff" stop-opacity=".0"/><stop offset=".35" stop-color="#7fe3ff" stop-opacity=".55"/><stop offset=".55" stop-color="#d48bff" stop-opacity=".5"/><stop offset=".75" stop-color="#ffd66b" stop-opacity=".5"/><stop offset="1" stop-color="#ffd66b" stop-opacity="0"/></linearGradient>
-            </defs>
-            <path fill="url(#hbnf)" d="M9 33c-4-7-1-13 2-17 0 4 2 6 4 7-1-7 3-13 8-17-1 5 1 8 4 10 1-4 4-7 7-8-2 4-1 8 2 10 2-2 3-5 3-8 4 5 5 11 2 18z"/>
-            <circle cx="24" cy="31" r="15" fill="url(#hbnd)" stroke="#2a2a2a" stroke-width="1.2"/>
-            <circle cx="24" cy="31" r="13.4" fill="url(#hbns)"/>
-            <circle cx="24" cy="31" r="5.2" fill="#e9ebef" stroke="#8a8f99" stroke-width=".8"/>
-            <circle cx="24" cy="31" r="2.2" fill="#1a1a1a"/>
-            <path fill="url(#hbnf)" opacity=".9" d="M11 40c-2-3-1-6 1-8 0 2 1 3 2 3 0-3 2-5 4-6-1 3 0 5 2 6-3 3-6 5-9 5zM37 40c2-3 1-6-1-8 0 2-1 3-2 3 0-3-2-5-4-6 1 3 0 5-2 6 3 3 6 5 9 5z"/>
-            </svg>
-            <p class="hero-burn__word"><b>nero</b><span>BURNING ROM</span></p>
-          </div>
-          <div class="hero-burn__body">
-            <p class="hero-burn__h">Writing <b>sameep_cv.iso</b>…</p>
-            <p class="hero-burn__meta"><span>Speed: 4x (600 KB/s)</span><span>Track 1 of 1</span></p>
-          </div>
-          <p class="hero-burn__lbl"><span>Buffer</span><i class="hero-burn__meter"><i class="hero-burn__buf"></i></i></p>
-          <p class="hero-burn__lbl"><span class="hero-burn__pct">0%</span><i class="hero-burn__meter hero-burn__meter--prog"><i class="hero-burn__prog"></i></i></p>
-          <p class="hero-burn__done"><span>Burn process completed successfully at 4x.</span> <span class="hero-burn__ok">OK</span></p>
-        </div>
         <footer class="hero-bottom">
           <div class="hero-cap" aria-live="polite">
             <p class="hero-cap__idx"><span class="hero-cap__n">01</span> / ${String(CAPS.length).padStart(2, '0')}</p>
@@ -145,7 +119,6 @@ function buildDOM(root, reduced) {
     cap: q('.hero-cap'),
     capN: q('.hero-cap__n'), capT: q('.hero-cap__txt'), skip: q('.hero-skip'), sound: q('.hero-sound'),
     soundTxt: q('.hero-sound__txt'), hint: q('.hero-hint'), prog: q('.hero-progress i'),
-    burn: q('.hero-burn'), burnH: q('.hero-burn__h'), burnPct: q('.hero-burn__pct'), burnProg: q('.hero-burn__prog'), burnBuf: q('.hero-burn__buf'),
   };
 }
 
@@ -551,7 +524,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   let lastP = 0;
 
   // ------------------------------------------------------------------ captions
-  let capIdx = -1, lastProgUI = -1, burnVis = -1, burnPct = -1, burnDone = null, burnBufT = 0;
+  let capIdx = -1, lastProgUI = -1;
   function setCaption(i, sub = 0) {
     const k = CAPS.findIndex(([b, s]) => b === i && s === sub);
     if (k === capIdx) return;
@@ -961,20 +934,6 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     if (Math.abs(p - lastProgUI) > 0.0005) { lastProgUI = p; dom.prog.style.transform = `scaleX(${p.toFixed(4)})`; }
     rootEl.classList.toggle('is-scrolled', p > 0.004);
     rootEl.classList.toggle('is-end', ins > 0.6);
-    // the burner dialog: "burned it… onto a CD" as a nod to Nero Burning ROM, from the flames to the finished disc
-    {
-      const vis = Math.min(smooth(seg(p, G('burn', 0.42), G('burn', 0.55))), 1 - smooth(seg(p, G('insert', 0.12), G('insert', 0.32))));
-      const r = Math.round(vis * 20) / 20;
-      if (r !== burnVis) { burnVis = r; dom.burn.style.opacity = r; dom.burn.style.visibility = r > 0 ? 'visible' : 'hidden'; dom.burn.style.transform = `translateY(${((1 - r) * 8).toFixed(1)}px)`; }
-      if (vis > 0) {
-        const pr = smooth(seg(p, G('burn', 0.5), G('cd', 0.72)));
-        const pct = Math.round(pr * 100);
-        if (pct !== burnPct) { burnPct = pct; dom.burnPct.textContent = pct + '%'; dom.burnProg.style.transform = `scaleX(${pr.toFixed(3)})`; }
-        const done = pct >= 100;
-        if (done !== burnDone) { burnDone = done; dom.burn.classList.toggle('is-done', done); dom.burnH.innerHTML = done ? 'Finished <b>sameep_cv.iso</b>' : 'Writing <b>sameep_cv.iso</b>\u2026'; }
-        if (!done && time - burnBufT > 0.3) { burnBufT = time; dom.burnBuf.style.transform = `scaleX(${(0.84 + Math.random() * 0.16).toFixed(2)})`; }
-      }
-    }
 
     // ---- sound cues
     if (Math.abs(p - lastP) < 0.08) {

@@ -57,44 +57,6 @@
 .hero-sound.is-on .hero-sound__bars i:nth-child(4) { animation-delay: -.2s; }
 @keyframes hero-eq { 0%, 100% { height: 3px; } 50% { height: 12px; } }
 
-/* the burn: a nod to Nero Burning ROM (a Win98 window with a Nero-style splash; the flame-and-disc mark is redrawn,
-   nothing of theirs is hotlinked) while the CV burns onto the CD */
-.hero-burn {
-  position: absolute; z-index: 3; left: calc(var(--g) + env(safe-area-inset-left, 0px)); top: calc(var(--g) + 52px + env(safe-area-inset-top, 0px));
-  width: 280px; padding: 3px; color: #000; background: #c0c0c0;
-  box-shadow: inset -1px -1px 0 #0a0a0a, inset 1px 1px 0 #dfdfdf, inset -2px -2px 0 #808080, inset 2px 2px 0 #fff, 3px 3px 0 rgba(0, 0, 0, .45);
-  font: 400 11px/1.3 Tahoma, Verdana, "Segoe UI", sans-serif; pointer-events: none; opacity: 0; visibility: hidden; will-change: opacity, transform;
-  -webkit-font-smoothing: antialiased;
-}
-.hero-burn p { margin: 0; }
-.hero-burn__bar { position: relative; height: 18px; display: flex; align-items: center; padding: 0 22px 0 4px; background: linear-gradient(90deg, #000080, #1084d0); color: #fff; }
-.hero-burn__bar span { font-weight: 700; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hero-burn__box { position: absolute; right: 2px; top: 2px; width: 16px; height: 14px; background: #c0c0c0; box-shadow: inset -1px -1px 0 #0a0a0a, inset 1px 1px 0 #fff, inset -2px -2px 0 #808080; }
-.hero-burn__box::before, .hero-burn__box::after { content: ""; position: absolute; left: 4px; top: 6px; width: 8px; height: 2px; background: #000; transform: rotate(45deg); }
-.hero-burn__box::after { transform: rotate(-45deg); }
-.hero-burn__splash { position: relative; display: flex; align-items: center; gap: 8px; margin-top: 3px; padding: 7px 10px; overflow: hidden;
-  background: radial-gradient(120% 140% at 12% 100%, rgba(255, 90, 18, .55), transparent 60%), linear-gradient(#1b0b06, #050302); }
-.hero-burn__logo { flex: none; filter: drop-shadow(0 0 6px rgba(255, 120, 20, .55)); }
-.hero-burn__logo path:first-of-type { animation: hero-burn-flick .5s steps(2) infinite; transform-origin: 50% 70%; }
-@keyframes hero-burn-flick { 50% { transform: scale(1.03, .94); } }
-.hero-burn__word { display: flex; flex-direction: column; line-height: 1; }
-.hero-burn__word b { font: italic 900 26px/0.9 Georgia, "Times New Roman", serif; letter-spacing: -.02em; color: #fff; text-shadow: 0 0 10px rgba(255, 110, 20, .7); }
-.hero-burn__word span { margin-top: 3px; font: 700 9px/1 Verdana, Tahoma, sans-serif; letter-spacing: .32em; color: #ff8a1f; }
-.hero-burn__body { padding: 7px 6px 5px; }
-.hero-burn__h { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hero-burn__h b { font-weight: 700; }
-.hero-burn__meta { margin-top: 2px !important; display: flex; justify-content: space-between; gap: 10px; color: #333; font-size: 10.5px; }
-.hero-burn__lbl { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 6px; padding: 0 6px 5px; font-size: 10.5px; }
-.hero-burn__pct { font-variant-numeric: tabular-nums; }
-.hero-burn__meter { display: block; height: 14px; padding: 2px; background: #fff; box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff, inset 2px 2px 0 #0a0a0a; overflow: hidden; }
-.hero-burn__meter > i { display: block; height: 100%; transform-origin: left; transform: scaleX(0); transition: transform .3s linear; }
-.hero-burn__buf { background: repeating-linear-gradient(90deg, #00a800 0 7px, transparent 7px 9px); }
-.hero-burn__prog { background: repeating-linear-gradient(90deg, #000080 0 7px, transparent 7px 9px); transition: none !important; }
-.hero-burn__done { display: none; align-items: center; justify-content: space-between; gap: 8px; margin: 1px 6px 5px !important; font-size: 10.5px; font-weight: 700; }
-.hero-burn__ok { flex: none; padding: 2px 18px; background: #c0c0c0; font-weight: 400; box-shadow: inset -1px -1px 0 #0a0a0a, inset 1px 1px 0 #fff, inset -2px -2px 0 #808080, 0 0 0 1px #000; }
-.hero-burn.is-done .hero-burn__done { display: flex; }
-.hero-burn.is-done .hero-burn__buf { transform: scaleX(0) !important; }
-
 .hero-cap { max-width: min(640px, 70vw); }
 @media (max-height: 640px) {
   .hero-cap__txt { font-size: clamp(20px, 2.6vw, 32px); }
@@ -141,16 +103,8 @@
   .hero-cap__txt { font-size: clamp(22px, 7vw, 30px); }
   .hero-hint { display: none; }
   .hero-pill { min-height: 44px; }
-  /* below the "Play it for me" pill, and compact so the flames stay clear */
-  .hero-burn { width: min(232px, calc(100vw - 2 * var(--g))); top: calc(var(--g) + 106px + env(safe-area-inset-top, 0px)); }
-  .hero-burn__splash { padding: 5px 8px; }
-  .hero-burn__logo { width: 30px; height: 30px; }
-  .hero-burn__word b { font-size: 20px; }
-  .hero-burn__meta, .hero-burn__lbl:first-of-type { display: none; }
-  .hero-burn__done { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-burn__logo path { animation: none !important; }
   .hero-cap.is-in .hero-cap__txt, .hero-cap.is-in .hero-cap__idx { animation: none; }
   .hero-hint i, .hero-sound.is-on .hero-sound__bars i { animation: none; }
 }
