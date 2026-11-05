@@ -1,7 +1,7 @@
 // On the Pack 1 page: a "Try it now" button on each mod card that opens the browser demo in a sheet.
 // The demo itself lives at /wispr-builders/try/ (its own page, so it can also open from the desktop Wispr folder).
 (() => {
-  const MODS = { 'wispr-file': 'file', 'wispr-wish': 'wish', 'wispr-review': 'review', 'wispr-pm': 'pm' };
+  const MODS = { 'wispr-guru': 'guru', 'wispr-file': 'file', 'wispr-wish': 'wish', 'wispr-review': 'review', 'wispr-pm': 'pm' };
   const css = `
   .try-now { display: flex; align-items: center; gap: 10px 12px; flex-wrap: wrap; margin-top: 14px; }
   .try-now .w-cta { cursor: pointer; font-family: inherit; }
@@ -55,5 +55,5 @@
   // the shelf is rendered by app.js; mount once it's there
   if (!mount()) new MutationObserver((_, o) => { if (mount()) o.disconnect(); }).observe(document.getElementById('apps') || document.body, { childList: true, subtree: true });
   // /wispr-builders/#try-file opens straight into that demo
-  const m = location.hash.match(/^#try-(file|wish|review|pm)$/); if (m) open(m[1]);
+  const m = location.hash.match(/^#try-(guru|file|wish|review|pm)$/); if (m) open(m[1]);
 })();
