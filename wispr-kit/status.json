@@ -1,0 +1,18 @@
+{
+  "updated": "2026-11-05",
+  "states": {
+    "live":     { "label": "Live",        "means": "Works and is tested." },
+    "testing":  { "label": "Testing",     "means": "Works. Being tested with real use." },
+    "progress": { "label": "In progress", "means": "Being built. The demo may be a stand-in." }
+  },
+  "products": {
+    "wrapped": "live",
+    "video":   "testing",
+    "guru":    "testing",
+    "bridge":  "testing",
+    "file":    "testing",
+    "wish":    "testing",
+    "review":  "testing",
+    "pm":      "progress"
+  }
+}

@@ -184,3 +184,6 @@ button { font: inherit; color: inherit; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
   .bars i.is-now b { animation: none !important; transform: scaleX(1); }
 }
+
+/* the status chip yields to the Project/Year/Yours switch on phones */
+@media (max-width: 420px) { .w-nav .w-lockup .w-status { display: none; } }

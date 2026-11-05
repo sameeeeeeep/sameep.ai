@@ -155,7 +155,7 @@
     if (/where|can'?t find|don'?t see|can'?t see|lost/.test(t)) return where()
     if (/^(stop|cancel|quit|never ?mind)/.test(t)) return stop('Stopped.')
     const k = intent(t); if (k) return start(k)
-    $('#card-detail').textContent = 'Say “done” when you’ve done it, “where?” if you can’t see it, or “back”.'
+    $('#card-detail').textContent = 'Click Done when you’ve done it, Where? if you can’t see it, or Back.'
   }
 
   // ── asking ──

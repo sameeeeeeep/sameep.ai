@@ -7,7 +7,7 @@
   <title>Wispr Guru</title>
   <meta name="description" content="Guru shows you where to click as you speak. Ask out loud how to do something in any app, and a second cursor points at the button and walks you through it, step by step. A Claude Code mod for Wispr Flow.">
   <meta property="og:title" content="Wispr Guru">
-  <meta property="og:description" content="Say “how do I export this?” and a second cursor shows you. Say “done” to go on.">
+  <meta property="og:description" content="Ask “how do I export this?” and a second cursor shows you where to click.">
   <link rel="canonical" href="https://sameep.ai/wispr-guru/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a1a1a'/%3E%3Ctext x='16' y='22.5' font-family='Figtree,Helvetica,Arial,sans-serif' font-size='18' font-weight='700' text-anchor='middle' fill='%23fcfcfb'%3EG%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
 <body class="w-site">
   <header class="top">
     <nav class="w-nav" aria-label="Wispr Guru">
-      <a class="w-lockup" href="./"><span class="w-lockup__name">Wispr Guru</span><span class="w-badge w-badge--new">New!</span></a>
+      <a class="w-lockup" href="./"><span class="w-lockup__name">Wispr Guru</span><span data-wstatus="guru" hidden></span></a>
       <div class="w-nav__links">
         <a href="#how">How it works</a>
         <a class="w-nav__hide" href="#mac">On your Mac</a>
@@ -107,11 +107,11 @@
   <section class="w-section w-section--ink how" id="how">
     <p class="w-eyebrow">How it works</p>
     <h2>Ask, see, <em>done.</em></h2>
-    <p class="w-lede">Guru waits for you at every step. Say “done”, “go back”, or “wait, where?”.</p>
+    <p class="w-lede">Guru waits for you at every step, and moves on when you click the thing it points at.</p>
     <ol class="how__steps">
       <li class="w-mcard"><b>Ask</b><p>Hold your Wispr key and say what you want: “where’s the setting for…”, “how do I export this?”</p><span class="w-hold">Hold <kbd class="w-kbd">fn</kbd> and speak</span></li>
       <li class="w-mcard"><b>See</b><p>Claude looks at your screen and finds the control through the Mac’s accessibility tree, so the pointer follows the window if you move it.</p></li>
-      <li class="w-mcard"><b>Do</b><p>A second cursor points, and a small card says the step. Guru moves on when you say “done”.</p></li>
+      <li class="w-mcard"><b>Do</b><p>A second cursor points, and a small card says the step. Click it and Guru moves on. Lost? Click Where?</p></li>
     </ol>
   </section>
 
@@ -142,7 +142,7 @@
     <p class="card__detail" id="card-detail"></p>
     <form class="card__field" id="card-form">
       <span class="card__mic" aria-hidden="true">●</span>
-      <input id="card-input" autocomplete="off" placeholder="Say “done”, or “where?”" aria-label="Reply to Guru">
+      <input id="card-input" autocomplete="off" placeholder="Ask a follow-up, like “where’s Share?”" aria-label="Reply to Guru">
     </form>
     <div class="card__btns">
       <button type="button" data-r="back">Back</button>
@@ -152,6 +152,7 @@
     <div class="card__foot"><kbd class="w-kbd">↵</kbd> done <kbd class="w-kbd">esc</kbd> stop</div>
   </div>
 
+  <script src="/wispr-kit/status.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

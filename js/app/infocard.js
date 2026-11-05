@@ -46,7 +46,7 @@ export function installCards({ area, loadList, folders = [], chapter, onHear, qu
     return [
       pic(d) || h('span.icard__pic.is-blank'),
       h('div.icard__body',
-        h('p.icard__t', d.title),
+        d.wstatus ? h('p.icard__t', d.title, ' ', h('span', { dataset: { wstatus: d.wstatus }, hidden: true })) : h('p.icard__t', d.title),
         d.what && h('p.icard__what', d.what),
         d.proof && h('p.icard__why', d.proof)),
       h('p.icard__where', where(el, d.folder, d.opens), node && h('span', ` · On the podcast: ${node}`)),
@@ -80,6 +80,7 @@ export function installCards({ area, loadList, folders = [], chapter, onHear, qu
     card.classList.toggle('is-touch', !!touch);
     card.hidden = false;
     place(el);
+    if (window.WisprStatus && card.querySelector('[data-wstatus]')) WisprStatus.fill(card).then(() => shownFor === el && place(el));
     requestAnimationFrame(() => card.classList.add('is-on'));
     el.setAttribute('aria-describedby', 'icard');
     shownFor = el;

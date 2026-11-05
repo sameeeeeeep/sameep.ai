@@ -239,3 +239,20 @@
 .w-foot a { color: var(--lumen); }
 /* footer as the last stacked panel: same big top radius, overlapping the section above */
 .w-foot--panel { position: relative; margin-top: calc(-1 * var(--m-r-section)); border-radius: var(--m-r-section) var(--m-r-section) 0 0; padding-top: 72px; }
+
+/* status chip — Live / Testing / In progress. Data: /wispr-kit/status.json, filled by /wispr-kit/status.js.
+   Same shape as the app's badges (22px, 6px radius, Figtree 12/600) with a leading dot. */
+.w-status { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px 0 7px; border-radius: var(--w-r-sm);
+  font: 600 12px/1 var(--w-sans); letter-spacing: 0; white-space: nowrap; vertical-align: middle; flex: none; }
+.w-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.w-status[hidden] { display: none; }
+.w-status--live { background: var(--fathom-50); color: var(--fathom); }
+.w-status--testing { background: #fff1de; color: #8a4b00; }
+.w-status--testing::before { background: var(--glow); }
+.w-status--progress { background: var(--sand-600); color: var(--vast-700); }
+.w-status--progress::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--vast-600); }
+/* on ink / fathom panels */
+.w-section--ink .w-status--live, .w-section--fathom .w-status--live { background: rgb(226 245 242 / .14); color: var(--fathom-100); }
+.w-section--ink .w-status--testing, .w-section--fathom .w-status--testing { background: rgb(255 169 70 / .16); color: #ffd3a0; }
+.w-section--ink .w-status--progress, .w-section--fathom .w-status--progress { background: rgb(255 255 235 / .1); color: var(--vast-200); }
+.w-section--ink .w-status--progress::before, .w-section--fathom .w-status--progress::before { box-shadow: inset 0 0 0 1.5px var(--vast-300); }

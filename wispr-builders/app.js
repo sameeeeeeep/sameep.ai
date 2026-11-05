@@ -3,44 +3,42 @@
   const REPO_LIVE = true;
   const REPO = 'sameeeeeeep/wispr-for-builders';
 
-  // status: 'tested' = built and checked end to end on a Mac; 'live' = shipped with its own page on this site;
-  // 'core' = installs with the pack, the others use it.
+  // key: the product's id in /wispr-kit/status.json, the one place statuses live (Live / Testing / In progress).
   const MODS = [
-    { id: 'wispr-file', name: 'Wispr File', status: 'tested',
+    { id: 'wispr-file', name: 'Wispr File', key: 'file',
       tag: 'Find any file by saying it',
-      say: ['the GST invoice from October', 'last screenshot of the admin panel', 'two, copy the path'],
-      body: 'File searches your Mac with Spotlight and shows the results as numbered thumbnails. Say “two” and File pastes it into the app you were in, or reveals, opens, or copies it.',
+      say: ['the GST invoice from October', 'last screenshot of the admin panel', 'the signed lease PDF'],
+      body: 'File searches your Mac with Spotlight and shows the results as numbered thumbnails. Click one, or press its number, and File pastes it into the app you were in, or reveals, opens, or copies it.',
       img: 'img/card.webp', alt: 'A numbered card of three image tiles, the second one highlighted, above a field that says Say two' },
-    { id: 'wispr-wish', name: 'Wispr Wish', status: 'tested',
+    { id: 'wispr-wish', name: 'Wispr Wish', key: 'wish',
       tag: 'Say what should happen to a file',
       say: ['make this a PDF', 'compress this video for WhatsApp', 'transcribe this audio', 'split this bill three ways'],
       body: 'Wish works on what you selected in Finder, with ffmpeg and an on-device transcript. Ask for a small tool, like a timer or a QR code, and it opens in its own window. Wish asks before deleting anything.',
       img: 'img/wish.webp', alt: 'Three small dark windows: a bill split at 944 rupees each, a QR code for a link, and a 10 minute timer' },
-    { id: 'wispr-review', name: 'Wispr Review', status: 'tested',
+    { id: 'wispr-review', name: 'Wispr Review', key: 'review',
       tag: 'Review a website by talking at it',
       say: ['too big on mobile', 'say per seat, and add annual pricing'],
       body: 'Point at anything on a page and talk. Review’s Chrome extension pins your note to that element with a crop. Claude reads the notes with /wispr-review and fixes them one by one.',
       img: 'img/review.webp', alt: 'A web page with a note pinned to the price that says Price should say per seat, and a Review dock in the corner' },
-    { id: 'wispr-pm', name: 'Wispr PM', status: 'tested',
+    { id: 'wispr-pm', name: 'Wispr PM', key: 'pm',
       tag: 'Your task boards, by voice',
-      say: ['park this for the portfolio', 'what’s next', 'split this into tasks', 'what’s waiting on me'],
-      body: 'PM keeps one Markdown board per project. Say “start a thread” on a card and a Claude Code session works on it, then moves it to review when it’s done.' },
-    { id: 'wispr-guru', name: 'Wispr Guru', status: 'live', page: '/wispr-guru/',
+      say: ['park this for the portfolio', 'split this into tasks', 'what’s waiting on me'],
+      body: 'PM keeps one Markdown board per project. Click Start on a card and a Claude Code session works on it, then moves it to review when it’s done.' },
+    { id: 'wispr-guru', name: 'Wispr Guru', key: 'guru', page: '/wispr-guru/',
       tag: 'A second cursor that shows you where to click',
-      say: ['walk me through exporting a frame in Figma', 'done', 'wait, where?'],
-      body: 'Guru points at the control you need, shows the step beside it, and waits. When a long Claude turn finishes, Guru gives you a card to dictate your reply into.' },
-    { id: 'wispr-video', name: 'Wispr Video', status: 'live', page: '/wispr-editor/',
+      say: ['walk me through exporting a frame in Figma', 'how do I add a page number in Pages'],
+      body: 'Guru points at the control you need, shows the step beside it, and moves on when you click it. When a long Claude turn finishes, Guru gives you a card to dictate your reply into.' },
+    { id: 'wispr-video', name: 'Wispr Video', key: 'video', page: '/wispr-editor/',
       tag: 'A video editor you talk to',
       say: ['cut the silences', 'highlight the product name', 'export 9:16'],
-      body: 'Video gives you a teleprompter that moves when you finish a line, word-timed captions, and edits you say out loud. It exports 9:16, 4:5, and 16:9.',
+      body: 'Video gives you a teleprompter that follows you as you read, word-timed captions, and edits you say out loud. It exports 9:16, 4:5, and 16:9.',
       img: 'img/video.webp', alt: 'The Wispr Video editor with a preview, a transcript and a timeline' },
-    { id: 'wispr-bridge', name: 'Wispr Bridge', status: 'core', wide: true,
+    { id: 'wispr-bridge', name: 'Wispr Bridge', key: 'bridge', wide: true,
       tag: 'What ties the pack together',
       say: ['(anything, into wispr-bridge ask)'],
-      body: 'Dictate any request and Bridge sends it to the mod that handles it. Every mod shows choices on the same numbered card, answered by voice, a number key, or a click.' },
+      body: 'Dictate any request and Bridge sends it to the mod that handles it. Every mod shows choices on the same numbered card. Pick with a click or a number key, and dictate anything longer.' },
   ];
-  const STATUS = { tested: 'Tested', live: 'Live', core: 'Included' };
-  const short = (m) => m.name.replace(/^Wispr /, '');
+    const short = (m) => m.name.replace(/^Wispr /, '');
 
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const line = (m) => `/plugin install ${m.id}@wispr-for-builders`;
@@ -53,7 +51,7 @@
           <h3>${esc(m.name)}</h3>
           <p>${esc(m.tag)}</p>
         </div>
-        <span class="w-badge pill pill--${m.status}">${STATUS[m.status]}</span>
+        <span class="pill" data-wstatus="${m.key}" hidden></span>
       </div>
       <ul class="say" aria-label="Things to say">${m.say.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
       <p class="app__p">${esc(m.body)}${m.page ? ` <a href="${m.page}">Try the demo</a>` : ''}</p>
@@ -63,6 +61,8 @@
         <button class="w-btn w-btn--primary" type="button" data-copy="cmd-${m.id}" aria-label="Copy the ${esc(m.name)} install line">Copy</button>
       </div>
     </article>`).join('');
+
+  window.WisprStatus && WisprStatus.fill(document.getElementById('apps'));
 
   // the segmented pill: All, or one mod at a time
   const seg = document.getElementById('seg');

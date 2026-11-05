@@ -19,7 +19,7 @@
 <body class="w-site">
   <header class="top">
     <div class="w-nav">
-      <a class="w-lockup" href="./" aria-label="Wispr Wrapped, start again"><span class="w-lockup__name">Wispr Wrapped</span><span class="w-badge w-badge--new">New!</span></a>
+      <a class="w-lockup" href="./" aria-label="Wispr Wrapped, start again"><span class="w-lockup__name">Wispr Wrapped</span><span data-wstatus="wrapped" hidden></span></a>
       <nav class="tabs w-seg" role="tablist" aria-label="Whose Wrapped"></nav>
       <span class="top__by">by <a href="/">Sameep Rehlan</a></span>
       <button class="w-cta w-cta--sm top__cta" type="button" data-own="open">Make yours</button>
@@ -69,6 +69,7 @@
   <noscript><p class="nos">Wispr Wrapped needs JavaScript. It’s a swipeable story of Sameep’s dictation stats: 6,539 words said to one portfolio, “you know” 98 times, peak hour 4am.</p></noscript>
   <script src="data.js"></script>
   <script type="module">import { track } from '../js/analytics.js'; window.wwTrack = track;</script>
+  <script src="/wispr-kit/status.js"></script>
   <script src="app.js"></script>
 <script type="module" src="../js/guide/page.js" data-guide="wrapped"></script>
 </body>

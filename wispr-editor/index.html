@@ -19,7 +19,7 @@
 </head>
 <body class="w-site">
   <nav class="w-nav top" aria-label="Wispr Video">
-    <a class="w-lockup" href="./"><span class="w-lockup__name">Wispr Video</span></a>
+    <a class="w-lockup" href="./"><span class="w-lockup__name">Wispr Video</span><span data-wstatus="video" hidden></span></a>
     <div class="w-nav__links">
       <a class="top__l" href="#how">How it works</a>
       <a class="top__l" href="#film">Watch</a>
@@ -45,7 +45,7 @@
     <section class="w-section w-section--ink sec" id="how" aria-labelledby="how-t">
       <div class="wrap">
         <span class="w-eyebrow">How it works</span>
-        <h2 id="how-t">Three steps, <em>all by voice</em></h2>
+        <h2 id="how-t">Three steps, <em>one of them is talking</em></h2>
         <p class="w-lede">Record, say the edit, export. Video keeps your footage on your Mac the whole way.</p>
         <div class="steps">
           <article class="w-mcard">
@@ -121,6 +121,7 @@
       <p>One of seven mods in <a href="/wispr-builders/">Wispr for Builders, Pack 1</a>. By <a href="/">Sameep Rehlan</a>.</p>
     </div>
   </footer>
+  <script src="/wispr-kit/status.js"></script>
   <script>
     document.getElementById('copy').onclick = async (e) => {
       try { await navigator.clipboard.writeText(document.getElementById('cmd').textContent); e.target.textContent = 'Copied'; }

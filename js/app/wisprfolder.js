@@ -58,7 +58,8 @@ function ensureKit() {
   if (document.getElementById('wispr-kit-css')) return;
   const link = (id, href) => Object.assign(document.createElement('link'), { id, rel: 'stylesheet', href });
   document.head.append(link('wispr-kit-css', at('wispr-kit/wispr.css')), link('wispr-kit-fonts', KIT_FONTS),
-    Object.assign(document.createElement('style'), { id: 'wispr-folder-css', textContent: APP_CSS }));
+    Object.assign(document.createElement('style'), { id: 'wispr-folder-css', textContent: APP_CSS }),
+    Object.assign(document.createElement('script'), { id: 'wispr-status-js', src: at('wispr-kit/status.js') }));
 }
 
 // still(): false (the guide that asked was skipped meanwhile) and it stays shut
