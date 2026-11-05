@@ -449,13 +449,14 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', search, hint, auto, skip)));
     const IDLE = 20000, COUNT = 10;
     let idleT = 0, cdT = 0, autoOff = false;
-    function stopAuto() { clearTimeout(idleT); clearInterval(cdT); idleT = cdT = 0; auto.hidden = true; }
+    // the countdown makes the name box taller: the faces' keep-out zone is measured again whenever it shows or goes
+    function stopAuto() { clearTimeout(idleT); clearInterval(cdT); idleT = cdT = 0; if (!auto.hidden) { auto.hidden = true; measure(); } }
     // only on the faces screen with an empty name box: someone who typed a name or opened "add account" is still deciding
     function arm() { stopAuto(); if (!autoOff && !pick && !q && el.dataset.view === 'field') idleT = setTimeout(countdown, IDLE); }
     function countdown() {
       if (autoOff || pick || q || el.dataset.view !== 'field') return;
       if (document.hidden) { idleT = setTimeout(countdown, 1000); return; }  // wait until they can see it
-      let n = COUNT; left.textContent = n; auto.hidden = false;
+      let n = COUNT; left.textContent = n; auto.hidden = false; measure();
       cdT = setInterval(() => {
         if (document.hidden) return;
         left.textContent = --n;

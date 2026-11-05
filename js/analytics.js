@@ -98,16 +98,21 @@ addEventListener('unhandledrejection', (e) => oops(e.reason?.message || e.reason
 const dest = (a) => { try { const u = new URL(a.href, location.href); return u.origin === location.origin ? u.pathname : u.hostname; } catch { return null; } };
 
 // Watched from the outside, so the app's own files (js/app/*) need no hooks: clicks on desktop icons and
-// links, windows the app opens (js/app/wm.js: section.win, named by aria-label), and the lock screen
-// (js/app/era.js: .lock, .lock__user; growth-os/: .pv__team). If those class names change, update here.
-let lockPick = null;
+// links, windows the app opens (js/app/wm.js: section.win, named by aria-label), and the Growth OS teammate
+// picker (growth-os/: .pv__team). If those class names change, update here. The lock screen tells us itself.
 const visitor = () => { try { return JSON.parse(ls('offthecv.visitor') || 'null'); } catch { return null; } };
-function loggedIn() {
-  if (lockPick === 'guest') return track('login', { as: 'guest' });
+// the lock screen (js/app/era.js) says who came in: a teammate (w- id) or own account by the name they picked,
+// a guest by what they typed in the name box (if anything), and whether the guest was the 20 s auto-continue
+const tidy = (x) => (typeof x === 'string' ? x.replace(/\s+/g, ' ').trim().slice(0, 40) : '') || undefined;
+document.addEventListener('otcv:login', (e) => {
+  const d = e.detail || {};
+  track('login', { as: d.as, id: d.as === 'team' ? d.id : undefined, name: tidy(d.name), auto: d.as === 'guest' ? !!d.auto : undefined });
+});
+// a name typed or said anywhere else (the podcast's name box sends its own with `welcome`; Growth OS sign-in): name(text, 'growth')
+export function name(text, from) { const n = tidy(text); if (n && n.length > 1) track('name', { name: n, from }); }
+function teamPicked() {
   const v = visitor();
-  // Wispr teammates (ids w-…) by the name they picked; an account someone made for themselves stays nameless
   if (v?.character && /^w-/.test(v.character)) track('login', { as: 'team', id: v.character, name: v.name });
-  else track('login', { as: 'own' });
 }
 addEventListener('click', (e) => {
   const t = e.target;
@@ -117,17 +122,13 @@ addEventListener('click', (e) => {
   const icon = t?.closest?.('.icon');
   if (icon) track('icon', { label: (icon.dataset.label || icon.querySelector('.icon__label')?.textContent || '').trim().slice(0, 40), to: a ? dest(a) : undefined });
   else if (a) track('link', { to: dest(a) });
-  const user = t?.closest?.('.lock__user');
-  if (user) lockPick = user.classList.contains('is-guest') ? 'guest' : user.classList.contains('is-add') ? null : 'pick';
-  if (t?.closest?.('.pv__team button')) { lockPick = 'pick'; setTimeout(loggedIn, 0); }
+  if (t?.closest?.('.pv__team button')) setTimeout(teamPicked, 0);
 }, { capture: true, passive: true });
 
 if (!off) {
   new MutationObserver((list) => {
     for (const m of list) {
       for (const n of m.addedNodes) if (n.nodeType === 1 && n.matches('section.win')) track('window', { title: (n.getAttribute('aria-label') || '').slice(0, 40) });
-      // era.js saves the pick to localStorage right after removing the lock screen, before this runs
-      for (const n of m.removedNodes) if (n.nodeType === 1 && n.classList.contains('lock')) loggedIn();
     }
   }).observe(document.body, { childList: true, subtree: true });
 }

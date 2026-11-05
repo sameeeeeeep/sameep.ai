@@ -5,6 +5,7 @@ import { h, isNarrow } from './util.js';
 import { sound } from './audio.js';
 import { isWispr } from '../version.js';
 import { flowClean } from './apps.js';
+import { name as sawName } from '../analytics.js';
 import * as D from './growthos-data.js';
 import { extraModules } from './gos/index.js';
 import { loadCss, avatar, appHead, art } from './gos/kit.js';
@@ -178,6 +179,8 @@ export function openGrowthOS(wm, { visitor, start } = {}) {
   return w;
 }
 
+// a first name off a work email for the visit log (tanay.k@wispr.ai → Tanay); the address itself is never sent
+const firstName = (email) => { const w = String(email).split('@')[0].split(/[._+-]/)[0].replace(/[^a-z]/gi, ''); return w.length > 1 ? w[0].toUpperCase() + w.slice(1).toLowerCase() : ''; };
 // the email prompt inside the folder: @wispr.ai address → 6-digit code (or the magic link in the same email)
 function signIn(w, done, notice, name = '') {
   // a guess from the teammate picked on the lock screen (firstname@wispr.ai); they can edit it
@@ -204,7 +207,7 @@ function signIn(w, done, notice, name = '') {
     const f = h('form.gos-signin__form', { onsubmit: async (e) => {
       e.preventDefault();
       busy(f, true); msg.textContent = 'Checking…';
-      try { const d = await api('/verify', { method: 'POST', body: { email, code: inp.value } }); token.set(d.token); await fetchPlan(); sound.tick('pick'); done(); } catch (err) { msg.textContent = err.message; busy(f, false); inp.select(); }
+      try { const d = await api('/verify', { method: 'POST', body: { email, code: inp.value } }); token.set(d.token); sawName(firstName(email), 'growth'); await fetchPlan(); sound.tick('pick'); done(); } catch (err) { msg.textContent = err.message; busy(f, false); inp.select(); }
     } }, inp, h('button.btn.btn--primary', { type: 'submit' }, 'Open'));
     msg.textContent = '';
     box.replaceChildren(icon, h('p.big', 'Check your ', h('em', 'email.')), h('p', 'A 6-digit code is on its way to ', h('b', email), '. Or tap the link in the same email. Both last 15 minutes.'), f, msg,

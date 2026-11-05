@@ -1561,7 +1561,8 @@ a.icon { text-decoration: none; }
 /* the lobby's faces follow its grid (era.js sets --bub per screen), phones included */
 .lock__field .lock__user { width: calc(var(--bub, 54px) * 2); }
 .lock__field .lock__face { width: calc(var(--bub, 54px) * 1.41); height: calc(var(--bub, 54px) * 1.41); }
-.lock__auto b { display: inline-block; min-width: 1.2em; text-align: center; font-variant-numeric: tabular-nums; }
+.lock__auto b { font-variant-numeric: tabular-nums; }
+.lock__auto:not([hidden]) ~ .lock__skip { display: none; }  /* "Continue now" says the same thing while it counts */
 .lock__auto button { padding: 4px 10px; min-height: 30px; border: 0; border-radius: 999px; background: rgba(255,255,255,.2); color: #fff; font: inherit; cursor: pointer; }
 .lock__auto button:last-child { background: #fff; color: #111; }
 .lock__auto button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

@@ -101,7 +101,7 @@ button { cursor: pointer; }
 .kpi[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); }
 .kpi .lbl-s { display: block; margin-bottom: 4px; }
 .kpi b { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; }
-.kpi.w b { color: var(--wispr); }
+.kpi.w b { color: var(--wispr); } .kpi.g b { color: var(--good); }
 .delta { font-size: 12px; margin-left: 6px; white-space: nowrap; font-weight: 600; }
 .delta.up { color: var(--good); } .delta.down { color: var(--bad); } .delta.flat { color: var(--ink-3); font-weight: 500; }
 .chartbox { padding: 14px 14px 10px; }
@@ -113,6 +113,23 @@ button { cursor: pointer; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 .tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 8px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%); opacity: 0; transition: opacity .1s; z-index: 2; }
 
+/* who came: Wispr teammates, named visitors, anonymous */
+.who { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+@media (max-width: 860px) { .who { grid-template-columns: 1fr; } }
+.grp { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: 16px; padding: 12px 14px; min-width: 0; }
+.grp-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ghost.tiny { min-height: 26px; padding: 2px 10px; font-size: 12px; }
+.ghost.tiny[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.grp-n { margin-top: 4px; } .grp-n b { font-size: 26px; font-weight: 650; color: var(--c); letter-spacing: -0.02em; }
+.grp-s { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-3); }
+.grp-l { list-style: none; margin: 8px 0 0; padding: 0; }
+.grp-l button { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 56px 50px; grid-template-rows: auto auto; gap: 0 8px; align-items: center; border: 0; background: none; text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); border-radius: 6px; }
+.grp-l li:first-child button { border-top: 0; }
+.grp-l button:hover { background: color-mix(in srgb, var(--c) 8%, transparent); }
+.grp-l .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grp-l .t { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); font-size: 12.5px; }
+.grp-l .a { grid-column: 1; font-size: 12px; color: var(--ink-3); }
+.grp-l .steps i.on { background: var(--c); }
 /* the Wispr strip */
 .team { margin-top: 12px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .team::-webkit-scrollbar { display: none; }
@@ -185,6 +202,7 @@ button.row:hover .bar { background: color-mix(in srgb, var(--accent) 24%, transp
 }
 .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--ink-2); vertical-align: 1px; white-space: nowrap; margin-left: 4px; }
 .pill.w { background: color-mix(in srgb, var(--wispr) 16%, transparent); color: var(--wispr); }
+.pill.g { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
 .pill.here { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
 .pill.dev { background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
 .pdet { padding: 2px 14px 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 60%, var(--card)); }
@@ -391,11 +409,14 @@ details.cf > summary::-webkit-details-marker { display: none; }
   const vals = (k, v) => DIMS[k][1](v).filter(Boolean);
   // quick segments, like saved filters
   const hereSids = () => new Set((state.data?.here || []).map((h) => h.sid).filter(Boolean));
-  const SEGS = { wispr: ['Wispr link', isWispr], team: ['Teammates', (v) => !!teammate(v)], listened: ['Listened', (v) => v.nodes.length > 0],
+  const SEGS = { wispr: ['Wispr link', isWispr], team: ['Teammates', (v) => !!teammate(v)], named: ['Named', (v) => !teammate(v) && !!v.name], anon: ['Anonymous', (v) => !teammate(v) && !v.name], listened: ['Listened', (v) => v.nodes.length > 0],
     phone: ['On a phone', (v) => v.device === 'phone'], back: ['Returning', (v) => v.returning], here: ['Here now', (v) => hereSids().has(v.sid)] };
   const passes = (v) => state.filters.every((f) => (f.k === 'seg' ? SEGS[f.v][1](v) : vals(f.k, v).includes(f.v)));
 
   // ---------------------------------------------------------------- people: a teammate is one person across devices; anyone else one browser
+  const NAME_RANK = { team: 5, growth: 4, account: 3, podcast: 2, typed: 1 };
+  const NAME_FROM = { growth: 'from Growth OS sign-in', account: 'their own lobby account', podcast: 'typed in the podcast', typed: 'typed in the lobby' };
+  const GROUPS = [['team', 'Wispr teammates', 'var(--wispr)'], ['named', 'Named visitors', 'var(--good)'], ['anon', 'Anonymous', 'var(--accent)']];
   let keyOf = (v) => 'vid:' + v.vid;
   function makeKeys(all) {
     const team = new Map();
@@ -410,9 +431,11 @@ details.cf > summary::-webkit-details-marker { display: none; }
       const vs = p.visits.sort((a, b) => b.start - a.start), v0 = vs[0];
       const t = p.key.startsWith('team:') ? vs.map(teammate).find(Boolean) || cap(p.key.slice(5)) : null;
       const best = vs.reduce((a, b) => (stage(b) > stage(a) || (stage(b) === stage(a) && b.nodes.length > a.nodes.length) ? b : a));
-      const who = v0.login?.as === 'own' ? 'Own account' : v0.login?.as === 'guest' ? 'Guest' : 'Someone';
+      // a name they gave us: the best-ranked one the Worker picked per visit (see named() there), newest first
+      const nv = t ? null : vs.filter((v) => v.name).sort((a, b) => (NAME_RANK[b.nameFrom] || 0) - (NAME_RANK[a.nameFrom] || 0))[0];
       const where = place(vs.find(place) || v0);
-      return { ...p, team: t, name: t || (where ? `${who} in ${where}` : `${who}, place unknown`), v0,
+      const group = t ? 'team' : nv ? 'named' : 'anon';
+      return { ...p, team: t, group, nameFrom: nv?.nameFrom, name: t || nv?.name || (where ? `Guest in ${where}` : 'Guest, place unknown'), v0,
         last: Math.max(...vs.map((v) => v.last)), best, stage: stage(best), active: vs.reduce((a, v) => a + active(v), 0),
         here: vs.some((v) => here.has(v.sid)), wispr: vs.some(isWispr), back: vs.some((v) => v.returning) || vs.length > 1,
         bounce: vs.every((v) => v.bounce) };
@@ -423,7 +446,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
   const KPIS = [
     ['people', 'People', (ps) => ps.length, 'n'],
     ['team', 'Wispr teammates', (ps) => ps.filter((p) => p.team).length, 'n'],
-    ['bounce', 'Bounce rate', (ps) => (ps.length ? ps.filter((p) => p.bounce).length / ps.length : null), '%', true],
+    ['named', 'Named visitors', (ps) => ps.filter((p) => p.group === 'named').length, 'n'],
     ['imac', 'Reached the iMac', (ps) => (ps.length ? ps.filter((p) => p.stage >= 2).length / ps.length : null), '%'],
     ['listened', 'Listened', (ps) => (ps.length ? ps.filter((p) => p.stage >= 5).length / ps.length : null), '%'],
     ['time', 'Time in view', (ps) => median(ps.filter((p) => !p.bounce).map((p) => p.active)), 's'],
@@ -445,7 +468,9 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const hourly = state.days === 1, n = hourly ? 24 : state.days, step = hourly ? 3600000 : DAY;
     const k = KPIS.find((x) => x[0] === state.metric) || KPIS[0];
     const bucket = (list, base) => Array.from({ length: n }, (_, i) => { const lo = base + i * step; return list.filter((v) => v.start >= lo && v.start < lo + step); });
-    const a = bucket(cur, from).map((vs) => (vs.length ? k[2](people(vs)) : null)), b = bucket(prev, from - n * step).map((vs) => (vs.length ? k[2](people(vs)) : null));
+    const curB = bucket(cur, from), a = curB.map((vs) => (vs.length ? k[2](people(vs)) : null)), b = bucket(prev, from - n * step).map((vs) => (vs.length ? k[2](people(vs)) : null));
+    // People: each bar split by who they were (teammates at the bottom, then named, then anonymous)
+    const stack = k[0] === 'people' ? curB.map((vs) => { const ps = people(vs); return GROUPS.map(([g]) => ps.filter((p) => p.group === g).length); }) : null;
     const max = Math.max(k[3] === '%' ? 0.1 : 1, ...a.map((x) => x || 0), ...b.map((x) => x || 0));
     const nice = k[3] === '%' ? Math.min(1, Math.ceil(max * 10) / 10) : k[3] === 's' ? Math.ceil(max / 60) * 60 || 60 : max <= 4 ? max : Math.ceil(max / 5) * 5;
     const W = Math.max(300, Math.min(1068, document.documentElement.clientWidth - 62)), H = 170, padB = 22, padL = 40, plotH = H - padB - 8, bw = (W - padL) / n, gap = Math.min(8, bw * 0.28);
@@ -456,14 +481,16 @@ details.cf > summary::-webkit-details-marker { display: none; }
     for (let i = 0; i < n; i++) {
       const x = padL + i * bw + gap / 2, w = Math.max(1, bw - gap), base = H - padB;
       const bar = (h, fill, op) => { const r = Math.min(3, w / 2, h); return h > 0 ? `<path d="M${x},${base} v${-(h - r)} q0,${-r} ${r},${-r} h${w - 2 * r} q${r},0 ${r},${r} v${h - r} z" fill="${fill}" opacity="${op}" />` : ''; };
-      svg += bar(y(b[i]), 'var(--ink-3)', 0.25) + bar(y(a[i]) * 0.999, 'var(--accent)', 0.9);
+      svg += bar(y(b[i]), 'var(--ink-3)', 0.25);
+      if (stack) { let acc = 0; stack[i].forEach((c, gi) => { if (!c) return; const hh = y(c), yy = base - y(acc) - hh; svg += `<rect x="${x}" y="${yy}" width="${w}" height="${Math.max(0, hh - (acc ? 1.5 : 0))}" rx="2" fill="${GROUPS[gi][2]}" />`; acc += c; }); }
+      else svg += bar(y(a[i]) * 0.999, 'var(--accent)', 0.9);
       svg += `<rect class="hit" data-i="${i}" x="${padL + i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent" />`;
       if (i % every === 0 || i === n - 1) svg += `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${esc(hourly ? lab(i).slice(0, 2) : lab(i))}</text>`;
     }
     const grid = [0, nice / 2, nice].map((g) => `<line class="grid-l" x1="${padL}" x2="${W}" y1="${H - padB - y(g)}" y2="${H - padB - y(g)}" /><text class="axis" x="${padL - 6}" y="${H - padB - y(g) + 4}" text-anchor="end">${esc(fmtK(k[3], g))}</text>`).join('');
-    return { html: `<div class="legend"><span><i style="background:var(--accent)"></i>${esc(k[1])}, ${hourly ? 'today by hour' : 'per day'}</span><span><i style="background:var(--ink-3);opacity:.45"></i>${hourly ? 'Yesterday' : 'The ' + n + ' days before'}${prev.length ? '' : ': no data'}</span></div>
+    return { html: `<div class="legend">${stack ? GROUPS.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('') : `<span><i style="background:var(--accent)"></i>${esc(k[1])}, ${hourly ? 'today by hour' : 'per day'}</span>`}<span><i style="background:var(--ink-3);opacity:.45"></i>${hourly ? 'Yesterday' : 'The ' + n + ' days before'}${prev.length ? '' : ': no data'}</span></div>
       <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(k[1])} over time">${grid}${svg}</svg><div class="tip"></div></div>`,
-      tip: (i) => `<b>${esc(lab(i))}</b> · ${esc(k[1])} ${esc(fmtK(k[3], a[i]))} <span style="opacity:.7">· before ${esc(fmtK(k[3], b[i]))}</span>`, W };
+      tip: (i) => `<b>${esc(lab(i))}</b> · ${esc(k[1])} ${esc(fmtK(k[3], a[i]))}${stack ? ` (${stack[i].map((c, gi) => c + ' ' + GROUPS[gi][1].split(' ')[0].toLowerCase()).join(', ')})` : ''} <span style="opacity:.7">· before ${esc(fmtK(k[3], b[i]))}</span>`, W };
   }
 
   // ---------------------------------------------------------------- a breakdown panel: tabs, rows that filter the page, People and the share who listened
@@ -525,7 +552,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
       <span class="meter"><i style="width:${(n[i] / n[0]) * 100}%"></i></span>${i && n[i - 1] ? `<span class="sub${lost[i] && lost[i] === worst ? ' big' : ''}">${pct(n[i], n[i - 1])} carried on${lost[i] ? ` · ${lost[i]} stopped before this` : ''}</span>` : ''}</li>`).join('')}</ul></section>`;
   }
 
-  const TL = { gate: 'Gate', resume: 'Resumed', intro: 'Intro', autoplay: 'Autoplay', imac: 'iMac', host: 'Host', login: 'Lock screen', chapter: 'Chapter', choice: 'Choice', switch: 'Host switch', end: 'End', make: 'Make own', away: 'Left tab', page: 'Page', window: 'Window', icon: 'Icon', link: 'Link out', video: 'Recording', error: 'Error' };
+  const TL = { name: 'Name', gate: 'Gate', resume: 'Resumed', intro: 'Intro', autoplay: 'Autoplay', imac: 'iMac', host: 'Host', login: 'Lock screen', chapter: 'Chapter', choice: 'Choice', switch: 'Host switch', end: 'End', make: 'Make own', away: 'Left tab', page: 'Page', window: 'Window', icon: 'Icon', link: 'Link out', video: 'Recording', error: 'Error' };
   const tlLabel = (e) => e.k === 'chapter' ? title(e.s) : e.k === 'host' || e.k === 'switch' ? hostName(e.s) : e.k === 'choice' ? e.s.replace(/^([\w.-]+)/, (x) => title(x)) : e.s;
 
   // one visit, in words
@@ -534,7 +561,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const dd = (k, x) => x && d.push(`<dt>${k}</dt><dd>${x}</dd>`);
     dd('Arrived', `${esc(new Date(v.start).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }))} · ${esc(srcOf(v) === 'Direct / none' ? 'direct or an app' : 'from ' + srcOf(v))}${v.entry && v.entry !== '/' ? ' · on ' + esc(v.entry) : ''}`);
     dd('Where', esc([placeLong(v) || 'Unknown place', [kit(v), v.browser].filter(Boolean).join(' · '), v.vp].filter(Boolean).join(' · ')));
-    dd('Got to', `${esc(STAGES[stage(v)])}${v.version === 'wispr' ? ' · Wispr link' : ''}${v.login ? ` · lock screen: ${esc(v.login.as === 'team' ? v.login.name : v.login.as)}` : ''}`);
+    if (v.name) dd('Name', `${esc(v.name)} <span class="muted">(${esc(NAME_FROM[v.nameFrom] || (v.nameFrom === 'team' ? 'picked in the Wispr lobby' : 'given'))})</span>`);
+    dd('Got to', `${esc(STAGES[stage(v)])}${v.version === 'wispr' ? ' · Wispr link' : ''}${v.login ? ` · lock screen: ${esc(v.login.as === 'team' ? v.login.name : v.login.as === 'guest' ? (v.login.auto ? 'guest (auto after 30 s)' : 'guest') : 'own account')}` : ''}`);
     if (v.welcome) dd('Podcast', `${esc(hostName(v.welcome.host))}, ${esc(v.welcome.route || 'standard')} length${v.switches.length ? ' · switched to ' + v.switches.map((s) => esc(hostName(s))).join(', ') : ''}`);
     if (v.nodes.length) dd('Heard', `<span class="chain">${v.nodes.map((n) => `<span>${esc(title(n.id))} <span class="muted">${mins(Number(n.s) || 0)}</span></span>`).join('')}${v.ended ? '<span class="yes">the end</span>' : ''}</span>`);
     const picks = v.choices.filter((c) => c.how !== 'auto');
@@ -555,8 +583,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
   function personRow(p) {
     const open = state.open.has(p.key), v0 = p.v0;
     return `<button class="prow${p.team ? ' is-team' : ''}" type="button" data-p="${esc(p.key)}" id="${esc(pid(p.key))}" aria-expanded="${open}">
-        <span class="nm"><b>${esc(p.name)}</b>${p.team ? '<span class="pill w">Wispr</span>' : p.wispr ? '<span class="pill w">Wispr link</span>' : ''}${p.here ? '<span class="pill here">here now</span>' : ''}${p.back ? '<span class="pill">back</span>' : ''}${p.bounce ? '<span class="pill">bounced</span>' : ''}
-          <span class="s">${esc([p.team ? place(v0) : '', kit(v0), p.visits.length > 1 ? plural(p.visits.length, 'visit') : ''].filter(Boolean).join(' · '))}</span></span>
+        <span class="nm"><b>${esc(p.name)}</b>${p.team ? '<span class="pill w">Wispr</span>' : p.group === 'named' ? '<span class="pill g">named</span>' : ''}${!p.team && p.wispr ? '<span class="pill w">Wispr link</span>' : ''}${p.here ? '<span class="pill here">here now</span>' : ''}${p.back ? '<span class="pill">back</span>' : ''}${p.bounce ? '<span class="pill">bounced</span>' : ''}
+          <span class="s">${esc([p.group !== 'anon' ? place(v0) : '', kit(v0), p.nameFrom ? 'name ' + NAME_FROM[p.nameFrom] : '', p.visits.length > 1 ? plural(p.visits.length, 'visit') : ''].filter(Boolean).join(' · '))}</span></span>
         <span class="when">${esc(ago(p.last))}</span>
         <span class="src">${esc(srcOf(v0))}${v0.browser && !['Chrome', 'Safari', 'Firefox', 'Edge', 'Other'].includes(v0.browser) ? ' · ' + esc(v0.browser) : ''}</span>
         <span class="steps" role="img" aria-label="Got to: ${esc(STAGES[p.stage])}">${STAGES.map((_, i) => `<i class="${i <= p.stage ? 'on' : ''}"></i>`).join('')}</span>
@@ -599,11 +627,18 @@ details.cf > summary::-webkit-details-marker { display: none; }
         ${state.filters.length ? '<button type="button" class="clear" data-act="clear">Clear filters</button>' : '<span class="small muted">or tap any row below to filter</span>'}</div>
 
       <div class="top">
-        <div class="kpis">${KPIS.map(([k, l, f, kind, inv]) => { const a = f(ps), b = pps.length ? f(pps) : null; return `<button type="button" class="kpi${k === 'team' ? ' w' : ''}" data-metric="${k}" aria-pressed="${state.metric === k}" title="Chart ${esc(l.toLowerCase())}"><span class="lbl-s">${l}</span><b class="num">${esc(fmtK(kind, a))}</b>${delta(kind, a, b, inv)}</button>`; }).join('')}</div>
+        <div class="kpis">${KPIS.map(([k, l, f, kind, inv]) => { const a = f(ps), b = pps.length ? f(pps) : null; return `<button type="button" class="kpi${k === 'team' ? ' w' : k === 'named' ? ' g' : ''}" data-metric="${k}" aria-pressed="${state.metric === k}" title="Chart ${esc(l.toLowerCase())}"><span class="lbl-s">${l}</span><b class="num">${esc(fmtK(kind, a))}</b>${delta(kind, a, b, inv)}</button>`; }).join('')}</div>
         <div class="chartbox">${c.html}</div>
       </div>
 
-      ${team.length ? `<div class="team" aria-label="Wispr teammates">${team.map((p) => `<button type="button" class="mate" data-jump="${esc(p.key)}"><b>${esc(p.name)}</b><span>${esc(p.best.nodes.length ? plural(uniq(p.best), 'chapter') : STAGES[p.stage])} · ${esc(ago(p.last))}</span></button>`).join('')}</div>` : ''}
+      <div class="who">${GROUPS.map(([g, l, col]) => { const gp = ps.filter((p) => p.group === g), was = pps.filter((p) => p.group === g).length;
+        const real = gp.filter((p) => !p.bounce), list = g === 'anon' ? [] : real.slice(0, 6);
+        const cities = g === 'anon' ? Object.entries(gp.reduce((m, p) => { const c = place(p.v0) || 'Unknown'; m[c] = (m[c] || 0) + 1; return m; }, {})).sort((a, b) => b[1] - a[1]).slice(0, 4) : [];
+        return `<section class="grp" style="--c:${col}"><div class="grp-h"><span class="lbl-s">${l}</span><button type="button" class="ghost tiny" data-seg="${g === 'team' ? 'team' : g}" aria-pressed="${segOn(g === 'team' ? 'team' : g)}">${segOn(g === 'team' ? 'team' : g) ? 'Showing only these' : 'Only these'}</button></div>
+          <div class="grp-n"><b class="num">${gp.length}</b>${pps.length ? delta('n', gp.length, was) : ''}</div>
+          <p class="grp-s">${gp.length ? `${pct(gp.filter((p) => p.stage >= 2).length, gp.length)} reached the iMac · ${pct(gp.filter((p) => p.stage >= 5).length, gp.length)} listened · median ${mins(median(real.map((p) => p.active)))} in view` : g === 'team' ? 'No teammate has logged in yet.' : g === 'named' ? 'Nobody has given a name yet.' : 'Nobody anonymous yet.'}</p>
+          ${list.length ? `<ul class="grp-l">${list.map((p) => `<li><button type="button" data-jump="${esc(p.key)}"><span class="nm">${esc(p.name)}</span><span class="steps" aria-label="Got to: ${esc(STAGES[p.stage])}">${STAGES.map((_, i) => `<i class="${i <= p.stage ? 'on' : ''}"></i>`).join('')}</span><span class="t">${mins(p.active)}</span><span class="a">${esc(ago(p.last))}</span></button></li>`).join('')}</ul>${real.length > 6 ? `<p class="grp-s">and ${real.length - 6} more in People below</p>` : ''}`
+            : cities.length ? `<p class="grp-s">Mostly ${cities.map(([c, n]) => `${esc(c)} (${n})`).join(', ')}</p>` : ''}</section>`; }).join('')}</div>
 
       <div class="panels">
         ${panel('src', [['src', 'Sources'], ['tag', 'Campaigns'], ['entry', 'Landing'], ['version', 'Version']], cur, { empty: 'No visits yet.' })}
