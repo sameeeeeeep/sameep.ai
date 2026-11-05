@@ -40,7 +40,7 @@ export function install({ wm, area, visitor, icon = true }) {
     if (!end || end.querySelector('.end__gos')) return;
     end.append(h('div.end__gos',
       h('p.end__kicker', 'Next, for the Wispr team'),
-      h('p.end__lede', 'I started a growth plan for Wispr Flow. It’s a rough prototype, not reviewed yet, but it’s where I’d start.'),
+      h('p.end__lede', 'I started a growth plan for Wispr Flow. Here’s where I’d start.'),
       h('button.btn.btn--primary', { type: 'button', onclick: () => { sound.tick('click'); openTab(wm, visitor); } }, 'Open Wispr Growth OS ↗')));
   }).observe(area, { childList: true });  // windows are direct children of the desktop
   return true;
@@ -72,7 +72,10 @@ const token = { get: () => { try { return localStorage.getItem(TOKEN); } catch {
 const fromLink = (() => { const m = location.hash.match(/#wgos=([a-z0-9]+)/i); if (!m) return null; history.replaceState(null, '', location.pathname + location.search); if (m[1] !== 'expired') token.set(m[1]); return m[1]; })();
 async function api(path, { method = 'GET', body } = {}) {
   const t = token.get();
-  const r = await fetch(API + path, { method, headers: { ...(body ? { 'content-type': 'application/json' } : {}), ...(t ? { authorization: 'Bearer ' + t } : {}) }, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
+  let r;
+  try {
+    r = await fetch(API + path, { method, headers: { ...(body ? { 'content-type': 'application/json' } : {}), ...(t ? { authorization: 'Bearer ' + t } : {}) }, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
+  } catch { throw Object.assign(new Error('Can’t reach the plan right now. Check your connection and try again.'), { status: 0 }); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw Object.assign(new Error(d.error || 'Something went wrong. Try again.'), { status: r.status });
   return d;
@@ -170,11 +173,19 @@ export function openGrowthOS(wm, { visitor, start } = {}) {
       h('p', 'Log in as a Wispr teammate on the lock screen to open it.')));
     return w;
   }
-  const name = (v?.name || teamId(v).replace(/^w-/, '')).split(' ')[0];
+  const name = (v?.name || (teamId(v) === 'w-other' ? '' : teamId(v).replace(/^w-/, ''))).split(' ')[0];
   const ready = () => addExtras().catch((e) => console.warn('[growth os] extras', e)).then(() => renderPlan(w, { name, start }));
   if (token.get()) {
-    w.body.append(h('div.gos-lock', h('p.big', 'Opening the plan…')));
-    fetchPlan().then(ready).catch((e) => { if (e.status === 401) token.set(null); signIn(w, ready, e.status === 401 ? 'Your session ended. Sign in again.' : e.message, name); });
+    // a saved session: open the plan; if the network is down, say so and offer a retry instead of the email step
+    const open = () => {
+      w.body.replaceChildren(h('div.gos-lock', h('p.big', 'Opening the plan…')));
+      fetchPlan().then(ready).catch((e) => {
+        if (e.status === 0) return w.body.replaceChildren(h('div.gos-lock', h('p.big', 'Can’t reach the plan.'), h('p', 'Check your connection and try again.'), h('button.btn.btn--primary', { type: 'button', onclick: open }, 'Try again')));
+        if (e.status === 401) token.set(null);
+        signIn(w, ready, e.status === 401 ? 'Your session ended. Sign in again.' : e.message, name);
+      });
+    };
+    open();
   } else signIn(w, ready, fromLink === 'expired' ? 'That link has expired. Ask for a new code.' : null, name);
   return w;
 }
@@ -199,7 +210,7 @@ function signIn(w, done, notice, name = '') {
       busy(f, true); msg.textContent = 'Sending…';
       try { await api('/login', { method: 'POST', body: { email } }); askCode(); } catch (err) { msg.textContent = err.message; busy(f, false); }
     } }, inp, h('button.btn.btn--primary', { type: 'submit' }, 'Send code'));
-    box.replaceChildren(icon, h('p.big', 'For the Wispr team, ', h('em', 'only.')), h('p', email ? 'I\u2019ll send a code to your @wispr.ai email. Fix it if yours is different.' : 'Enter your @wispr.ai email and I\u2019ll send you a code.'), f, msg);
+    box.replaceChildren(icon, name ? h('p.big', 'Hi ', h('em', name + '.')) : h('p.big', 'For the Wispr team, ', h('em', 'only.')), h('p', email ? 'I\u2019ll send a code to your @wispr.ai email. Fix it if yours is different.' : 'Enter your @wispr.ai email and I\u2019ll send you a code.'), f, msg);
     setTimeout(() => { inp.focus({ preventScroll: true }); if (email) inp.select(); }, 60);
   };
   const askCode = () => {
@@ -232,16 +243,16 @@ function wipNote(wip, jump) {
 // the OS's structure: eight sections down the side, each a few tabs; every module lives in exactly one
 const SECTIONS = [
   { id: 'plan', t: 'Plan', g: 'dash', art: 'mb-quiet-speed', line: 'The bet, month by month, and how we’d know it’s working.', tabs: [['home', 'Overview'], ['dash', 'Measures'], ['tracking', 'Tracking']] },
-  { id: 'campaigns', t: 'Campaigns', g: 'campaigns', art: 'ev-founder-dinner', line: 'Five campaigns from December, on one board.', tabs: [['campaigns', 'All campaigns'], ['storyboards', 'Storyboards'], ['wrapped', 'Wispr Wrapped']] },
+  { id: 'campaigns', t: 'Campaigns', g: 'campaigns', art: 'ev-founder-dinner', line: 'Five campaigns, December to May, on one board.', tabs: [['campaigns', 'All campaigns'], ['storyboards', 'Storyboards'], ['wrapped', 'Wispr Wrapped']] },
   { id: 'ideas', t: 'Ideas', g: 'ideas', art: 'mb-talking-voicenote', line: 'Untested ideas, each with the cheapest way to try it.', tabs: [['ideas', 'Idea bank'], ['brainstorm', 'Brainstorm']] },
   { id: 'brand', t: 'Brand', g: 'brand', art: 'guide-do-people', line: 'How Flow should look and sound in India.', tabs: [['guide', 'Guideline'], ['moodboards', 'Moodboards'], ['brand', 'Cool in India?']] },
-  { id: 'social', t: 'Social', g: 'lincal', art: 'mb-desk-11pm', line: 'Founder posts, the posting calendar and channel numbers.', tabs: [['linkedin', 'Founder posts'], ['lincal', 'Calendar'], ['social', 'Numbers'], ['contests', 'Contests']] },
+  { id: 'social', t: 'Social', g: 'lincal', art: 'mb-talking-auto', line: 'Founder posts, the posting calendar and channel numbers.', tabs: [['linkedin', 'Founder posts'], ['lincal', 'Calendar'], ['social', 'Numbers'], ['contests', 'Contests']] },
   { id: 'creators', t: 'Creators', g: 'creators', art: 'ev-stream-desk', line: 'Who we’d work with, and where each conversation is.', tabs: [['creators', 'Creators'], ['infcal', 'Calendar'], ['connects', 'Outreach'], ['negotiate', 'Negotiation'], ['crm', 'Contacts']] },
-  { id: 'partners', t: 'Partners', g: 'partners', art: 'partners-handshake', line: 'Brands, programmes and products to team up with.', tabs: [['collabs', 'Brand collabs'], ['partners', 'Deals'], ['integrations', 'Integrations']] },
-  { id: 'events', t: 'Events', g: 'events', art: 'ev-mic-taping', line: 'Formats, run of show and the vendors behind them.', tabs: [['events', 'Formats'], ['eventlab', 'New formats'], ['runofshow', 'Run of show'], ['vendors', 'Vendors']] },
+  { id: 'partners', t: 'Partners', g: 'partners', art: 'partners-vendors-setup', line: 'Brands, programmes and products to team up with.', tabs: [['collabs', 'Brand collabs'], ['partners', 'Deals'], ['integrations', 'Integrations']] },
+  { id: 'events', t: 'Events', g: 'events', art: 'ev-city-drop', line: 'Formats, run of show and the vendors behind them.', tabs: [['events', 'Formats'], ['eventlab', 'New formats'], ['runofshow', 'Run of show'], ['vendors', 'Vendors']] },
 ];
 const secOf = (id) => SECTIONS.find((s) => s.tabs.some(([t]) => t === id));
-const PROTO = 'Prototype, not reviewed. A first draft of where I’d start, made before talking to anyone at Wispr. Some of these ideas are probably bad; read everything as a question.';
+const PROTO = 'A first draft, made before talking to Wispr. Read it as questions.';
 
 function renderPlan(w, { name, start }) {
   const page = h('article.gos__page', { tabindex: '-1' });
@@ -257,7 +268,7 @@ function renderPlan(w, { name, start }) {
     railBtn('home', 'Home', 'home', () => showHome()),
     SECTIONS.map((s) => railBtn(s.id, s.t, s.g, () => go(s.tabs[0][0]))));
   const mark = (id) => rail.querySelectorAll('.grail__b').forEach((b) => b.setAttribute('aria-current', String(b.dataset.sec === id)));
-  const root = h('div.gos.gos--os', rail, h('div.gos__main', h('p.gos-proto.gos-proto--bar', h('b', 'Prototype, not reviewed. '), PROTO.replace(/^Prototype, not reviewed\. /, '')), page));
+  const root = h('div.gos.gos--os', rail, h('div.gos__main', page));
   w.body.replaceChildren(root);
   // the window's own title bar carries the open tickets and your account
   const bar = w.el.querySelector('.win__bar');
@@ -271,7 +282,8 @@ function renderPlan(w, { name, start }) {
     page.replaceChildren(h('div.ghome',
       h('header.ghome__head',
         h('h2.ghome__hi', name ? `Hi ${name}.` : 'Hi.'),
-        h('p.ghome__sub', 'Wispr Flow in India, December to May. The plan, the campaigns and the people, in eight sections.')),
+        h('p.ghome__sub', 'Wispr Flow in India, December to May. The plan, the campaigns and the people, in eight sections.'),
+        h('p.gos-proto', PROTO)),
       h('div.gsecs', SECTIONS.map((s) => h('button.gsec', { type: 'button', onclick: () => go(s.tabs[0][0]) },
         art(s.art, '', { ratio: '16/10' }),
         h('span.gsec__b', h('span.gsec__t', s.t), h('span.gsec__l', s.line), h('span.gsec__tabs', s.tabs.map(([, t]) => t).join(' · ')))))),
@@ -369,7 +381,7 @@ function campaigns(m, opts) {
     const months = [];
     for (let d = new Date(first + 'T00:00:00'); d <= new Date(last + 'T00:00:00'); d.setMonth(d.getMonth() + 1, 1)) months.push(new Date(d));
     const tl = h('div.tl', { style: { '--n': weeks } }, h('div.tl__in',
-      h('div.tl__months', h('div', { style: { padding: '0 8px' } }, 'Campaign'), h('div.tl__mrow', months.map((d) => h('span.tl__m', { style: { left: x(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`) } }, d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' }))))),
+      h('div.tl__months', h('div', { style: { padding: '0 8px' } }, 'Campaign'), h('div.tl__mrow', months.map((d, i) => h('span.tl__m', { style: { left: x(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`) } }, d.toLocaleDateString('en-GB', i === 0 || d.getMonth() === 0 ? { month: 'short', year: 'numeric' } : { month: 'short' }))))),
       h('div', { style: { position: 'relative' } },
         list.map((c) => h('div.tl__row', h('button.tl__name', { type: 'button', onclick: () => open(c) }, c.name),
           h('div.tl__track', h('button.tl__bar', { type: 'button', title: `${c.name}: ${fmtD(c.start)} – ${fmtD(c.end)}`, 'aria-label': c.name, onclick: () => open(c), style: { left: x(c.start), width: `max(8px, calc(${Math.max(1, days(c.start, c.end)) / 7} * var(--wk)))`, '--c': tone(c.c) || 'var(--bondi)' } })))),
@@ -439,7 +451,7 @@ function installBits(t) {
   const m = t.match(/claude --plugin-url \S+?(?=[.,;)]*(\s|$))/);
   if (!m) return [h('p.bsec__p', rich(t))];
   const [before, after] = [t.slice(0, m.index).replace(/:\s*$/, ':'), t.slice(m.index + m[0].length).replace(/^\.\s*/, '')];
-  return [before.trim() ? h('p.bsec__p', rich(before)) : null, h('code.bcode', m[0]), after ? h('p.bsec__p', rich(after)) : null];
+  return [before.trim() ? h('p.bsec__p', rich(before)) : null, h('div.bcode-row', h('code.bcode', m[0]), copyBtn(() => m[0], 'Copy')), after ? h('p.bsec__p', rich(after)) : null];
 }
 // a prototype page that isn't up yet shows as "being built" instead of a dead link
 const protosOf = (c) => c.protos || (c.proto ? [c.proto] : []);
@@ -484,7 +496,7 @@ function events(m) {
   const detail = h('div');
   let on = null;
   // a picture on every event (the plan's own art)
-  const EV_ART = { tvt: 'ev-stream-desk', mic: 'ev-mic-taping', booth: 'ev-vo-booth', inbox: 'mb-monsoon-office', build: 'sb-startup-7', fest: 'ev-city-drop' };
+  const EV_ART = { tvt: 'mb-placement', mic: 'ev-mic-taping', booth: 'ev-vo-booth', inbox: 'mb-monsoon-office', build: 'sb-startup-7', fest: 'ev-city-drop' };
   const cards = h('div.cgrid', D.EVENTS.map((e) => h('button.ccard', { type: 'button', 'aria-pressed': 'false', style: { '--c': tone(e.c) }, onclick: (ev) => show(e, ev.currentTarget) },
     EV_ART[e.id] ? art(EV_ART[e.id], '', { ratio: '16/9' }) : h('span.ccard__swatch'),
     h('span.ccard__b', h('span.ccard__t', e.name), h('span.ccard__p', e.one), h('span.ccard__m', e.where)))));
