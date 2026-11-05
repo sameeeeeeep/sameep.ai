@@ -34,7 +34,6 @@ export function installGuides({ area, cards, ctx }) {
   const inWin = (w, sel) => () => w()?.querySelector(sel) || null;
 
   // ------------------------------------------------------------ the desktop tour (first visit)
-  let crtChanged = false, look = -1, openedPlayer = false;
   // a window the tour opens for a step: shut again when it moves on, unless they've touched it (then it's theirs)
   const borrowed = new Map();
   const borrow = async (key, isOpen, openIt) => {
@@ -46,25 +45,14 @@ export function installGuides({ area, cards, ctx }) {
   };
   const giveBack = (key) => { const w = borrowed.get(key); borrowed.delete(key); if (w?.isConnected) w.querySelector('.win__close')?.click(); };
   const workWin = q('.win--work:not(.is-closing)'), wisprWin = () => document.querySelector('.win--folder[aria-label="Wispr"]:not(.is-closing)');
-  const flat = () => { if (window.crtfx?.set) window.crtfx.set('flat'); else window.otcvCrt?.preview('flat'); };
-  const LOOKS = [['curved', 'Curved: the whole tube, bent like glass.'], ['off', 'Off: clean pixels, no CRT.'], ['flat', 'Flat: the iMac look, easiest on the eyes. Switch any time.']];
+  // the desktop tour: the work, the Wispr folder (Wispr version), then the show. The games stay out of it.
+  // When it ends, however it ends, the show starts by itself 15 s later (main.js: the countdown pill)
   defineGuide('desktop', {
     area, layer, cardFor, label: 'Desktop guide', here: () => 1,
     start: { label: 'Start the show', run: () => ctx.startShow() },
     steps: () => [
-      { at: null, say: 'Welcome to 1999. Fancy a quick tour? Skip whenever you like.' },
-      // the player: opened for this stop if it isn't up (and closed again after, if the guide opened it)
-      { at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing 60 songs from ’99. Skip one, or pause the lot.`,
-        enter: async () => {
-          if (!document.querySelector('.win--juke')) { ctx.openJukebox({ quiet: true }); openedPlayer = true; await until(q('.win--juke'), 800); }
-          // once they touch it, it's theirs: leaving this step won't close it
-          document.querySelector('.win--juke')?.addEventListener('pointerdown', () => { openedPlayer = false; }, { once: true, capture: true });
-        },
-        leave: () => { if (openedPlayer) document.querySelector('.win--juke .win__close')?.click(); openedPlayer = false; } },
-      { at: showEl, centre: true, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
-        ? 'The show, my portfolio in my voice, is installing. No rush: it waits for you.'
-        : 'The show, my portfolio in my voice, is ready. No rush: it waits for you.') },
-      // before the show: the work, then the Wispr folder, opened for them and shut again after
+      { at: null, say: 'Welcome to 1999. A quick tour: my work, then the show. Skip whenever you like.' },
+      // the work, then the Wispr folder, opened for them and shut again after
       { at: () => workWin()?.querySelector('.work__list'), say: 'First, my work: everything I’ve made, in one list, each with its video and links.',
         enter: async (g) => { await borrow('work', workWin, async () => { if (g.active) ctx.open('work'); }); await until(() => workWin()?.querySelector('.work__item'), 4000); }, leave: () => giveBack('work') },
       { at: () => wisprWin()?.querySelector('.wsec[data-sec="builders"]'), when: () => isWispr, say: 'Then the Wispr folder. Up top, Wispr for Builders: small Claude mods you run by voice. Pack 1 is out: seven of them, one install.',
@@ -73,26 +61,10 @@ export function installGuides({ area, cards, ctx }) {
       { at: () => wisprWin()?.querySelector('.wsec-row'), when: () => isWispr, say: 'Below: the fun one, Wispr Wrapped, and the plan, Growth OS.',
         enter: () => until(() => wisprWin()?.querySelector('.wsec-row'), 3000), leave: () => giveBack('wispr') },
       { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), when: () => !isWispr, card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'Hover any icon on the left for a card like this.' },
-      { at: clear(...GAMES), card: true, say: isNarrow() ? 'Further down, the toys: three games I made the ’99 way, and a few real classics.' : 'On the right, the toys: three games I made the ’99 way, and a few real classics.' },
-      { at: q('.menubar__crt'), when: () => !isNarrow() && !!window.otcvCrt, say: 'The screen has three looks. Try them, or don’t; Flat is lovely.',
-        action: { label: 'Try them', run: (g) => {
-          const crt = window.otcvCrt;
-          for (let n = 0; n < LOOKS.length; n++) {
-            look = (look + 1) % LOOKS.length;
-            const [m, line] = LOOKS[look];
-            crt.preview(m);
-            if (crt.mode === m) { crtChanged = m !== 'flat'; g.say(line); return; }  // not offered on this screen: the next one
-          }
-        } },
-        leave: () => { if (crtChanged) flat(); crtChanged = false; look = -1; } },
+      // last: the show. Wispr is the remote there (a phone has no Flow key: chips, or just say it)
       isNarrow()
-        ? { at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Lost? Special › Show me around replays this. Every window has a ? too.' }
-        : { at: q('.menubar__help'), say: 'Lost? The ? replays this, and every window has its own. Or hold Flow and say “show me around”.' },
-      // last: start the show; Wispr is the remote there (a phone has no Flow key: chips, or just say it).
-      // Then the guide is gone for good, and nothing opens by itself after it
-      isNarrow()
-        ? { at: showEl, centre: true, say: 'Then press Start the show. Inside, tap a chip or just say where to go.' }
-        : { at: showEl, centre: true, say: 'Then press Start the show. Hold your Flow key any time and say where to go.', extra: () => flowPill() },
+        ? { at: showEl, centre: true, say: 'Then OFF THE CV, my portfolio as a show in my voice. It starts 15 s after this; tap a chip inside, or just say where to go.' }
+        : { at: showEl, centre: true, say: 'Then OFF THE CV, my portfolio as a show in my voice. It starts 15 s after this. Inside, hold Flow and say where to go.', extra: () => flowPill() },
     ],
   });
 
