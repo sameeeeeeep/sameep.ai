@@ -78,9 +78,10 @@ function guide(m) {
     tabs(['Logo', 'Colour', 'Type', 'Voice', 'Say it like Wispr', 'India', 'Do and don’t'], (i) => [logo, colour, type, voice, rewriter, india, pairs][i](), 0)];
 
   function logo() {
-    const mark = (dark) => h('div.gb-logo' + (dark ? '.is-dark' : ''), h('span.gb-logo__in', h('span.gb-bars', { 'aria-hidden': 'true' }), h('span.gb-word', 'Wispr Flow')));
-    return [h('div.gos-grid.gos-grid--2', mark(false), mark(true)),
-      h('p.note', G.logo.note, ' The dashed line is the clear space.'),
+    // no drawn lockup on purpose: the real marks come from Wispr's own media kit
+    return [h('p.lede', 'The logo isn’t redrawn here. For the real marks, use Wispr’s media kit: ',
+        h('a', { href: 'https://wisprflow.ai/media-kit', target: '_blank', rel: 'noopener' }, 'wisprflow.ai/media-kit ↗'), '.'),
+      h('p.note', G.logo.note),
       h('div.gos-grid.gos-grid--2', { style: { marginTop: '6px' } }, gboxW('Do', ul(G.logo.rules)), gboxW('Don’t', ul(G.logo.donts)))];
   }
 
@@ -177,7 +178,7 @@ function guide(m) {
   }
 
   function pairs() {
-    return [h('p.small', 'Pictures are placeholders until the art is made. The “don’t” side stays a description on purpose.'),
+    return [h('p.small', 'The “don’t” side stays a description on purpose.'),
       ...G.pairs.map((p) => gbox(p.t, h('div.gb-pair',
         h('figure.gb-pair__side', h('span.gb-pair__k.is-do', 'Do'), art(p.do.art, p.do.alt, { ratio: '4/3' }), h('figcaption', rich(p.do.p))),
         h('figure.gb-pair__side.is-dont', h('span.gb-pair__k.is-dont', 'Don’t'), art(p.dont.art, p.dont.alt, { ratio: '4/3' }), h('figcaption', rich(p.dont.p))))))];
