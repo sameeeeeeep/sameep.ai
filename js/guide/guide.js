@@ -261,6 +261,9 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     if (s.action) { act.textContent = s.action.label; act.onclick = () => s.action.run(api); }
     cap.classList.add('is-on');
     point(el, s);
+    // a window still sliding in (a phone's bottom sheet): once it has landed, the caption follows it
+    const was0 = el && JSON.stringify(box(el));
+    setTimeout(() => { if (alive && my === token && here === el && el && JSON.stringify(box(el)) !== was0) point(el, s, 300); }, 520);
     // focus stays on Next, so Space always moves on; the action is a click, a Tab away, or “open it”
     if (keep || k === 0 || document.activeElement === document.body) next.focus({ preventScroll: true });
   }
