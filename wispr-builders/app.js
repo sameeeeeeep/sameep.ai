@@ -9,7 +9,7 @@
       tag: 'Find any file by saying it',
       say: ['the GST invoice from October', 'last screenshot of the admin panel', 'the signed lease PDF'],
       body: 'File searches your Mac with Spotlight and shows the results as numbered thumbnails. Click one, or press its number, and File pastes it into the app you were in, or reveals, opens, or copies it.',
-      img: 'img/card.webp', alt: 'A numbered card of three image tiles, the second one highlighted, above a field that says Say two' },
+      img: 'img/card.webp', alt: 'The Wispr Bridge card: three numbered poster tiles with the second one selected, a note field, and a Not now button' },
     { id: 'wispr-wish', name: 'Wispr Wish', key: 'wish',
       tag: 'Say what should happen to a file',
       say: ['make this a PDF', 'compress this video for WhatsApp', 'transcribe this audio', 'split this bill three ways'],
