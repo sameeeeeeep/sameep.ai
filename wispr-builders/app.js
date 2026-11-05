@@ -78,19 +78,27 @@
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     clips.forEach((v) => { v.controls = true; attach(v); });  // preload stays none: nothing loads until play
   } else if ('IntersectionObserver' in window) {
+    // visible clips take turns: each plays once through, then the next visible one starts; hover plays one now
     const seen = new Map();
     let on = null;
-    const pick = () => {
-      let best = null, top = 0.35;
-      seen.forEach((r, v) => { if (r > top) { top = r; best = v; } });
-      if (best === on) return;
+    const visible = () => clips.filter((v) => (seen.get(v) || 0) > 0.35);
+    const play = (v) => {
+      if (v === on) { if (v) { v.currentTime = 0; v.play().catch(() => {}); } return; }
       if (on) detach(on);
-      on = best;
+      on = v;
       if (on) { attach(on); on.play().catch(() => {}); }
     };
-    const io = new IntersectionObserver((es) => { es.forEach((e) => seen.set(e.target, e.intersectionRatio)); pick(); },
-      { threshold: [0, 0.35, 0.6, 0.85, 1] });
-    clips.forEach((v) => io.observe(v));
+    const next = () => { const vis = visible(); if (!vis.length) return play(null); const i = vis.indexOf(on); play(vis[(i + 1) % vis.length]); };
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => seen.set(e.target, e.intersectionRatio));
+      if (!on || (seen.get(on) || 0) <= 0.35) { const vis = visible(); play(vis[0] || null); }
+    }, { threshold: [0, 0.35, 0.6, 1] });
+    clips.forEach((v) => {
+      v.loop = false;
+      v.addEventListener('ended', () => { if (v === on) next(); });
+      v.addEventListener('mouseenter', () => { if ((seen.get(v) || 0) > 0.35) play(v); });
+      io.observe(v);
+    });
   } else if (clips[0]) { attach(clips[0]); clips[0].play().catch(() => {}); }
 
   // the segmented pill: All, or one mod at a time
