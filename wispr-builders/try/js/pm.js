@@ -1,7 +1,7 @@
 // Wispr PM, in the browser: a sample board across three projects, the real mod's keyword router (park, what's next,
 // what's waiting on me, mark done, start a thread, split this into tasks) and its cards, word for word.
 // Threads are simulated here; on the Mac a thread is Claude Code working on the card.
-import { present, notify } from './card.js';
+import { present, notify, TOUCH } from './card.js';
 
 export const PROJECTS = {
   portfolio: { name: 'portfolio', aliases: ['portfolio', 'sameep.ai', 'sameep ai', 'the site', 'my site', 'my portfolio', 'website'] },
@@ -57,7 +57,7 @@ export function parsePM(raw) {
   m = raw.match(/\bmark (.+?) (?:as )?(done|doing)\b/i);
   if (m) return { op: m[2].toLowerCase(), project, text: stripProject(m[1]).replace(/^the\s+/i, '') };
   m = raw.match(/\b(?:park|remind me to|add)\s+(.+)/i);
-  if (m) { const what = stripProject(m[1]).replace(/[.!]$/, ''); return { op: 'park', project, text: /^(this|that|it)$/i.test(what) ? null : what }; }
+  if (m) { const what = stripProject(m[1]).replace(/[.!]$/, '').replace(/^(?:a |an )?(?:new )?(?:task|card|todo|to-do)(?: to| for)?\s+/i, ''); return { op: 'park', project, text: /^(this|that|it)$/i.test(what) ? null : what }; }
   return { op: 'board', project };
 }
 
@@ -102,7 +102,7 @@ export async function runPM(raw, ui) {
     if (!w.length) return notify('Nothing is waiting on you.', { title: 'Wispr PM' });
     const opts = w.map((it) => ({ label: it.title.slice(0, 70), detail: [it.project, it.waited && `waited ${it.waited}`, it.needs || (it.me ? 'tagged @me' : '')].filter(Boolean).join(' · ') }));
     opts.push({ label: 'Snooze for an hour', detail: 'Hide the pill; it comes back with anything new after that' });
-    const r = await present({ mod: 'Wispr PM', title: `${w.length} waiting on you`, subtitle: 'Click one to open it', options: opts, recommended: 1 });
+    const r = await present({ mod: 'Wispr PM', title: `${w.length} waiting on you`, subtitle: `${TOUCH ? 'Tap' : 'Click'} one to open it`, options: opts, recommended: 1 });
     ui.result(r);
     if (r.cancelled) return;
     if (r.pick === opts.length) { ui.snooze(); return notify('Snoozed for an hour.', { title: 'Wispr PM' }); }
@@ -129,7 +129,7 @@ export async function runPM(raw, ui) {
     const items = a.dump.split(/\s*(?:[,;\n]|\band then\b|\bthen\b|\balso\b|\band\b)\s*/i).map((s) => s.replace(/^(to|i need to|we need to)\s+/i, '').trim()).filter((s) => s.length > 2);
     if (items.length < 2) return notify('Say the list after “split this into tasks”, like “split this into tasks: fix the footer, add OG images and test on mobile”. (On your Mac it can split your clipboard too.)', { title: 'Wispr PM', ttl: 7 });
     const list = [...new Set(items.map((s) => s[0].toUpperCase() + s.slice(1)))].slice(0, 9);
-    const r = await present({ mod: 'Wispr PM', multi: true, title: `${list.length} cards for ${p}. Keep which?`, subtitle: 'Click the ones to keep, then Done.', options: list.map((c) => ({ label: c, detail: 'New task' })) });
+    const r = await present({ mod: 'Wispr PM', multi: true, title: `${list.length} cards for ${p}. Keep which?`, subtitle: `${TOUCH ? 'Tap' : 'Click'} the ones to keep, then Done.`, options: list.map((c) => ({ label: c, detail: 'New task' })) });
     ui.result(r);
     if (r.cancelled || !r.picks) return;
     let lastId; for (const i of r.picks) { const c = C(p, list[i - 1], 'backlog', 'med', { fresh: true }); BOARD.push(c); lastId = c.id; }

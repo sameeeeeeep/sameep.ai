@@ -63,6 +63,9 @@ function build() {
     </div>`;
   document.body.append(root);
   hl = root.querySelector('.rv-hl'); pins = root.querySelector('.rv-pins'); pill = root.querySelector('.rv-pill'); ta = pill.querySelector('textarea'); dock = root.querySelector('.rv-dock');
+  // like content.js: while review mode is on, the note box keeps focus so Flow always has somewhere to type
+  ta.addEventListener('blur', () => setTimeout(() => { if (on && !paused && !document.querySelector('.t-dialog:not([hidden]), .wb') && !/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName)) ta.focus({ preventScroll: true }); }, 0));
+  addEventListener('focus', () => { if (on && !paused) ta.focus({ preventScroll: true }); });
   ta.addEventListener('input', () => {
     if (!ta.value.trim()) return;
     if (!locked && hover) { locked = hover; box(locked, 'is-locked'); }
@@ -111,7 +114,7 @@ function setMode(v) {
   on = !!v; document.documentElement.classList.toggle('rv-on', on);
   root.hidden = !on && !notes.length; pill.hidden = !on; dock.querySelector('[data-a=mode]').classList.toggle('is-on', on);
   if (!on) { drop(); hl.style.display = 'none'; dock.hidden = !notes.length; if (!notes.length) root.hidden = true; }
-  else { dock.hidden = false; if (touch) pill.classList.add('is-docked'); ta.focus({ preventScroll: true }); }
+  else { dock.hidden = false; if (touch) { pill.classList.add('is-docked'); const s = document.querySelector('.t-site'); if (s) { const r = s.getBoundingClientRect(); scrollBy({ top: r.top - 80, behavior: 'smooth' }); } } ta.focus({ preventScroll: true }); }
   renderPins();
 }
 function drop() { clearTimeout(saveT); ta.value = ''; locked = null; hl.style.display = 'none'; }
@@ -130,7 +133,7 @@ function save() {
   };
   notes.push(n);
   ta.value = ''; locked = null; hl.style.display = 'none';
-  notify(`Note ${n.n} pinned (no crop)`, { title: 'Wispr Review', ttl: 2.5 });
+  notify(`Note ${n.n} pinned`, { title: 'Wispr Review', ttl: 2.5 });
   renderPins(); onChange();
 }
 function renderPins() {
@@ -175,6 +178,7 @@ let onChange = () => {}, onExport = () => {};
 export function initReview(opts) { onChange = opts.onChange || onChange; onExport = opts.onExport || onExport; }
 export function reviewOn(v = true) { setMode(v); }
 export const reviewState = () => ({ on, count: notes.length });
+export function reviewFocus() { if (on && !paused && ta) ta.focus({ preventScroll: true }); }
 export function runReview(args, ui) {
   ui.route({ intent: 'review.note', args, mod: 'Wispr Review' });
   if (args.export) return exportNotes();

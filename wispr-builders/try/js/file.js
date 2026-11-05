@@ -129,7 +129,7 @@ export function search(text) {
 
 const VERB = { paste: 'paste into the front app', attach: 'attach', copy: 'copy', reveal: 'show in Finder', open: 'open', path: 'copy the path' };
 // "find my passport photo" -> "passport photo", for a card title that asks, like the real card does
-const noun = (t) => t.replace(/[,.!?].*$/, '').replace(/^\s*(?:please\s+)?(?:find|get|grab|show(?: me)?|pull up|open|where(?:'s| is)|look for|search for)\s+/i, '').replace(/^(?:me\s+)?(?:my|the|a|an)\s+/i, '').replace(/^(?:last|latest|newest|most recent)\s+/i, '').trim().slice(0, 48);
+const noun = (t) => t.replace(/[,.!?].*$/, '').replace(/^\s*(?:please\s+)?(?:find|get|grab|show(?: me)?|pull up|open|where(?:'s| is)|look for|search for)\s+/i, '').replace(/^(?:me\s+)?(?:my|the|a|an|that|this)\s+/i, '').replace(/^(?:last|latest|newest|most recent)\s+/i, '').trim().slice(0, 48);
 const detailOf = (f) => `${whenLabel(f.date)} · ${f.folder}`;
 
 export async function runFile(text, ui, depth = 0) {
@@ -151,8 +151,15 @@ export async function runFile(text, ui, depth = 0) {
   ui.result(r);
   if (r.cancelled) return;
   if (r.text) {
-    // a reply that isn't a pick refines the search once, like the real card
-    if (depth < 1) return runFile(`${text} ${r.text}`, ui, depth + 1);
+    // the real card's parseReply: a number anywhere ("the second one, reveal it") is a pick, plus an action;
+    // anything else refines the search once with the words that are left ("none of these, the blue one")
+    const rt = ' ' + r.text.toLowerCase() + ' ';
+    const ORD = { one: 1, first: 1, two: 2, second: 2, three: 3, third: 3, four: 4, fourth: 4, five: 5, fifth: 5, six: 6, sixth: 6 };
+    const nm = rt.match(/\b([1-6])\b|\b(first|second|third|fourth|fifth|sixth)\b|\b(one|two|three|four|five|six)\b(?! of)/);
+    const n = nm ? Number(nm[1]) || ORD[nm[2] || nm[3]] : 0;
+    if (n >= 1 && n <= items.length && !/\bnone\b/.test(rt)) { let a = action; for (const [re, x] of ACTIONS) if (re.test(rt)) { a = x; break; } return act_(items[n - 1], a, ui); }
+    const more = rt.replace(/\b(none|not|no|of|these|those|this|that|it|the|one|ones|instead|actually|rather|i meant?|want)\b/g, ' ').replace(/[^a-z0-9 ]/g, ' ').trim();
+    if (depth < 1 && more) return runFile(`${plan.terms.join(' ')} ${more}`, ui, depth + 1);
     notify('Still nothing picked, so File stopped here.', { title: 'Wispr File' });
     return;
   }
@@ -174,7 +181,7 @@ async function act_(f, act, ui) {
   try {
     const blob = filePNG(f);
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    notify(`Copied ${f.name} as an image. Press ⌘V anywhere to paste it.`, { title: 'Wispr File', ttl: 5 });
+    notify(`Copied ${f.name} as an image. ${TOUCH ? 'Paste it anywhere.' : 'Press ⌘V anywhere to paste it.'}`, { title: 'Wispr File', ttl: 5 });
     ui.copied(f);
   } catch {
     notify(`Your browser blocked the copy. Here’s the file instead.`, { title: 'Wispr File', ttl: 4 });

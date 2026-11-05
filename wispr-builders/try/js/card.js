@@ -3,7 +3,7 @@
 // present(spec) resolves with the same result JSON the real card prints.
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-// ---- pick parsing, ported 1:1 from wb-card.swift
+// ---- pick parsing, ported from wb-card.swift (leadingPick, parsePicks, matchLabel)
 const NUM = { one: 1, won: 1, first: 1, '1st': 1, two: 2, to: 2, too: 2, second: 2, '2nd': 2, three: 3, third: 3, '3rd': 3, tree: 3,
   four: 4, for: 4, fourth: 4, '4th': 4, five: 5, fifth: 5, six: 6, sixth: 6, seven: 7, seventh: 7, eight: 8, eighth: 8, nine: 9, ninth: 9 };
 const FILL = new Set(['the', 'one', 'option', 'number', 'no', 'pick', 'choose', 'i', 'want', 'lets', "let's", 'go', 'with', 'please', 'and', 'a',
@@ -75,7 +75,7 @@ export function present(spec) {
         <button class="wb__row" type="button" role="option" data-i="${i}"><span class="wb__n">${i + 1}</span>${o.image ? `<img class="wb__ico" src="${esc(o.image)}" alt="">` : ''}
           <span class="wb__rt"><span class="wb__l">${esc(o.label)}</span>${o.detail ? `<span class="wb__d">${esc(o.detail)}</span>` : ''}</span></button>`).join('')}</div>
       <input class="wb__in" type="text" autocomplete="off" spellcheck="false" aria-label="Your answer" placeholder="${TOUCH ? (multi ? 'Tap the ones to keep, then Done' : 'Tap one, or type a note') : (multi ? 'Click the ones to keep, then press return' : 'Click one, or press its number')}">
-      <div class="wb__foot">${HOLD}${opts.length ? `<span class="wb-hint"><kbd class="w-kbd">${multi ? '1 3 ↵' : '1–' + Math.max(1, opts.length)}</kbd> to pick</span>` : ''}<span class="wb__sp"></span>
+      <div class="wb__foot">${opts.length && !TOUCH ? `<span class="wb-hint"><kbd class="w-kbd">${multi ? '1 3 ↵' : opts.length === 1 ? '1' : '1–' + opts.length}</kbd> to pick</span>` : ''}<span class="wb__sp"></span>
         <button class="w-btn w-btn--ghost wb__no" type="button">Not now</button>${multi ? '<button class="w-btn w-btn--primary wb__done" type="button">Done</button>' : ''}</div>`;
     const input = el.querySelector('.wb__in');
     const items = [...el.querySelectorAll('[data-i]')];

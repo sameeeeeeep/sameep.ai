@@ -1,7 +1,7 @@
 // Wispr Wish, in the browser. Conversions really run here (canvas encodes, a tiny PDF writer), on the
 // selected sample or a file you choose; nothing is uploaded. Mini apps are the real mod's built-in apps
 // (apps/timer.html, split.html, qr.html), opened in a small window.
-import { present, notify } from './card.js';
+import { present, notify, TOUCH } from './card.js';
 
 const fmt = (b) => (b >= 1e6 ? (b / 1e6).toFixed(2) + ' MB' : Math.max(1, Math.round(b / 1e3)) + ' KB');
 const NUMW = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, 'forty-five': 45, fifty: 50, sixty: 60 };
@@ -15,7 +15,7 @@ async function appHTML(name, params) {
   if (name === 'qr') { QRLIB ??= await fetch(new URL('../vendor/qrcode-generator.js', import.meta.url)).then((r) => r.text()); h = h.replace('/*QRLIB*/', () => QRLIB); }
   // the in-page window is light like the rest of the demo; the apps' own fonts come from the parent's Google Fonts link
   return h.replace('/*BASE*/', () => BASE.replace(/@media \(prefers-color-scheme:dark\)\{[^}]*\{[^}]*\}\}/, '') + 'body{background:#f5f4f0}')
-    .replace(/\/\*PARAMS\*\/\{[^}]*\}/, () => JSON.stringify(params))
+    .replace(/\/\*PARAMS\*\/\{[^}]*\}/, () => JSON.stringify(params).replace(/</g, '\\u003c'))
     .replace('try{Notification.requestPermission()}catch(e){}', '').replace(/try\{new Notification\([^)]*\)\}catch\(e\)\{\}/, '')
     .replace('<head>', '<head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">');
 }
@@ -28,19 +28,21 @@ export function timerParams(t) {
   const u = m[2][0];
   const s = Math.round(n * (u === 'h' ? 3600 : u === 's' ? 1 : 60));
   const what = t.match(/\bfor (?:my |the )?([a-z]+)(?: \d|$|\s)/);
-  const label = what && !/^(a|an|\d|one|two|three|four|five|ten|twenty|thirty)$/.test(what[1]) && !/min|hour|sec/.test(what[1]) ? what[1][0].toUpperCase() + what[1].slice(1) : '';
+  const label = what && !/^(a|an|\d|one|two|three|four|five|ten|twenty|thirty)$/.test(what[1]) && !/min|hour|sec|half|quarter/.test(what[1]) ? what[1][0].toUpperCase() + what[1].slice(1) : '';
   return s > 0 ? { minutes: s / 60, label } : null;
 }
 export function splitParams(t) {
   const cur = /₹|rupee|\brs\b|\binr\b/.test(t) ? '₹' : /\$|dollar|bucks/.test(t) ? '$' : /€|euro/.test(t) ? '€' : /£|pound/.test(t) ? '£' : '';
+  const tp = t.match(/(\d+)\s*%/);
+  t = t.replace(/\d+(?:\.\d+)?\s*%(\s*tip)?/g, ' ');
   const am = t.match(/(?:₹|\$|€|£|rs\.?\s?)?\s?(\d[\d,]*(?:\.\d+)?)\s?(k\b)?(?!\s*(?:%|ways|people|persons|of us|friends))/);
   let amount = am ? num(am[1]) * (am[2] ? 1000 : 1) : 0;
   const pp = t.match(/\b(\d+|two|three|four|five|six|seven|eight|nine|ten)\s*(ways|people|persons|of us|friends)\b/) || t.match(/\b(?:between|among|with|by)\s+(\d+|two|three|four|five|six|seven|eight|nine|ten)\b/);
-  const tip = t.match(/(\d+)\s*%/);
+  const tip = tp;
   return { amount, people: pp ? num(pp[1]) : 2, tip: tip ? Number(tip[1]) : 0, currency: cur };
 }
 export function qrParams(t, raw) {
-  const m = raw.match(/\b((?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s]*)?)/i);
+  const m = raw.match(/\b((?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<>"'`]*)?)/i);
   return { text: m ? (/^https?:/i.test(m[1]) ? m[1] : 'https://' + m[1].replace(/[.,]$/, '')) : location.origin + '/wispr-builders/' };
 }
 
@@ -55,14 +57,14 @@ export async function runApp(app, raw, ui) {
   if (app === 'timer') {
     let p = timerParams(t);
     if (!p) {
-      const r = await present({ mod: 'Wispr Wish', title: 'How long?', subtitle: 'Click one, or type a time like “7 minutes”', options: [{ label: '5 minutes' }, { label: '10 minutes' }, { label: '25 minutes', detail: 'Pomodoro' }, { label: '45 minutes' }], recommended: 3 });
+      const r = await present({ mod: 'Wispr Wish', title: 'How long?', subtitle: `${TOUCH ? 'Tap' : 'Click'} one, or type a time like “7 minutes”`, options: [{ label: '5 minutes' }, { label: '10 minutes' }, { label: '25 minutes', detail: 'Pomodoro' }, { label: '45 minutes' }], recommended: 3 });
       ui.result(r);
       if (r.cancelled) return;
       p = r.pick ? timerParams(' ' + r.label.toLowerCase() + ' ') : timerParams(' ' + String(r.text).toLowerCase() + ' ');
       if (!p) return notify('That didn’t sound like a time. Try “a timer for 7 minutes”.', { title: 'Wispr Wish' });
     }
     const mm = Math.round(p.minutes);
-    return openApp('timer', p, ui, p.label ? `${p.label} · ${mm} min` : `Timer · ${p.minutes < 1 ? Math.round(p.minutes * 60) + ' s' : mm + ' min'}`);
+    return openApp('timer', p, ui, p.label ? `${p.label} · ${mm} min` : `Timer · ${p.minutes % 1 ? Math.floor(p.minutes) + ':' + String(Math.round((p.minutes % 1) * 60)).padStart(2, '0') : mm + ' min'}`);
   }
   if (app === 'split') {
     const p = splitParams(t);
@@ -176,7 +178,7 @@ export async function runConvert(raw, ui) {
       name = `${base}-${w}px.${type.split('/')[1].replace('jpeg', 'jpg')}`;
     }
     ui.converted({ from: sel, blob, name, w: p.op === 'pdf' ? W : w, h: p.op === 'pdf' ? H : h, W, H, note });
-    notify(`Saved ${name} next to the original. ${fmt(sel.blob.size)} → ${fmt(blob.size)}.`, { title: 'Wispr Wish', ttl: 4 });
+    notify(`Made ${name} in this tab. ${fmt(sel.blob.size)} → ${fmt(blob.size)}.`, { title: 'Wispr Wish', ttl: 4 });
   } catch (e) {
     notify('That file can’t be read as an image in this browser. Try one of the samples.', { title: 'Wispr Wish' });
   } finally { ui.busy(false); }

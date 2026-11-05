@@ -76,7 +76,7 @@
   function claudePrompt(list, { sinkUp = false } = {}) {
     const site = siteName(list[0]?.site);
     return [
-      `I reviewed ${site} by voice with Wispr Review and left ${list.length} notes, each pinned to an element. Work through them in this codebase:`,
+      `I reviewed ${site} by voice with Wispr Review and left ${list.length} note${list.length === 1 ? '' : 's'}, each pinned to an element. Work through them in this codebase:`,
       'for each note find the element (selector, its text, the page URL), make the change, then reply with what you changed per note number.',
       "If a note is unclear or the element can't be found, say so instead of guessing.",
       sinkUp ? 'The notes and screenshot crops are also on disk: run `~/.wispr-review/bin/wispr-review notes` (crops in ~/.wispr-review/shots/). Mark one done with `~/.wispr-review/bin/wispr-review done <n>`.' : '',

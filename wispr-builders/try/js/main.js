@@ -6,7 +6,7 @@ import { runFile, search } from './file.js';
 import { FILES, PATH, whenLabel, thumbURL } from './mac.js';
 import { runApp, runConvert, runWishOther, fmt } from './wish.js';
 import { runPM, BOARD, PROJECTS, waitingCount, PRI } from './pm.js';
-import { runReview, initReview, reviewOn, reviewState } from './review.js';
+import { runReview, initReview, reviewOn, reviewState, reviewFocus } from './review.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -33,13 +33,17 @@ const q = $('#q'), stage = $('#stage'), layer = $('#layer'), routeEl = $('#route
 setLayer(layer);
 
 // ---------------------------------------------------------------- the ask field
-function focusAsk() { if (!cardOpen() && !reviewState().on) q.focus({ preventScroll: true }); }
+function focusAsk() { if (cardOpen()) return; if (reviewState().on) reviewFocus(); else q.focus({ preventScroll: true }); }
 async function send(text) {
   text = text.trim(); if (!text) return;
   q.value = ''; closeCard();
   const c = classify(text);
   // like the real router, a noun phrase that names something on this Mac is a file search
   if (!c.mod && search(text).items.length) Object.assign(c, { mod: 'file', intent: 'file.find' });
+  // nothing matched: what you say is meant for the mod you're looking at
+  if (!c.mod && mod === 'pm') Object.assign(c, { mod: 'pm', intent: 'pm' }), (text = 'park ' + text);
+  if (!c.mod && mod === 'wish') Object.assign(c, { mod: 'wish', intent: 'wish.run', args: { wish: text } });
+  if (!c.mod && mod === 'review') { runReview({ mode: 'on' }, ui); setTimeout(() => notify('Review mode is on. Point at the thing that note is about, then say it again.', { title: 'Wispr Review', ttl: 4 }), 50); return; }
   const target = c.mod;
   if (target && target !== mod) { setMod(target, { keepRoute: true }); }
   try {
@@ -73,7 +77,7 @@ if (SR) {
     let final = '';
     rec.onresult = (e) => { let s = ''; for (const r of e.results) s += r[0].transcript; q.value = s; if (e.results[e.results.length - 1].isFinal) final = s; };
     rec.onerror = () => {};
-    rec.onend = () => { mic.classList.remove('is-on'); mic.setAttribute('aria-pressed', 'false'); mic.querySelector('span').textContent = 'No Flow? Use the mic'; rec = null; if (final.trim()) send(final); };
+    rec.onend = () => { mic.classList.remove('is-on'); mic.setAttribute('aria-pressed', 'false'); mic.querySelector('span').textContent = 'Use the mic'; rec = null; if (final.trim()) send(final); };
     rec.start();
   });
 }
@@ -87,13 +91,15 @@ function setMod(id, { keepRoute = false } = {}) {
   const prev = mod; mod = id;
   closeCard();
   if (prev === 'review' && id !== 'review' && reviewState().on) reviewOn(false);
+  if (id !== 'wish') layer.querySelectorAll('.t-mini').forEach((w) => w.remove());
   tabs.querySelectorAll('[data-mod]').forEach((b) => { const on = b.dataset.mod === id; b.setAttribute('aria-selected', on); b.classList.toggle('is-on', on); if (on) { const r = b.getBoundingClientRect(), tr = tabs.getBoundingClientRect(); if (r.left < tr.left || r.right > tr.right) tabs.scrollLeft += r.left - tr.left - 8; } });
   const m = MODS[id];
   $('#h').innerHTML = m.h; $('#sub').textContent = m.sub;
   $('#cmd').textContent = `/plugin install wispr-${id === 'video' ? 'video' : id}@wispr-for-builders`;
-  q.placeholder = m.ph;
+  q.placeholder = TOUCH && m.say[0] ? m.say[0] : m.ph;
   $('#chips').innerHTML = m.say.map((s) => `<button type="button" class="t-chip">${esc(s)}</button>`).join('');
   $('#ask').classList.toggle('is-quiet', !m.say.length);
+  $('#ask').hidden = !!m.page; $('.t-real').hidden = !!m.page;
   if (!keepRoute) routeEl.hidden = true;
   document.body.dataset.mod = id;
   const st = $('#status'); st.dataset.wstatus = id; window.WisprStatus?.fill(st.parentElement);
@@ -126,7 +132,7 @@ const ui = {
   selection: () => wishSel(),
   ready: () => wishLoad,
   busy(b) { stage.classList.toggle('is-busy', b); },
-  async converted(o) { await wishLoad; wishOut = o; if (o.blob !== o.from.blob) { wishFiles.push({ name: o.name, blob: o.blob, made: true }); } RENDER.wish(); },
+  async converted(o) { await wishLoad; if (wishOut?.url) URL.revokeObjectURL(wishOut.url); wishOut = o; if (o.blob !== o.from.blob) { wishFiles.push({ name: o.name, blob: o.blob, made: true }); if (/^image\//.test(o.blob.type)) wishPick = wishFiles.length - 1; } await RENDER.wish(); reveal(stage.querySelector('.t-out')); },
   miniWindow({ title, html, h }) {
     const w = document.createElement('div'); w.className = 't-mini'; w.setAttribute('role', 'dialog'); w.setAttribute('aria-label', title);
     w.innerHTML = `<div class="t-mini__bar"><span class="t-mini__dots"><i></i><i></i><i></i></span><b>${esc(title)}</b><button type="button" aria-label="Close">×</button></div>`;
@@ -198,7 +204,7 @@ const RENDER = {
       </div>
       <div class="t-win t-out" aria-live="polite">
         <div class="t-win__bar"><span class="t-mini__dots"><i></i><i></i><i></i></span><b>${wishOut ? 'Done' : 'Result'}</b></div>
-        ${wishOut ? outHTML(wishOut) : `<div class="t-out__empty"><p>Say what should happen to <b>${esc(sel?.name || 'the selected file')}</b>.</p><p class="t-fine">“make this a WebP”, “make it smaller for WhatsApp”, “half size”, “make this a PDF”</p></div>`}
+        ${wishOut ? outHTML(wishOut) : `<div class="t-out__empty"><p>Say what should happen to <b>${esc(sel?.name || 'the selected file')}</b>.</p></div>`}
       </div></div>`;
     stage.querySelector('.t-sel__list').onclick = (e) => { const b = e.target.closest('[data-w]'); if (b) { wishPick = +b.dataset.w; RENDER.wish(); focusAsk(); } };
     const inp = stage.querySelector('input[type=file]');
@@ -248,7 +254,7 @@ const RENDER = {
     if (pmFlash) { reveal(stage.querySelector('.is-flash')); setTimeout(() => { pmFlash = null; }, 1600); }
   },
 
-  guru() { stage.innerHTML = linkStage('guru', 'Walk me through exporting a frame in Figma', ['done', 'wait, where?']); },
+  guru() { stage.innerHTML = linkStage('guru', 'Walk me through exporting a frame in Figma', ['how do I share this file with my team', 'show me where the export settings are']); },
   video() { stage.innerHTML = linkStage('video', 'Cut the silences', ['highlight the product name', 'export 9:16']); },
 };
 

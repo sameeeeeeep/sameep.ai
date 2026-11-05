@@ -290,7 +290,7 @@ html.rv-on .rv-dock button, html.rv-on .rv-pin { cursor: pointer; }
 
 /* ---------- phones ---------- */
 @media (max-width: 760px) {
-  .t-wish, .t-rv, .t-link { grid-template-columns: 1fr; }
+  .t-wish, .t-rv, .t-link { grid-template-columns: minmax(0, 1fr); }
   .t-pm__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .t-cmd { margin-left: 0; width: 100%; }
   .t-cmd code { flex: 1; }
@@ -325,7 +325,7 @@ html.rv-on .rv-dock button, html.rv-on .rv-pin { cursor: pointer; }
   .t-finder__side { display: flex; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px; gap: 4px; }
   .t-finder__side button { white-space: nowrap; }
   .t-finder__grid { max-height: 420px; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 10px; gap: 10px 8px; }
-  .t-pm__cols { grid-template-columns: 1fr; }
+  .t-pm__cols { grid-template-columns: minmax(0, 1fr); }
   .t-pill { margin-left: 0; }
   .t-site__plans { grid-template-columns: 1fr; }
   .t-site__nav span { display: none; }
@@ -351,3 +351,21 @@ body[data-mod="guru"] .t-screen, body[data-mod="video"] .t-screen { min-height: 
 .t-route__x[open] { display: grid; gap: 6px; justify-items: start; }
 .t-real p .t-status { margin-right: 6px; vertical-align: 1px; }
 .rv-pill.is-docked .rv-pill__k, .rv-pill.is-docked .rv-pill__foot { display: none; }
+
+/* clarity review: toasts sit at the bottom of the screen, not over results; phones get one row of chips, an icon mic, no clipped tabs */
+.wb-toasts { top: auto; bottom: 14px; }
+.t-tabs .w-seg { padding-right: 6px; }
+@media (max-width: 640px) {
+  .t-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; width: 100%; min-width: 0; padding-bottom: 2px; }
+  .t-chips::-webkit-scrollbar { display: none; }
+  .t-chip { flex: none; white-space: nowrap; }
+  .t-try { display: none; }
+  .t-mic span { display: none; }
+  .t-mic { width: 36px; padding: 0; justify-content: center; }
+  .t-ask__head { flex-wrap: nowrap; }
+  .wb-toasts { bottom: 12px; }
+  html.rv-on .wb-toasts { top: 12px; bottom: auto; }
+  .t-pm__seg { width: 100%; }
+}
+.t-main { overflow-x: clip; }
+.t-main { grid-template-columns: minmax(0, 1fr); }

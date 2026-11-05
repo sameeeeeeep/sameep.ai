@@ -6,9 +6,10 @@ export function classify(raw) {
   const say = (intent, mod, args = {}) => ({ intent, mod, args });
   if (/\breview mode\b|\b(start|turn on) review\b|^ review (this|the) page\b|\breview this page\b/.test(t)) return say('review.note', 'review', { mode: /\boff\b/.test(t) ? 'off' : 'on' });
   if (/\b(export|send) (it |them |the notes |my notes )?(for|to) claude\b/.test(t)) return say('review.note', 'review', { export: true });
-  if (/\binto tasks\b|\bpark\b|\bremind me to\b|\bwhat'?s next\b|\bwhat is next\b|\bwaiting on me\b|\bwhat'?s waiting\b|\bmark .+ (done|doing)\b|\bstart a thread\b|\bmy board\b|\bthe board\b|\bbacklog\b/.test(t)) return say('pm', 'pm');
+  if (/\binto tasks\b|\bpark\b|\bremind me to\b|\bwhat'?s next\b|\bwhat is next\b|\bwaiting on me\b|\bwhat'?s waiting\b|\bmark .+ (done|doing)\b|\bstart a thread\b|\bmy board\b|\bthe board\b|\bbacklog\b|\b(add|new) (a )?(task|card|todo|to-do)\b|\btasks?\b.*\b(for|on|to) (the )?(portfolio|nailinit|nail in it|wispr pack|pack 1)\b/.test(t)) return say('pm', 'pm');
   if (/\b(how do i|how to|walk me through|show me where|where do i click|guide me)\b/.test(t)) return say('guide', 'guru', { task: raw });
   if (/\b(cut the silences?|captions?|teleprompter|export (9:16|4:5|16:9)|edit (this|the|my) video)\b/.test(t)) return say('video', 'video');
+  if (/\b(find|where'?s|where is|get me|pull up|look for|search for)\b/.test(t) && !/\b(make|convert|turn)\b/.test(t)) return say('file.find', 'file', { query: raw });
   if (/\b(timer|pomodoro|countdown)\b|\b\d+ ?(min|mins|minutes|minute)\b(?!.*\b(video|audio)\b)/.test(t)) return say('ask', 'wish', { app: 'timer' });
   if (/\bsplit\b|\b\d[\d,.]* ?(rupees|rs|inr|dollars|bucks|euros|pounds)?\b.*\b(ways|between|among)\b|\btip\b/.test(t) && !/\binto tasks\b/.test(t)) return say('ask', 'wish', { app: 'split' });
   if (/\bqr\b|\bqr code\b/.test(t)) return say('ask', 'wish', { app: 'qr' });
