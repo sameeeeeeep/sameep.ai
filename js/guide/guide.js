@@ -131,29 +131,44 @@ export function askFeedback({ area = document.body, where = 'site' } = {}) {
   let rate = null;
   const close = () => { card.classList.remove('is-on'); removeEventListener('keydown', onKey, true); setTimeout(() => card.remove(), 300); };
   const onKey = (e) => { if (e.key === 'Escape' && card.isConnected) { e.stopImmediatePropagation(); close(); } };
-  const thanks = () => { body.replaceChildren(h('p.gtour__text', 'Thank you. Sameep reads every one.')); setTimeout(close, 2200); };
+  let shut = null;
+  const thanks = () => { clearTimeout(shut); body.replaceChildren(h('p.gtour__text', 'Thank you. Sameep reads every one.')); shut = setTimeout(close, 2200); };
   const send = (extra = {}) => track('feedback', { where, rate, ...extra });
-  const pick = (r) => { rate = r; send(); btns.querySelectorAll('button').forEach((b) => b.classList.toggle('is-primary', b.dataset.r === r)); say.hidden = false; say.querySelector('input').focus({ preventScroll: true }); };
+  // one tap is the whole ask: thanks, and it closes itself; a note is there for anyone who wants it, never pushed
+  const pick = (r) => {
+    rate = r; send();
+    const note = h('button.gfeed__note', { type: 'button', onclick: () => { clearTimeout(shut); note.remove(); say.hidden = false; say.querySelector('input').focus({ preventScroll: true }); } }, 'Add a note');
+    body.replaceChildren(h('p.gtour__text', 'Thank you. Sameep reads every one.'), note, say);
+    shut = setTimeout(close, 2600);
+  };
   const btns = h('div.gfeed__btns', [['loved', 'Loved it'], ['good', 'Good'], ['meh', 'Not for me']].map(([r, t]) => h('button.gtour__btn', { type: 'button', dataset: { r }, onclick: () => pick(r) }, t)));
   const say = h('form.gfeed__say', { hidden: true, onsubmit: (e) => { e.preventDefault(); const t = e.target.elements.say.value.trim().slice(0, 500); if (t) send({ text: t }); thanks(); } },
-    h('input', { name: 'say', type: 'text', maxlength: 500, placeholder: 'Anything else? Say it with Flow, or type', 'aria-label': 'Anything else' }),
+    h('input', { name: 'say', type: 'text', maxlength: 500, placeholder: isNarrow() ? 'Anything else? Type it' : 'Anything else? Say it with Flow, or type', 'aria-label': 'Anything else' }),
     h('button.gtour__btn.is-primary', { type: 'submit' }, 'Send'));
-  const body = h('div', h('p.gtour__text', 'How was that?'), btns, say, h('p.gtour__hint', 'One tap is plenty. Nothing else is asked.'));
+  const body = h('div', h('p.gtour__text', 'How was that?'), btns);
   const card = h('div.gtour__cap.gfeed' + (fixed ? '.is-fixed' : ''), { role: 'dialog', 'aria-label': 'Quick feedback' },
     h('button.gfeed__x', { type: 'button', 'aria-label': 'Close', onclick: () => { if (!rate) track('feedback', { where, rate: 'dismissed' }); close(); } }, '×'), body);
   (fixed ? document.body : area).append(card);
+  // never over the steer field: sit just above it when it's on screen
+  const steer = [...document.querySelectorAll('.steer')].find((x) => x.getClientRects().length);
+  if (steer) {
+    const r = steer.getBoundingClientRect(), c = card.getBoundingClientRect(), base = fixed ? innerHeight : area.getBoundingClientRect().bottom;
+    const over = c.left < r.right && c.right > r.left && c.top < r.bottom && c.bottom > r.top;
+    if (over && r.top > 0 && r.top < base) card.style.bottom = Math.max(8, base - r.top + 12) + 'px';
+  }
   addEventListener('keydown', onKey, true);
   requestAnimationFrame(() => card.classList.add('is-on'));
   return true;
 }
 
 // ---------------------------------------------------------------- the engine
-// steps: [{ at, say, card, action, extra, enter, leave, when, dx, dy }]
+// steps: [{ at, say, card, action, extra, enter, leave, when, dx, dy, place }]
 //   at      a selector or a function → the element to point at (none: the caption sits in the middle)
 //   say     the line (string or function)
 //   card    true: show the target's hover card inside the caption (needs cardFor)
 //   action  { label, run(api) }: one primary button on that step (“Open Growth OS”)
 //   enter   async, before the step: open what it needs; leave(): put it back
+//   place   'above' | 'left': put the caption there (when it fits) instead of beside the thing
 //   centre  true: if `at` isn't there, say it from the middle of the screen rather than skip the step
 //   holder  a function → the window this guide is about: when it closes, the guide ends with it
 //   layer   where the arrow and caption are drawn, when it isn't `area` (the desktop: over the menu bar too)
@@ -196,13 +211,16 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
   const box = (el) => { const a = A(), r = el.getBoundingClientRect(); return { x: r.left - a.left, y: r.top - a.top, w: r.width, h: r.height }; };
   const light = (el) => { lit?.classList.remove('is-tour-lit'); lit = el || null; lit?.classList.add('is-tour-lit'); };
 
-  function placeCap(x, y, near) {
+  function placeCap(x, y, near, place) {
     const a = A(), cw = cap.offsetWidth, ch = cap.offsetHeight;
     let cx, cy;
     const G = 14;
     // never over the menu bar (the desktop draws the guide over it): cards start below it
     const T = 8 + (mount.querySelector?.(':scope > .menubar')?.offsetHeight || 0);
     if (!near) { cx = (a.width - cw) / 2; cy = ghost ? y + 30 : a.height * 0.3; }
+    // the step asks: above a wide thing (a field along the bottom), or to its left (a side column at the window's edge)
+    else if (place === 'above' && near.y - G - ch >= T) { cx = x - 24; cy = near.y - G - ch; }
+    else if (place === 'left' && near.x - G - cw >= 8) { cx = near.x - G - cw; cy = clamp(y - 20, near.y, near.y + Math.max(0, near.h - ch)); }
     else if (!ghost) {  // no arrow (phones): under the thing, or over it, never on it
       cx = near.x + near.w / 2 - cw / 2;
       cy = near.y + near.h + 10;
@@ -222,7 +240,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     const b = el ? box(el) : { x: a.width * 0.5, y: a.height * 0.36, w: 0, h: 0 };
     const x = b.x + b.w * (s?.dx ?? 0.5), y = b.y + b.h * (s?.dy ?? 0.5);
     if (ghost) { ghost.style.transitionDuration = ms + 'ms'; ghost.style.transform = `translate(${x}px, ${y}px)`; }
-    placeCap(x, y, el ? b : null);
+    placeCap(x, y, el ? b : null, s?.place);
   }
   const reflow = () => { if (alive && i >= 0) point(here, list[i], 0); };
 
@@ -240,6 +258,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     const s = list[k];
     count.textContent = `${k + 1} of ${list.length}`;
     back.disabled = k === 0;
+    back.hidden = k === 0;  // nothing to go back to on the first step
     const last = k === list.length - 1;
     next.textContent = last ? 'Done' : 'Next';
     if (startBtn) { next.classList.toggle('is-primary', !last); startBtn.classList.toggle('is-last', last); startBtn.textContent = last ? start.label : `or ${start.label.charAt(0).toLowerCase() + start.label.slice(1)} →`; }

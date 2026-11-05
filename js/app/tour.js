@@ -185,14 +185,14 @@ export function installGuides({ area, cards, ctx }) {
     onEnd: () => { const p = ctx.podcast(); if (wasPlaying && p && !p.playing && podW()) p.toggle(); wasPlaying = false; },
     steps: () => [
       // the Wispr version opens on the part made for them: point at it, gently
-      { at: inWin(podW, '.mcards'), when: () => isWispr, say: 'This first part is the one made for you: Wispr for Builders. Each card opens a piece of it.' },
+      { at: inWin(podW, '.mcards'), when: () => isWispr, centre: true, say: 'This first part is the one made for you: Wispr for Builders. Tap a card to open that piece.' },
       isNarrow()
         ? { at: inWin(podW, '.steer'), say: 'You steer. Tap a chip, or say where you’d like to go.' }
-        : { at: inWin(podW, '.steer'), say: 'You steer. Hold your Flow key any time and say where to go.', extra: () => flowPill('Hold Flow: “something fun”') },
+        : { at: inWin(podW, '.steer'), dx: 0.12, place: 'above', say: 'You steer. Hold your Flow key any time and say where to go.', extra: () => flowPill('Hold Flow: “something fun”') },
       { at: inWin(podW, '.transport'), say: isNarrow() ? 'Back, pause, skip: a part at a time.' : 'Back, pause, skip: a part at a time. Space pauses.' },
       isNarrow()
         ? { at: inWin(podW, '.chap-drawer'), say: 'The episode map: jump anywhere, or pick a project and hear just that. Enjoy the show.' }
-        : { at: inWin(podW, '.pod__side'), dx: 0.2, dy: 0.15, say: 'The episode map: jump anywhere, or pick a project and hear just that. Enjoy the show.' },
+        : { at: inWin(podW, '.pod__side'), dx: 0.2, dy: 0.15, place: 'left', say: 'The episode map: jump anywhere, or pick a project and hear just that. Enjoy the show.' },
     ],
   });
 

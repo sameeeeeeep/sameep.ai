@@ -15,7 +15,8 @@
 .gtour__hint { margin-top: 6px !important; font: 500 11.5px/1.3 Figtree, var(--f-ui, system-ui), sans-serif; color: rgba(26,26,26,.55); }
 .gtour__n { font: 600 10.5px/1 Figtree, var(--f-ui, system-ui), sans-serif; letter-spacing: .06em; text-transform: uppercase; color: rgba(26,26,26,.5); white-space: nowrap; }
 .gtour__btns { display: flex; gap: 6px; }
-.gtour__btn { min-height: 30px; padding: 0 10px; border: 2px solid var(--vast); border-radius: 8px; background: var(--lumen); color: var(--vast); font: 600 12px/1 Figtree, var(--f-ui, system-ui), sans-serif; cursor: pointer; }
+.gtour__btn[hidden] { display: none; }
+.gtour__btn { min-height: 40px; padding: 0 10px; border: 2px solid var(--vast); border-radius: 8px; background: var(--lumen); color: var(--vast); font: 600 12px/1 Figtree, var(--f-ui, system-ui), sans-serif; cursor: pointer; }
 .gtour__btn:hover:not(:disabled) { box-shadow: 2px 2px 0 0 var(--vast); }
 .gtour__btn:focus-visible { outline: 2px solid #7b4fd6; outline-offset: 2px; }
 .gtour__btn.is-primary { background: #f0d7ff; }
@@ -50,11 +51,12 @@
 @media (max-width: 760px) { .gtour__btn { min-height: 44px; min-width: 44px; padding: 0 12px; font-size: 13px; } .gtour__cap, .gtour__cap.has-card { width: calc(100% - 16px); } .gtour-help { width: 28px; height: 28px; } .gtour-help.is-floating { width: 44px; height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .gtour__cap { transition: opacity .01s; transform: none; } .gtour__wave i { animation: none; height: 60%; } }
 /* the one-time feedback card: a guide caption, parked bottom right (bottom on a phone) */
-.gtour__cap.gfeed { left: auto; top: auto; right: 14px; bottom: 14px; width: min(300px, calc(100% - 28px)); padding-right: 30px; }
-.gfeed__x { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: 0; background: none; color: rgba(26,26,26,.6); font: 400 20px/1 Figtree, system-ui, sans-serif; cursor: pointer; }
+.gtour__cap.gfeed { left: auto; top: auto; right: 14px; bottom: 14px; width: min(300px, calc(100% - 28px)); padding-right: 40px; }
+.gfeed__x { position: absolute; top: 2px; right: 2px; width: 40px; height: 40px; border: 0; background: none; color: rgba(26,26,26,.6); font: 400 20px/1 Figtree, system-ui, sans-serif; cursor: pointer; }
 .gfeed__x:hover { color: #1a1a1a; }
 .gfeed__btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .gfeed__say { display: flex; gap: 6px; margin-top: 8px; }
 .gfeed__say[hidden] { display: none; }
+.gfeed__note { min-height: 40px; margin-top: 2px; padding: 0; border: 0; background: none; color: rgba(26,26,26,.7); font: 600 12.5px Figtree, system-ui, sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .gfeed__say input { flex: 1; min-width: 0; min-height: 30px; padding: 0 8px; border: 2px solid #1a1a1a; border-radius: 8px; background: #fff; color: #1a1a1a; font: 500 12.5px Figtree, system-ui, sans-serif; }
 @media (max-width: 760px) { .gtour__cap.gfeed { right: 8px; bottom: 8px; width: calc(100% - 16px); } .gfeed__say input { min-height: 44px; font-size: 16px; } }

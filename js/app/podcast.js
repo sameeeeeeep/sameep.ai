@@ -255,7 +255,9 @@ export class Podcast {
     const L = this.layer.getBoundingClientRect();
     // leave the right-hand icon column visible on wide screens
     // (the show is the main act: it fills the screen, only the right-hand icon column stays clear on wide screens)
-    const reserve = L.width > 1180 ? 290 : 0;
+    // (measured: the leftmost of the right-hand icon columns, plus a 12px gutter; at least 290)
+    const iconL = Math.min(...[...document.querySelectorAll('.icons > li')].map((li) => li.getBoundingClientRect()).filter((r) => r.width && r.left > L.left + L.width / 2).map((r) => r.left));
+    const reserve = L.width > 1180 ? Math.min(L.width / 3, Math.max(290, isFinite(iconL) ? L.right - iconL + 12 : 0)) : 0;
     const w = Math.min(1520, L.width - 24 - reserve);
     const hgt = Math.min(960, L.height - 20);
     this.win = this.wm.win('podcast', {
@@ -355,7 +357,7 @@ export class Podcast {
     // steering: the audience badge, quick chips, the say field
     this.audBadge = h('span.steer__aud');
     this.chips = h('div.chips', { role: 'group', 'aria-label': 'Pull a thread' });
-    this.sayIn = h('input.say__input', { type: 'text', placeholder: COPY.placeholder, 'aria-label': 'Say or type where to go next', autocomplete: 'off', enterkeyhint: 'go', spellcheck: 'false', autocapitalize: 'off' });
+    this.sayIn = h('input.say__input', { type: 'text', placeholder: isNarrow() ? 'Say or type where to go…' : COPY.placeholder, 'aria-label': 'Say or type where to go next', autocomplete: 'off', enterkeyhint: 'go', spellcheck: 'false', autocapitalize: 'off' });
     this.sayMsg = h('div.say__msg', { 'aria-live': 'polite' });
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.mic = SR ? h('button.say__mic', { type: 'button', 'aria-label': 'Speak (uses your browser’s speech recognition)', title: 'Speak', onclick: () => this.#listen(SR) }, h('span.ico.ico--mic')) : null;
@@ -500,7 +502,7 @@ export class Podcast {
     if (!this.chapEl) return;
     this.#renderTabs();
     this.#renderProjects();
-    this.mapFolded ||= new Set();
+    this.mapFolded ||= new Set(['specials']); // Specials start folded: one line, the chapters above the fold
     this.chapEl.replaceChildren(...chapterMap(this.map, {
       visited: this.visited, currentNode: this.nodeId, nextNode: this.node ? this.#nextPart()?.to : null, folded: this.mapFolded,
       specials: this.specialRows, specialSeen: this.specialSeen, onSpecial: (slug) => { this.chapDrawer.open = false; this.playSpecial(slug); },
