@@ -44,7 +44,10 @@ export class Podcast {
     this.base = persona.base;
     this.reduced = reducedMotion();
     const sv = savedVisitor();
-    this.visitor = sv ? { name: sv.name || '', character: persona.characters.find((c) => c.id === sv.character) || null } : { name: '' };
+    // a Wispr teammate with no illustrated character (most of data/wispr-team.json) keeps their w- seat, so a
+    // return visit is still greeted by name (data/greetings.json)
+    this.visitor = sv ? { name: sv.name || '', character: persona.characters.find((c) => c.id === sv.character)
+      || (/^w-[\w-]+$/.test(sv.character || '') ? { id: sv.character, label: sv.name || '' } : null) } : { name: '' };
     this.casted = false;
     // who hosts: episode.json "hosts" (the first is the script's own host); saved per visitor
     this.hosts = Array.isArray(episode.hosts) ? episode.hosts : [];
