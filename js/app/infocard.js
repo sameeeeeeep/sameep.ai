@@ -11,7 +11,7 @@ const GAP = 10, EDGE = 8, DELAY = 300;
 // where a click goes, in a few words
 function where(el, folder, opens) {
   if (folder) return `Opens a folder of ${folder.items.length}`;
-  if (el.matches('[aria-label$="still being built"]')) return 'Still being built: it opens here the moment it’s done';
+  if (el.matches('[aria-label$="still being built"], [aria-label$="coming soon"]')) return 'Coming soon: it opens here the moment it’s live';
   if (opens) return opens;
   const href = el.getAttribute('href');
   if (!href) return '';

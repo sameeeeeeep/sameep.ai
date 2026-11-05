@@ -113,10 +113,11 @@ export function installGuides({ area, cards, ctx }) {
   defineGuide('wispr', {
     area, layer, cardFor, holder: wisprW, label: 'Wispr folder guide', here: inFront(isWisprF),
     steps: () => [
-      { at: wItem('growthos'), card: true, enter: () => until(wItem('growthos')), say: 'Growth OS: the plan I’d start with for your team. Its own tab, behind a team sign-in.', action: openIt('growthos', 'Open Growth OS ↗') },
-      { at: wItem('wrapped'), card: true, say: 'Wispr Wrapped: my real Flow history, as a story. Yours takes a minute of talking.', action: openIt('wrapped') },
-      { at: wItem('wispreditor'), card: true, say: 'Wispr Video: edit by saying what you want, not by scrubbing.' },
-      { at: wItem('guru'), card: true, say: 'And Guru, a voice guide for any software. “Building…” means it’s on its way.' },
+      { at: inWin(wisprW, '.wsec[data-sec="builders"] .wsec__head'), enter: () => until(wItem('wispreditor')), say: 'Wispr for Builders: small Claude mods that make voice a superpower. Pack 1 is six of them.' },
+      { at: wItem('wispreditor'), card: true, say: 'Wispr Video: a teleprompter, recorder and editor. You say the edit, Claude makes it.' },
+      { at: wItem('guru'), card: true, say: 'Wispr Guru: a voice guide for any software. “Coming” means it’s on its way.' },
+      { at: wItem('wrapped'), card: true, say: 'And the fun one, Wispr Wrapped: my real Flow history, as a story. Yours takes a minute of talking.', action: openIt('wrapped') },
+      { at: wItem('growthos'), card: true, say: 'Growth OS is the plan: how I’d grow Wispr. Its own tab, behind a team sign-in.', action: openIt('growthos', 'Open Growth OS ↗') },
     ],
   });
 

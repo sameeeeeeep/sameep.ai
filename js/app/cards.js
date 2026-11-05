@@ -37,8 +37,13 @@ export const MORE_CARDS = {
   tetris: { title: 'Tetris', what: 'Tetris, on tetris.com', proof: 'Plays in your browser', icon: 'proj-tetris' },
   pacman: { title: 'Pac-Man', what: 'Google’s playable Pac-Man doodle from 2010', proof: 'Plays in your browser', icon: 'proj-pacman' },
   // the Wispr folder
-  'wispr-growthos': { title: 'Wispr Growth OS', what: 'A growth plan I started for your team', proof: 'Eight sections: plan, campaigns, ideas, brand, social, creators, partners, events', opens: 'Opens in a new tab · Wispr team sign-in', iconUrl: 'growth-os/icon.svg' },
-  'wispr-wrapped': { title: 'Wispr Wrapped', what: 'A Wrapped of my real Wispr Flow history', proof: 'By project or by year; make yours by talking or pasting', icon: 'proj-wrapped' },
-  'wispr-wispreditor': { title: 'Voice Editor', what: 'A video editor you drive by talking', proof: 'A Wispr product prototype', icon: 'proj-wispreditor' },
-  'wispr-guru': { title: 'Wispr Guru', what: 'A Wispr product prototype', proof: 'Still being built', icon: 'proj-guru' },
+  'wispr-growthos': { title: 'Wispr Growth OS', what: 'The plan: how I’d grow Wispr, started for your team', proof: 'Eight sections: plan, campaigns, ideas, brand, social, creators, partners, events', opens: 'Opens in a new tab · Wispr team sign-in', iconUrl: 'growth-os/icon.svg' },
+  'wispr-wrapped': { title: 'Wispr Wrapped', what: 'The fun one: a Wrapped of my real Wispr Flow history', proof: 'By project or by year; make yours by talking or pasting', icon: 'proj-wrapped' },
+  // Wispr for Builders, Pack 1: small Claude mods that make voice a superpower
+  'wispr-wispreditor': { title: 'Wispr Video', what: 'Teleprompter, recorder and editor: say the edit, Claude makes it', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-wispreditor' },
+  'wispr-guru': { title: 'Wispr Guru', what: 'A voice guide for any software; answer any Claude thread from the notch', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-guru' },
+  'wispr-review': { title: 'Wispr Review', what: 'Review a website out loud, right in Chrome', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-review' },
+  'wispr-file': { title: 'Wispr File', what: 'Find a file by saying what’s in it', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-file' },
+  'wispr-wish': { title: 'Wispr Wish', what: 'Say a mini app or a conversion, and get it', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-wish' },
+  'wispr-pm': { title: 'Wispr PM', what: 'Voice task boards across all your projects', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-pm' },
 };

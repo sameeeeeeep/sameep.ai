@@ -1413,6 +1413,22 @@ a.icon { text-decoration: none; }
 .folder__grid .icon { width: 100%; height: auto; min-height: 88px; padding-bottom: 6px; }
 .folder__grid .icon__label { background: none; max-width: 100%; -webkit-line-clamp: 3; }
 .win--folder .win__body { overflow-y: auto; }
+/* the Wispr folder (js/app/wisprfolder.js): three labelled parts, Wispr for Builders first */
+.win--wfold .win__body { background: #fff; display: grid; grid-template-columns: 1fr 1fr; align-content: start; }
+.win--wfold .folder__bar, .win--wfold .wsec[data-sec="builders"] { grid-column: 1 / -1; }
+.wsec + .wsec { border-top: 1px solid var(--plat-2); }
+.wsec__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; padding: 10px 12px 0; }
+.wsec__t { margin: 0; font: 700 12px/1.3 var(--f-ui); letter-spacing: .02em; color: #111; }
+.wsec__note { margin: 0; font: 400 11.5px/1.3 var(--f-ui); color: #666; }
+.wsec[data-sec="builders"] .wsec__t::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border: 1px solid #111; background: #b583e6; vertical-align: 0; }
+.wsec .folder__grid { padding-top: 6px; }
+.win--wfold .wsec[data-sec="plan"] { border-left: 1px solid var(--plat-2); }
+.wsec[data-sec="fun"] .folder__grid, .wsec[data-sec="plan"] .folder__grid { grid-template-columns: minmax(100px, 128px); }
+.icon.is-coming img.is-off { filter: grayscale(1); opacity: .5; }
+.wsec__soon { font: 600 10px/1.4 var(--f-ui); padding: 0 5px; background: #ffd23f; color: #111; border-radius: 2px; }
+@media (max-width: 520px) {
+  .win--wfold .wsec[data-sec="builders"] .folder__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
 /* Built with (js/app/apps.js): the real build numbers, data/build-stats.json */
 .win--built .win__body { padding: 0; }
