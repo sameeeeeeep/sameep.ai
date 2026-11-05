@@ -19,11 +19,7 @@
   <header class="top">
     <a class="top__mark" href="./" aria-label="Wispr Wrapped, start again"><em>Wispr</em> Wrapped</a>
     <span class="top__by">a prototype by Sameep for Wispr</span>
-    <nav class="tabs" role="tablist" aria-label="Whose Wrapped">
-      <button role="tab" data-mode="project">Project</button>
-      <button role="tab" data-mode="year">Year</button>
-      <button role="tab" data-mode="yours">Yours</button>
-    </nav>
+    <nav class="tabs" role="tablist" aria-label="Whose Wrapped"></nav>
   </header>
 
   <main class="stage">
@@ -45,8 +41,11 @@
   <div class="own" hidden>
     <div class="own__box" role="dialog" aria-modal="true" aria-labelledby="own-t">
       <p class="own__k">Make yours</p>
-      <h2 id="own-t">Say something, or paste something you’d normally type.</h2>
-      <p class="own__p">A minute of talking is plenty. It’s counted right here, in this tab.</p>
+      <h2 id="own-t">Get your real Wrapped: give this to your Claude.</h2>
+      <p class="own__p">Use Wispr Flow and Claude Code on a Mac? Run this in Terminal. Claude reads your own Flow history on your Mac and builds your Wrapped there, with every card as a PNG. Nothing gets uploaded.</p>
+      <div class="own__cmd"><code id="own-cmd">claude --plugin-url https://sameep.ai/wispr-wrapped/wispr-wrapped.zip "/wispr-wrapped"</code><button class="act" type="button" data-own="copy">Copy</button></div>
+      <p class="own__or"><span>or try it here</span></p>
+      <p class="own__p own__p--sm">Talk for a minute, or paste something you’d normally type. It’s counted in this tab.</p>
       <div class="own__mic">
         <button class="mic" type="button" aria-pressed="false"><span class="mic__dot"></span><span class="mic__l">Start talking</span></button>
         <span class="mic__t" aria-live="polite"></span>
@@ -63,7 +62,9 @@
   </div>
 
   <noscript><p class="nos">Wispr Wrapped needs JavaScript. It’s a swipeable story of Sameep’s dictation stats: 7,365 words said to one portfolio, “you know” 105 times, peak hour 4am.</p></noscript>
-  <script type="module" src="app.js"></script>
+  <script src="data.js"></script>
+  <script type="module">import { track } from '../js/analytics.js'; window.wwTrack = track;</script>
+  <script src="app.js"></script>
 <script type="module" src="../js/guide/page.js" data-guide="wrapped"></script>
 </body>
 </html>

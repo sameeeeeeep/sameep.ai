@@ -1,14 +1,16 @@
 // data.js — Sameep's real numbers. Read on his Mac from Wispr Flow's local history (flow.sqlite) and matched
 // to his Claude Code sessions for this site, 5 Nov 2026. Only totals and a few of his own lines leave the Mac:
 // no transcripts, no audio. Each card is plain data so the page and the 1080×1920 PNG draw the same thing.
+// A plain script (sets window.WW_DATA) so the same renderer runs on the site and from disk.
 // Colours: Wispr Flow's palette (lumen, dawn, signal, glow, fathom, vast, mint, flare), as sampled for Growth OS.
 
-export const C = {
+window.WW_DATA = {};
+const C = window.WW_DATA.C = {
   lumen: '#ffffeb', paper: '#fffdf9', vast: '#1a1a1a', mute: '#5d5d52', fathom: '#034f46', dawn: '#f0d7ff',
   signal: '#ffbcf2', glow: '#ffa946', flare: '#ff6c4c', pulse: '#7f1c34', mint: '#cfe8dc',
 };
 
-export const STORIES = {
+window.WW_DATA.STORIES = {
   project: {
     tab: 'Project',
     title: 'Project Wrapped',

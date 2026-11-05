@@ -85,6 +85,7 @@ button { font: inherit; color: inherit; }
 @keyframes grow { from { transform: scaleX(0); } }
 .v-list { list-style: none; padding: 0; display: grid; gap: 2cqw; }
 .v-list li { display: grid; grid-template-columns: 24cqw 1fr 12cqw; align-items: center; gap: 2.4cqw; font: 600 3.8cqw/1 var(--sans); opacity: 0; animation: rise .6s var(--ease) forwards; animation-delay: var(--d); }
+.v-list b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .v-list span { display: block; height: 2.6cqw; border-radius: 2cqw; background: currentColor; transform-origin: left; transform: scaleX(var(--w)); opacity: .85; }
 .v-list em { font-style: normal; text-align: right; opacity: .7; font-variant-numeric: tabular-nums; }
 .v-chips { display: flex; flex-wrap: wrap; gap: 1.8cqw; }
@@ -124,6 +125,12 @@ button { font: inherit; color: inherit; }
 .own__k { margin: 0 0 8px; font: 600 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
 .own h2 { margin: 0; font: 400 30px/1.05 var(--serif); letter-spacing: -.02em; }
 .own__p { margin: 10px 0 18px; color: var(--mute); }
+.own__cmd { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--vast); color: var(--lumen); }
+.own__cmd code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font: 500 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; scrollbar-width: none; }
+.own__cmd .act { min-height: 36px; padding: 0 14px; background: var(--lumen); color: var(--vast); box-shadow: none; flex: none; }
+.own__or { display: flex; align-items: center; gap: 10px; margin: 22px 0 6px; font: 600 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.own__or::before, .own__or::after { content: ""; flex: 1; height: 1px; background: var(--line-2); }
+.own__p--sm { margin-top: 4px; }
 .own__mic { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .mic { min-height: 52px; padding: 0 22px 0 16px; display: flex; align-items: center; gap: 10px; border: 0; border-radius: 999px; background: var(--vast); color: var(--lumen); font: 600 15px/1 var(--sans); cursor: pointer; }
 .mic__dot { width: 14px; height: 14px; border-radius: 50%; background: var(--flare); }

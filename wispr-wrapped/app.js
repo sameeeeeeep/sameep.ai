@@ -1,14 +1,19 @@
 // Wispr Wrapped: a story player (tap, hold, swipe, keys), a 1080×1920 PNG of any card drawn from the same card
 // data, and "make yours" (talk or paste, counted in this tab; only the counts go in the share link).
-import { track } from '../js/analytics.js';
-import { C, STORIES } from './data.js';
+// A plain script, not a module, so the /wispr-wrapped skill can inline it into a page that opens from disk
+// (file:// can't load modules). The page sets window.WW_DATA = { C, STORIES } and, optionally, WW_CONFIG.
+// ?png=<mode>:<n> draws card n as a bare 1080×1920 image (the skill screenshots it with headless Chrome).
+(() => {
+const { C, STORIES } = window.WW_DATA;
+const CFG = { yours: true, foot: ['A prototype by Sameep for Wispr', 'sameep.ai'], ...window.WW_CONFIG };
+const track = (t, d) => { try { window.wwTrack?.(t, d); } catch { /* analytics never breaks the story */ } };
 
 const $ = (s, el = document) => el.querySelector(s);
 const RM = matchMedia('(prefers-reduced-motion: reduce)');
 const nf = (n) => Math.round(n).toLocaleString('en-US');
 const INK = new Set(['fathom', 'vast', 'flare']);
 const fgOf = (bg) => (INK.has(bg) && bg !== 'flare' ? C.lumen : C.vast);
-const FOOT = ['A prototype by Sameep for Wispr', 'sameep.ai'];
+const FOOT = CFG.foot;
 const BLOBS = [[78, 24, 70], [18, 30, 62], [84, 58, 56], [30, 18, 80], [70, 40, 66]]; // x%, y%, size cqw, per card
 const DUR = 7500;
 
@@ -49,7 +54,7 @@ function syncUrl() {
   u.searchParams.set('m', S.mode);
   if (S.i) u.searchParams.set('c', S.i + 1); else u.searchParams.delete('c');
   u.hash = S.mode === 'yours' && S.yoursCode ? 'y=' + S.yoursCode : '';
-  history.replaceState(null, '', u);
+  try { history.replaceState(null, '', u); } catch { /* file:// in some browsers */ }
 }
 
 // ---------------------------------------------------------------- one card
@@ -146,7 +151,7 @@ function shareBody(s) {
     el('div.sh__grid', {}, s.tiles.map(([k, v, bg], i) => el('div', { style: { background: C[bg], color: fgOf(bg), '--d': (0.5 + i * 0.1) + 's' } }, el('small', {}, k), el('b', {}, v)))),
     r(0.9, el('div.sh__btns', {},
       el('button.act.act--primary', { type: 'button', onclick: (e) => { e.stopPropagation(); save(); } }, 'Save card'),
-      el('button.act', { type: 'button', onclick: (e) => { e.stopPropagation(); openOwn(); } }, own ? 'Make another' : 'Make yours'))),
+      CFG.yours ? el('button.act', { type: 'button', onclick: (e) => { e.stopPropagation(); openOwn(); } }, own ? 'Make another' : 'Make yours') : null)),
     r(1, el('p.c__foot', {}, el('span', {}, FOOT[0]), el('span', {}, FOOT[1]))));
 }
 
@@ -227,11 +232,12 @@ addEventListener('keydown', (e) => {
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden && !S.paused) { setPaused(true); S.autoPaused = true; } else if (!document.hidden && S.autoPaused) { S.autoPaused = false; setPaused(false); } });
 
-document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => {
-  if (b.dataset.mode === 'yours' && !S.yours) openOwn(); else setMode(b.dataset.mode);
-}));
+// tabs: one per story in the data, plus "Yours" where make-yours is on
+$('.tabs').replaceChildren(...[...Object.keys(STORIES), ...(CFG.yours ? ['yours'] : [])].map((m) => el('button', { role: 'tab', 'data-mode': m, type: 'button',
+  onclick: () => { if (m === 'yours' && !S.yours) openOwn(); else setMode(m); } }, m === 'yours' ? 'Yours' : STORIES[m].tab)));
 $('[data-act="pause"]').onclick = () => setPaused(!S.paused);
 $('[data-act="save"]').onclick = () => save();
+if (CFG.link === false) $('[data-act="link"]').hidden = true;
 $('[data-act="link"]').onclick = async (e) => {
   syncUrl();
   const b = e.currentTarget;
@@ -263,7 +269,8 @@ function mix(fg, a) { // fg at alpha a, as rgba
 const SERIF = '"EB Garamond", Georgia, serif', SANS = 'Figtree, system-ui, sans-serif';
 
 async function drawPng(card) {
-  try { await Promise.all([`400 100px ${SERIF}`, `italic 400 60px ${SERIF}`, `600 40px ${SANS}`, `500 40px ${SANS}`].map((f) => document.fonts.load(f))); } catch {}
+  // wait for the fonts, but never more than 5 s (offline: system fonts it is)
+  try { await Promise.race([Promise.all([`400 100px ${SERIF}`, `italic 400 60px ${SERIF}`, `600 40px ${SANS}`, `500 40px ${SANS}`].map((f) => document.fonts.load(f))), new Promise((r) => setTimeout(r, 5000))]); } catch {}
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const c = cv.getContext('2d'), bg = C[card.bg], fg = fgOf(card.bg), X = 7.5 * U, MW = W - 2 * X;
   c.fillStyle = bg; c.fillRect(0, 0, W, H);
@@ -295,7 +302,7 @@ async function drawPng(card) {
     lines.forEach((l, k) => c.fillText(l, X, b - (lines.length - 1 - k) * lh));
     b -= lines.length * lh + 3.4 * U;
   }
-  if (card.unit) { c.font = `italic 400 ${7 * U}px ${SERIF}`; wrapText(c, card.unit, MW).reverse().forEach((l, k) => c.fillText(l, X, b - k * 7.7 * U)); b -= 2.4 * U + 7.7 * U * (wrapText(c, card.unit, MW).length); }
+  if (card.unit) { c.font = `italic 400 ${7 * U}px ${SERIF}`; wrapText(c, card.unit, MW).reverse().forEach((l, k) => c.fillText(l, X, b - k * 7.7 * U)); b -= 4.6 * U + 7.7 * U * (wrapText(c, card.unit, MW).length); }
   const txt = typeof card.big === 'number' ? nf(card.big) : card.big;
   let fs = (typeof card.big === 'number' || txt.length <= 6 ? 27 : txt.length > 14 ? 13 : 17) * U;
   c.font = `400 ${fs}px ${SERIF}`;
@@ -318,7 +325,7 @@ function drawViz(c, v, x, y, w, fg, bg) {
   }
   if (v.type === 'list') {
     const max = Math.max(...v.items.map(([, n]) => n)), lh = 6.4 * U;
-    v.items.forEach(([l, n], i) => { const yy = y + i * lh; c.font = `600 ${3.8 * U}px ${SANS}`; c.fillStyle = fg; c.fillText(l, x, yy + 3.8 * U); const bx = x + 26.4 * U, bw = w - 26.4 * U - 14.4 * U; c.globalAlpha = .85; rr(c, bx, yy + 1.4 * U, Math.max(.03, n / max) * bw, 2.6 * U, 1.3 * U); c.fill(); c.globalAlpha = .7; c.textAlign = 'right'; c.fillText(nf(n), x + w, yy + 3.8 * U); c.textAlign = 'left'; c.globalAlpha = 1; });
+    v.items.forEach(([l, n], i) => { const yy = y + i * lh; let ls = 3.8 * U; c.font = `600 ${ls}px ${SANS}`; while (c.measureText(l).width > 24.4 * U && ls > 2.2 * U) { ls *= .92; c.font = `600 ${ls}px ${SANS}`; } c.fillStyle = fg; c.fillText(l, x, yy + 3.8 * U); c.font = `600 ${3.8 * U}px ${SANS}`; const bx = x + 26.4 * U, bw = w - 26.4 * U - 14.4 * U; c.globalAlpha = .85; rr(c, bx, yy + 1.4 * U, Math.max(.03, n / max) * bw, 2.6 * U, 1.3 * U); c.fill(); c.globalAlpha = .7; c.textAlign = 'right'; c.fillText(nf(n), x + w, yy + 3.8 * U); c.textAlign = 'left'; c.globalAlpha = 1; });
   }
   if (v.type === 'chips') {
     c.font = `500 ${3.7 * U}px ui-monospace, Menlo, monospace`; let cx = x, cy = y; const ph = 7 * U, g = 1.8 * U;
@@ -350,8 +357,9 @@ function drawShare(c, s, X, MW, b, cv) {
     const tx = X + (i % 2) * (tw + g), ty = top + Math.floor(i / 2) * (th + g), fg = fgOf(bg);
     c.fillStyle = C[bg]; rr(c, tx, ty, tw, th, 4 * U); c.fill(); c.fillStyle = fg;
     c.globalAlpha = .75; c.font = `600 ${2.9 * U}px ${SANS}`; c.fillText(k.toUpperCase(), tx + 3.6 * U, ty + 6.4 * U); c.globalAlpha = 1;
-    c.font = `400 ${6.6 * U}px ${SERIF}`; const lines = wrapText(c, v, tw - 7.2 * U).slice(0, 3);
-    lines.reverse().forEach((l, k2) => c.fillText(l, tx + 3.6 * U, ty + th - 3.6 * U - k2 * 6.8 * U));
+    let vs = 6.6 * U; c.font = `400 ${vs}px ${SERIF}`; let lines = wrapText(c, v, tw - 7.2 * U);
+    while (lines.length > 2 && vs > 3.6 * U) { vs *= .9; c.font = `400 ${vs}px ${SERIF}`; lines = wrapText(c, v, tw - 7.2 * U); }
+    lines.slice(0, 3).reverse().forEach((l, k2) => c.fillText(l, tx + 3.6 * U, ty + th - 3.6 * U - k2 * vs * 1.03));
   });
   c.fillStyle = C.vast;
   let y = top - 6 * U;
@@ -386,19 +394,27 @@ async function save() {
 const own = $('.own'), txt = $('.own__txt'), err = $('.own__err'), mic = $('.mic'), micT = $('.mic__t');
 let lastFocus = null;
 function openOwn() {
+  if (!own) return;
   lastFocus = document.activeElement;
   own.hidden = false; err.textContent = '';
   setPaused(true);
-  setTimeout(() => (SR ? mic : txt).focus(), 30);
+  setTimeout(() => $('[data-own="copy"]').focus(), 30);
   track('wrapped_own_open', {});
 }
 function closeOwn() {
   stopMic(); own.hidden = true; lastFocus?.focus?.();
   if (!S.data) setMode('project');
 }
+if (own) {
 own.addEventListener('click', (e) => { if (e.target === own) closeOwn(); });
 own.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOwn(); });
 $('[data-own="close"]').onclick = closeOwn;
+$('[data-own="copy"]').onclick = async (e) => {
+  const b = e.currentTarget, line = $('#own-cmd').textContent;
+  try { await navigator.clipboard.writeText(line); b.textContent = 'Copied'; } catch { prompt('Copy this line', line); }
+  setTimeout(() => { b.textContent = 'Copy'; }, 1800);
+  track('wrapped_install_copy', {});
+};
 $('[data-own="sample"]').onclick = () => {
   txt.value = 'Okay so basically I think the onboarding is, you know, kind of long. Like, why do we ask for the team size before they have even tried it? I would honestly just let them talk first. Let them hold the key, say one sentence, and see it show up clean. That is the aha. Everything else can wait. Also, can we try a version where the first screen is just a mic? Literally just a mic. I think it would basically double activation, or at least, you know, we would learn something.';
   S.speechSecs = 0; err.textContent = ''; txt.focus();
@@ -410,11 +426,15 @@ $('[data-own="go"]').onclick = () => {
   setYours(st); own.hidden = true;
   track('wrapped_own_made', { src: S.speechSecs ? 'mic' : 'paste', words: st.n });
 };
+}
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, micOn = false, t0 = 0, tick = 0, base = '';
-if (!SR) { mic.disabled = true; micT.textContent = 'This browser can’t transcribe. Paste instead.'; }
-mic.onclick = () => (micOn ? stopMic() : startMic());
+if (own) {
+  if (!SR) { mic.disabled = true; micT.textContent = 'This browser can’t transcribe. Paste instead.'; }
+  mic.onclick = () => (micOn ? stopMic() : startMic());
+  txt.addEventListener('input', () => { if (!micOn && !txt.value.trim()) S.speechSecs = 0; });
+}
 function startMic() {
   if (!SR) return;
   rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = navigator.language || 'en-IN';
@@ -439,7 +459,6 @@ function timer() {
   const s = (S.speechSecs || 0) + (micOn ? (performance.now() - t0) / 1000 : 0), n = words(txt.value).length;
   if (s) micT.textContent = `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')} · ${n} words`;
 }
-txt.addEventListener('input', () => { if (!micOn && !txt.value.trim()) S.speechSecs = 0; });
 
 // the counting
 const words = (t) => String(t).toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}'’]*/gu) || [];
@@ -508,8 +527,30 @@ function readYours(code) {
 // ---------------------------------------------------------------- go
 const q = new URLSearchParams(location.search), hy = location.hash.match(/y=([\w-]+)/);
 if (hy) S.yours = readYours(hy[1]);
-const m0 = q.get('m') === 'yours' ? (S.yours ? 'yours' : 'project') : STORIES[q.get('m')] ? q.get('m') : 'project';
-setMode(m0, Math.max(0, (parseInt(q.get('c'), 10) || 1) - 1), { push: false });
-if (q.get('m') === 'yours' && !S.yours) openOwn();
-document.fonts?.ready.then(() => fitBig(cardEl));
-addEventListener('resize', () => fitBig(cardEl));
+const first = Object.keys(STORIES)[0];
+const png = q.get('png') === 'all' ? ['all'] : (q.get('png') || '').match(/^(\w+):(\d+)$/);
+const m0 = png && png[1] ? png[1] : q.get('m') === 'yours' ? (S.yours ? 'yours' : first) : STORIES[q.get('m')] ? q.get('m') : first;
+if (png?.[0] === 'all') {
+  // every card of every story as "mode n id data:image/png…" lines, for `chrome --headless --dump-dom`
+  (async () => {
+    const out = [];
+    for (const m of Object.keys(STORIES)) {
+      S.mode = m; S.data = STORIES[m]; S.list = cardsOf(S.data);
+      for (let k = 0; k < S.list.length; k++) out.push(`${m} ${k + 1} ${S.list[k].id} ${(await drawPng(S.list[k])).toDataURL('image/png')}`);
+    }
+    document.body.replaceChildren(el('pre', { id: 'png-out' }, out.join('\n')));
+  })().catch((e) => document.body.replaceChildren(el('pre', { id: 'png-out' }, 'ERROR ' + e)));
+} else if (png) {
+  S.mode = m0; S.data = m0 === 'yours' ? S.yours : STORIES[m0]; S.list = cardsOf(S.data);
+  drawPng(S.list[Math.min(S.list.length, Math.max(1, +png[2])) - 1]).then((cv) => {
+    document.body.replaceChildren(el('img', { src: cv.toDataURL('image/png'), alt: '', style: { display: 'block', width: '1080px', height: '1920px' } }));
+    document.body.style.overflow = 'hidden'; document.body.style.margin = '0';
+    document.title = 'ready';
+  });
+} else {
+  setMode(m0, Math.max(0, (parseInt(q.get('c'), 10) || 1) - 1), { push: false });
+  if (q.get('m') === 'yours' && !S.yours) openOwn();
+  document.fonts?.ready.then(() => fitBig(cardEl));
+  addEventListener('resize', () => fitBig(cardEl));
+}
+})();
