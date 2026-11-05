@@ -63,8 +63,8 @@ export function installGuides({ area, cards, ctx }) {
       { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), when: () => !isWispr, card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'Hover any icon on the left for a card like this.' },
       // last: the show. Wispr is the remote there (a phone has no Flow key: chips, or just say it)
       isNarrow()
-        ? { at: showEl, centre: true, say: 'Then OFF THE CV, my portfolio as a show in my voice. It starts 15 s after this; tap a chip inside, or just say where to go.' }
-        : { at: showEl, centre: true, say: 'Then OFF THE CV, my portfolio as a show in my voice. It starts 15 s after this. Inside, hold Flow and say where to go.', extra: () => flowPill() },
+        ? { at: showEl, centre: true, say: 'Then OFF THE CV, my portfolio as a show in my voice. It starts 15 s after this; tap a chip inside to jump around.' }
+        : { at: showEl, centre: true, say: 'Then OFF THE CV, my portfolio as a show in my voice. It starts 15 s after this. Inside, tap a chip to jump around.' },
     ],
   });
 
@@ -159,8 +159,8 @@ export function installGuides({ area, cards, ctx }) {
       // the Wispr version opens on the part made for them: point at it, gently
       { at: inWin(podW, '.mcards'), when: () => isWispr, centre: true, say: 'This first part is the one made for you: Wispr for Builders. Tap a card to open that piece.' },
       isNarrow()
-        ? { at: inWin(podW, '.steer'), say: 'You steer. Tap a chip, or say where you’d like to go.' }
-        : { at: inWin(podW, '.steer'), dx: 0.12, place: 'above', say: 'You steer. Hold your Flow key any time and say where to go.', extra: () => flowPill('Hold Flow: “something fun”') },
+        ? { at: inWin(podW, '.steer'), say: 'You steer. Tap a chip, or use ← → to jump between parts.' }
+        : { at: inWin(podW, '.steer'), dx: 0.12, place: 'above', say: 'You steer. Tap a chip, or use ← → to jump between parts.' },
       { at: inWin(podW, '.transport'), say: isNarrow() ? 'Back, pause, skip: a part at a time.' : 'Back, pause, skip: a part at a time. Space pauses.' },
       isNarrow()
         ? { at: inWin(podW, '.chap-drawer'), say: 'The episode map: jump anywhere, or pick a project and hear just that. Enjoy the show.' }
