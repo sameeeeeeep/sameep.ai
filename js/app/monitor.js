@@ -168,6 +168,7 @@ export class Monitor {
     this.pinned = false;
     this.el.dataset.type = v.type;
     this.el.dataset.layout = v.layout || '';
+    this.el.dataset.fit = v.type === 'cards' && (v.items || []).length <= 5 ? '1' : ''; // a short menu: the panel fits it, bigger stills
     this.title.textContent = v.title || '';
     // rule 3: screens have a legible small version; stats and the menu don't
     this.smallOK = v.type !== 'stats' && v.type !== 'cards' && v.type !== 'reel';
@@ -281,8 +282,10 @@ export class Monitor {
   // a card with a url opens that page in a new tab; with probe, a page that isn't up yet shows as "Coming soon"
   #cards(v) {
     const cards = v.items.map((it) => {
-      const kids = [h('span.mcard__pic', it.thumb && h('img', { src: it.thumb, alt: '', loading: 'eager', draggable: 'false' })),
+      const kids = [h('span.mcard__pic' + (it.mono ? '.mcard__pic--mono' : ''), it.thumb ? h('img', { src: it.thumb, alt: '', loading: 'eager', draggable: 'false' }) : it.mono ? h('span', { 'aria-hidden': 'true' }, it.mono) : null),
         h('span.mcard__t', it.title, it.url && h('span.mcard__ext', { 'aria-hidden': 'true' }, ' ↗')), h('span.mcard__b', it.blurb)];
+      // neither a part to play nor a page to open (a group of things on the way): a plain card, not a control
+      if (!it.url && !it.to) return h('div.mcard.is-note', ...kids);
       if (!it.url) return h('button.mcard', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onGo?.(it.to); } }, ...kids);
       const a = h('a.mcard', { href: it.url, target: '_blank', rel: 'noopener', onclick: (e) => { e.stopPropagation(); if (a.classList.contains('is-soon')) e.preventDefault(); } }, ...kids);
       if (it.probe) fetch(it.url, { method: 'HEAD', cache: 'no-store' }).then((r) => r.ok, () => false).then((ok) => {
@@ -322,11 +325,11 @@ export class Monitor {
           media.addEventListener('click', watch(sp));
           media.play?.().catch(() => {});
         } else media = info.poster ? h('img.reel__img', { src: info.poster, alt: '' }) : tile(sp);
-        scr.replaceChildren(media, info.ok ? h('button.reel__big', { type: 'button', 'aria-label': `Watch ${sp.title} with sound`, onclick: watch(sp) }) : null);
-        cap.replaceChildren(h('span.reel__t', sp.title), sp.blurb ? h('span.reel__b', sp.blurb) : null,
+        scr.replaceChildren(...[media, info.ok && h('button.reel__big', { type: 'button', 'aria-label': `Watch ${sp.title} with sound`, onclick: watch(sp) })].filter(Boolean));
+        cap.replaceChildren(...[h('span.reel__t', sp.title), sp.blurb && h('span.reel__b', sp.blurb),
           h('span.reel__acts',
             info.ok ? h('button.reel__watch', { type: 'button', onclick: watch(sp) }, '▶ Watch with sound', info.sec ? h('span.reel__len', ' · ' + specialLen(info)) : null) : null,
-            info.page ? h('a.reel__open', { href: info.page, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation() }, 'Open ↗') : null));
+            info.page ? h('a.reel__open', { href: info.page, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation() }, 'Open ↗') : null)].filter(Boolean));
       });
     };
     const chips = list.map((sp, i) => h('button.reel__chip', { type: 'button', 'aria-pressed': 'false', onclick: (e) => { e.stopPropagation(); manual = true; put(i); } }, sp.title));

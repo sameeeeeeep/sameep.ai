@@ -134,162 +134,105 @@
       }
      },
      "visual": {
-      "type": "reel",
+      "type": "cards",
       "key": "wispr-builders",
       "title": "Wispr for Builders · Pack 1",
       "items": [
-       "wispr-builders",
-       "guru",
-       "wispr-video",
-       "review",
-       "file",
-       "wish",
-       "pm",
-       "wrapped"
+       {
+        "title": "Guru",
+        "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
+        "thumb": "img/work/wispr/guru.jpg",
+        "url": "wispr-guru/"
+       },
+       {
+        "title": "Wispr Video",
+        "blurb": "Teleprompter, recorder and editor in one.",
+        "thumb": "img/work/wispr/video.jpg",
+        "url": "wispr-editor/"
+       },
+       {
+        "title": "Pack 1, on the way",
+        "blurb": "Review, File, Wish and PM.",
+        "mono": "+4"
+       },
+       {
+        "title": "Wispr Wrapped",
+        "blurb": "The fun one: a Wrapped of your Wispr Flow history.",
+        "thumb": "img/work/wispr/wrapped.jpg",
+        "url": "wispr-wrapped/"
+       }
       ],
       "cue": {
        "builders-01.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-01-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-01-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-01-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ],
        "builders-02.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          8.32,
-         1
+         0
         ]
        ],
        "builders-02-k56.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          7.67,
-         1
-        ]
-       ],
-       "builders-02-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-02-kimmy.mp3": [
-        [
-         0,
          0
         ]
        ],
        "builders-03.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          5.63,
-         3
-        ],
-        [
-         8.77,
-         4
-        ],
-        [
-         10.54,
-         5
-        ],
-        [
-         14.24,
-         6
+         2
         ],
         [
          17.67,
-         7
+         3
         ]
        ],
        "builders-03-k56.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          3.85,
-         3
-        ],
-        [
-         6.77,
-         4
-        ],
-        [
-         8.7,
-         5
-        ],
-        [
-         11.33,
-         6
+         2
         ],
         [
          13.84,
-         7
-        ]
-       ],
-       "builders-03-gus.mp3": [
-        [
-         0,
-         2
-        ]
-       ],
-       "builders-03-kimmy.mp3": [
-        [
-         0,
-         2
+         3
         ]
        ],
        "builders-04.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-04-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-04-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-04-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ]
       }
@@ -309,162 +252,105 @@
       }
      },
      "visual": {
-      "type": "reel",
+      "type": "cards",
       "key": "wispr-builders",
       "title": "Wispr for Builders · Pack 1",
       "items": [
-       "wispr-builders",
-       "guru",
-       "wispr-video",
-       "review",
-       "file",
-       "wish",
-       "pm",
-       "wrapped"
+       {
+        "title": "Guru",
+        "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
+        "thumb": "img/work/wispr/guru.jpg",
+        "url": "wispr-guru/"
+       },
+       {
+        "title": "Wispr Video",
+        "blurb": "Teleprompter, recorder and editor in one.",
+        "thumb": "img/work/wispr/video.jpg",
+        "url": "wispr-editor/"
+       },
+       {
+        "title": "Pack 1, on the way",
+        "blurb": "Review, File, Wish and PM.",
+        "mono": "+4"
+       },
+       {
+        "title": "Wispr Wrapped",
+        "blurb": "The fun one: a Wrapped of your Wispr Flow history.",
+        "thumb": "img/work/wispr/wrapped.jpg",
+        "url": "wispr-wrapped/"
+       }
       ],
       "cue": {
        "builders-01.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-01-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-01-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-01-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ],
        "builders-02.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          8.32,
-         1
+         0
         ]
        ],
        "builders-02-k56.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          7.67,
-         1
-        ]
-       ],
-       "builders-02-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-02-kimmy.mp3": [
-        [
-         0,
          0
         ]
        ],
        "builders-03.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          5.63,
-         3
-        ],
-        [
-         8.77,
-         4
-        ],
-        [
-         10.54,
-         5
-        ],
-        [
-         14.24,
-         6
+         2
         ],
         [
          17.67,
-         7
+         3
         ]
        ],
        "builders-03-k56.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          3.85,
-         3
-        ],
-        [
-         6.77,
-         4
-        ],
-        [
-         8.7,
-         5
-        ],
-        [
-         11.33,
-         6
+         2
         ],
         [
          13.84,
-         7
-        ]
-       ],
-       "builders-03-gus.mp3": [
-        [
-         0,
-         2
-        ]
-       ],
-       "builders-03-kimmy.mp3": [
-        [
-         0,
-         2
+         3
         ]
        ],
        "builders-04.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-04-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-04-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-04-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ]
       }
@@ -483,162 +369,105 @@
       }
      },
      "visual": {
-      "type": "reel",
+      "type": "cards",
       "key": "wispr-builders",
       "title": "Wispr for Builders · Pack 1",
       "items": [
-       "wispr-builders",
-       "guru",
-       "wispr-video",
-       "review",
-       "file",
-       "wish",
-       "pm",
-       "wrapped"
+       {
+        "title": "Guru",
+        "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
+        "thumb": "img/work/wispr/guru.jpg",
+        "url": "wispr-guru/"
+       },
+       {
+        "title": "Wispr Video",
+        "blurb": "Teleprompter, recorder and editor in one.",
+        "thumb": "img/work/wispr/video.jpg",
+        "url": "wispr-editor/"
+       },
+       {
+        "title": "Pack 1, on the way",
+        "blurb": "Review, File, Wish and PM.",
+        "mono": "+4"
+       },
+       {
+        "title": "Wispr Wrapped",
+        "blurb": "The fun one: a Wrapped of your Wispr Flow history.",
+        "thumb": "img/work/wispr/wrapped.jpg",
+        "url": "wispr-wrapped/"
+       }
       ],
       "cue": {
        "builders-01.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-01-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-01-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-01-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ],
        "builders-02.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          8.32,
-         1
+         0
         ]
        ],
        "builders-02-k56.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          7.67,
-         1
-        ]
-       ],
-       "builders-02-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-02-kimmy.mp3": [
-        [
-         0,
          0
         ]
        ],
        "builders-03.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          5.63,
-         3
-        ],
-        [
-         8.77,
-         4
-        ],
-        [
-         10.54,
-         5
-        ],
-        [
-         14.24,
-         6
+         2
         ],
         [
          17.67,
-         7
+         3
         ]
        ],
        "builders-03-k56.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          3.85,
-         3
-        ],
-        [
-         6.77,
-         4
-        ],
-        [
-         8.7,
-         5
-        ],
-        [
-         11.33,
-         6
+         2
         ],
         [
          13.84,
-         7
-        ]
-       ],
-       "builders-03-gus.mp3": [
-        [
-         0,
-         2
-        ]
-       ],
-       "builders-03-kimmy.mp3": [
-        [
-         0,
-         2
+         3
         ]
        ],
        "builders-04.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-04-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-04-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-04-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ]
       }
@@ -657,162 +486,105 @@
       }
      },
      "visual": {
-      "type": "reel",
+      "type": "cards",
       "key": "wispr-builders",
       "title": "Wispr for Builders · Pack 1",
       "items": [
-       "wispr-builders",
-       "guru",
-       "wispr-video",
-       "review",
-       "file",
-       "wish",
-       "pm",
-       "wrapped"
+       {
+        "title": "Guru",
+        "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
+        "thumb": "img/work/wispr/guru.jpg",
+        "url": "wispr-guru/"
+       },
+       {
+        "title": "Wispr Video",
+        "blurb": "Teleprompter, recorder and editor in one.",
+        "thumb": "img/work/wispr/video.jpg",
+        "url": "wispr-editor/"
+       },
+       {
+        "title": "Pack 1, on the way",
+        "blurb": "Review, File, Wish and PM.",
+        "mono": "+4"
+       },
+       {
+        "title": "Wispr Wrapped",
+        "blurb": "The fun one: a Wrapped of your Wispr Flow history.",
+        "thumb": "img/work/wispr/wrapped.jpg",
+        "url": "wispr-wrapped/"
+       }
       ],
       "cue": {
        "builders-01.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-01-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-01-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-01-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ],
        "builders-02.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          8.32,
-         1
+         0
         ]
        ],
        "builders-02-k56.mp3": [
         [
          0,
-         0
+         -1
         ],
         [
          7.67,
-         1
-        ]
-       ],
-       "builders-02-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-02-kimmy.mp3": [
-        [
-         0,
          0
         ]
        ],
        "builders-03.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          5.63,
-         3
-        ],
-        [
-         8.77,
-         4
-        ],
-        [
-         10.54,
-         5
-        ],
-        [
-         14.24,
-         6
+         2
         ],
         [
          17.67,
-         7
+         3
         ]
        ],
        "builders-03-k56.mp3": [
         [
          0,
-         2
+         1
         ],
         [
          3.85,
-         3
-        ],
-        [
-         6.77,
-         4
-        ],
-        [
-         8.7,
-         5
-        ],
-        [
-         11.33,
-         6
+         2
         ],
         [
          13.84,
-         7
-        ]
-       ],
-       "builders-03-gus.mp3": [
-        [
-         0,
-         2
-        ]
-       ],
-       "builders-03-kimmy.mp3": [
-        [
-         0,
-         2
+         3
         ]
        ],
        "builders-04.mp3": [
         [
          0,
-         0
+         -1
         ]
        ],
        "builders-04-k56.mp3": [
         [
          0,
-         0
-        ]
-       ],
-       "builders-04-gus.mp3": [
-        [
-         0,
-         0
-        ]
-       ],
-       "builders-04-kimmy.mp3": [
-        [
-         0,
-         0
+         -1
         ]
        ]
       }
@@ -820,10 +592,6 @@
     }
    ],
    "next": "cold-open",
-   "hosts": [
-    "foyra",
-    "k56"
-   ],
    "ask": "would you like Sameep to present the idea?",
    "choices": [
     {
@@ -9227,7 +8995,12 @@
    ],
    "skip": [
     "about"
-   ]
+   ],
+   "v": {
+    "wispr": {
+     "blurb": "Wispr for Builders, then the cold open and one highlight: the Nykaa sales."
+    }
+   }
   },
   "standard": {
    "label": "Standard",
@@ -9240,7 +9013,12 @@
     "sb-intro",
     "ppt-intro",
     "outro-make"
-   ]
+   ],
+   "v": {
+    "wispr": {
+     "blurb": "Wispr for Builders, then how this was made, growth, Switchboard and ppt.live."
+    }
+   }
   },
   "full": {
    "label": "Full",
@@ -9294,7 +9072,12 @@
     "f-alter",
     "f-vibedj",
     "outro-make"
-   ]
+   ],
+   "v": {
+    "wispr": {
+     "blurb": "Wispr for Builders, then everything, one topic at a time: how this was made, growth, the startup that didn't work, Switchboard, ppt.live, the toolbox and the fun stuff."
+    }
+   }
   }
  }
 }

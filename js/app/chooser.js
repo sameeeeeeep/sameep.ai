@@ -277,17 +277,22 @@ export function chapterMap(map, { visited, currentNode, nextNode, folded, onGo, 
       'aria-label': `${map.title(s)}, ${mins(map.sec(s)) || 'short'}${now ? ', playing now' : heard ? ', heard' : ''}${next ? ', up next' : ''}`,
     }, h('i.sub__dot', { 'aria-hidden': 'true' }, now ? '▶' : heard ? '✓' : ''), h('span.sub__t', keepWhole(map.title(s)), next && h('span.sub__next', 'next')), h('span.sub__m', mins(map.sec(s))));
   };
-  // Specials: the videos, first; one that isn't up yet reads "soon" and can't be tapped
+  // Specials: the videos, first, folded to one line until it's opened (the chapters stay above the fold).
+  // A video that's up plays; one that isn't but has a page opens the page; the rest read "soon"
   const sp = specials?.length ? (() => {
     const open = !folded.has('specials');
     const up = specials.filter((r) => r.info.ok).length;
-    const row = ({ sp: s, info }) => h('li', h(info.ok ? 'button.sub.sub--sp' : 'div.sub.sub--sp.is-soon',
-      info.ok ? { type: 'button', onclick: () => onSpecial(s.slug), 'aria-label': `Watch ${s.title}${specialSeen?.has(s.slug) ? ', watched' : ''}` } : { 'aria-label': `${s.title}, coming soon` },
-      h('i.sub__dot', { 'aria-hidden': 'true' }, specialSeen?.has(s.slug) ? '✓' : info.ok ? '▶' : ''), h('span.sub__t', keepWhole(s.title)),
-      h('span.sub__m', info.ok ? (info.sec ? mins(info.sec) : 'video') : 'soon')));
+    const row = ({ sp: s, info }) => h('li', info.ok
+      ? h('button.sub.sub--sp', { type: 'button', onclick: () => onSpecial(s.slug), 'aria-label': `Watch ${s.title}${specialSeen?.has(s.slug) ? ', watched' : ''}` },
+        h('i.sub__dot', { 'aria-hidden': 'true' }, specialSeen?.has(s.slug) ? '✓' : '▶'), h('span.sub__t', keepWhole(s.title)), h('span.sub__m', info.sec ? mins(info.sec) : 'video'))
+      : info.page
+        ? h('a.sub.sub--sp.is-page', { href: info.page, target: '_blank', rel: 'noopener', 'aria-label': `${s.title}: open the page (new tab)` },
+          h('i.sub__dot', { 'aria-hidden': 'true' }, ''), h('span.sub__t', keepWhole(s.title)), h('span.sub__m', 'Open ↗'))
+        : h('div.sub.sub--sp.is-soon', { 'aria-label': `${s.title}, coming soon` },
+          h('i.sub__dot', { 'aria-hidden': 'true' }, ''), h('span.sub__t', keepWhole(s.title)), h('span.sub__m', 'soon')));
     return [h('li.cmap__ch.cmap__ch--sp' + (open ? '.is-open' : ''),
       h('button.chap', { type: 'button', 'aria-expanded': String(open), onclick: () => onToggle('specials') },
-        h('span.chap__n', { 'aria-hidden': 'true' }, '▶'), h('span.chap__t', 'Specials', h('span.chap__sub', ' · videos')), h('span.chap__m', up ? `${up} of ${specials.length}` : `${specials.length} coming`)),
+        h('span.chap__n', { 'aria-hidden': 'true' }, '▶'), h('span.chap__t', 'Specials', h('span.chap__sub', up ? ' · videos' : ' · videos on the way')), h('span.chap__m', up ? `${up} of ${specials.length}` : '')),
       open ? h('ul.cmap__subs', specials.map(row)) : null)];
   })() : [];
   return [...sp, ...episodeParts(map).map((g) => {
