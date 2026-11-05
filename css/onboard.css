@@ -27,6 +27,7 @@
 .onb__ok { margin: 10px 0 0; font: 500 14px/1.45 var(--f-ui, system-ui); color: #a6e8b4; }
 .onb__ok.is-miss { color: var(--flame, #ffa946); }
 .onb__foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; }
+.onb__go { margin-left: auto; } /* stays right once Skip goes */
 .onb.is-win .onb__go { animation: onb-pop .4s ease-out; }
 @media (max-width: 760px) { .onb__cards { grid-template-columns: 1fr; } .onb__foot { flex-direction: column-reverse; } .onb__foot .btn { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .onb, .onb__card, .onb__card.is-lit { transition: none; animation: none; } }

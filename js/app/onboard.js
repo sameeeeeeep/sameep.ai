@@ -6,6 +6,7 @@
 //      shows the mic hearing you, the words appear, the matching card lights up
 //   await practice(hostEl, { isWispr, step: 'Step 3 of 4' })  → resolves on Continue / Skip
 import { bestMatch } from './fuzzy.js';
+import { isNarrow } from './util.js';
 
 const CARDS = [
   { key: 'ppt', label: 'Tell me about ppt.live', phrases: ['ppt live', 'ppt', 'p p t', 'tell me about ppt live', 'presentation', 'live show'] },
@@ -39,14 +40,21 @@ export function practice(host, { isWispr = false, step = '' } = {}) {
     // 2. say
     const s2 = el('div', 'onb__step is-later');
     const s2h = el('p', 'onb__ask');
-    s2h.innerHTML = isWispr
-      ? '<b>2</b> Now say it. Hold your <kbd>Flow</kbd> key and say “<i>something fun</i>”.'
-      : `<b>2</b> Now say it. ${SR ? 'Tap the mic' : 'Type it'} and say “<i>something fun</i>”${SR ? ', or just type it' : ''}.`;
+    // a phone has no Flow key (or fn): there it's the mic, or typing
+    const flowKey = isWispr && !isNarrow();
+    // say the card they didn't tap, so a match visibly moves the light
+    const ask = (label) => {
+      const q = `“<i>${escapeHTML(label.toLowerCase())}</i>”`;
+      s2h.innerHTML = flowKey
+        ? `<b>2</b> Now say it. Hold your <kbd>Flow</kbd> key and say ${q}.`
+        : SR ? `<b>2</b> Now say it. Tap the mic and say ${q}, or just type it.` : `<b>2</b> Now type it: ${q}.`;
+    };
+    ask(CARDS[1].label);
     const form = el('form', 'onb__say');
     const lead = el('span', 'onb__lead');
     if (isWispr) { const im = el('img'); im.src = 'img/ui/wispr.svg'; im.alt = ''; im.width = 20; im.height = 20; lead.append(im); } else lead.textContent = '›';
     const input = el('input', 'onb__in');
-    Object.assign(input, { type: 'text', placeholder: isWispr ? 'Hold your Flow key and speak…' : 'Say or type where to go…', autocomplete: 'off', spellcheck: false });
+    Object.assign(input, { type: 'text', placeholder: flowKey ? 'Hold your Flow key and speak…' : 'Say or type where to go…', autocomplete: 'off', spellcheck: false });
     input.setAttribute('aria-label', 'Say or type where to go');
     const meter = el('span', 'onb__meter'); meter.setAttribute('aria-hidden', 'true');
     const bars = Array.from({ length: 5 }, () => meter.appendChild(el('i')));
@@ -76,9 +84,10 @@ export function practice(host, { isWispr = false, step = '' } = {}) {
       light(cards.indexOf(b));
       s1ok.hidden = false;
       s1ok.innerHTML = '✓ That’s it. At a real fork that plays the next part. Do nothing and the <b>recommended</b> one plays after a short countdown.';
+      if (!saidOk) ask(CARDS[1 - CARDS.indexOf(c)].label);
       if (s2.classList.contains('is-later')) {
         s1.classList.replace('is-now', 'is-done'); s2.classList.replace('is-later', 'is-now');
-        setTimeout(() => (isWispr || !SR ? input : mic || input).focus({ preventScroll: true }), 200);
+        setTimeout(() => (flowKey || !SR ? input : mic || input).focus({ preventScroll: true }), 200);
       }
     }
     function heard(text) {
@@ -92,6 +101,7 @@ export function practice(host, { isWispr = false, step = '' } = {}) {
       s2.classList.replace('is-now', 'is-done');
       go.focus({ preventScroll: true });
       root.classList.add('is-win');
+      skip.hidden = true;  // both tries done: Start the show is the only way on
     }
     // dictation tools set the value in all sorts of ways: read it on every event, and poll
     const read = () => { if (input.value !== last) { last = input.value; meterFrom(input.value.length ? 0.6 : 0); clearTimeout(read.t); read.t = setTimeout(() => heard(input.value), 700); } };

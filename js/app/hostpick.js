@@ -49,7 +49,7 @@ export function openWelcome(container, { hosts, current, base, persona, routes =
       const mins = h('span.hostpick__min', '…');
       const b = h('button.hostpick__len', { type: 'button', role: 'radio', dataset: { len: id },
         onclick: () => { len = id; sync(); sound.tick('pick'); stopCount(); } },
-      mins, h('span.hostpick__lenk', r.label || id), r.blurb && h('span.hostpick__lenb', r.blurb));
+      mins, h('span.hostpick__lenk', r.label || id), (isWispr && r.v?.wispr?.blurb) || r.blurb ? h('span.hostpick__lenb', (isWispr && r.v?.wispr?.blurb) || r.blurb) : null);
       b._mins = mins;
       lenBtns.push(b);
       lenRow.append(b);
@@ -112,7 +112,7 @@ export function openWelcome(container, { hosts, current, base, persona, routes =
       const page = {
         host: () => [...head(i, full ? 'Welcome to a podcast that you control' : 'Who’s hosting?', 'Choose your host'), hostGrid,
           h('p.hostpick__sub', 'Switch hosts anytime during the show: tap a face on the caption bar under the picture.')],
-        length: () => [...head(i, 'How long have you got?', 'Select the speed'), lenRow, h('p.hostpick__sub', SUB)],
+        length: () => [...head(i, 'How long have you got?', 'Pick a length'), lenRow, h('p.hostpick__sub', SUB)],
         seat: () => [...head(i, 'Grab a seat in the audience', 'Pick who you are in the crowd'),
           panel.area, h('div.cast__form.hostpick__name', panel.field),
           h('p.hostpick__sub', { style: { fontSize: '12px', opacity: '.8' } }, 'Sameep sees the name you type and the parts you played, nothing else.')],

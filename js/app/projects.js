@@ -3,10 +3,17 @@
 // For anyone who wants the work, not the whole show.
 import { h } from './util.js';
 import { mins } from './chooser.js';
+import { shows } from '../version.js';
 
 // node: where the episode talks about it. work: its work.json entry (poster, one-liner).
-// Projects with no node open their work page instead.
+// Projects with no node open their work page instead; url: a page of its own (new tab). only: one version's group.
 export const PROJECTS = [
+  { group: 'Made for Wispr', only: 'wispr', items: [
+    { node: 'builders', title: 'Wispr for Builders', tag: 'Pack 1: Claude mods you run by voice', blurb: 'The part of the show made for Wispr, about a minute long.' },
+    { title: 'Guru', url: 'wispr-guru/', tag: 'A second cursor that shows you how', thumb: 'img/work/wispr/guru.jpg' },
+    { title: 'Wispr Video', url: 'wispr-editor/', tag: 'Teleprompter, recorder and editor in one', thumb: 'img/work/wispr/video.jpg' },
+    { title: 'Wispr Wrapped', url: 'wispr-wrapped/', tag: 'A Wrapped of your Wispr Flow history', thumb: 'img/work/wispr/wrapped.jpg' },
+  ] },
   { group: 'Things I built', items: [
     { work: 'switchboard', node: 'sb-intro', tag: 'Sign in with Google, but for AI' },
     { work: 'pptlive', node: 'ppt-intro', tag: 'Kahoot inside your slides' },
@@ -40,10 +47,13 @@ export function projectCards(map, { workList = [], base = '', currentNode, visit
   const byId = new Map(workList.map((w) => [w.id, w]));
   const src = (u) => (u ? new URL(u, base || location.href).href : '');
   const out = [];
-  for (const g of PROJECTS) {
+  for (const g of PROJECTS.filter(shows)) {
     const cards = g.items.map((p) => {
       const w = p.work ? byId.get(p.work) : null;
       const node = p.node && map.N[p.node] ? p.node : null;
+      const pic = (title) => h('span.pcard__pic', p.thumb || w?.poster ? h('img', { src: src(p.thumb || w.poster), alt: '', loading: 'lazy', decoding: 'async' }) : h('span.pcard__mono', { 'aria-hidden': 'true' }, title.slice(0, 1)));
+      if (p.url && !node) return h('li', h('a.pcard', { href: src(p.url), target: '_blank', rel: 'noopener' }, pic(p.title),
+        h('span.pcard__body', h('span.pcard__t', p.title), h('span.pcard__tag', p.tag), p.blurb && h('span.pcard__blurb', p.blurb), h('span.pcard__go', 'Open the page ↗'))));
       if (!w && !node) return null;
       const title = p.title || w?.title || map.title(node);
       const now = node && node === currentNode;
@@ -52,7 +62,7 @@ export function projectCards(map, { workList = [], base = '', currentNode, visit
         type: 'button', 'aria-current': now ? 'true' : null,
         onclick: () => (node ? onGo(node) : onOpen(p.work)),
       },
-        h('span.pcard__pic', w?.poster ? h('img', { src: src(w.poster), alt: '', loading: 'lazy', decoding: 'async' }) : h('span.pcard__mono', { 'aria-hidden': 'true' }, title.slice(0, 1))),
+        pic(title),
         h('span.pcard__body',
           h('span.pcard__t', title, w?.status && w.status !== 'live' ? h('span.pcard__st', STATUS[w.status] || w.status) : null),
           h('span.pcard__tag', p.tag),
