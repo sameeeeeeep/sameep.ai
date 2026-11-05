@@ -12,4 +12,6 @@
 .gart.is-in .gart__img { opacity: 1; }
 .gart__ph { position: absolute; inset: auto 10px 10px; font: 500 12px/1.3 var(--sans); color: var(--mute); }
 .gart.is-in .gart__ph { display: none; }
+.gart.is-missing { display: none; }
+.mb__tile:has(> .gart.is-missing) { display: none; }
 .who__t .tag { justify-self: start; }

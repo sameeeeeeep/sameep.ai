@@ -93,10 +93,13 @@ export function avatar({ name, photo, size = 36 } = {}) {
   return box;
 }
 
-// art made for the plan lives in site/growth-os/art/<id>.webp; until it exists, a calm placeholder
+// art made for the plan lives in site/growth-os/art/<id>.webp. ART lists the files that exist (add the id when you add a
+// picture), so a frame without art asks for nothing and renders text-only: the figure gets .is-missing and is hidden
+const ART = new Set(['ev-city-drop', 'ev-founder-dinner', 'ev-mic-taping', 'ev-santa-kit', 'ev-stream-desk', 'ev-vo-booth', 'ev-year-words', 'guide-do-air', 'guide-do-people', 'mb-desk-11pm', 'mb-monsoon-office', 'mb-placement', 'mb-quiet-speed', 'mb-talking-auto', 'mb-talking-voicenote', 'partners-handshake', 'partners-vendors-setup', 'sb-dadi-1', 'sb-dadi-5', 'sb-shaadi-2', 'sb-shaadi-6', 'sb-startup-1', 'sb-startup-7', 'wrapped-books', 'wrapped-desk', 'wrapped-hero', 'wrapped-night', 'wrapped-train']);
 export function art(id, alt = '', { ratio = '4/3' } = {}) {
-  const fig = h('figure.gart', { style: { aspectRatio: ratio } }, h('span.gart__ph', alt || id));
-  const img = h('img.gart__img', { src: new URL(`../../../growth-os/art/${id}.webp`, import.meta.url).href, alt, loading: 'lazy', onload: () => fig.classList.add('is-in'), onerror: () => img.remove() });
+  const fig = h('figure.gart', { style: { aspectRatio: ratio } });
+  if (!ART.has(id)) { fig.classList.add('is-missing'); return fig; }
+  const img = h('img.gart__img', { src: new URL(`../../../growth-os/art/${id}.webp`, import.meta.url).href, alt, loading: 'lazy', onload: () => fig.classList.add('is-in'), onerror: () => { img.remove(); fig.classList.add('is-missing'); } });
   fig.prepend(img);
   return fig;
 }

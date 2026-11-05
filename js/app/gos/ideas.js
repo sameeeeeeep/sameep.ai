@@ -401,7 +401,7 @@ function boardView(b, go) {
       idea && h('button.btn.btn--sm', { type: 'button', onclick: () => go('ideas', { focus: idea.id }) }, 'Open the idea'),
       h('button.btn.btn--sm', { type: 'button', onclick: () => { if (!confirm('Undo your edits to this storyboard?')) return; delete S.v.edits[b.id]; delete S.v.added[b.id]; S.save(); paint(); } }, 'Reset')),
     meta, grid,
-    h('p.note', 'Pictures are placeholders until the art is made. Edits stay on this device.'),
+    h('p.note', 'Frames without a picture are still to be drawn. Edits stay on this device.'),
   ];
 }
 function shotList(b) {
