@@ -55,7 +55,7 @@
       </div>
       <ul class="say" aria-label="Things to say">${m.say.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
       <p class="app__p">${esc(m.body)}${m.page ? ` <a href="${m.page}">Try the demo</a>` : ''}</p>
-      ${m.clip ? `<video class="app__img app__clip" autoplay muted loop playsinline preload="metadata" poster="gifs/${m.clip}.jpg" aria-label="${esc(m.clipAlt)}"><source src="gifs/${m.clip}.webm" type="video/webm"><source src="gifs/${m.clip}.mp4" type="video/mp4"></video>`
+      ${m.clip ? `<video class="app__img app__clip" muted loop playsinline preload="none" poster="gifs/${m.clip}.jpg" data-clip="gifs/${m.clip}" aria-label="${esc(m.clipAlt)}"></video>`
         : m.img ? `<img class="app__img" src="${m.img}" alt="${esc(m.alt)}" loading="lazy" decoding="async">` : ''}
       <div class="cmd cmd--sm">
         <code id="cmd-${m.id}">${esc(line(m))}</code>
@@ -65,14 +65,29 @@
 
   window.WisprStatus && WisprStatus.fill(document.getElementById('apps'));
 
-  // clips play only while on screen; with reduced motion they stay on the poster, with controls
+  // clips: each gets its source only while on screen and gives it back when it leaves, so only a couple
+  // decode at once (browsers run out of video decoders with six playing); reduced motion: poster + controls
   const clips = [...document.querySelectorAll('.app__clip')];
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    clips.forEach((v) => { v.removeAttribute('autoplay'); v.pause(); v.controls = true; });
-  } else if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { threshold: 0.25 });
-    clips.forEach((v) => { v.removeAttribute('autoplay'); io.observe(v); });
-  }
+  const attach = (v) => {
+    if (v.childElementCount) return;
+    v.append(Object.assign(document.createElement('source'), { src: v.dataset.clip + '.webm', type: 'video/webm' }),
+      Object.assign(document.createElement('source'), { src: v.dataset.clip + '.mp4', type: 'video/mp4' }));
+    v.load();
+  };
+  const detach = (v) => { if (!v.childElementCount) return; v.pause(); v.replaceChildren(); v.load(); };
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) clips.forEach((v) => { v.controls = true; v.preload = 'metadata'; v.addEventListener('play', () => attach(v), { once: true }); attach(v); });
+  else if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      const v = e.target;
+      if (e.isIntersecting) { attach(v); v.play().catch(() => {}); } else detach(v);
+    }), { threshold: 0.25 });
+    clips.forEach((v) => {
+      io.observe(v);
+      // a decode error (rare, when the device is short on decoders): try the next source once, then rest on the poster
+      v.addEventListener('error', () => { if (v.dataset.retried) return; v.dataset.retried = '1'; detach(v); attach(v); v.play().catch(() => {}); }, true);
+    });
+  } else clips.forEach((v) => { attach(v); v.play().catch(() => {}); });
 
   // the segmented pill: All, or one mod at a time
   const seg = document.getElementById('seg');
