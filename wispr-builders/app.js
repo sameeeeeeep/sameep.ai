@@ -5,12 +5,12 @@
 
   // key: the product's id in /wispr-kit/status.json, the one place statuses live (Live / Testing / In progress).
   const MODS = [
-    { id: 'wispr-file', clip: 'file', clipAlt: 'Wispr File in the browser demo: a spoken search, numbered results, one clicked and copied', name: 'Wispr File', key: 'file',
+    { id: 'wispr-file', clip: 'file-mac', clipAlt: 'Wispr File on a Mac: a dictated search, Quick Look results on the Wispr Bridge card, one picked', name: 'Wispr File', key: 'file',
       tag: 'Find any file by saying it',
       say: ['the GST invoice from October', 'last screenshot of the admin panel', 'the signed lease PDF'],
       body: 'File searches your Mac with Spotlight and shows the results as numbered thumbnails. Click one, or press its number, and File pastes it into the app you were in, or reveals, opens, or copies it.',
       img: 'img/card.webp', alt: 'The Wispr Bridge card: three numbered poster tiles with the second one selected, a note field, and a Not now button' },
-    { id: 'wispr-wish', clip: 'wish', clipAlt: 'Wispr Wish converting sameep.ai’s og.png to WebP, then a timer', name: 'Wispr Wish', key: 'wish',
+    { id: 'wispr-wish', clip: 'wish-mac', clipAlt: 'Wispr Wish on a Mac converting sameep.ai’s og.png to WebP, 154 KB to 80 KB', name: 'Wispr Wish', key: 'wish',
       tag: 'Say what should happen to a file',
       say: ['make this a PDF', 'compress this video for WhatsApp', 'transcribe this audio', 'split this bill three ways'],
       body: 'Wish works on what you selected in Finder, with ffmpeg and an on-device transcript. Ask for a small tool, like a timer or a QR code, and it opens in its own window. Wish asks before deleting anything.',
@@ -20,7 +20,7 @@
       say: ['too big on mobile', 'say per seat, and add annual pricing'],
       body: 'Point at anything on a page and talk. Review’s Chrome extension pins your note to that element with a crop. Claude reads the notes with /wispr-review and fixes them one by one.',
       img: 'img/review.webp', alt: 'A web page with a note pinned to the price that says Price should say per seat, and a Review dock in the corner' },
-    { id: 'wispr-pm', clip: 'pm', clipAlt: 'Wispr PM: a task parked by voice, then started from its card', name: 'Wispr PM', key: 'pm',
+    { id: 'wispr-pm', clip: 'pm-mac', clipAlt: 'Wispr PM on a Mac showing the real portfolio board on the Wispr Bridge card', name: 'Wispr PM', key: 'pm',
       tag: 'Your task boards, by voice',
       say: ['park this for the portfolio', 'split this into tasks', 'what’s waiting on me'],
       body: 'PM keeps one Markdown board per project. Click Start on a card and a Claude Code session works on it, then moves it to review when it’s done.' },
