@@ -11,7 +11,8 @@ import { defineGuide, firstOpen, play, playHere, guideOn, endGuide, flowPill, he
 
 export { guideOn, endGuide };
 
-const showEl = () => document.querySelector('.win--install:not(.is-closing)') || document.querySelector('.is-offthecv .icon');
+const drawn = (el) => (el && el.getClientRects().length ? el : null);
+const showEl = () => [...document.querySelectorAll('.win--install:not(.is-closing)')].find(drawn) || drawn(document.querySelector('.is-offthecv .icon'));
 const q = (sel) => () => document.querySelector(sel);
 // the first of these that isn't hidden under a window (the installer sits over the top of the games column)
 const clear = (...sels) => () => {
@@ -34,6 +35,17 @@ export function installGuides({ area, cards, ctx }) {
 
   // ------------------------------------------------------------ the desktop tour (first visit)
   let crtChanged = false, look = -1, openedPlayer = false;
+  // a window the tour opens for a step: shut again when it moves on, unless they've touched it (then it's theirs)
+  const borrowed = new Map();
+  const borrow = async (key, isOpen, openIt) => {
+    if (isOpen()) return;
+    await openIt();
+    if (!(await until(isOpen, 3000))) return;
+    const w = isOpen(); borrowed.set(key, w);
+    w.addEventListener('pointerdown', () => borrowed.delete(key), { once: true, capture: true });
+  };
+  const giveBack = (key) => { const w = borrowed.get(key); borrowed.delete(key); if (w?.isConnected) w.querySelector('.win__close')?.click(); };
+  const workWin = q('.win--work:not(.is-closing)'), wisprWin = () => document.querySelector('.win--folder[aria-label="Wispr"]:not(.is-closing)');
   const flat = () => { if (window.crtfx?.set) window.crtfx.set('flat'); else window.otcvCrt?.preview('flat'); };
   const LOOKS = [['curved', 'Curved: the whole tube, bent like glass.'], ['off', 'Off: clean pixels, no CRT.'], ['flat', 'Flat: the iMac look, easiest on the eyes. Switch any time.']];
   defineGuide('desktop', {
@@ -49,10 +61,17 @@ export function installGuides({ area, cards, ctx }) {
           document.querySelector('.win--juke')?.addEventListener('pointerdown', () => { openedPlayer = false; }, { once: true, capture: true });
         },
         leave: () => { if (openedPlayer) document.querySelector('.win--juke .win__close')?.click(); openedPlayer = false; } },
-      { at: showEl, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
+      { at: showEl, centre: true, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
         ? 'The show, my portfolio in my voice, is installing. No rush: it waits for you.'
         : 'The show, my portfolio in my voice, is ready. No rush: it waits for you.') },
-      { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'On the left, my work. Hover any icon for a card like this.' },
+      // before the show: the work, then the Wispr folder, opened for them and shut again after
+      { at: () => workWin()?.querySelector('.work__list'), say: 'First, my work: everything I’ve made, in one list, each with its video and links.',
+        enter: async (g) => { await borrow('work', workWin, async () => { if (g.active) ctx.open('work'); }); await until(() => workWin()?.querySelector('.work__item'), 4000); }, leave: () => giveBack('work') },
+      { at: () => wisprWin()?.querySelector('.wsec[data-sec="builders"]'), when: () => isWispr, say: 'Then the Wispr folder. Up top, Wispr for Builders: Pack 1, small Claude mods you run by voice.',
+        enter: (g) => borrow('wispr', wisprWin, () => ctx.openWispr({ still: () => g.active })) },
+      { at: () => wisprWin()?.querySelector('.wsec[data-sec="fun"]'), when: () => isWispr, say: 'Below: the fun one, Wispr Wrapped, and the plan, Growth OS.',
+        enter: () => until(() => wisprWin()?.querySelector('.wsec[data-sec="fun"]'), 3000), leave: () => giveBack('wispr') },
+      { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), when: () => !isWispr, card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'On the left, my work. Hover any icon for a card like this.' },
       { at: clear(...GAMES), card: true, say: 'On the right, the toys: three games I made the ’99 way, and a few real classics.' },
       { at: q('.menubar__crt'), when: () => !isNarrow() && !!window.otcvCrt, say: 'The screen has three looks. Try them, or don’t; Flat is lovely.',
         action: { label: 'Try them', run: (g) => {
@@ -65,12 +84,11 @@ export function installGuides({ area, cards, ctx }) {
           }
         } },
         leave: () => { if (crtChanged) flat(); crtChanged = false; look = -1; } },
-      { at: q('[data-card="folder-wispr"]'), when: () => isWispr, card: true, say: 'The Wispr folder: a growth plan for your team, and a few things I built for Wispr.' },
       isNarrow()
         ? { at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Lost? Special › Show me around replays this. Every window has a ? too.' }
         : { at: q('.menubar__help'), say: 'Lost? The ? replays this, and every window has its own. Or hold Flow and say “show me around”.' },
       // last: Wispr is the remote. Then the guide is gone for good, and nothing opens by itself after it
-      { at: showEl, say: 'Last thing: Wispr is the remote. In the show, hold your Flow key and say where to go. That’s the tour; over to you.', extra: () => flowPill() },
+      { at: showEl, centre: true, say: 'You can come back to all of these after you try the audio experience. Wispr is the remote there: hold your Flow key and say where to go.', extra: () => flowPill() },
     ],
   });
 

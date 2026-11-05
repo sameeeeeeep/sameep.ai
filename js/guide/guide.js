@@ -154,6 +154,7 @@ export function askFeedback({ area = document.body, where = 'site' } = {}) {
 //   card    true: show the target's hover card inside the caption (needs cardFor)
 //   action  { label, run(api) }: one primary button on that step (“Open Growth OS”)
 //   enter   async, before the step: open what it needs; leave(): put it back
+//   centre  true: if `at` isn't there, say it from the middle of the screen rather than skip the step
 //   holder  a function → the window this guide is about: when it closes, the guide ends with it
 //   layer   where the arrow and caption are drawn, when it isn't `area` (the desktop: over the menu bar too)
 export function runGuide({ id = 'guide', steps, area = document.body, layer = null, cardFor, onStart, onEnd, label = 'Guide', start = null, holder = null, glide: wantGlide = true } = {}) {
@@ -162,7 +163,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
   const phone = isNarrow(), glide = wantGlide && !phone && !reducedMotion();
   // a target that isn't drawn (in a collapsed window, display:none) counts as missing
   const find = (at) => { const el = !at ? null : typeof at === 'function' ? at() : document.querySelector(at); return el && el.getClientRects().length ? el : null; };
-  const usable = (s) => !s.at || s.enter || !!find(s.at);
+  const usable = (s) => !s.at || s.enter || s.centre || !!find(s.at);
   const build = () => (typeof steps === 'function' ? steps() : steps).filter((s) => (!s.when || s.when()) && usable(s));
   if (!build().length) return null;  // nothing to show: leave whatever guide is up alone
   current?.end();
@@ -241,7 +242,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     try { await s.enter?.(api); } catch (e) { console.warn('[guide]', e); }
     if (!alive || my !== token) return;
     const el = find(s.at);
-    if (s.at && !el) { go(dir < 0 && k > 0 ? k - 1 : k + 1); return; }  // gone since: on past it
+    if (s.at && !el && !s.centre) { go(dir < 0 && k > 0 ? k - 1 : k + 1); return; }  // gone since: on past it (centre: true, the middle instead)
     here = el;
     if (el && !glide) el.scrollIntoView?.({ block: 'nearest' });
     if (el && fixed) { const r = el.getBoundingClientRect(); if (r.top < 0 || r.bottom > innerHeight) el.scrollIntoView({ block: 'center' }); }
