@@ -49,7 +49,7 @@
     </section>
 
     <section class="t-real" aria-label="About this demo">
-      <p><span class="w-badge w-badge--quiet t-status" id="status">Live demo</span> <b>This is a browser demo.</b> The real mod does this on your Mac.</p>
+      <p><span id="status" data-wstatus="file" data-wstatus-class="t-status" hidden></span> <b>This is a browser demo.</b> The real mod does this on your Mac.</p>
       <div class="t-cmd"><code id="cmd"></code><button class="w-btn w-btn--secondary" type="button" id="copycmd">Copy</button></div>
     </section>
 
@@ -67,6 +67,7 @@
   </div>
 
   <noscript><p class="t-nos">This demo needs JavaScript. <a href="/wispr-builders/">Back to Pack 1</a>.</p></noscript>
+  <script src="/wispr-kit/status.js" defer></script>
   <script src="vendor/untrusted.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>

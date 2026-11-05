@@ -96,6 +96,7 @@ function setMod(id, { keepRoute = false } = {}) {
   $('#ask').classList.toggle('is-quiet', !m.say.length);
   if (!keepRoute) routeEl.hidden = true;
   document.body.dataset.mod = id;
+  const st = $('#status'); st.dataset.wstatus = id; window.WisprStatus?.fill(st.parentElement);
   history.replaceState(null, '', `?mod=${id}${EMBED ? '&embed=1' : ''}${params.has('mute') ? '&mute' : ''}`);
   RENDER[id]();
   window.wbTrack?.('try_mod', { mod: id });
