@@ -24,7 +24,7 @@
       tag: 'Your task boards, by voice',
       say: ['park this for the portfolio', 'split this into tasks', 'what’s waiting on me'],
       body: 'PM keeps one Markdown board per project. Click Start on a card and a Claude Code session works on it, then moves it to review when it’s done.' },
-    { id: 'wispr-guru', clip: 'guru', clipAlt: 'Wispr Guru pointing at File, then Export, in a pretend document', name: 'Wispr Guru', key: 'guru', page: '/wispr-guru/',
+    { id: 'wispr-guru', clip: 'guru-video', clipAlt: 'Wispr Guru on the Mac, pointing through recording a take in Wispr Video', name: 'Wispr Guru', key: 'guru', page: '/wispr-guru/',
       tag: 'A second cursor that shows you where to click',
       say: ['walk me through exporting a frame in Figma', 'how do I add a page number in Pages'],
       body: 'Guru points at the control you need, shows the step beside it, and moves on when you click it. When a long Claude turn finishes, Guru gives you a card to dictate your reply into.' },
