@@ -243,7 +243,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     const last = k === list.length - 1;
     next.textContent = last ? 'Done' : 'Next';
     if (startBtn) { next.classList.toggle('is-primary', !last); startBtn.classList.toggle('is-last', last); startBtn.textContent = last ? start.label : `or ${start.label.charAt(0).toLowerCase() + start.label.slice(1)} →`; }
-    hint.textContent = k === 0 ? (phone ? 'Tap Next, or say “next”.' : 'Next, Space, or say “next”. Esc skips.') : '';
+    hint.textContent = k === 0 ? (phone ? 'Tap Next.' : 'Next, Space, or say “next”. Esc skips.') : '';
     try { await s.enter?.(api); } catch (e) { console.warn('[guide]', e); }
     if (!alive || my !== token) return;
     const el = find(s.at);

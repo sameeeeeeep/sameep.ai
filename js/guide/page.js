@@ -4,12 +4,12 @@
 // "show me around" replays it too (js/guide/guide.js).
 // A page with no entry below can mark its own steps: data-guide-step="1" data-guide-say="…" on each element.
 import { defineGuide, firstOpen, helpButton, guideOn } from './guide.js';
-import { h } from '../app/util.js';
+import { h, isNarrow } from '../app/util.js';
 
 const PAGES = {
   // Wispr Growth OS (growth-os/): the rail of sections, Campaigns first, the home grid, your account
   growthos: { ready: '.grail', area: '.desk__area', label: 'Growth OS guide', steps: [
-    { at: '.grail', dx: 0.5, dy: 0.25, say: 'Eight sections down the side, from Plan to Events. Home brings you back here.' },
+    { at: '.grail', dx: 0.5, dy: 0.25, say: isNarrow() ? 'Eight sections along the top, from Plan to Events. Home brings you back here.' : 'Eight sections down the side, from Plan to Events. Home brings you back here.' },
     { at: '.grail__b[data-sec="campaigns"]', say: 'Campaigns is a good first stop: five of them, on one board.' },
     { at: '.gsecs', dx: 0.5, dy: 0.2, say: 'Or start anywhere: each card says what’s inside.' },
     { at: '.gos__menu summary', say: 'Your account and the sources live up here. Have a wander.' },
@@ -73,7 +73,7 @@ function campaignGuides(area) {
       { at: () => here()?.querySelector('.brief__head'), dx: 0.15, dy: 0.5, say: `${g.name}, in a line each:`, extra: () => who },
       g.demo
         ? { at: () => here()?.querySelector('.brief__t'), say: 'There’s a demo, if you’d like to see it move.', action: { label: 'Watch the demo ↗', run: (x) => { x.end(); open(g.demo, '_blank', 'noopener'); } } }
-        : { at: () => here()?.querySelector('.dl'), dx: 0.1, dy: 0.05, say: 'The idea, why it works and the first three steps are all below. A demo video lands here once it’s cut.' },
+        : { at: () => here()?.querySelector('.bsec--steps') || here()?.querySelector('.bsec--proto') || here()?.querySelector('.bsec--idea'), dx: 0.1, dy: 0.1, say: here()?.querySelector('.bsec--proto') ? 'Start with the first three steps, or try a prototype.' : 'Start with the first three steps.' },
     ] });
     b.scrollIntoView?.({ block: 'start' });
     setTimeout(() => firstOpen(gid), 500);
