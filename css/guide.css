@@ -23,8 +23,12 @@
 .gtour__btn.is-text:hover { box-shadow: none; text-decoration: underline; }
 .gtour__btn:disabled { opacity: .35; cursor: default; }
 /* the step's own action ("Open Growth OS") and Start the show: full width, the one dark button */
-.gtour__btn.is-act, .gtour__btn.is-start { flex: 1; background: var(--vast); color: var(--lumen); }
-.gtour__row--start { margin-top: 8px; }
+.gtour__btn.is-act { background: var(--lumen); color: var(--vast); }
+/* the guide's way out to the show: a quiet link until the last step, then the one primary */
+.gtour__btn.is-start { border-color: transparent; background: none; padding: 0 2px; color: rgba(26,26,26,.7); text-decoration: underline; text-underline-offset: 3px; }
+.gtour__btn.is-start:hover { box-shadow: none; color: var(--vast); }
+.gtour__btn.is-start.is-last { flex: 1; border-color: var(--vast); background: var(--vast); color: var(--lumen); text-decoration: none; }
+.gtour__row--start { margin-top: 8px; justify-content: flex-end; }
 /* the hover card, inside the caption: the same card a mouse hover shows, never a second popup */
 .gtour__card { margin-top: 8px; }
 .gtour__card .icard { position: static; width: auto; opacity: 1; transform: none; pointer-events: auto; box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 var(--plat-4, #888); }

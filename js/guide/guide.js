@@ -180,6 +180,7 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
   const next = h('button.gtour__btn.is-primary', { type: 'button', onclick: () => go(i + 1) }, 'Next');
   const skip = h('button.gtour__btn.is-text', { type: 'button', onclick: () => end() }, 'Skip');
   const act = h('button.gtour__btn.is-act', { type: 'button', hidden: true });
+  // one primary per step: Next. “Start the show” is a quiet link until the last step, then it's the primary
   const startBtn = start ? h('button.gtour__btn.is-start', { type: 'button', onclick: () => { end(); start.run(); } }, start.label) : null;
   text.id = 'gtour-text-' + Math.random().toString(36).slice(2, 8);
   text.setAttribute('aria-live', 'polite');
@@ -199,20 +200,22 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     const a = A(), cw = cap.offsetWidth, ch = cap.offsetHeight;
     let cx, cy;
     const G = 14;
+    // never over the menu bar (the desktop draws the guide over it): cards start below it
+    const T = 8 + (mount.querySelector?.(':scope > .menubar')?.offsetHeight || 0);
     if (!near) { cx = (a.width - cw) / 2; cy = ghost ? y + 30 : a.height * 0.3; }
     else if (!ghost) {  // no arrow (phones): under the thing, or over it, never on it
       cx = near.x + near.w / 2 - cw / 2;
       cy = near.y + near.h + 10;
       if (cy + ch > a.height - 8) cy = near.y - ch - 10;
       // a tall thing: the edge of the screen that covers the least of it
-      if (cy < 8) cy = near.y + near.h / 2 < a.height / 2 ? a.height - ch - 8 : 8;
+      if (cy < T) cy = near.y + near.h / 2 < a.height / 2 ? a.height - ch - 8 : T;
     } else if (near.x + near.w + G + cw <= a.width - 8) { cx = near.x + near.w + G; cy = clamp(y + 10, near.y, near.y + Math.max(0, near.h - 40)); }  // beside the thing, like a hover card
     else if (near.x - G - cw >= 8) { cx = near.x - G - cw; cy = clamp(y + 10, near.y, near.y + Math.max(0, near.h - 40)); }
     else if (near.y + near.h + G + ch <= a.height - 8) { cx = x - cw / 2; cy = near.y + near.h + G; }
-    else if (near.y - G - ch >= 8) { cx = x - cw / 2; cy = near.y - G - ch; }
+    else if (near.y - G - ch >= T) { cx = x - cw / 2; cy = near.y - G - ch; }
     else { cx = x + 22; cy = y + 16; }  // it fills the screen: by the arrow
     cap.style.left = clamp(cx, 8, Math.max(8, a.width - cw - 8)) + 'px';
-    cap.style.top = clamp(cy, 8, Math.max(8, a.height - ch - 8)) + 'px';
+    cap.style.top = clamp(cy, T, Math.max(T, a.height - ch - 8)) + 'px';
   }
   function point(el, s, ms = GLIDE) {
     const a = A();
@@ -237,7 +240,9 @@ export function runGuide({ id = 'guide', steps, area = document.body, layer = nu
     const s = list[k];
     count.textContent = `${k + 1} of ${list.length}`;
     back.disabled = k === 0;
-    next.textContent = k === list.length - 1 ? 'Done' : 'Next';
+    const last = k === list.length - 1;
+    next.textContent = last ? 'Done' : 'Next';
+    if (startBtn) { next.classList.toggle('is-primary', !last); startBtn.classList.toggle('is-last', last); startBtn.textContent = last ? start.label : `or ${start.label.charAt(0).toLowerCase() + start.label.slice(1)} →`; }
     hint.textContent = k === 0 ? (phone ? 'Tap Next, or say “next”.' : 'Next, Space, or say “next”. Esc skips.') : '';
     try { await s.enter?.(api); } catch (e) { console.warn('[guide]', e); }
     if (!alive || my !== token) return;
