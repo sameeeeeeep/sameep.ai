@@ -27,6 +27,7 @@ html { scroll-padding-top: 112px; }
 
 /* ---- hero + install box */
 .hero h1 em { display: block; }
+.hero h1 { font-size: clamp(44px, 6.6vw, 92px); max-width: 13.5em; margin-left: auto; margin-right: auto; text-wrap: balance; }
 .hero { padding-bottom: 128px; }
 .get { max-width: 720px; margin: 8px auto 0; text-align: left; }
 .get__head { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -111,3 +112,9 @@ html { scroll-padding-top: 112px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 [id] { scroll-margin-top: 96px; }
+
+/* ---- the notch clip in the hero: the pack's hook */
+.notch { margin: 8px auto 36px; max-width: 520px; }
+.notch__clip { display: block; width: 100%; aspect-ratio: 800 / 752; border-radius: var(--m-r-card); border: 2px solid var(--lumen-dark); background: var(--sand-500); object-fit: cover; }
+.notch figcaption { margin-top: 10px; font: 400 13px/1.4 var(--w-sans); color: var(--vast-700); }
+@media (max-width: 720px) { .notch { margin-bottom: 28px; } }
