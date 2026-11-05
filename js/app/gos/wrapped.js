@@ -169,7 +169,7 @@ function tilesFor(S, T, P) {
 }
 function shareHtml(S, T, P, isSample) {
   return h('div.wr-share',
-    h('div.wr-share__top', h('span.wr-share__logo', bars(), 'Flow'), isSample ? h('span.wr-share__tag', 'Sample year') : null),
+    h('div.wr-share__top', h('span.wr-share__logo', { style: { fontFamily: 'var(--w-sans)', fontWeight: '700' } }, 'Wispr Flow'), isSample ? h('span.wr-share__tag', 'Sample year') : null),
     h('p.wr-share__k', fill(T.share.k, P)),
     h('div.wr-share__big', nf(S.words)), h('p.wr-share__unit', 'words, ', h('em', 'spoken')),
     h('div.wr-share__grid', tilesFor(S, T, P).map((t) => h('div.wr-tile' + (t.wide ? '.wr-tile--wide' : ''), { style: { background: t.bg, color: t.fg } }, h('span.wr-tile__k', t.k), h('span.wr-tile__v', t.v), h('span.wr-tile__s', t.s)))),
@@ -180,14 +180,13 @@ function shareHtml(S, T, P, isSample) {
 function rrect(c, x, y, w, hh, rad) { c.beginPath(); c.moveTo(x + rad, y); c.arcTo(x + w, y, x + w, y + hh, rad); c.arcTo(x + w, y + hh, x, y + hh, rad); c.arcTo(x, y + hh, x, y, rad); c.arcTo(x, y, x + w, y, rad); c.closePath(); }
 function fitText(c, text, font, size, maxW, min = 24) { let s = size; do { c.font = font.replace('{s}', s); if (c.measureText(text).width <= maxW) break; s -= 4; } while (s > min); return s; }
 async function drawCard(S, T, P, isSample) {
-  try { await Promise.all(['400 200px "EB Garamond"', 'italic 400 90px "EB Garamond"', '600 40px Figtree', '400 30px Figtree'].map((f) => document.fonts.load(f))); } catch { /* system fonts then */ }
+  try { await Promise.all(['400 200px "EB Garamond"', 'italic 400 90px "EB Garamond"', '600 40px Figtree', '700 48px Figtree', '400 30px Figtree'].map((f) => document.fonts.load(f))); } catch { /* system fonts then */ }
   const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const c = cv.getContext('2d'), serif = '"EB Garamond", Georgia, serif', sans = 'Figtree, system-ui, sans-serif';
   c.fillStyle = PAL.lumen; c.fillRect(0, 0, W, H);
   c.fillStyle = PAL.dawn; c.beginPath(); c.arc(980, 260, 260, 0, Math.PI * 2); c.fill();
-  // logo bars + name
-  c.fillStyle = PAL.vast; [12, 28, 36, 20, 8].forEach((bh, i) => { rrect(c, 80 + i * 18, 120 - bh, 11, bh * 2, 5.5); c.fill(); });
-  c.font = `600 48px ${sans}`; c.textBaseline = 'middle'; c.fillText('Flow', 186, 122);
+  // the product name in Figtree, no logo
+  c.fillStyle = PAL.vast; c.font = `700 48px ${sans}`; c.textBaseline = 'middle'; c.fillText('Wispr Flow', 80, 122);
   if (isSample) { c.font = `600 30px ${sans}`; const tw = c.measureText('SAMPLE YEAR').width; c.fillStyle = '#fff0d9'; rrect(c, W - 80 - tw - 48, 92, tw + 48, 60, 30); c.fill(); c.fillStyle = '#7a4b00'; c.fillText('SAMPLE YEAR', W - 80 - tw - 24, 123); }
   c.textBaseline = 'alphabetic'; c.fillStyle = PAL.mute; c.font = `500 40px ${sans}`; c.fillText(fill(T.share.k, P), 80, 300);
   c.fillStyle = PAL.vast; const bs = fitText(c, nf(S.words), `400 {s}px ${serif}`, 250, W - 160); c.font = `400 ${bs}px ${serif}`; c.fillText(nf(S.words), 72, 520);
@@ -219,7 +218,7 @@ function player(W) {
   const stage = h('div.wr-cards');
   const badge = h('span.wr-badge');
   const phone = h('div.wr-phone', { tabindex: '0', role: 'region', 'aria-roledescription': 'story', 'aria-label': 'Wispr Wrapped story. Left and right arrow keys move between cards, space pauses.' },
-    barsEl, h('div.wr-top', h('span.wr-top__logo', bars(), 'Wispr Wrapped'), badge), stage);
+    barsEl, h('div.wr-top', h('span.wr-top__logo', { style: { fontFamily: 'var(--w-sans)', fontWeight: '700' } }, 'Wispr Wrapped'), badge), stage);
   const pauseBtn = h('button.btn.btn--sm', { type: 'button', onclick: () => togglePause() });
   const panel = minePanel();
   const banner = h('p.wr-banner');

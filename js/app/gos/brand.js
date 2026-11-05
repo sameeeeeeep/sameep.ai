@@ -74,13 +74,14 @@ function guide(m) {
   const G = B().guide;
   if (!G) return missing(m);
   return [head(m, G.why),
-    h('p.gb-disc', tag('Sameep’s read', 'warn'), ' ', G.disclaimer),
     tabs(['Logo', 'Colour', 'Type', 'Voice', 'Say it like Wispr', 'India', 'Do and don’t'], (i) => [logo, colour, type, voice, rewriter, india, pairs][i](), 0)];
 
   function logo() {
-    // no drawn lockup on purpose: the real marks come from Wispr's own media kit
-    return [h('p.lede', 'The logo isn’t redrawn here. For the real marks, use Wispr’s media kit: ',
-        h('a', { href: 'https://wisprflow.ai/media-kit', target: '_blank', rel: 'noopener' }, 'wisprflow.ai/media-kit ↗'), '.'),
+    // no logo or symbol on purpose: the name is set in Wispr's own type (Figtree 700, kit tokens)
+    const mark = (bg, fg, edge, label) => h('div', { role: 'img', 'aria-label': `Wispr Flow, ${label}`, style: { flex: '1 1 200px', display: 'grid', placeItems: 'center', minHeight: '120px', padding: '20px', borderRadius: 'var(--w-r-xl)', background: bg, border: `1px solid ${edge}` } },
+      h('span', { style: { font: '700 clamp(28px, 5vw, 40px)/1 var(--w-sans)', letterSpacing: '-.02em', color: fg } }, 'Wispr Flow'));
+    return [h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '12px', margin: '0 0 12px' } },
+        mark('var(--sand-50)', 'var(--vast-950)', 'var(--sand-600)', 'dark on light'), mark('var(--vast-950)', 'var(--sand-50)', 'var(--vast-950)', 'light on dark')),
       h('p.note', G.logo.note),
       h('div.gos-grid.gos-grid--2', { style: { marginTop: '6px' } }, gboxW('Do', ul(G.logo.rules)), gboxW('Don’t', ul(G.logo.donts)))];
   }

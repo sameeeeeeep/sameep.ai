@@ -5,7 +5,7 @@
 // ?png=<mode>:<n> draws card n as a bare 1080×1920 image (the skill screenshots it with headless Chrome).
 (() => {
 const { C, STORIES } = window.WW_DATA;
-const CFG = { yours: true, foot: ['A prototype by Sameep for Wispr', 'sameep.ai'], footHref: /^https?:$/.test(location.protocol) ? '/' : null, ...window.WW_CONFIG };
+const CFG = { yours: true, foot: ['Wispr Wrapped', 'sameep.ai'], footHref: /^https?:$/.test(location.protocol) ? '/' : null, ...window.WW_CONFIG };
 const track = (t, d) => { try { window.wwTrack?.(t, d); } catch { /* analytics never breaks the story */ } };
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -269,11 +269,11 @@ function rr(c, x, y, w, h, rad) { c.beginPath(); c.roundRect ? c.roundRect(x, y,
 function mix(fg, a) { // fg at alpha a, as rgba
   const n = parseInt(fg.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
 }
-const SERIF = '"EB Garamond", Georgia, serif', SANS = 'Figtree, system-ui, sans-serif';
+const SERIF = '"EB Garamond", Georgia, serif', SANS = 'Figtree, system-ui, sans-serif', MONO = '"Google Sans Code", ui-monospace, Menlo, monospace';
 
 async function drawPng(card) {
   // wait for the fonts, but never more than 5 s (offline: system fonts it is)
-  try { await Promise.race([Promise.all([`400 100px ${SERIF}`, `italic 400 60px ${SERIF}`, `600 40px ${SANS}`, `500 40px ${SANS}`].map((f) => document.fonts.load(f))), new Promise((r) => setTimeout(r, 5000))]); } catch {}
+  try { await Promise.race([Promise.all([`400 100px ${SERIF}`, `italic 400 60px ${SERIF}`, `600 40px ${SANS}`, `500 40px ${SANS}`, `500 40px ${MONO}`].map((f) => document.fonts.load(f))), new Promise((r) => setTimeout(r, 5000))]); } catch {}
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const c = cv.getContext('2d'), bg = C[card.bg], fg = fgOf(card.bg), X = 7.5 * U, MW = W - 2 * X;
   c.fillStyle = bg; c.fillRect(0, 0, W, H);
@@ -331,7 +331,7 @@ function drawViz(c, v, x, y, w, fg, bg) {
     v.items.forEach(([l, n], i) => { const yy = y + i * lh; let ls = 3.8 * U; c.font = `600 ${ls}px ${SANS}`; while (c.measureText(l).width > 24.4 * U && ls > 2.2 * U) { ls *= .92; c.font = `600 ${ls}px ${SANS}`; } c.fillStyle = fg; c.fillText(l, x, yy + 3.8 * U); c.font = `600 ${3.8 * U}px ${SANS}`; const bx = x + 26.4 * U, bw = w - 26.4 * U - 14.4 * U; c.globalAlpha = .85; rr(c, bx, yy + 1.4 * U, Math.max(.03, n / max) * bw, 2.6 * U, 1.3 * U); c.fill(); c.globalAlpha = .7; c.textAlign = 'right'; c.fillText(nf(n), x + w, yy + 3.8 * U); c.textAlign = 'left'; c.globalAlpha = 1; });
   }
   if (v.type === 'chips') {
-    c.font = `500 ${3.7 * U}px ui-monospace, Menlo, monospace`; let cx = x, cy = y; const ph = 7 * U, g = 1.8 * U;
+    c.font = `500 ${3.7 * U}px ${MONO}`; let cx = x, cy = y; const ph = 7 * U, g = 1.8 * U;
     v.items.forEach((t) => { const tw = c.measureText(t).width + 6 * U; if (cx + tw > x + w) { cx = x; cy += ph + g; } c.fillStyle = C.paper; rr(c, cx, cy, tw, ph, ph / 2); c.fill(); c.fillStyle = fg; c.fillText(t, cx + 3 * U, cy + ph / 2 + 1.2 * U); c.strokeStyle = C.flare; c.lineWidth = .35 * U; c.beginPath(); for (let k = 0; k <= tw - 6 * U; k += 2 * U) { c.lineTo(cx + 3 * U + k, cy + ph / 2 + 2.6 * U + (k / (2 * U) % 2 ? .6 * U : -.2 * U)); } c.stroke(); cx += tw + g; });
   }
   if (v.type === 'quote') {
@@ -412,6 +412,7 @@ if (own) {
 own.addEventListener('click', (e) => { if (e.target === own) closeOwn(); });
 own.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOwn(); });
 $('[data-own="close"]').onclick = closeOwn;
+document.querySelectorAll('[data-own="open"]').forEach((b) => { b.onclick = () => openOwn(); });
 $('[data-own="copy"]').onclick = async (e) => {
   const b = e.currentTarget, line = $('#own-cmd').textContent;
   try { await navigator.clipboard.writeText(line); b.textContent = 'Copied'; } catch { prompt('Copy this line', line); }

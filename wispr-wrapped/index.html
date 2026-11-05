@@ -4,22 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffeb">
-  <title>Wispr Wrapped · a prototype by Sameep</title>
-  <meta name="description" content="A Spotify Wrapped for your voice: a project's worth of dictation, counted. Real numbers from Sameep's Wispr Flow history, or make your own. A prototype by Sameep for Wispr, not a Wispr product.">
-  <meta property="og:title" content="Wispr Wrapped · a prototype by Sameep">
+  <title>Wispr Wrapped</title>
+  <meta name="description" content="A Spotify Wrapped for your voice: a project's worth of dictation, counted. Real numbers from Sameep's Wispr Flow history, or make your own.">
+  <meta property="og:title" content="Wispr Wrapped">
   <meta property="og:description" content="6,539 words said to one portfolio, “you know” ×98, peak hour 4am. Make yours.">
   <link rel="canonical" href="https://sameep.ai/wispr-wrapped/">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23f0d7ff'/%3E%3Ctext x='16' y='23' font-family='Georgia' font-size='20' font-style='italic' text-anchor='middle' fill='%231a1a1a'%3EW%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a1a1a'/%3E%3Ctext x='16' y='22.5' font-family='Figtree,Helvetica,Arial,sans-serif' font-size='18' font-weight='700' text-anchor='middle' fill='%23fcfcfb'%3EW%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600;700&family=Google+Sans+Code:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/wispr-kit/wispr.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="w-site">
   <header class="top">
-    <a class="top__mark" href="./" aria-label="Wispr Wrapped, start again"><em>Wispr</em> Wrapped</a>
-    <span class="top__by">a prototype by <a href="/">Sameep</a> for Wispr</span>
-    <nav class="tabs" role="tablist" aria-label="Whose Wrapped"></nav>
+    <div class="w-nav">
+      <a class="w-lockup" href="./" aria-label="Wispr Wrapped, start again"><span class="w-lockup__name">Wispr Wrapped</span><span class="w-badge w-badge--new">New!</span></a>
+      <nav class="tabs w-seg" role="tablist" aria-label="Whose Wrapped"></nav>
+      <span class="top__by">by <a href="/">Sameep Rehlan</a></span>
+      <button class="w-cta w-cta--sm top__cta" type="button" data-own="open">Make yours</button>
+    </div>
   </header>
 
   <main class="stage">
@@ -40,12 +44,12 @@
   <!-- make yours: paste or speak, counted in this tab -->
   <div class="own" hidden>
     <div class="own__box" role="dialog" aria-modal="true" aria-labelledby="own-t">
-      <p class="own__k">Make yours</p>
-      <h2 id="own-t">Get your real Wrapped: give this to your Claude.</h2>
-      <p class="own__p">Use Wispr Flow and Claude Code on a Mac? Run this in Terminal. Claude reads your own Flow history on your Mac and builds your Wrapped there, with every card as a PNG. Nothing gets uploaded.</p>
+      <p class="own__k w-eyebrow">Make yours</p>
+      <h2 id="own-t">Your real Wrapped, <em>made on your Mac.</em></h2>
+      <p class="own__p">Wrapped reads your own Flow history and builds every card on your Mac, each as a PNG. Nothing gets uploaded. You need Wispr Flow and Claude Code. Run this in Terminal:</p>
       <div class="own__cmd"><code id="own-cmd">claude --plugin-url https://sameep.ai/wispr-wrapped/wispr-wrapped.zip "/wispr-wrapped"</code><button class="act" type="button" data-own="copy">Copy</button></div>
       <p class="own__then">That starts Claude with the Wrapped plugin and runs <code>/wispr-wrapped</code>.</p>
-      <p class="own__or"><span>or try it here</span></p>
+      <p class="own__or w-eyebrow"><span>or try it here</span></p>
       <p class="own__p own__p--sm">Talk for a minute, or paste something you’d normally type. It’s counted in this tab.</p>
       <div class="own__mic">
         <button class="mic" type="button" aria-pressed="false"><span class="mic__dot"></span><span class="mic__l">Start talking</span></button>

@@ -17,7 +17,6 @@
 .win--gos .win__bar { height: 60px; padding: 0 20px 0 24px; gap: 12px; background: var(--lumen); border-bottom: 1px solid var(--line); cursor: default; }
 .win--gos .win__stripes, .win--gos .win__shade { display: none; }
 .win--gos .win__title { order: 1; margin: 0; padding: 0; background: none; max-width: none; display: flex; align-items: center; gap: 10px; font: 600 17px/1 var(--sans); letter-spacing: -.01em; }
-.win--gos .win__title::after { content: "Made for Wispr"; flex: none; padding: 5px 10px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line-2); font: 500 12px/1 var(--sans); letter-spacing: 0; color: var(--mute); }
 .win--gos .win__close { order: 3; margin-left: auto; width: 36px; height: 36px; border: 0; border-radius: 999px; background: var(--line); }
 .win--gos .win__close::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; font: 600 14px/1 var(--sans); color: var(--vast); }
 .win--gos .win__close:hover { background: var(--vast); }
@@ -513,7 +512,6 @@ a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; 
   .gos--os .gos__page { padding: 20px 16px 72px; }
   .win--gos .win__bar { gap: 8px; padding: 0 10px; }
   .win--gos:has(.gos--os.is-app) .win__title { font-size: 0; gap: 0; }
-  .win--gos .win__title::after { display: none; }
   .gos__homebtn span { display: none; }
   .gos__homebtn { width: 36px; padding: 0; justify-content: center; }
   .gos__where { font-size: 18px; }
@@ -623,3 +621,103 @@ a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; 
   .gsec__l { font-size: 12.5px; }
   .gsec__tabs { display: none; }
 }
+
+/* ================================================================ app mode (5 Nov design review)
+   The plan is a dashboard, so it wears the Flow desktop app: sand-500 frame and sidebar, a sand-50 panel with a
+   1px sand-600 border and 16px radius, Figtree 600 titles, sand-600 selected rows, 8px buttons, 6px badges.
+   The sign-in stays in marketing mode (Lumen, like the cover). Values come from wispr-kit/wispr.css. */
+.win.win--gos:has(.gos--os), .gos.gos--os {
+  --paper: var(--sand-50, #fcfcfb); --line: var(--sand-600, #eeebe3); --line-2: var(--sand-700, #c5c0b3); --mute: var(--vast-700, #5b5b59);
+  --r: 16px; --r-sm: 8px;
+}
+/* Lumen becomes sand inside the plan; the brand specimen and the Wrapped story keep the real Lumen */
+.gos.gos--os { --lumen: var(--sand-500, #f5f4f0); }
+.gos--os .gb-logo, .gos--os .wr-phone { --lumen: #ffffeb; }
+.win.win--gos:has(.gos--os), .win--gos:has(.gos--os) .win__bar, .win--gos:has(.gos--os) .win__body { background: var(--sand-500, #f5f4f0); }
+.win--gos .win__bar { border-bottom: 0; }
+.win--gos .win__title { font: 700 20px/1 var(--sans); letter-spacing: -.025em; }
+.win--gos .win__close { width: 32px; height: 32px; border-radius: 8px; background: none; transition: background-color .15s var(--w-ease, ease); }
+.win--gos .win__close:hover, .win--gos .win__close:active { background: var(--sand-600, #eeebe3); }
+.win--gos .win__close:hover::after { color: var(--vast); }
+.win--gos .win__close::after { font: 400 16px/1 var(--sans); }
+/* the frame: sidebar on sand, the page as a bordered panel */
+.gos.gos--os { grid-template-columns: 208px minmax(0, 1fr); padding: 0 8px 8px 0; background: var(--sand-500, #f5f4f0); }
+.gos--os .grail { padding: 4px 8px 16px 12px; gap: 2px; border-right: 0; background: none; }
+.gos--os .grail__b { min-height: 34px; gap: 10px; padding: 0 10px; border-radius: 8px; color: var(--vast); font: 500 14px/1.2 var(--sans); transition: background-color .1s var(--w-ease, ease); }
+.gos--os .grail__b:hover { background: rgba(238, 235, 227, .7); }
+.gos--os .grail__b[aria-current="true"] { background: var(--sand-600, #eeebe3); color: var(--vast); }
+.gos--os .grail__b:first-child { margin-bottom: 8px; }
+.gos--os .grail__ic svg { width: 18px; height: 18px; }
+.gos--os .gos__main { border: 1px solid var(--sand-600, #eeebe3); border-radius: 16px; background: var(--sand-50, #fcfcfb); overflow: hidden; }
+.gos--os .gos__page { background: var(--sand-50, #fcfcfb); padding-top: 28px; }
+/* titles: Figtree 600 like "Welcome back!"; the serif stays for numbers, quotes and the one idea block */
+.gos--os .ghome__hi { font: 600 28px/1.2 var(--sans); letter-spacing: -.01em; }
+.gos--os .ghome__sub { margin: 6px 0 14px; font: 400 16px/1.5 var(--sans); color: var(--vast-700, #5b5b59); }
+.gos--os .gsec-head__t { margin: 0 0 12px; font: 600 28px/1.2 var(--sans); letter-spacing: -.01em; }
+.gos--os .gsec-tabs { gap: 20px; }
+.gos--os .gsec-tabs .gtab { min-height: 36px; font-size: 14px; }
+.gos--os .gos__title { font: 600 28px/1.2 var(--sans); letter-spacing: -.01em; }
+.gos--os .gbox > .gbox__label { margin-bottom: 12px; font: 600 18px/1.3 var(--sans); letter-spacing: -.005em; }
+.gos--os .gbox { padding: 20px; }
+.gos--os .gbox--white { background: var(--w-card, #fff); box-shadow: inset 0 0 0 1px var(--line); }
+.gos--os .gsec { border-radius: 16px; }
+.gos--os .gsec__b { gap: 4px; padding: 12px 14px 14px; }
+.gos--os .gsec__t { font: 600 16px/1.25 var(--sans); }
+.gos--os .gsec__l { font-size: 13px; color: var(--vast-700, #5b5b59); }
+.gos--os .gsec__tabs { color: var(--vast-600, #71716e); }
+.gos--os .ccard { border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); }
+.gos--os .ccard__b { border-top-width: 3px; }
+.gos--os .ccard__t, .gos--os .home-strip .ccard__t { font: 600 15px/1.3 var(--sans); }
+.gos--os .crcard__n { font: 600 16px/1.25 var(--sans); }
+.gos--os .card__t { font: 600 16px/1.3 var(--sans); }
+.gos--os .ghome__g, .gos--os .cboard__h, .gos--os .tl__months, .gos--os .tbl th { letter-spacing: .08em; color: var(--vast-600, #71716e); }
+/* the draft line: a quiet sand note, not a warning */
+.gos--os .gos-proto { padding: 8px 12px; border-radius: 8px; background: var(--sand-600, #eeebe3); color: var(--vast-700, #5b5b59); }
+/* buttons 8px: black primary, outline secondary (the app's) */
+.win--gos:has(.gos--os) .btn { min-height: 36px; padding: 0 16px; border-radius: 8px; background: var(--w-card, #fff); box-shadow: inset 0 0 0 1px var(--line), var(--w-shadow-xs, 0 1px 2px rgb(26 26 26 / .05)); font: 500 14px/1 var(--sans); }
+.win--gos:has(.gos--os) .btn:hover { background: var(--sand-200, #f8f7f3); box-shadow: inset 0 0 0 1px var(--line-2); }
+.win--gos:has(.gos--os) .btn--primary { background: var(--vast); color: var(--sand-50, #fcfcfb); box-shadow: none; }
+.win--gos:has(.gos--os) .btn--primary:hover { background: var(--vast-875, #343432); box-shadow: none; }
+.win--gos:has(.gos--os) .btn--sm { min-height: 30px; padding: 0 12px; border-radius: 8px; font-size: 13px; }
+/* badges 6px, like "Pro" and "New!" */
+.gos--os .tag { padding: 3px 8px; border-radius: 6px; font-weight: 500; }
+.gos--os .gtabs:not(.gsec-tabs) { border-radius: 10px; padding: 3px; }
+.gos--os .gtabs:not(.gsec-tabs) .gtab { border-radius: 8px; min-height: 32px; font-weight: 500; }
+.gos--os .gtabs:not(.gsec-tabs) .gtab[aria-selected="true"] { background: var(--w-card, #fff); box-shadow: var(--w-shadow-sm, 0 1px 3px rgb(26 26 26 / .1)); }
+/* the bar's right side: ghost "Work in progress" with an orange count badge, a sand avatar */
+.win--gos:has(.gos--os) .gos__top .gos-wip summary { min-height: 32px; padding: 0 10px; border-radius: 8px; background: none; font: 500 14px var(--sans); }
+.win--gos:has(.gos--os) .gos__top .gos-wip summary:hover, .win--gos .gos__top .gos-wip[open] summary { background: var(--sand-600, #eeebe3); }
+.win--gos:has(.gos--os) .gos-wip__dot { display: none; }
+.win--gos:has(.gos--os) .gos__top .gos-wip__n { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; background: var(--new, #efac5b); color: var(--new-ink, #1a1a1a); font: 500 12px/1 var(--sans); }
+.win--gos:has(.gos--os) .gos-wip__pop { border-radius: 12px; background: var(--w-card, #fff); box-shadow: 0 0 0 1px var(--sand-600, #eeebe3), var(--w-shadow-lg, 0 10px 15px -3px rgb(26 26 26 / .1)); }
+.win--gos:has(.gos--os) .gos-wip__note { color: var(--vast-700, #5b5b59); }
+.win--gos:has(.gos--os) .gos-wip__list button { border-radius: 8px; }
+.win--gos:has(.gos--os) .gos-wip__list button:hover { background: var(--sand-500, #f5f4f0); }
+.win--gos:has(.gos--os) .gos__menu summary { width: 32px; height: 32px; background: var(--sand-600, #eeebe3); font: 600 13px var(--sans); }
+.win--gos:has(.gos--os) .gos__menupop { top: 40px; border-radius: 12px; background: var(--w-card, #fff); box-shadow: 0 0 0 1px var(--sand-600, #eeebe3), var(--w-shadow-lg, 0 10px 15px -3px rgb(26 26 26 / .1)); }
+.win--gos:has(.gos--os) .gos__menupop button { min-height: 34px; border-radius: 8px; }
+.win--gos:has(.gos--os) .gos__menupop button:hover { background: var(--sand-500, #f5f4f0); }
+@media (max-width: 760px) {
+  .gos.gos--os { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); padding: 0; }
+  .gos--os .gos__main { border-width: 1px 0 0; border-radius: 16px 16px 0 0; }
+  .gos--os .grail { padding: 2px 12px 8px; border-bottom: 0; }
+  .gos--os .grail__b { min-height: 36px; padding: 0 10px; border-radius: 8px; font-size: 14px; }
+  .gos--os .gos__page { padding: 20px 16px 72px; }
+  .gos--os .ghome__hi, .gos--os .gsec-head__t { font-size: 24px; }
+  .gos--os .gsec__t { font-size: 15px; }
+  .win--gos:has(.gos--os) .gos__top .gos-wip summary { padding: 0 6px; }
+}
+
+/* sign-in: marketing mode, like the cover (Lumen, eyebrow, serif headline with an italic word, the lilac CTA) */
+.win--gos:has(.gos-signin) .win__bar { border-bottom: 0; }
+.gos-signin { max-width: 520px; justify-items: center; text-align: center; gap: 16px; }
+.gos-signin .gos__kicker { margin: 0; font: 500 13px/1.3 var(--sans); letter-spacing: .08em; color: var(--vast-800, #464544); }
+.gos-lock.gos-signin p.big { max-width: 16ch; font-size: clamp(48px, 7vw, 88px); line-height: .9; }
+.gos-signin > p:not(.big):not(.gos__kicker):not(.gos-signin__msg) { max-width: 46ch; font-size: 18px; color: var(--vast); }
+.gos-signin__form { justify-content: center; margin-top: 8px; }
+.gos-signin__form .field { min-height: 52px; border: 2px solid var(--lumen-dark, #e4e4d0); border-radius: 8px; background: #fff; }
+.gos-signin__form .field:focus { border-color: var(--vast); }
+.gos-signin__form .btn { min-height: 52px; padding: 0 24px; border-radius: 8px; background: var(--dawn); box-shadow: inset 0 0 0 2px var(--vast); font: 600 16px/1 var(--sans); transition: transform .2s, background-color .3s; }
+.gos-signin__form .btn:hover { background: var(--dawn); box-shadow: inset 0 0 0 2px var(--vast); transform: translateY(-2px); }
+.gos-signin__msg { color: var(--flare-600, #a6280b); }
+@media (max-width: 760px) { .gos-lock.gos-signin p.big { font-size: 52px; } .gos-signin > p:not(.big):not(.gos__kicker):not(.gos-signin__msg) { font-size: 16px; } }

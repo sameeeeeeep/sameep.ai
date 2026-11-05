@@ -4,29 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffeb">
-  <title>Wispr Guru · a prototype by Sameep</title>
-  <meta name="description" content="A second cursor for any app. Ask out loud how to do something; Guru points at the right button and walks you through it, step by step, by voice. A Claude Code mod built on Wispr Flow. A prototype by Sameep for Wispr, not a Wispr product.">
-  <meta property="og:title" content="Wispr Guru · a prototype by Sameep">
+  <title>Wispr Guru</title>
+  <meta name="description" content="Guru shows you where to click as you speak. Ask out loud how to do something in any app, and a second cursor points at the button and walks you through it, step by step. A Claude Code mod for Wispr Flow.">
+  <meta property="og:title" content="Wispr Guru">
   <meta property="og:description" content="Say “how do I export this?” and a second cursor shows you. Say “done” to go on.">
   <link rel="canonical" href="https://sameep.ai/wispr-guru/">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ffffeb'/%3E%3Cpath d='M10 7v17l4.5-4.2 3.4 7.2 2.8-1.3-3.4-7.1H24z' fill='%23ff6c4c'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a1a1a'/%3E%3Ctext x='16' y='22.5' font-family='Figtree,Helvetica,Arial,sans-serif' font-size='18' font-weight='700' text-anchor='middle' fill='%23fcfcfb'%3EG%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600;700&family=Google+Sans+Code:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/wispr-kit/wispr.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="w-site">
   <header class="top">
-    <a class="top__mark" href="./"><em>Wispr</em> Guru</a>
-    <span class="top__by">a prototype by Sameep for Wispr</span>
+    <nav class="w-nav" aria-label="Wispr Guru">
+      <a class="w-lockup" href="./"><span class="w-lockup__name">Wispr Guru</span><span class="w-badge w-badge--new">New!</span></a>
+      <div class="w-nav__links">
+        <a href="#how">How it works</a>
+        <a class="w-nav__hide" href="#mac">On your Mac</a>
+        <a class="w-cta w-cta--sm" href="#mac">Get Guru</a>
+      </div>
+    </nav>
   </header>
 
   <main>
-    <section class="intro">
-      <h1>A second cursor that <em>shows</em> you how.</h1>
-      <p>Ask out loud how to do something in any app. Guru points at the button, tells you the step, and waits. Say “done” and it moves on. Try it on the document below.</p>
+    <section class="w-hero intro">
+      <p class="w-eyebrow">Wispr Guru for Mac</p>
+      <h1>Don’t hunt for it, <em>just ask.</em></h1>
+      <p>Guru shows you where to click as you speak. It points at the button, says the step, and waits for you.</p>
+      <a class="w-cta" href="#demo">Try it below</a>
+      <span class="w-cta__note">A Claude Code mod. Works with Wispr Flow, or just type.</span>
     </section>
 
+    <div class="demo" id="demo">
     <!-- the pretend app: a plain document editor, nothing real -->
     <section class="desk" aria-label="Demo: a pretend document app">
       <div class="win" id="win">
@@ -90,28 +101,32 @@
       </div>
     </section>
 
-    <section class="how">
-      <div class="how__col">
-        <h2>How it works</h2>
-        <ol>
-          <li><b>Ask.</b> Hold your Wispr key and say what you want: “where’s the setting for…”, “how do I export this?”</li>
-          <li><b>See.</b> Claude looks at your screen and finds the control through the Mac’s accessibility tree, so the pointer follows the window if you move it.</li>
-          <li><b>Do.</b> A second cursor points, and a small card says the step. Say “done”, “go back” or “wait, where?”. Guru waits for you.</li>
-        </ol>
-      </div>
-      <div class="how__col">
-        <h2>On your Mac</h2>
-        <p>Guru is a Claude Code mod. Claude gets a <code>guide</code> tool and a <code>/guru</code> command, so it can walk you through anything on your Mac. When a thread finishes while you’re elsewhere, Guru meows (or plays a short metal riff, your call) and shows a small card you can answer by voice.</p>
-        <div class="install">
-          <code id="install">claude --plugin-url https://sameep.ai/wispr-guru/wispr-guru.zip</code>
-          <button class="copy" type="button" data-copy="#install">Copy</button>
-        </div>
-        <p class="fine">Needs an Apple silicon Mac on macOS 13+, a recent Claude Code, and Wispr Flow for voice. Typing works too.</p>
-      </div>
-    </section>
+    </div>
   </main>
 
-  <footer class="foot">Wispr Guru is a prototype by <a href="/">Sameep</a>, made for Wispr. Not a Wispr product.</footer>
+  <section class="w-section w-section--ink how" id="how">
+    <p class="w-eyebrow">How it works</p>
+    <h2>Ask, see, <em>done.</em></h2>
+    <p class="w-lede">Guru waits for you at every step. Say “done”, “go back”, or “wait, where?”.</p>
+    <ol class="how__steps">
+      <li class="w-mcard"><b>Ask</b><p>Hold your Wispr key and say what you want: “where’s the setting for…”, “how do I export this?”</p><span class="w-hold">Hold <kbd class="w-kbd">fn</kbd> and speak</span></li>
+      <li class="w-mcard"><b>See</b><p>Claude looks at your screen and finds the control through the Mac’s accessibility tree, so the pointer follows the window if you move it.</p></li>
+      <li class="w-mcard"><b>Do</b><p>A second cursor points, and a small card says the step. Guru moves on when you say “done”.</p></li>
+    </ol>
+  </section>
+
+  <section class="w-section w-section--fathom mac" id="mac">
+    <p class="w-eyebrow">On your Mac</p>
+    <h2>Guru lives <em>in Claude Code</em></h2>
+    <p class="w-lede">Claude gets a <code>guide</code> tool and a <code>/guru</code> command, so it can walk you through anything on your Mac. When a thread finishes while you’re elsewhere, Guru meows (or plays a short metal riff, your call) and shows a small card you can answer by voice.</p>
+    <div class="install">
+      <code id="install">claude --plugin-url https://sameep.ai/wispr-guru/wispr-guru.zip</code>
+      <button class="copy" type="button" data-copy="#install">Copy</button>
+    </div>
+    <p class="fine">Needs an Apple silicon Mac on macOS 13+, a recent Claude Code, and Wispr Flow for voice. Typing works too.</p>
+  </section>
+
+  <footer class="w-foot foot"><span class="w-lockup__name">Wispr Guru</span><span>by <a href="/">Sameep Rehlan</a></span></footer>
 
   <!-- the guide layer -->
   <div class="guru" id="guru" aria-hidden="true">
@@ -134,7 +149,7 @@
       <button type="button" data-r="where">Where?</button>
       <button type="button" class="primary" data-r="next">Done</button>
     </div>
-    <div class="card__foot"><kbd>↵</kbd> done <kbd>esc</kbd> stop <span>made for Wispr</span></div>
+    <div class="card__foot"><kbd class="w-kbd">↵</kbd> done <kbd class="w-kbd">esc</kbd> stop</div>
   </div>
 
   <script src="app.js"></script>
