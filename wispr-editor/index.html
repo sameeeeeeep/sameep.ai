@@ -42,7 +42,7 @@
         <h2>Record <em>like you talk</em></h2>
         <p>The teleprompter lights up each word as you say it and only moves on once you finish the line. It never runs on a timer. Space or → if you want to jump.</p>
         <p class="note">Camera and screen are separate tracks. Record them together, or do the screen pass later and drop it in at the playhead.</p>
-        <p class="status"><b>New:</b> voice-follow now listens to the recording’s own mic. If Chrome still can’t hear you, hold your Wispr key and read: the dictated words move the prompt. Tested in Chrome with a simulated mic; a live-mic test is next.</p>
+        <p class="note">It follows your voice through the recording’s own mic. Holding your Wispr key and reading works too: the dictated words move the prompt.</p>
       </article>
       <article>
         <span class="n">2</span>
@@ -65,7 +65,7 @@
 
     <section class="film" id="film">
       <h2>Made with it: <em>the sameep.ai launch video</em></h2>
-      <p class="lede small">Cut in Wispr Video from one screen take of the site, two clips and the site’s own music bed. 51 seconds.</p>
+      <p class="lede small">Cut in Wispr Video from one screen take of the site, two clips and the site’s own music bed. 50 seconds.</p>
       <div class="vids">
         <video src="launch-16x9.mp4" poster="launch-16x9.jpg" controls playsinline preload="none" width="1920" height="1080"></video>
         <video class="tall" src="launch-9x16.mp4" poster="launch-9x16.jpg" controls playsinline preload="none" width="1080" height="1920"></video>
@@ -86,10 +86,10 @@
 
     <section class="install" id="install">
       <h2>Try it <em>yourself</em></h2>
-      <p>One command. Nothing is installed or written to your settings until you keep it.</p>
+      <p>One command. Nothing is written to your settings: it runs for this session only.</p>
       <div class="cmd"><code id="cmd">claude --plugin-url https://sameep.ai/wispr-editor/wispr-video.zip</code><button type="button" id="copy">Copy</button></div>
       <p>Then tell Claude what the video is about, like <code>/video a 45-second launch for my app</code>. Claude writes the script, opens the teleprompter, and edits your take when you’re done.</p>
-      <p class="note"> Needs macOS, Chrome for the teleprompter’s voice-follow, <code>ffmpeg</code>, and <code>whisper-cpp</code> (<code>brew install ffmpeg whisper-cpp</code>). Projects live in <code>~/WisprVideo</code>.</p>
+      <p class="note">Needs macOS, Chrome, Python 3, Xcode Command Line Tools, <code>ffmpeg</code> and <code>whisper-cpp</code> (<code>brew install ffmpeg whisper-cpp</code>). The first run downloads a 140 MB speech model. Voice-follow has been tested in Chrome with a simulated mic so far. Projects live in <code>~/WisprVideo</code>.</p>
     </section>
   </main>
 
