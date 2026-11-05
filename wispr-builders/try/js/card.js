@@ -51,7 +51,8 @@ let open = null; // one card at a time, as on the Mac
 export const cardOpen = () => !!open;
 export function closeCard() { if (open) open.cancel('replaced'); }
 
-const HOLD = '<span class="wb-hold">Hold <kbd class="w-kbd">fn</kbd> and speak</span>';
+export const TOUCH = matchMedia('(hover: none)').matches;
+const HOLD = TOUCH ? '<span class="wb-hold">Speak with the Flow keyboard</span>' : '<span class="wb-hold">Hold <kbd class="w-kbd">fn</kbd> and speak</span>';
 
 export function present(spec) {
   if (open) open.cancel('replaced');
@@ -66,14 +67,14 @@ export function present(spec) {
     el.className = 'wb' + (grid ? ' wb--grid' : '') + (grid && opts.length < 3 ? ' wb--few' : '');
     el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', spec.title || 'Pick one');
     el.innerHTML = `
-      <div class="wb__head"><span class="wb__lock">Wispr Bridge</span>${spec.mod ? `<span class="wb__mod">${esc(spec.mod)}</span>` : ''}${multi ? '<span class="wb__any">Pick any</span>' : ''}</div>
+      <div class="wb__head"><span class="wb__lock">Wispr Bridge</span>${multi ? '<span class="wb__any">Pick any</span>' : ''}</div>
       <div class="wb__tt"><div class="wb__t">${esc(spec.title || 'Pick one')}</div>${spec.subtitle ? `<div class="wb__s">${esc(spec.subtitle)}</div>` : ''}</div>
       <div class="wb__opts" role="listbox" aria-label="Options">${opts.map((o, i) => grid ? `
         <button class="wb__tile" type="button" role="option" data-i="${i}"><span class="wb__img"><img src="${esc(o.image)}" alt="" draggable="false"><span class="wb__n">${i + 1}</span></span>
           <span class="wb__l">${esc(o.label)}</span>${o.detail ? `<span class="wb__d">${esc(o.detail)}</span>` : ''}</button>` : `
         <button class="wb__row" type="button" role="option" data-i="${i}"><span class="wb__n">${i + 1}</span>${o.image ? `<img class="wb__ico" src="${esc(o.image)}" alt="">` : ''}
           <span class="wb__rt"><span class="wb__l">${esc(o.label)}</span>${o.detail ? `<span class="wb__d">${esc(o.detail)}</span>` : ''}</span></button>`).join('')}</div>
-      <input class="wb__in" type="text" autocomplete="off" spellcheck="false" aria-label="Your answer" placeholder="${multi ? 'Click the ones to keep, then press return' : 'Click one, or press its number'}">
+      <input class="wb__in" type="text" autocomplete="off" spellcheck="false" aria-label="Your answer" placeholder="${TOUCH ? (multi ? 'Tap the ones to keep, then Done' : 'Tap one, or type a note') : (multi ? 'Click the ones to keep, then press return' : 'Click one, or press its number')}">
       <div class="wb__foot">${HOLD}${opts.length ? `<span class="wb-hint"><kbd class="w-kbd">${multi ? '1 3 ↵' : '1–' + Math.max(1, opts.length)}</kbd> to pick</span>` : ''}<span class="wb__sp"></span>
         <button class="w-btn w-btn--ghost wb__no" type="button">Not now</button>${multi ? '<button class="w-btn w-btn--primary wb__done" type="button">Done</button>' : ''}</div>`;
     const input = el.querySelector('.wb__in');

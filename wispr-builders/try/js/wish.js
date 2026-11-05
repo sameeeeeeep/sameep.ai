@@ -134,6 +134,7 @@ export function convertPlan(raw) {
 
 export async function runConvert(raw, ui) {
   const p = convertPlan(raw);
+  await ui.ready?.();
   const sel = ui.selection();
   ui.route({ intent: 'convert', args: { input: sel ? sel.name : null, to: p.op, ...(p.px ? { options: { width: p.px } } : {}) }, mod: 'Wispr Wish' });
   if (p.op === 'mac') return notify(`That one needs your Mac: ${p.why}. In the browser, try “make this a WebP” or “make it smaller for WhatsApp”.`, { title: 'Wispr Wish', ttl: 6 });

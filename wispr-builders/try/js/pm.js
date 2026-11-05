@@ -28,6 +28,8 @@ export const BOARD = [
 ];
 let last = 'portfolio';
 const PRIO = { high: 0, med: 1, low: 2 };
+export const COL = { backlog: 'Backlog', doing: 'In progress', review: 'In review', done: 'Done' };
+export const PRI = { high: 'High priority', med: 'Medium priority', low: 'Low priority' };
 const cards = (p) => BOARD.filter((t) => t.project === p);
 
 export function projectOf(t) {
@@ -85,7 +87,7 @@ export async function runPM(raw, ui) {
     const list = cards(p).filter((c) => c.col === 'doing' || c.col === 'backlog').sort((x, y) => (x.col !== 'doing') - (y.col !== 'doing') || PRIO[x.prio] - PRIO[y.prio]).slice(0, 4);
     ui.showProject(p);
     if (!list.length) return notify(`Nothing open on ${p}.`, { title: 'Wispr PM' });
-    const r = await present({ mod: 'Wispr PM', title: `Next on ${p}`, subtitle: 'Click one to act on it, or press esc', options: list.map((t) => ({ label: t.title.slice(0, 70), detail: [t.col, t.prio && 'prio ' + t.prio].filter(Boolean).join(' · ') })), recommended: 1 });
+    const r = await present({ mod: 'Wispr PM', title: `Next on ${p}`, subtitle: 'Pick one to act on it.', options: list.map((t) => ({ label: t.title.slice(0, 70), detail: [COL[t.col], PRI[t.prio]].filter(Boolean).join(' · ') })), recommended: 1 });
     ui.result(r);
     if (r.cancelled) return;
     let card = r.pick ? list[r.pick - 1] : findCard(r.text, p);
@@ -127,7 +129,7 @@ export async function runPM(raw, ui) {
     const items = a.dump.split(/\s*(?:[,;\n]|\band then\b|\bthen\b|\balso\b|\band\b)\s*/i).map((s) => s.replace(/^(to|i need to|we need to)\s+/i, '').trim()).filter((s) => s.length > 2);
     if (items.length < 2) return notify('Say the list after “split this into tasks”, like “split this into tasks: fix the footer, add OG images and test on mobile”. (On your Mac it can split your clipboard too.)', { title: 'Wispr PM', ttl: 7 });
     const list = [...new Set(items.map((s) => s[0].toUpperCase() + s.slice(1)))].slice(0, 9);
-    const r = await present({ mod: 'Wispr PM', multi: true, title: `${list.length} cards for ${p}. Keep which?`, subtitle: 'Click the ones to keep, then Done.', options: list.map((c) => ({ label: c, detail: 'task · med' })) });
+    const r = await present({ mod: 'Wispr PM', multi: true, title: `${list.length} cards for ${p}. Keep which?`, subtitle: 'Click the ones to keep, then Done.', options: list.map((c) => ({ label: c, detail: 'New task' })) });
     ui.result(r);
     if (r.cancelled || !r.picks) return;
     let lastId; for (const i of r.picks) { const c = C(p, list[i - 1], 'backlog', 'med', { fresh: true }); BOARD.push(c); lastId = c.id; }
@@ -140,7 +142,7 @@ function move(card, col, ui) { card.col = col; if (col !== 'review') { delete ca
 
 async function cardMenu(card, ui) {
   const r = await present({
-    mod: 'Wispr PM', title: card.title.slice(0, 80), subtitle: `${card.project} · ${card.col}`,
+    mod: 'Wispr PM', title: card.title.slice(0, 80), subtitle: `${card.project} · ${COL[card.col]}`,
     options: [{ label: 'Start a thread on it', detail: 'claude -p in the project, pings you when done' }, { label: 'Mark done' }, { label: 'Park it (backlog)' }, { label: 'Mark doing' }],
   });
   ui.result(r);

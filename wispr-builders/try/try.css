@@ -336,3 +336,18 @@ html.rv-on .rv-dock button, html.rv-on .rv-pin { cursor: pointer; }
 }
 
 .t-status { flex: none; }
+
+/* review fixes: selected tab, card parity with wb-card (12px surface, 6px badges, 24px padding, 2px selection, grows from the top) */
+.t-tabs .w-seg > button.is-on { background: var(--pure-white, #fff); color: var(--vast-950); box-shadow: var(--w-shadow-xs); }
+.wb { border-radius: 12px; padding: 24px; transform-origin: top center; }
+.wb__n { border-radius: 6px; }
+.wb__tile.is-sel .wb__img, .wb__tile.is-on .wb__img { border-width: 2px; }
+.t-finder__grid li.is-sel { background: var(--sand-600, #eeebe3); box-shadow: 0 0 0 2px var(--vast-950) inset; }
+.t-ask__in.is-typed { background: var(--lumen, #ffffeb); }
+body[data-mod="guru"] .t-screen, body[data-mod="video"] .t-screen { min-height: 0; }
+.t-route__k { font-weight: 600; }
+.t-route__x { width: 100%; }
+.t-route__x summary { cursor: pointer; color: var(--vast-600); font-size: 12.5px; width: max-content; }
+.t-route__x[open] { display: grid; gap: 6px; justify-items: start; }
+.t-real p .t-status { margin-right: 6px; vertical-align: 1px; }
+.rv-pill.is-docked .rv-pill__k, .rv-pill.is-docked .rv-pill__foot { display: none; }

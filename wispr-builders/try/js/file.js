@@ -1,7 +1,7 @@
 // Wispr File, in the browser: the real mod's parser (lib/find.mjs parse/parseWhen, ported), a ranking like its
 // Spotlight ranking, over the sample Mac in mac.js. Picking a file copies it to the clipboard as an image.
 import { FILES, PATH, whenLabel, thumbURL, filePNG } from './mac.js';
-import { present, notify } from './card.js';
+import { present, notify, TOUCH } from './card.js';
 
 const ACTIONS = [
   [/\b(copy|grab) (the |its )?(file )?path\b|\bpath (of|to)\b/, 'path'],
@@ -128,6 +128,8 @@ export function search(text) {
 }
 
 const VERB = { paste: 'paste into the front app', attach: 'attach', copy: 'copy', reveal: 'show in Finder', open: 'open', path: 'copy the path' };
+// "find my passport photo" -> "passport photo", for a card title that asks, like the real card does
+const noun = (t) => t.replace(/[,.!?].*$/, '').replace(/^\s*(?:please\s+)?(?:find|get|grab|show(?: me)?|pull up|open|where(?:'s| is)|look for|search for)\s+/i, '').replace(/^(?:me\s+)?(?:my|the|a|an)\s+/i, '').replace(/^(?:last|latest|newest|most recent)\s+/i, '').trim().slice(0, 48);
 const detailOf = (f) => `${whenLabel(f.date)} · ${f.folder}`;
 
 export async function runFile(text, ui, depth = 0) {
@@ -141,8 +143,8 @@ export async function runFile(text, ui, depth = 0) {
   const what = [plan.terms.join(' '), plan.kind && KINDS[plan.kind], plan.range && !plan.droppedDate && plan.range.label].filter(Boolean).join(' · ');
   const r = await present({
     mod: 'Wispr File',
-    title: what ? `Found: ${what}` : 'Which file?',
-    subtitle: `Click one to ${VERB[action] === VERB.paste ? 'copy it' : VERB[action]}, or press its number.`,
+    title: noun(text) ? `Which ${noun(text)}?` : 'Which file?',
+    subtitle: `${items.length} on this sample Mac. ${TOUCH ? 'Tap' : 'Click'} one to ${VERB[action] === VERB.paste ? 'copy it' : VERB[action]}.`,
     options: items.map((f) => ({ label: f.name, detail: detailOf(f), image: thumbURL(f) })),
     recommended: 1,
   });

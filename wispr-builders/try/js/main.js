@@ -1,11 +1,11 @@
 // Try Pack 1: one Bridge ask field, a mod per tab, and a "screen" where the mod's card and sample data live.
 // Flow types into whatever field has focus, so the ask field keeps focus between requests.
 import { classify } from './router.js';
-import { setLayer, notify, closeCard, cardOpen, reveal } from './card.js';
+import { setLayer, notify, closeCard, cardOpen, reveal, TOUCH } from './card.js';
 import { runFile, search } from './file.js';
 import { FILES, PATH, whenLabel, thumbURL } from './mac.js';
 import { runApp, runConvert, runWishOther, fmt } from './wish.js';
-import { runPM, BOARD, PROJECTS, waitingCount } from './pm.js';
+import { runPM, BOARD, PROJECTS, waitingCount, PRI } from './pm.js';
 import { runReview, initReview, reviewOn, reviewState } from './review.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -114,17 +114,18 @@ const ui = {
   route({ intent, args, mod: m, note }) {
     const a = Object.fromEntries(Object.entries(args || {}).filter(([, v]) => v != null && v !== ''));
     routeEl.hidden = false;
-    routeEl.innerHTML = `<span class="t-route__k">Bridge</span><span>→ ${m ? esc(m) : 'Claude'}</span><code>${esc(JSON.stringify({ intent, args: a }))}</code>${note ? `<span class="t-route__n">${esc(note)}</span>` : ''}`;
+    routeEl.innerHTML = `<span class="t-route__k">Bridge sent this to ${m ? esc(m) : 'Claude'}</span><details class="t-route__x"><summary>What Bridge understood</summary><code>${esc(JSON.stringify({ intent, args: a }))}</code>${note ? `<span class="t-route__n">${esc(note)}</span>` : ''}</details>`;
   },
-  result(r) { if (!routeEl.hidden) { const c = document.createElement('code'); c.className = 't-route__r'; c.textContent = '← ' + JSON.stringify(r); routeEl.querySelector('.t-route__r')?.remove(); routeEl.append(c); } },
+  result(r) { if (!routeEl.hidden) { const c = document.createElement('code'); c.className = 't-route__r'; c.textContent = '← ' + JSON.stringify(r); routeEl.querySelector('.t-route__r')?.remove(); (routeEl.querySelector('details') || routeEl).append(c); } },
   // File
   reveal(f) { if (mod !== 'file') setMod('file', { keepRoute: true }); finder.folder = f.folder; finder.sel = f.id; RENDER.file(); const li = stage.querySelector(`[data-f="${f.id}"]`); if (li) { li.parentElement.scrollTop = li.offsetTop - 20; reveal(li); } },
   preview(f) { openDialog(f.name, `<figure class="t-prev"><img src="${thumbURL(f)}" alt="${esc(f.name)}"><figcaption><code>${esc(PATH(f))}</code><span>${esc(whenLabel(f.date))}</span></figcaption></figure><p class="t-fine">On your Mac, File opens the real file in its app.</p>`); },
   copied(f) { finder.sel = f.id; if (mod === 'file') RENDER.file(); },
   // Wish
   selection: () => wishSel(),
+  ready: () => wishLoad,
   busy(b) { stage.classList.toggle('is-busy', b); },
-  converted(o) { wishOut = o; if (o.blob !== o.from.blob) { wishFiles.push({ name: o.name, blob: o.blob, made: true }); } RENDER.wish(); },
+  async converted(o) { await wishLoad; wishOut = o; if (o.blob !== o.from.blob) { wishFiles.push({ name: o.name, blob: o.blob, made: true }); } RENDER.wish(); },
   miniWindow({ title, html, h }) {
     const w = document.createElement('div'); w.className = 't-mini'; w.setAttribute('role', 'dialog'); w.setAttribute('aria-label', title);
     w.innerHTML = `<div class="t-mini__bar"><span class="t-mini__dots"><i></i><i></i><i></i></span><b>${esc(title)}</b><button type="button" aria-label="Close">×</button></div>`;
@@ -158,7 +159,7 @@ function openDialog(title, html) {
 // ---------------------------------------------------------------- stages
 const finder = { folder: 'All', sel: null };
 const FOLDERS = ['All', 'Desktop', 'Downloads', 'Documents', 'Pictures'];
-let wishFiles = null, wishPick = 0, wishOut = null;
+let wishFiles = null, wishLoad = null, wishPick = 0, wishOut = null;
 let pmView = 'portfolio', pmFlash = null, pmSnoozed = false;
 
 const RENDER = {
@@ -175,10 +176,13 @@ const RENDER = {
   },
 
   async wish() {
-    if (!wishFiles) {
-      wishFiles = [{ name: 'IMG_2041.jpg', url: 'samples/IMG_2041.jpg' }, { name: 'studio-desk.png', url: 'samples/studio-desk.png' }];
+    if (!wishLoad) {
+      const list = [{ name: 'IMG_2041.jpg', url: 'samples/IMG_2041.jpg' }, { name: 'studio-desk.png', url: 'samples/studio-desk.png' }];
+      wishLoad = Promise.all(list.map(async (f) => { f.blob = await fetch(f.url).then((r) => r.blob()); })).then(() => { wishFiles = [...list, ...(wishFiles || [])]; });
+    }
+    if (!wishFiles || wishFiles.some((f) => !f.blob)) {
       stage.innerHTML = '<p class="t-fine t-pad">Loading the samples…</p>';
-      await Promise.all(wishFiles.map(async (f) => { f.blob = await fetch(f.url).then((r) => r.blob()); }));
+      await wishLoad;
       if (mod !== 'wish') return;
     }
     const sel = wishSel();
@@ -235,7 +239,7 @@ const RENDER = {
       <div class="t-pm__top"><div class="w-seg t-pm__seg" role="tablist" aria-label="Board">${[...Object.keys(PROJECTS), 'all'].map((p) => `<button type="button" data-p="${p}" class="${p === pmView ? 'is-on' : ''}" aria-selected="${p === pmView}">${p === 'all' ? 'All boards' : p}</button>`).join('')}</div>
         ${wc && !pmSnoozed ? `<button type="button" class="t-pill" data-wait><i></i>${wc} waiting on you</button>` : ''}</div>
       <div class="t-pm__cols">${cols.map((col) => { const cs = shown.filter((c) => c.col === col); return `<section class="t-pm__col"><h3>${names[col]} <span>${cs.length}</span></h3><ul>${cs.map((c) => `
-        <li class="t-pm__card${c.id === pmFlash ? ' is-flash' : ''}${c.running ? ' is-run' : ''}"><b>${esc(c.title)}</b><span>${pmView === 'all' ? esc(c.project) + ' · ' : ''}${c.prio}${c.running ? ' · thread running' : ''}${c.waited ? ' · waited ' + esc(c.waited) : ''}${c.me ? ' · @me' : ''}</span></li>`).join('')}</ul></section>`; }).join('')}</div>
+        <li class="t-pm__card${c.id === pmFlash ? ' is-flash' : ''}${c.running ? ' is-run' : ''}"><b>${esc(c.title)}</b><span>${pmView === 'all' ? esc(c.project) + ' · ' : ''}${PRI[c.prio]}${c.running ? ' · Claude is working on it' : ''}${c.waited ? ' · waiting ' + esc(c.waited) : ''}${c.me ? ' · needs you' : ''}</span></li>`).join('')}</ul></section>`; }).join('')}</div>
       <p class="t-fine">On your Mac, each project is a plain Markdown board, and a thread is Claude Code working on the card. Here the thread is simulated.</p>
     </div>`;
     stage.querySelector('.t-pm__seg').onclick = (e) => { const b = e.target.closest('[data-p]'); if (b) { pmView = b.dataset.p; RENDER.pm(); } };
@@ -302,5 +306,6 @@ document.addEventListener('paste', (e) => {
   const s = e.clipboardData?.getData('text'); if (s) { e.preventDefault(); q.value = s; q.focus(); }
 });
 
+if (TOUCH) { $('.t-ask__head .wb-hold').textContent = 'Speak with the Flow keyboard'; $('.t-ask__foot .wb-hint').hidden = true; }
 setMod(mod);
 if (!matchMedia('(hover: none)').matches) q.focus({ preventScroll: true });
