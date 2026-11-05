@@ -32,8 +32,11 @@ export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = fal
   const crt = new CRT(glass.querySelector('.crt__tube'), { reduced });
 
   const dataP = loadPersona({ episodeUrl });
-  const fast = new URLSearchParams(location.search).has('fast') || !!resume || skipIntro; // a resume skips the boot it already saw
   const q0 = new URLSearchParams(location.search);
+  // ?scene=lock|desk|folder&f=<id>|podcast: capture hooks for the launch video (pair with ?clean). Each lands
+  // straight on that scene, holds still (no boot, no guide, no countdowns, no show opening by itself) and writes no resume
+  const scene = ['lock', 'desk', 'folder', 'podcast'].includes(q0.get('scene')) ? q0.get('scene') : null;
+  const fast = q0.has('fast') || !!resume || skipIntro || !!scene; // a resume skips the boot it already saw
   const eraOn = !fast && !q0.has('debug') && !q0.has('noera'); // the 1999 minute: music, a desktop installer, then the show
   let persona;
   if (!fast) {
@@ -125,12 +128,13 @@ export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = fal
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
   // a resume skips the lock screen: the teammate who logged in last time is still them (Growth OS stays)
   const stored = () => { try { return JSON.parse(localStorage.getItem('offthecv.visitor') || 'null'); } catch { return null; } };
-  const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : resume || skipIntro ? stored() : null;
-  if (!resume) markStage('app');  // only now: a reload before this (on the lobby) starts over, not "back to the iMac"
+  const loggedIn = era || scene === 'lock' ? await login(desk.area, persona, { reduced, stylise: stylisePhoto, hold: scene === 'lock' }) : resume || skipIntro ? stored() : null;
+  if (!resume && !scene) markStage('app');  // only now: a reload before this (on the lobby) starts over, not "back to the iMac"
   if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn, icon: false })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
   // every guide on the desktop (js/app/tour.js); set up after the boot's own player, so it isn't a "first open"
-  guides = installGuides({ area: desk.area, cards, ctx });
+  // a capture scene runs no guides at all (no first-open walkthroughs over the window being filmed)
+  guides = scene ? new Proxy({}, { get: () => () => null }) : installGuides({ area: desk.area, cards, ctx });
   let tour = null;
 
   if (episode && episode.nodes) {
@@ -142,24 +146,44 @@ export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = fal
       // first visit: the guide plays while it installs and keeps going after; the Open countdown waits for it.
       // It moves only when they say, so it holds the show until they're done (or Skip, or Start the show)
       tour = guides.first();
-      // when the guide is over (done or skipped) it leaves them to it: the install finishes quietly, the icon
-      // lands, and nothing opens by itself; they start the show when they want
-      let guideOver = false;
-      tour?.finished.then(() => { if (ctx.wantShow) return; guideOver = true; if (ctx.installing) ctx.skipInstall?.(); else ctx.stay?.(); });
+      // when the guide is over (done, skipped or Esc) the install finishes at once, the icon lands, and a pill
+      // counts 15 s to the show (paused while they have something open; Not yet cancels it)
+      tour?.finished.then(() => { if (!ctx.wantShow && ctx.installing) ctx.skipInstall?.(); });
       await installer(wm, { reduced, minMs: tour ? 13000 : 3000, onProgress: desk.setProgress, bindSkip: (skip) => { ctx.skipInstall = skip; } });
       ctx.skipInstall = null;
       ctx.installing = false;
       desk.setInstalling(false);  // the icon lands on the desktop
-      const ready = installed(wm, { onCount: desk.setBadge, hold: guideOn, layer: desk.area });
+      const ready = installed(wm, { onCount: desk.setBadge, hold: guideOn, layer: desk.area, pill: !!tour });
       ctx.launch = ready.open; ctx.stay = ready.stay;
       if (ctx.wantShow) ready.open();
-      else if (guideOver) ready.stay();
       await ready.done;
       endGuide();  // opening the show ends the guide
       ctx.launch = ctx.stay = null;
       await Promise.all([juke.fadeOut(), splash(desk.area, persona, { reduced })]);
       juke.win.close();
     } else await wait(reduced ? 0 : 500);
+    if (scene === 'desk' || scene === 'folder') {
+      // nothing open (or just the one folder); the OFF THE CV icon still starts the show
+      ctx.launch = () => { ctx.launch = null; pod.open(); pod.pickHost({ first: true, visitor: loggedIn }).then(() => pod.start()); };
+      if (scene === 'folder') {
+        const f = q0.get('f'), fold = FOLDERS.find((x) => x.id === f);
+        if (f === 'wispr') ctx.openWispr();
+        else if (fold) openFolder(wm, fold);
+        else if (f === 'games') openGames(wm, { reduced });
+        else if (f) ctx.open(f);  // an app window by id: work, hd, readme, resume…
+      }
+      if (q0.has('debug')) window.__otcv = { crt, wm, podcast: pod, persona };
+      return { crt, wm, podcast: pod };
+    }
+    if (scene === 'podcast') {
+      // the show open at its first line, paused (the default host; Play or Space starts it)
+      pod.open();
+      pod.start();
+      for (let i = 0; i < 40 && !pod.playing; i++) await wait(100);
+      pod.pause();
+      if (q0.has('debug')) window.__otcv = { crt, wm, podcast: pod, persona };
+      return { crt, wm, podcast: pod };
+    }
     pod.open();
     guides.podcastReady();  // the player's own guide, the first time the show is playing
     guides.feedbackLater();  // one "How was that?", once ever: after the show, or after a while on the desktop

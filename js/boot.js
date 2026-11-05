@@ -393,11 +393,11 @@ function autoplayCard() {
 
 async function start() {
   // the tab was reloaded mid-show (iOS does this to heavy pages): offer to carry on
-  const res = resumable();
+  const res = params.has('scene') ? null : resumable();
   if (res) return resumeGate(res);
 
-  // Repeat visitors / ?skip go straight in.
-  if (params.has('skip') || params.has('app')) {
+  // Repeat visitors / ?skip go straight in (and ?scene=… capture hooks, js/app/main.js).
+  if (params.has('skip') || params.has('app') || params.has('scene')) {
     heroEl.hidden = true;
     return handoff({ instant: true });
   }

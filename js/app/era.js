@@ -421,7 +421,8 @@ const ACCOUNTS = 'offthecv.accounts';
 const ownAccounts = () => { try { return JSON.parse(localStorage.getItem(ACCOUNTS) || '[]'); } catch { return []; } };
 const saveOwn = (list) => { try { localStorage.setItem(ACCOUNTS, JSON.stringify(list.slice(-4))); } catch { /* full or private: this visit only */ } };
 
-export function login(layer, persona, { reduced, stylise } = {}) {
+// hold: a capture scene (?scene=lock): no auto-guest countdown
+export function login(layer, persona, { reduced, stylise, hold = false } = {}) {
   return new Promise((resolve) => {
     const team = (persona.characters || []).filter((c) => c.team);
     let roster = null;  // the Wispr lobby: everyone on the team, from data/wispr-team.json
@@ -439,10 +440,10 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     const hint = h('p.lock__hint', hintText);
     const pickView = h('div.lock__picked', { hidden: true });
     const addView = h('form.lock__add', { hidden: true });
-    // skip, and the auto-guest: 20 s with nobody touching anything shows a 10 s countdown, then in as a guest.
+    // skip, and the auto-guest: 20 s with nobody touching anything shows a 15 s countdown, then in as a guest.
     // Typing, hovering a face, a click or a key cancels it (and the 20 s start again); "Stay here" turns it off.
     const skip = h('button.lock__skip', { type: 'button', hidden: !team.length, onclick: () => guestIn(false, true) }, 'Continue as guest →');
-    const left = h('b', '10');
+    const left = h('b', '15');
     const auto = h('div.lock__auto', { role: 'status', hidden: true },
       h('span', h('span.lock__as', 'Going in as a guest in '), left, ' s'),
       h('button', { type: 'button', onclick: () => { autoOff = true; stopAuto(); if (team.length) search.focus({ preventScroll: true }); } }, 'Stay'),
@@ -451,8 +452,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       // the plain route has only two bubbles: its question sits under the clock, above them
       h('div.lock__top', time, date, online, !team.length && ask),
       h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', team.length && ask, search, hint, auto, skip)));
-    const IDLE = 20000, COUNT = 10;
-    let idleT = 0, cdT = 0, autoOff = false;
+    const IDLE = 20000, COUNT = 15;
+    let idleT = 0, cdT = 0, autoOff = hold;
     // the countdown makes the name box taller: the faces' keep-out zone is measured again whenever it shows or goes
     function stopAuto() { clearTimeout(idleT); clearInterval(cdT); idleT = cdT = 0; if (!auto.hidden) { auto.hidden = true; measure(); } }
     // only on the faces screen with an empty name box: someone who typed a name or opened "add account" is still deciding
@@ -721,17 +722,19 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 // ---------------------------------------------------------------- installed: open it, or it opens itself
 // resolves when the visitor clicks Open (here or on the new desktop icon via `open`), or after `secs`
 // on a phone there's no window: the icon wears a badge counting down (onCount), and tapping it opens the show
-export function installed(wm, { secs = 15, onCount, hold = () => false, layer } = {}) {
+export function installed(wm, { secs = 15, onCount, hold = () => false, layer, pill = false } = {}) {
   // The install is done: Open goes straight in; otherwise a visible countdown opens the show by itself.
-  // "Stay on the desktop" cancels it, and then the icon just waits to be opened. While hold() is true (the
-  // desktop tour is showing) nothing is drawn at all: no window, no bar, no badge, no frozen number. The
-  // guide's own "Start the show" does that job, and when the guide ends main.js calls stay() or open().
-  // Only if the hold lifts some other way does the window (or the phone's bar) appear and really count.
+  // "Not yet" / "Stay on the desktop" cancels it, and then the icon just waits to be opened. While hold() is
+  // true (a guide is showing) nothing is drawn and nothing counts. pill: a guide ran first, so when it ends
+  // (Done, Skip, Esc) a small pill counts the same 15 s instead of the Installer window. While they have
+  // something open (a window, a folder, a game) the count pauses, and the pill hides until they're back.
   let go;
   const p = new Promise((r) => { go = r; });
   const narrow = isNarrow();
   const left = h('b', String(secs));
   let n = secs, t = 0, w = null, bar = null, stopped = false;
+  const area = layer || document.querySelector('.desk__area');
+  const away = () => !!document.querySelector('.lock, .cast') || [...(area?.querySelectorAll('.win:not([hidden]):not(.is-closing):not(.is-shaded):not(.win--install):not(.win--juke)') || [])].length > 0;
   const stop = (fromClose) => {
     stopped = true;
     clearInterval(t); t = 0;
@@ -739,30 +742,43 @@ export function installed(wm, { secs = 15, onCount, hold = () => false, layer } 
     if (fromClose !== true) w?.close();
     bar?.remove();
   };
-  const btns = () => [h('button.btn', { type: 'button', onclick: () => stop() }, narrow ? 'Not yet' : 'Stay on the desktop'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open')];
+  const btns = () => pill
+    ? [h('button.btn', { type: 'button', onclick: () => stop() }, 'Not yet'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Start now')]
+    : [h('button.btn', { type: 'button', onclick: () => stop() }, narrow ? 'Not yet' : 'Stay on the desktop'), h('button.btn.btn--primary', { type: 'button', onclick: () => go() }, 'Open')];
   const draw = () => {
     if (w || bar || stopped) return;
-    if (!narrow) {
+    if (!narrow && !pill) {
       w = wm.win('installed', { title: 'Installer', width: 420, y: 40, className: 'win--install', sheet: false, onClose: () => { if (t) stop(true); } });
       w.body.append(h('div.inst',
         h('div.inst__head', h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 40, height: 40 }), h('div', h('p.inst__t', 'Installation complete'), h('p.inst__s', '“OFF THE CV” is on your desktop. Open its icon any time.'))),
         h('p.inst__doing', 'Opens by itself in ', left, ' s'),
         h('div.inst__row.inst__row--end', ...btns())));
     } else {
-      // phone: no window, so a small bar under the grid does the same job as the badge on the icon
-      bar = h('div.inst-bar', { role: 'status' }, h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 28, height: 28 }), h('p', h('b', 'OFF THE CV'), ' opens in ', left, ' s'), ...btns());
-      (layer || document.querySelector('.desk__area'))?.append(bar);
+      // the pill (and the phone's bar): no window, a small bar at the bottom does the same job as the badge on the icon
+      bar = h('div.inst-bar' + (pill ? '.is-pill' : ''), { role: 'status' }, h('img', { src: 'img/ui/offthecv.svg', alt: '', width: 28, height: 28 }),
+        pill ? h('p', h('b', 'OFF THE CV'), ' starts in ', left, '…') : h('p', h('b', 'OFF THE CV'), ' opens in ', left, ' s'), ...btns());
+      area?.append(bar);
     }
     sound.tick('pick');
     onCount?.(n);
   };
+  let paused = false;
+  const pause = (on) => {
+    if (on === paused) return;
+    paused = on;
+    if (bar) bar.hidden = on;
+    onCount?.(on ? null : n);
+  };
   if (!hold()) draw();
   t = setInterval(() => {
-    if (stopped || hold()) return;
+    if (stopped) return;
+    if (hold()) { pause(true); return; }
     if (!w && !bar) { draw(); return; }  // drawn the moment the hold lifts; counts from the next second
+    if (away()) { pause(true); return; }
+    if (paused) { pause(false); return; }  // back on the desktop: the same number, counting from the next second
     n -= 1; left.textContent = String(Math.max(0, n)); onCount?.(Math.max(0, n));
     if (n <= 0) go();
   }, 1000);
-  // stay(): what "Stay on the desktop" does, for when the guide ends: no window, no countdown, the icon waits
+  // stay(): what "Not yet" does: no countdown, the icon waits
   return { open: () => go(), stay: () => stop(), done: p.then(() => { clearInterval(t); t = 0; w?.close(); bar?.remove(); onCount?.(null); }) };
 }
