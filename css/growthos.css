@@ -17,7 +17,7 @@
 .win--gos .win__bar { height: 60px; padding: 0 20px 0 24px; gap: 12px; background: var(--lumen); border-bottom: 1px solid var(--line); cursor: default; }
 .win--gos .win__stripes, .win--gos .win__shade { display: none; }
 .win--gos .win__title { order: 1; margin: 0; padding: 0; background: none; max-width: none; display: flex; align-items: center; gap: 10px; font: 600 17px/1 var(--sans); letter-spacing: -.01em; }
-.win--gos .win__title::before { content: ""; width: 22px; height: 18px; flex: none; background: var(--vast); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 18'%3E%3Crect x='0' y='6' width='3' height='6' rx='1.5'/%3E%3Crect x='5' y='2' width='3' height='14' rx='1.5'/%3E%3Crect x='10' y='0' width='3' height='18' rx='1.5'/%3E%3Crect x='15' y='4' width='3' height='10' rx='1.5'/%3E%3Crect x='19' y='7' width='3' height='4' rx='1.5'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 18'%3E%3Crect x='0' y='6' width='3' height='6' rx='1.5'/%3E%3Crect x='5' y='2' width='3' height='14' rx='1.5'/%3E%3Crect x='10' y='0' width='3' height='18' rx='1.5'/%3E%3Crect x='15' y='4' width='3' height='10' rx='1.5'/%3E%3Crect x='19' y='7' width='3' height='4' rx='1.5'/%3E%3C/svg%3E") center / contain no-repeat; }
+.win--gos .win__title::after { content: "Made for Wispr"; flex: none; padding: 5px 10px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--line-2); font: 500 12px/1 var(--sans); letter-spacing: 0; color: var(--mute); }
 .win--gos .win__close { order: 3; margin-left: auto; width: 36px; height: 36px; border: 0; border-radius: 999px; background: var(--line); }
 .win--gos .win__close::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; font: 600 14px/1 var(--sans); color: var(--vast); }
 .win--gos .win__close:hover { background: var(--vast); }
@@ -112,6 +112,7 @@
 .ul li + li { margin-top: 6px; }
 .ul li::marker { color: var(--mute); }
 .src { font: 600 10.5px var(--sans); color: var(--fathom); text-decoration: none; vertical-align: super; margin-left: 1px; }
+@media (max-width: 760px) { a.src { display: inline-block; padding: 8px 3px; margin: -8px -1px; } }
 .src:hover { text-decoration: underline; }
 
 /* tabs inside a module: Wispr's segmented pill (Dictation | Notetaker) */
@@ -221,7 +222,9 @@
 .bmap__state { font: 500 13px/1.2 var(--sans); color: var(--mute); white-space: nowrap; }
 .tag--next { background: var(--line); color: var(--mute); }
 .bsec--install { --k: var(--line-2); }
-.bcode { display: block; margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: var(--vast); color: var(--lumen); font: 500 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; overflow-wrap: anywhere; user-select: all; }
+.bcode-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; min-width: 0; }
+.bcode { display: block; flex: 1; min-width: 0; margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--vast); color: var(--lumen); font: 500 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; white-space: nowrap; overflow-x: auto; user-select: all; }
+.win--gos .bcode-row .btn { flex: none; min-height: 44px; }
 /* prototypes: Wispr's lilac call-to-action pill */
 .bsec--proto { --k: var(--dawn); }
 .bprotos { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
@@ -347,7 +350,7 @@ a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; 
 }
 
 /* sign-in: an @wispr.ai email, then a 6-digit code */
-.gos-signin { width: 100%; max-width: 520px; }
+.gos-signin { width: 100%; max-width: 460px; text-align: left; justify-items: start; padding-left: 16px; padding-right: 16px; }
 .gos-signin__form { width: 100%; max-width: 440px; display: flex; gap: 10px; margin-top: 10px; }
 .gos-signin__form .field { flex: 1; min-width: 0; min-height: 52px; font-size: 16px; }
 .gos-signin__form .btn { min-height: 52px; padding: 0 24px; font-size: 16px; }
@@ -461,7 +464,8 @@ a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; 
 .gos__top .gos-wip { position: relative; margin: 0; background: none; }
 .gos__top .gos-wip summary { min-height: 36px; padding: 0 14px; border-radius: 999px; background: #fff0d9; font-size: 13px; }
 .gos__top .gos-wip__n { margin-left: 6px; }
-.gos__top .gos-wip[open] > :not(summary) { position: relative; }
+.gos__top .gos-wip[open] > .gos-wip__pop { position: absolute; }
+@media (max-width: 760px) { .gos__top .gos-wip[open] > .gos-wip__pop { position: fixed; top: 56px; right: 12px; left: 12px; width: auto; max-height: calc(100vh - 80px); overflow-y: auto; } }
 .gos__top .gos-wip[open]::after { content: none; }
 .gos__top .gos-wip__note, .gos__top .gos-wip__list { display: none; }
 .gos__top .gos-wip[open] .gos-wip__pop { display: grid; }
@@ -506,9 +510,10 @@ a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; 
 .gos__about p { margin: 4px 0 0; font: 400 15px/1.55 var(--sans); color: #33332c; }
 
 @media (max-width: 760px) {
-  .gos--os .gos__page { padding: 20px 16px 40px; }
+  .gos--os .gos__page { padding: 20px 16px 72px; }
   .win--gos .win__bar { gap: 8px; padding: 0 10px; }
   .win--gos:has(.gos--os.is-app) .win__title { font-size: 0; gap: 0; }
+  .win--gos .win__title::after { display: none; }
   .gos__homebtn span { display: none; }
   .gos__homebtn { width: 36px; padding: 0; justify-content: center; }
   .gos__where { font-size: 18px; }
@@ -597,7 +602,7 @@ a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; 
 .gsec { display: grid; padding: 0; overflow: hidden; border: 0; border-radius: 20px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); color: var(--vast); text-align: left; cursor: pointer; transition: transform .15s, box-shadow .15s; }
 .gsec:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--line), 0 14px 30px -16px rgba(26,26,26,.35); }
 .gsec .gart { border-radius: 0; }
-.gsec__b { display: grid; gap: 5px; padding: 14px 16px 16px; }
+.gsec__b { display: grid; gap: 5px; align-content: start; padding: 14px 16px 16px; }
 .gsec__t { font: 400 26px/1 var(--serif); }
 .gsec__l { font: 400 14px/1.4 var(--sans); color: #45453c; }
 .gsec__tabs { margin-top: 4px; font: 500 12px/1.4 var(--sans); color: var(--mute); }
