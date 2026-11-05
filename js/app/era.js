@@ -465,8 +465,10 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     }
     const nudge = (e) => { if (!e.target.closest?.('.lock__auto')) arm(); };
     for (const t of ['pointerdown', 'keydown', 'input', 'touchstart', 'wheel']) el.addEventListener(t, nudge, { passive: true, capture: true });
-    // hovering a face counts only when the pointer itself moves (the faces drift under a still mouse all the time)
-    el.addEventListener('pointermove', (e) => { if ((e.movementX || e.movementY) && e.target.closest?.('.lock__user, .lock__search')) nudge(e); }, { passive: true });
+    // a moving mouse anywhere on the lock screen means someone's there; only real movement counts (the faces
+    // drift under a still mouse all the time), checked at most four times a second
+    let movedAt = 0;
+    el.addEventListener('pointermove', (e) => { if (!(e.movementX || e.movementY) || e.timeStamp - movedAt < 250) return; movedAt = e.timeStamp; nudge(e); }, { passive: true });
     function guestIn(isAuto) {
       const g = bubbles.find((b) => b.a.id === 'guest')?.a || { id: 'guest', label: 'Guest User' };
       choose({ ...g, auto: isAuto });
@@ -507,7 +509,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     const pinned = (b) => PINNED.includes(b.a.id);
     const matches = (b) => { const l = b.a.label.toLowerCase(); return l.startsWith(q) || l.split(' ').some((w) => w.startsWith(q)); };
     const hash = (str) => { let x = 0; for (const c of str) x = (x * 31 + c.charCodeAt(0)) | 0; return Math.abs(x); };
-    function vis(b, on) { if (on) { const img = b.el.querySelector('img[data-src]'); if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); } } b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); if (!on) b.cell = null; }
+    function load(b) { const img = b.el.querySelector('img[data-src]'); if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); } }
+    function vis(b, on) { if (on) load(b); b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); if (!on) b.cell = null; }
     function put(b, cell) {
       b.cell = cell; cell.b = b;
       b.el.style.transform = `translate3d(${(cell.x - R).toFixed(1)}px, ${(cell.y - R).toFixed(1)}px, 0)`;
@@ -560,7 +563,9 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       if (q) return filter();
       const free = cells.slice();
       const take = (pick) => { const i = pick(); if (i < 0) return null; return free.splice(i, 1)[0]; };
-      const nearBox = () => { const z = zones[1]; if (!z) return free.length - 1; let best = -1, d = Infinity; free.forEach((c, i) => { const dd = Math.hypot(c.x - (z.l + z.r) / 2, c.y - z.t); if (dd < d) { d = dd; best = i; } }); return best; };
+      // Add and Guest always show their line under the name, so they need a deeper foot clear of the name box
+      const deep = (c) => !zones.some((z) => c.x + R > z.l && c.x - R < z.r && c.y + R * (FOOT + 1) > z.t && c.y - R < z.b);
+      const nearBox = () => { const z = zones[1]; if (!z) return free.length - 1; let best = -1, d = Infinity; free.forEach((c, i) => { if (!deep(c)) return; const dd = Math.hypot(c.x - (z.l + z.r) / 2, c.y - z.t); if (dd < d) { d = dd; best = i; } }); return best; };
       for (const b of bubbles.filter(pinned)) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
       for (const b of bubbles.filter((x) => always(x) && x.a.id !== 'add' && x.a.id !== 'guest')) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
       for (const id of ['guest', 'add']) { const b = bubbles.find((x) => x.a.id === id), c = b && take(nearBox); if (c) { put(b, c); vis(b, true); } }
@@ -576,6 +581,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       const n = queue.find((b) => !b.on);
       if (!outs.length || !n) return;
       const o = outs[Math.floor(Math.random() * outs.length)], cell = o.cell;
+      load(n);  // its photo starts loading now, so it fades in with a face, not an empty ring
       vis(o, false); queue = queue.filter((b) => b !== o && b !== n).concat([n, o]);
       cell.b = null;  // free while it's empty; a relayout or a filter in the meantime takes the slot back
       setTimeout(() => { if (q || pick || n.on || cell.b || !cells.includes(cell)) return; put(n, cell); vis(n, true); n.el.classList.remove('is-new'); void n.el.offsetWidth; n.el.classList.add('is-new'); }, 450);
