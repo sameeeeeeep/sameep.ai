@@ -369,3 +369,11 @@ body[data-mod="guru"] .t-screen, body[data-mod="video"] .t-screen { min-height: 
 }
 .t-main { overflow-x: clip; }
 .t-main { grid-template-columns: minmax(0, 1fr); }
+
+/* Guru and Video tabs: the real clip, then where to go next */
+.t-link { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: center; }
+.t-link__clip { margin: 0; padding: 0 !important; background: #fff; border: 1px solid #ddd9cd; border-radius: 12px; overflow: hidden; }
+.t-link__clip { display: grid; place-items: center; background: var(--sand-500, #f5f4f0); }
+.t-link__clip video { display: block; width: 100%; height: auto; max-height: 520px; object-fit: contain; }
+@media (prefers-reduced-motion: reduce) { .t-link__clip video { animation: none; } }
+@media (max-width: 760px) { .t-link { grid-template-columns: minmax(0, 1fr); } }

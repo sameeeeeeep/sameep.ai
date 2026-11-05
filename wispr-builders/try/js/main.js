@@ -23,11 +23,11 @@ const MODS = {
     say: [], ph: 'Turn on review mode below, then point and talk' },
   pm: { name: 'PM', h: 'Your task boards, <em>by voice</em>', sub: 'A sample board across three projects. Park things, ask what’s next, and see what’s waiting on you, all from one sentence.',
     say: ['what’s next on the portfolio', 'what’s waiting on me', 'park fix the footer links for the portfolio', 'start a thread on the podcast player', 'split this into tasks: fix the footer, add OG images and test on mobile'], ph: 'Say “what’s next on the portfolio”' },
-  guru: { name: 'Guru', h: 'A second cursor that <em>shows you where</em>', sub: 'Guru points at the control you need, shows the step beside it, and waits for you. It has its own demo.', say: [], ph: 'Say “walk me through exporting a frame”', page: '/wispr-guru/' },
-  video: { name: 'Video', h: 'A video editor <em>you talk to</em>', sub: 'A teleprompter that moves when you finish a line, word-timed captions, and edits you say out loud. It has its own demo.', say: [], ph: 'Say “cut the silences”', page: '/wispr-editor/' },
+  guru: { name: 'Guru', h: 'Talk back to Claude Code, <em>from the notch</em>', sub: 'When a Claude Code turn finishes, a card drops in from the notch. Hold fn and answer with Wispr, and your reply goes straight back into the thread. Guru also points at the control you need in any app.', say: [], ph: '', page: '/wispr-guru/', clip: 'notch', clipAlt: 'The Guru reply card dropping in from the notch, answered with Wispr' },
+  video: { name: 'Video', h: 'A video editor <em>you talk to</em>', sub: 'A teleprompter that moves when you finish a line, word-timed captions, and edits you say out loud. It has its own demo.', say: [], ph: '', page: '/wispr-editor/', clip: 'video-real', clipAlt: 'Wispr Video on the Mac: the teleprompter follows what Flow types, then Claude cuts the pauses' },
 };
-const ORDER = ['file', 'wish', 'review', 'pm', 'guru', 'video'];
-let mod = MODS[params.get('mod')] ? params.get('mod') : (MODS[location.hash.slice(1)] ? location.hash.slice(1) : 'file');
+const ORDER = ['guru', 'review', 'pm', 'video', 'file', 'wish'];
+let mod = MODS[params.get('mod')] ? params.get('mod') : (MODS[location.hash.slice(1)] ? location.hash.slice(1) : 'review');
 
 const q = $('#q'), stage = $('#stage'), layer = $('#layer'), routeEl = $('#route');
 setLayer(layer);
@@ -99,7 +99,8 @@ function setMod(id, { keepRoute = false } = {}) {
   q.placeholder = TOUCH && m.say[0] ? m.say[0] : m.ph;
   $('#chips').innerHTML = m.say.map((s) => `<button type="button" class="t-chip">${esc(s)}</button>`).join('');
   $('#ask').classList.toggle('is-quiet', !m.say.length);
-  $('#ask').hidden = !!m.page; $('.t-real').hidden = !!m.page;
+  $('#ask').hidden = !!m.page;
+  $('#realtxt').innerHTML = m.page ? '<b>This one runs on your Mac.</b> The clip is the real thing; install it with this line.' : '<b>This is a browser demo.</b> The real mod does this on your Mac.';
   if (!keepRoute) routeEl.hidden = true;
   document.body.dataset.mod = id;
   const st = $('#status'); st.dataset.wstatus = id; window.WisprStatus?.fill(st.parentElement);
@@ -254,16 +255,16 @@ const RENDER = {
     if (pmFlash) { reveal(stage.querySelector('.is-flash')); setTimeout(() => { pmFlash = null; }, 1600); }
   },
 
-  guru() { stage.innerHTML = linkStage('guru', 'Walk me through exporting a frame in Figma', ['how do I share this file with my team', 'show me where the export settings are']); },
-  video() { stage.innerHTML = linkStage('video', 'Cut the silences', ['highlight the product name', 'export 9:16']); },
+  guru() { stage.innerHTML = linkStage('guru'); },
+  video() { stage.innerHTML = linkStage('video'); },
 };
 
-function linkStage(id, line, more) {
+function linkStage(id) {
   const m = MODS[id];
   return `<div class="t-link">
-    <div class="t-link__say"><span class="w-eyebrow">You say</span><p>“${esc(line)}”</p><ul>${more.map((s) => `<li>“${esc(s)}”</li>`).join('')}</ul></div>
-    <div class="t-link__go"><p>${id === 'guru' ? 'Guru’s demo runs a sample app window where Guru points and steps you through it.' : 'Video’s demo is the full editor in your browser: script, teleprompter, captions and voice edits.'}</p>
-      <a class="w-btn w-btn--primary w-btn--lg" href="${m.page}" ${EMBED ? 'target="_top"' : ''}>Open the ${m.name} demo</a></div></div>`;
+    <figure class="t-link__clip"><video autoplay muted loop playsinline preload="metadata" poster="../gifs/${m.clip}.jpg" aria-label="${esc(m.clipAlt)}"><source src="../gifs/${m.clip}.webm" type="video/webm"><source src="../gifs/${m.clip}.mp4" type="video/mp4"></video></figure>
+    <div class="t-link__go"><p>${id === 'guru' ? 'The real reply card, on a Mac. On the Guru page you can try its other half: ask how to do something, and Guru points you through it.' : 'Recorded in the real editor on a Mac, with a stand-in camera and voice. Its page shows what it made and how to install it.'}</p>
+      <a class="w-btn w-btn--primary w-btn--lg" href="${m.page}" ${EMBED ? 'target="_top"' : ''}>${id === 'guru' ? 'Try the Guru demo' : 'See Wispr Video'}</a></div></div>`;
 }
 
 function outHTML(o) {
