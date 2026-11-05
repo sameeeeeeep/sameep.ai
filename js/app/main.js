@@ -300,7 +300,8 @@ function buildDesktop(screen, persona) {
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
       // the way into Switchboard: always one click from anywhere in the app
       const make = h('a.menubar__make', { href: MAKE_URL, target: '_blank', rel: 'noopener', title: MAKE_SAY }, h('span', 'Make your own'), h('span', { 'aria-hidden': 'true' }, '↗'));
-      menubar.append(left, h('div.menubar__right', make, h('span.menubar__app', persona.showName), soundBtn, help, clock));
+      // the Wispr version keeps the menu bar about Wispr: Make your own stays in Special › Make your own sameep.ai…
+      menubar.append(left, h('div.menubar__right', isWispr ? null : make, h('span.menubar__app', persona.showName), soundBtn, help, clock));
     },
   };
 }
