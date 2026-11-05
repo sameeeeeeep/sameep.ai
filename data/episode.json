@@ -131,6 +131,14 @@
       "k56": {
        "text": "Before the show, a word from tonight's sponsor. Correction, sir: there is no sponsor. There is Sameep, and a thing he made for Wispr. Wispr for Builders.",
        "audio": "audio/clips/builders-01-k56.mp3"
+      },
+      "gus": {
+       "text": "Before kick-off, a word from tonight's sponsor! There is no sponsor! It's Sameep, with something he built for Wispr! Wispr for Builders!",
+       "audio": "audio/clips/builders-01-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Okay, before we start, a word from tonight's sponsor! There is no sponsor! Ha! It's Sameep, with a thing he made for Wispr. Wispr for Builders, folks!",
+       "audio": "audio/clips/builders-01-kimmy.mp3"
       }
      },
      "visual": {
@@ -230,6 +238,78 @@
         ]
        ],
        "builders-04-k56.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-kimmy.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-02-gus.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         7.0,
+         0
+        ]
+       ],
+       "builders-02-kimmy.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         6.97,
+         0
+        ]
+       ],
+       "builders-03-gus.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.54,
+         2
+        ],
+        [
+         13.86,
+         3
+        ]
+       ],
+       "builders-03-kimmy.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.81,
+         2
+        ],
+        [
+         13.7,
+         3
+        ]
+       ],
+       "builders-04-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-04-kimmy.mp3": [
         [
          0,
          -1
@@ -249,6 +329,14 @@
       "k56": {
        "text": "Wispr is for typing, and typing is for everything. So he made Pack 1: Claude mods you run by voice. Guru is a second cursor. It answers any Claude Code thread from the notch. I find that unsettling.",
        "audio": "audio/clips/builders-02-k56.mp3"
+      },
+      "gus": {
+       "text": "Wispr is for typing, and typing is for everything! So he made Pack 1, Claude mods you run by voice! Guru is a second cursor, it answers any Claude Code thread from the notch!",
+       "audio": "audio/clips/builders-02-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Wispr is for typing, and typing is for everything. So he made Pack 1: Claude mods you run with your voice. Guru's a second cursor. It answers any Claude Code thread from the notch!",
+       "audio": "audio/clips/builders-02-kimmy.mp3"
       }
      },
      "visual": {
@@ -348,6 +436,78 @@
         ]
        ],
        "builders-04-k56.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-kimmy.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-02-gus.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         7.0,
+         0
+        ]
+       ],
+       "builders-02-kimmy.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         6.97,
+         0
+        ]
+       ],
+       "builders-03-gus.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.54,
+         2
+        ],
+        [
+         13.86,
+         3
+        ]
+       ],
+       "builders-03-kimmy.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.81,
+         2
+        ],
+        [
+         13.7,
+         3
+        ]
+       ],
+       "builders-04-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-04-kimmy.mp3": [
         [
          0,
          -1
@@ -366,6 +526,14 @@
       "k56": {
        "text": "Wispr Video is a teleprompter, a recorder and an editor. Review reviews a website, out loud. File finds any file. Wish makes mini apps and conversions. PM runs voice task boards. And Wrapped, which I am told is fun.",
        "audio": "audio/clips/builders-03-k56.mp3"
+      },
+      "gus": {
+       "text": "Wispr Video: teleprompter, recorder, editor! Review, a website review, out loud! File finds any file! Wish makes mini apps and conversions! PM runs voice task boards! And Wrapped, just for fun!",
+       "audio": "audio/clips/builders-03-gus.mp3"
+      },
+      "kimmy": {
+       "text": "Wispr Video: teleprompter, recorder, editor. Review does a website review, out loud. File finds any file. Wish makes mini apps and conversions. PM runs voice task boards. And Wrapped, the fun one!",
+       "audio": "audio/clips/builders-03-kimmy.mp3"
       }
      },
      "visual": {
@@ -465,6 +633,78 @@
         ]
        ],
        "builders-04-k56.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-kimmy.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-02-gus.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         7.0,
+         0
+        ]
+       ],
+       "builders-02-kimmy.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         6.97,
+         0
+        ]
+       ],
+       "builders-03-gus.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.54,
+         2
+        ],
+        [
+         13.86,
+         3
+        ]
+       ],
+       "builders-03-kimmy.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.81,
+         2
+        ],
+        [
+         13.7,
+         3
+        ]
+       ],
+       "builders-04-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-04-kimmy.mp3": [
         [
          0,
          -1
@@ -483,6 +723,14 @@
       "k56": {
        "text": "He built this very website with them. Builders first, then editors and designers who have Claude and no instructions. I relate. Proceeding with the show.",
        "audio": "audio/clips/builders-04-k56.mp3"
+      },
+      "gus": {
+       "text": "He built this whole website with them! Builders first, then editors and designers who've got Claude and no game plan! Right, let's get this show kicked off!",
+       "audio": "audio/clips/builders-04-gus.mp3"
+      },
+      "kimmy": {
+       "text": "He built this whole website with them! Builders first, then editors and designers who've got Claude and no idea what to do with it. Okay! Let's do the show!",
+       "audio": "audio/clips/builders-04-kimmy.mp3"
       }
      },
      "visual": {
@@ -582,6 +830,78 @@
         ]
        ],
        "builders-04-k56.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-01-kimmy.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-02-gus.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         7.0,
+         0
+        ]
+       ],
+       "builders-02-kimmy.mp3": [
+        [
+         0,
+         -1
+        ],
+        [
+         6.97,
+         0
+        ]
+       ],
+       "builders-03-gus.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.54,
+         2
+        ],
+        [
+         13.86,
+         3
+        ]
+       ],
+       "builders-03-kimmy.mp3": [
+        [
+         0,
+         1
+        ],
+        [
+         3.81,
+         2
+        ],
+        [
+         13.7,
+         3
+        ]
+       ],
+       "builders-04-gus.mp3": [
+        [
+         0,
+         -1
+        ]
+       ],
+       "builders-04-kimmy.mp3": [
         [
          0,
          -1
