@@ -13,7 +13,7 @@
   const STATUSES = ['idea', 'draft', 'review', 'approved', 'scheduled', 'posted'];
   const CONTENT = ['platform', 'format', 'copy', 'parts', 'firstComment', 'titleLine', 'link', 'assets'];
   let n = 0; const id = () => 'd' + (++n).toString(36) + Math.random().toString(36).slice(2, 6);
-  const norm = (p) => ({ id: id(), title: '', platform: 'linkedin', format: 'post', status: 'idea', date: null, time: null, copy: '', parts: [], firstComment: '', titleLine: '', link: '', assets: [], notes: '', dump: '', group: null, reminded: null, created: new Date(NOW).toISOString(), ...p });
+  const norm = (p) => ({ feedback: [], versions: [], id: id(), title: '', platform: 'linkedin', format: 'post', status: 'idea', date: null, time: null, copy: '', parts: [], firstComment: '', titleLine: '', link: '', assets: [], notes: '', dump: '', group: null, reminded: null, created: new Date(NOW).toISOString(), ...p });
   let posts = SEED.posts.map((p) => norm({ ...p, status: ['final', 'scheduled', 'approved'].includes(p.status) ? 'review' : p.status }));
 
   const tzOffset = (tz, at) => {
@@ -126,6 +126,15 @@
       const x = posts.find((y) => y.id === m[1]);
       x.approvedAt = new Date(NOW).toISOString(); x.status = x.date && x.time ? 'scheduled' : 'approved';
       return { ...x };
+    }
+    if ((m = p.match(/^\/api\/posts\/([\w-]+)\/(feedback|undo)$/))) {
+      const x = posts.find((y) => y.id === m[1]); x.feedback ||= []; x.versions ||= [];
+      if (m[2] === 'undo') { const v = x.versions.pop(); if (v) Object.assign(x, v); x.status = 'review'; return { ...x }; }
+      await wait(body.revise ? 1200 : 0);
+      x.feedback.push({ id: id(), at: new Date(NOW).toISOString(), text: body.text, revised: !!body.revise,
+        changes: body.revise ? 'In this demo the text stays as it is. On your Mac, your own Claude rewrites the post from your note and keeps the old version.' : '' });
+      if (body.revise) { x.status = 'review'; x.approvedAt = null; }
+      return { post: { ...x }, changes: body.revise ? 'demo: text unchanged' : '' };
     }
     if (method === 'POST' && p === '/api/besttime') return { suggestions: suggest(body.platform, body.from, body.id) };
     if ((m = p.match(/^\/api\/posts\/([\w-]+)\/(remind|preview|copy)$/))) {

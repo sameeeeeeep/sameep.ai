@@ -127,6 +127,30 @@
     if (p.firstComment) blocks.push(['First comment', p.firstComment]);
     return blocks.map(([k, v, n]) => `<div class="ok__b"><span class="ok__k">${esc(k)}${n ? ` · ${n}/280` : ''}</span><p>${esc(v)}</p></div>`).join('');
   }
+  // feedback: say what should change; Claude revises and it comes back for your OK (the old text is kept)
+  function fbBlock(p) {
+    const last = [...p.feedback].reverse().slice(0, 3);
+    return `<div class="fb" data-fb="${p.id}">
+      ${last.map((f) => `<div class="fb__item${f.undone ? ' is-undone' : ''}"><p class="fb__you"><b>You</b> ${esc(f.text)}</p>${f.revised ? `<p class="fb__ai"><b>Revised</b> ${esc(f.changes || 'Updated.')}${f.undone ? ' (undone)' : ''}</p>` : `<p class="fb__ai"><b>${f.applied ? 'Used in a revision' : 'Noted'}</b>${f.applied ? '' : ' Revise with Claude picks this up too.'}</p>`}</div>`).join('')}
+      <label class="sr" for="fb-${p.id}">What should change?</label>
+      <textarea id="fb-${p.id}" class="fb__in" rows="2" placeholder="What should change? Hold fn and say it: shorter, lose the hashtags, lead with the iMac…"></textarea>
+      <div class="row"><button class="w-btn w-btn--secondary small" type="button" data-revise="${p.id}">Revise with Claude</button>
+        <button class="linkish" type="button" data-note="${p.id}">Just note it</button>
+        ${p.versions.length ? `<button class="linkish" type="button" data-undo="${p.id}">Undo the last revision</button>` : ''}</div>
+    </div>`;
+  }
+  async function sendFeedback(id, revise, btn) {
+    const ta = document.getElementById(`fb-${id}`), text = ta?.value.trim();
+    if (!text) { toast('Say what should change first.'); ta?.focus(); return; }
+    const label = btn.textContent; btn.disabled = true; if (revise) btn.textContent = 'Claude is revising… about 15 s';
+    try {
+      const r = await api('POST', `/api/posts/${id}/feedback`, { text, revise });
+      const p = S.posts.find((x) => x.id === id); Object.assign(p, r.post);
+      toast(revise ? `Revised: ${(r.changes || 'updated').replace(/[.\s]+$/, '')}. It's back for your OK.` : 'Noted. Revise with Claude will use it.', 5200);
+      renderRange(); renderCal(); renderRail(); refreshQueue(); if (S.sel === id) openDrawer(id, { quiet: true });
+    } catch (e) { toast(`Couldn't revise: ${e.message}`, 5000); btn.disabled = false; btn.textContent = label; }
+  }
+
   function renderApprovals(cal) {
     const ps = S.posts.filter((p) => p.status === 'review').sort((a, b) => (a.date || '9').localeCompare(b.date || '9') || (a.time || '').localeCompare(b.time || ''));
     const done = S.posts.filter((p) => GATED.includes(p.status));
@@ -139,6 +163,7 @@
         ${p.assets.length ? `<div class="ok__a">${p.assets.map((a) => `<figure><img src="${esc(thumb(a.path))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><figcaption title="${esc(a.path)}">${esc(a.path.split('/').pop())}${a.note ? ` · ${esc(a.note)}` : ''}</figcaption></figure>`).join('')}</div>` : '<p class="hint">No image or video.</p>'}
         ${full(p)}
         ${p.notes ? `<p class="ok__n"><b>Note</b> ${esc(p.notes)}</p>` : ''}
+        ${fbBlock(p)}
         <div class="row ok__btns"><button class="w-btn w-btn--primary" type="button" data-approve="${p.id}">${p.date && p.time ? `Approve for ${rel(p.date)}, ${p.time}` : 'Approve'}</button>
           <button class="w-btn w-btn--outline" type="button" data-open="${p.id}">Edit</button></div>
       </article>`).join('') || '<p class="empty">Nothing is waiting for your OK.</p>'}
@@ -208,6 +233,7 @@
     ab.innerHTML = okd
       ? `<span><b>Approved</b>${p.approvedAt ? ` ${new Date(p.approvedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}. ${p.status === 'scheduled' ? `Reminder set for ${rel(p.date)}, ${p.time}.` : p.status === 'posted' ? 'Posted.' : 'Not scheduled yet: give it a day and a time, then press Scheduled.'} Any edit sends it back for your OK.</span>`
       : `<span>${p.status === 'review' ? '<b>Needs your OK.</b> Read it through, then approve.' : 'Not approved. Nothing is scheduled until you approve it.'}</span><button class="w-btn w-btn--primary small" type="button" data-approve="${p.id}">${p.date && p.time ? `Approve for ${rel(p.date)}, ${p.time}` : 'Approve'}</button>`;
+    $('#fFeedback').innerHTML = p.status === 'posted' ? '' : fbBlock(p);
     $('#fDate').value = p.date || ''; $('#fTime').value = p.time || '';
     $('#fNotes').value = p.notes; $('#fDump').value = p.dump; $('#dumpBox').open = !!p.dump && p.status === 'idea';
     if (!quiet) { $('#best').hidden = true; $('#preview').hidden = true; }
@@ -272,6 +298,9 @@
     if (t.dataset.view) { S.view = t.dataset.view; renderRange(); renderCal(); return; }
     if (t.dataset.new) { const p = await api('POST', '/api/posts', { post: { date: t.dataset.new, status: 'idea', platform: 'linkedin', title: '' } }); S.posts.push(p); renderCal(); openDrawer(p.id); $('#fTitle').focus(); return; }
     if (t.dataset.approve) return approve(t.dataset.approve);
+    if (t.dataset.revise) return sendFeedback(t.dataset.revise, true, t);
+    if (t.dataset.note) return sendFeedback(t.dataset.note, false, t);
+    if (t.dataset.undo) { try { const np = await api('POST', `/api/posts/${t.dataset.undo}/undo`, {}); Object.assign(S.posts.find((x) => x.id === t.dataset.undo), np); toast('Previous version back. It needs your OK.'); renderRange(); renderCal(); renderRail(); refreshQueue(); if (S.sel === np.id) openDrawer(np.id, { quiet: true }); } catch (e) { toast(e.message); } return; }
     if (t.dataset.status) {
       const p = S.posts.find((x) => x.id === S.sel);
       if (t.getAttribute('aria-disabled') === 'true') { toast('Press Approve first. Nothing is scheduled without your OK.'); return; }
@@ -318,6 +347,7 @@
 
   $('#drawer').addEventListener('input', (e) => {
     const el = e.target, p = cur(); if (!p) return;
+    if (el.classList.contains('fb__in')) return;
     if (el.id === 'fTitle') return patch({ title: el.value });
     if (el.id === 'fNotes') return patch({ notes: el.value });
     if (el.id === 'fDump') return patch({ dump: el.value });
@@ -359,7 +389,7 @@
   document.addEventListener('keydown', (e) => {
     const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
     if (e.key === 'Escape') { if ($('#vpick').open) return; if (typing) { document.activeElement.blur(); return; } if (S.sel) closeDrawer(); return; }
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { if (document.activeElement?.id === 'dump') { e.preventDefault(); draftDump(); } return; }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { const a = document.activeElement; if (a?.id === 'dump') { e.preventDefault(); draftDump(); } else if (a?.classList.contains('fb__in')) { e.preventDefault(); a.closest('.fb').querySelector('[data-revise]').click(); } return; }
     if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
     const k = e.key.toLowerCase();
     if (k === 'n') { e.preventDefault(); $('#dump').focus(); }

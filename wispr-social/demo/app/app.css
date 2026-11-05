@@ -175,6 +175,13 @@ input[type=checkbox] { accent-color: var(--vast-950); }
 .ok__b p { margin: 4px 0 0; white-space: pre-wrap; font: 400 14.5px/1.5 var(--w-sans); overflow-wrap: anywhere; }
 .ok__n { background: var(--sand-200); border-radius: var(--w-r-md); padding: 8px 10px; font-size: 13px; font-weight: 400; margin: 4px 0 0; }
 .ok__btns { margin-top: 12px; }
+.fb { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding: 10px 12px; background: var(--sand-200); border-radius: var(--w-r-md); }
+.fb__in { width: 100%; border: 1px solid var(--w-border); background: var(--w-card); border-radius: var(--w-r-md); padding: 7px 10px; font: 400 14px/1.45 var(--w-sans); resize: vertical; }
+.fb__item { font-size: 13px; font-weight: 400; border-bottom: 1px solid var(--w-border); padding-bottom: 6px; }
+.fb__item p { margin: 0; overflow-wrap: anywhere; } .fb__item p + p { margin-top: 3px; color: var(--w-fg-2); }
+.fb__item b { font-weight: 600; margin-right: 4px; color: var(--w-fg); }
+.fb__item.is-undone { opacity: .55; }
+.fb .row { gap: 12px; }
 .ok__done { margin: 18px 0 0; }
 .best { display: flex; flex-direction: column; gap: 6px; }
 .best button { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; text-align: left; border: 1px solid var(--w-border); background: var(--w-card); border-radius: var(--w-r-md); padding: 8px 10px; }
