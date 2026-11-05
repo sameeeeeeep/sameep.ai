@@ -6,6 +6,7 @@
 .is-clean .hero-hint,              /* "Scroll" hint */
 .is-clean .hero-skip,              /* "Skip to the work" pill */
 .is-clean .hero-sound,             /* "Sound off" pill */
+.is-clean .autoplay,               /* "Play it for me · or scroll" (its button still works from JS: .autoplay__btn.click()) */
 .is-clean .menubar__help,          /* the guide's ? in the menubar */
 .is-clean .gtour-help,             /* per-window guide ? buttons */
 .is-clean .gfeed,                  /* "How was that?" feedback card */
