@@ -74,7 +74,7 @@ button { cursor: pointer; }
 .seg { display: inline-flex; background: var(--chip); border-radius: 999px; padding: 3px; }
 .seg button { border: 0; background: none; padding: 5px 10px; border-radius: 999px; font-size: 13px; color: var(--ink-2); min-height: 30px; white-space: nowrap; }
 .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 0.1); font-weight: 600; }
-.seg.who button[aria-pressed="true"][data-view="mine"] { background: var(--mine); }
+.seg.view button[aria-pressed="true"][data-view="mine"] { background: var(--mine); }
 .seg b { font-weight: 500; color: var(--ink-3); margin-left: 4px; }
 .banner { margin-top: 12px; padding: 9px 14px; border-radius: 12px; background: var(--mine); }
 
@@ -232,6 +232,15 @@ details.cf > summary { cursor: pointer; list-style: none; display: flex; justify
 details.cf > summary::-webkit-details-marker { display: none; }
 .foot { margin-top: 24px; font-size: 12.5px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .foot span { max-width: 64ch; }
+/* phone: every control at least 40 px to tap */
+@media (max-width: 520px) {
+  .seg button, .chip, .ghost, .ghost.tiny, .ptabs button, .morebtn, .here, .live button, .clear { min-height: 40px; }
+  .live button { min-width: 40px; }
+  .fpill button { width: 36px; height: 36px; }
+  .row { min-height: 40px; }
+  .foot label { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; }
+  .foot input { width: 20px; height: 20px; margin: 0; }
+}
 </style>
 </head>
 <body>
@@ -249,12 +258,13 @@ details.cf > summary::-webkit-details-marker { display: none; }
   // view: 'real' (visitors, never Sameep) or 'mine' (only his own test runs); the two never mix
   const state = { days: [1, 7, 30, 90].includes(pref.days) ? pref.days : 7, dev: !!pref.dev, view: pref.view === 'mine' ? 'mine' : 'real',
     metric: pref.metric || 'people', tab: {}, more: new Set(),
-    filters: [], data: null, ep: null, cf: null, cfOpen: false, open: new Set(), limit: 25, hidden: false, fetchedAt: 0, failed: false, busy: false };
+    filters: [], data: null, ep: null, cf: null, cfOpen: false, open: new Set(), tl: new Set(), limit: 25, hidden: false, fetchedAt: 0, failed: false, busy: false };
   const savePref = () => ls.set('otcv-dash', JSON.stringify({ days: state.days, dev: state.dev, view: state.view, metric: state.metric }));
 
   // the old login link: /admin#k=TOKEN (or /api/admin#k=…) keeps the token on this device, then drops it from the address bar
   const m = location.hash.match(/#k=([^&]+)/);
   if (m) { ls.set(TOKEN, decodeURIComponent(m[1])); history.replaceState(null, '', location.pathname); }
+  const viaLink = () => !!ls.get(TOKEN);
   const auth = () => { const t = ls.get(TOKEN); return t ? { authorization: 'Bearer ' + t } : {}; };
 
   // ---------------------------------------------------------------- lock
@@ -272,7 +282,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
       const tick = () => {
         const s = Math.max(0, Math.round((until - Date.now()) / 1000));
         inp.disabled = go.disabled = s > 0;
-        out.textContent = s > 0 ? `Too many wrong tries. Try again in ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}.` : '';
+        out.textContent = s >= 3600 ? `PIN logins are paused after many wrong tries. Try again in about ${Math.ceil(s / 3600)} h, or use your private link.` : s > 0 ? `Too many wrong tries. Try again in ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}.` : '';
         if (!s) { clearInterval(t); inp.focus(); }
       };
       tick(); t = setInterval(tick, 1000);
@@ -324,7 +334,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
       }
       state.busy = false;
       if (same) return setLive();
-      render();
+      // a live refresh: keep the reader where they were
+      const y = scrollY; render(); if (y) scrollTo(0, y);
     } catch (e) {
       state.failed = true; state.busy = false;
       if (state.data) setLive();
@@ -364,7 +375,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
   const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
   // the device in words: iPhone, Mac, Android phone …
   const kit = (v) => v.os === 'iOS' ? (v.device === 'tablet' ? 'iPad' : 'iPhone') : v.os === 'Android' ? (v.device === 'tablet' ? 'Android tablet' : 'Android phone')
-    : v.os === 'macOS' ? 'Mac' : v.os === 'Windows' ? 'Windows PC' : v.os === 'ChromeOS' ? 'Chromebook' : v.os === 'Linux' ? 'Linux' : v.device ? cap(v.device) : '';
+    : v.os === 'macOS' ? 'Mac' : v.os === 'Windows' ? 'Windows PC' : v.os === 'ChromeOS' ? 'Chromebook' : v.os === 'Linux' ? 'Linux' : v.device ? cap(v.device) + ', OS unknown' : '';
   // the lock-screen pick; failing that, a w- seat in the podcast (same person, the login event just didn't arrive)
   // a teammate is their roster id (data/wispr-team.json, ~140 people, some sharing a first name: "Adam H.", "Adam S."),
   // named as the roster names them now, so a rename never splits one person in two
@@ -375,6 +386,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
   const teamKey = (v) => { const id = teamId(v); return id ? 'team:' + id : teammate(v) ? 'team:' + teammate(v).toLowerCase() : null; };
   const strs = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []);
   const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || strs(v.pages).some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
+  const winName = (t) => String(t || '').replace(/,\s*now playing.*$/i, '').trim();
+  const opened = (v) => [...new Set([...v.windows.map(winName), ...v.icons])].filter(Boolean);
   const projectPages = (v) => strs(v.pages).filter((p) => p !== '/' && p !== '/index.html' && !p.startsWith('/admin') && !p.startsWith('/api'));
   const active = (v) => Number(v.active ?? v.duration) || 0;
   const isBot = (v) => v.browser === 'Bot';
@@ -403,7 +416,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     kit: ['Device', (v) => [kit(v)]], browser: ['Browser', (v) => [v.browser]], vp: ['Screen', (v) => [v.vp]],
     stopped: ['Stopped at', (v) => [v.nodes.length && !v.ended ? title(v.nodes[v.nodes.length - 1].id) : null]], chapter: ['Heard', (v) => [...new Set(v.nodes.map((n) => title(n.id)))]],
     host: ['Host', (v) => [v.welcome && hostName(v.welcome.host)]], route: ['Length', (v) => [v.welcome?.route]],
-    win: ['Opened', (v) => [...new Set([...v.windows, ...v.icons])]], link: ['Link out', (v) => [...new Set(v.links.map(hostOf))]], page: ['Page', (v) => projectPages(v)],
+    win: ['Opened', opened], link: ['Link out', (v) => [...new Set(v.links.map(hostOf))]], page: ['Page', (v) => projectPages(v)],
     error: ['Error', (v) => v.errors.map((e) => `${e.msg || 'error'}${e.src ? ' · ' + e.src : ''}`)],
   };
   const vals = (k, v) => DIMS[k][1](v).filter(Boolean);
@@ -461,7 +474,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     else { d = Math.round(((cur - prev) / prev) * 100); txt = Math.abs(d) + '%'; }
     if (!d) return '<span class="delta flat">same</span>';
     const good = inverse ? d < 0 : d > 0;
-    return `<span class="delta ${good ? 'up' : 'down'}" title="vs ${state.days === 1 ? 'yesterday' : 'the ' + state.days + ' days before'}">${d > 0 ? '↑' : '↓'} ${txt}</span>`;
+    return `<span class="delta ${good ? 'up' : 'down'}" title="vs ${state.days === 1 ? 'yesterday by this time' : 'the ' + state.days + ' days before'}">${d > 0 ? '↑' : '↓'} ${txt}</span>`;
   }
 
   // ---------------------------------------------------------------- chart: the picked KPI per day (per hour for Today), the period before as ghost bars
@@ -489,7 +502,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
       if (i % every === 0) svg += `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${esc(hourly ? lab(i).slice(0, 2) : lab(i))}</text>`;
     }
     const grid = [0, nice / 2, nice].map((g) => `<line class="grid-l" x1="${padL}" x2="${W}" y1="${H - padB - y(g)}" y2="${H - padB - y(g)}" /><text class="axis" x="${padL - 6}" y="${H - padB - y(g) + 4}" text-anchor="end">${esc(fmtK(k[3], g))}</text>`).join('');
-    return { html: `<div class="legend">${stack ? GROUPS.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('') : `<span><i style="background:var(--accent)"></i>${esc(k[1])}, ${hourly ? 'today by hour' : 'per day'}</span>`}<span><i style="background:var(--ink-3);opacity:.45"></i>${hourly ? 'Yesterday' : 'The ' + n + ' days before'}${prev.length ? '' : ': no data'}</span></div>
+    return { html: `<div class="legend">${stack ? GROUPS.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('') : `<span><i style="background:var(--accent)"></i>${esc(k[1])}, ${hourly ? 'today by hour' : 'per day'}</span>`}<span><i style="background:var(--ink-3);opacity:.45"></i>${hourly ? 'Yesterday' : 'The ' + n + ' days before'}${prev.length ? '' : ': no data'}</span>${hourly ? '<span>The ↑↓ numbers compare with yesterday by this time</span>' : ''}</div>
       <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(k[1])} over time">${grid}${svg}</svg><div class="tip"></div></div>`,
       tip: (i) => `<b>${esc(lab(i))}</b> · ${esc(k[1])} ${esc(fmtK(k[3], a[i]))}${stack ? ` (${stack[i].map((c, gi) => c + ' ' + GROUPS[gi][1].split(' ')[0].toLowerCase()).join(', ')})` : ''} <span style="opacity:.7">· before ${esc(fmtK(k[3], b[i]))}</span>`, W };
   }
@@ -514,7 +527,8 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const col = COL2[k] || listenedRate;
     const rows = [...by].map(([x, g]) => { g.stages = [...g.who.values()]; return [x, g.who.size, g, col[2](g)]; });
     const total = rows.reduce((a, r) => a + r[1], 0);
-    return { col, total, rows: rows.sort((a, b) => b[1] - a[1] || b[3] - a[3]) };
+    const unk = (x) => /OS unknown$/.test(x);  // 'Desktop, OS unknown' after the real devices
+    return { col, total, rows: rows.sort((a, b) => unk(a[0]) - unk(b[0]) || b[1] - a[1] || b[3] - a[3]) };
   }
   function panel(id, tabs, list, { wide = false, empty = 'Nothing yet.' } = {}) {
     const k = tabs.some(([t]) => t === state.tab[id]) ? state.tab[id] : tabs[0][0];
@@ -568,7 +582,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     if (v.nodes.length) dd('Heard', `<span class="chain">${v.nodes.map((n) => `<span>${esc(title(n.id))} <span class="muted">${mins(Number(n.s) || 0)}</span></span>`).join('')}${v.ended ? '<span class="yes">the end</span>' : ''}</span>`);
     const picks = v.choices.filter((c) => c.how !== 'auto');
     if (picks.length) dd('Chose', picks.map((c) => esc(title(c.to)) + (c.how === 'voice' ? ' <span class="muted">(voice)</span>' : '')).join(', '));
-    if (v.windows.length || v.icons.length) dd('Opened', esc([...new Set([...v.windows, ...v.icons])].join(', ')));
+    if (v.windows.length || v.icons.length) dd('Opened', esc(opened(v).join(', ')));
     if (v.links.length) dd('Links out', esc(v.links.map(hostOf).join(', ')));
     if (projectPages(v).length) dd('Pages', esc(projectPages(v).join(', ')));
     if (v.video) dd('Recording', v.video.done ? '<span class="yes">Watched to the end</span>' : v.video.played ? `Played to ${Number(v.video.max) || 0}% (${mins(Number(v.video.secs) || 0)})` : 'Opened, not played');
@@ -576,7 +590,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     if (v.make) dd('Make own', '<span class="yes">Clicked “make your own”</span>');
     if (v.errors.length) dd('Errors', `<span class="bad">${v.errors.map((e) => esc(`${e.msg} (${e.src}${e.line ? ':' + e.line : ''})`)).join('; ')}</span>`);
     dd('Time', `${mins(active(v))} in view${v.duration > active(v) + 60 ? ` <span class="muted">(tab open ${mins(v.duration)})</span>` : ''}${v.perf ? ` · page load ${ms(v.perf.load)}` : ''}`);
-    const tl = v.timeline?.length ? `<details class="tlx"><summary>Full timeline · ${plural(v.timeline.length, 'event')}</summary><ol class="tl">${v.timeline.map((e) => `<li><span class="at">${clock((e.t - v.start) / 1000)}</span><span class="k${e.k === 'error' ? ' err' : ''}">${esc(TL[e.k] || e.k)}</span><span>${esc(tlLabel(e))}</span></li>`).join('')}</ol></details>` : '';
+    const tl = v.timeline?.length ? `<details class="tlx" data-sid="${esc(v.sid)}" ${state.tl.has(v.sid) ? 'open' : ''}><summary>Full timeline · ${plural(v.timeline.length, 'event')}</summary><ol class="tl">${v.timeline.map((e) => `<li><span class="at">${clock((e.t - v.start) / 1000)}</span><span class="k${e.k === 'error' ? ' err' : ''}">${esc(TL[e.k] || e.k)}</span><span>${esc(tlLabel(e))}</span></li>`).join('')}</ol></details>` : '';
     return `<div class="visit"><div class="vh">${esc(ago(v.start))}${v.returning ? ' <span class="pill">back</span>' : ''}${v.site !== 'live' ? ' <span class="pill dev">local test</span>' : ''}</div><dl>${d.join('')}</dl>${tl}</div>`;
   }
 
@@ -601,15 +615,18 @@ details.cf > summary::-webkit-details-marker { display: none; }
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const from = today.getTime() - (state.days - 1) * DAY, span = state.days * DAY;
     const live = (v) => state.dev || v.site === 'live';
-    const scope = (d.visits || []).filter((v) => live(v) && (state.view === 'mine' ? v.owner : !v.owner) && !isBot(v));
-    makeKeys(scope);
-    const cur = scope.filter((v) => v.start >= from && passes(v)), prev = scope.filter((v) => v.start >= from - span && v.start < from && passes(v));
+    const all = (d.visits || []).filter((v) => live(v) && !isBot(v));
+    const scope = all.filter((v) => (state.view === 'mine' ? v.owner : !v.owner));
+    makeKeys(all);  // the same person keys for both views, so the header counts match the page
+    const cur = scope.filter((v) => v.start >= from && passes(v)), prevAll = scope.filter((v) => v.start >= from - span && v.start < from && passes(v));
+    // Today: the KPIs compare with yesterday up to this time of day (the chart still shows all of yesterday)
+    const prev = state.days === 1 ? prevAll.filter((v) => v.start < Date.now() - DAY) : prevAll;
     const ps = people(cur), pps = people(prev);
     const bots = (d.visits || []).filter((v) => v.start >= from && isBot(v) && live(v)).length;
     const shown = ps.filter((p) => state.hidden || !p.bounce), quick = ps.length - ps.filter((p) => !p.bounce).length;
-    const nOf = (mine) => people((d.visits || []).filter((v) => v.start >= from && live(v) && !!v.owner === mine && !isBot(v))).length;
+    const nOf = (mine) => people(all.filter((v) => v.start >= from && !!v.owner === mine)).length;
     const here = people(scope.filter((v) => hereSids().has(v.sid)));
-    const c = chart(cur, prev, from);
+    const c = chart(cur, prevAll, from);
     const team = ps.filter((p) => p.team);
     const segOn = (k) => state.filters.some((f) => f.k === 'seg' && f.v === k);
     const fLabel = (f) => `${esc(DIMS[f.k][0])} is <b>${esc(f.v)}</b>`;
@@ -619,10 +636,10 @@ details.cf > summary::-webkit-details-marker { display: none; }
         <div class="titlebar"><h1>sameep.ai visits</h1><span class="stripes" aria-hidden="true"></span>
           <button class="here" type="button" data-seg="here" aria-pressed="${segOn('here')}" title="Show only who's on the site now"><span class="dot ${here.length ? 'on' : ''}"></span>${here.length ? plural(here.length, 'person', 'people') + ' here now' : 'Nobody here now'}</button>
           <span class="live" aria-live="polite"></span></div>
-        <div class="seg who" role="group" aria-label="Whose visits"><button type="button" data-view="real" aria-pressed="${state.view === 'real'}">Visitors<b>${nOf(false)}</b></button><button type="button" data-view="mine" aria-pressed="${state.view === 'mine'}">My tests<b>${nOf(true)}</b></button></div>
+        <div class="seg view" role="group" aria-label="Whose visits"><button type="button" data-view="real" aria-pressed="${state.view === 'real'}">Visitors<b>${nOf(false)}</b></button><button type="button" data-view="mine" aria-pressed="${state.view === 'mine'}">My tests<b>${nOf(true)}</b></button></div>
         <div class="seg" role="group" aria-label="Range">${[[1, 'Today'], [7, '7d'], [30, '30d'], [90, '90d']].map(([n, l]) => `<button type="button" data-days="${n}" aria-pressed="${state.days === n}" aria-label="${n === 1 ? 'Today' : 'Last ' + n + ' days'}">${l}</button>`).join('')}</div>
       </header>
-      ${state.view === 'mine' ? `<div class="banner"><b>Your own test runs only</b>: this browser, ${plural(Number(d.myBrowsers) || 0, 'registered browser')}, your network and the Claude app. They never count in Visitors.</div>` : ''}
+      ${state.view === 'mine' ? `<div class="banner"><b>Your own test runs only</b>: this browser, ${plural(Number(d.myBrowsers) || 0, 'registered browser')}, automated test runs and the Claude app. They never count in Visitors.</div>` : ''}
       <div class="filters">${state.filters.filter((f) => f.k !== 'seg').map((f) => `<span class="fpill"><span>${fLabel(f)}</span><button type="button" data-unf="${esc(f.k + '|' + f.v)}" aria-label="Remove filter">×</button></span>`).join('')}
         ${Object.entries(SEGS).filter(([k]) => k !== 'here' || segOn('here')).map(([k, [l]]) => `<button type="button" class="chip" data-seg="${k}" aria-pressed="${segOn(k)}">${esc(l)}</button>`).join('')}
         ${state.filters.length ? '<button type="button" class="clear" data-act="clear">Clear filters</button>' : '<span class="small muted">or tap any row below to filter</span>'}</div>
@@ -651,7 +668,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
         ${panel('open', [['win', 'Windows & icons'], ['link', 'Links out'], ['page', 'Pages'], ['error', 'Errors']], cur, { wide: true, empty: 'Nothing here yet.' })}
       </div>
 
-      <section class="ptable" id="people"><div class="ph"><h2>People</h2><span class="small muted">${plural(ps.length, 'person', 'people')}${state.filters.length ? ' matching the filters' : ''} · newest first · tap one for every visit</span></div>
+      <section class="ptable" id="people"><div class="ph"><h2>People</h2><span class="small muted">${plural(shown.length, 'person', 'people')}${state.filters.length ? ' matching the filters' : ''}${quick && !state.hidden ? ` · ${plural(quick, 'bounce')} hidden` : ''} · newest first · tap one for every visit</span></div>
         <div class="pcols"><span>Person</span><span>Last seen</span><span>Source</span><span>Got to</span><span>Where they stopped</span><span>In view</span></div>
         ${shown.length ? shown.slice(0, state.limit).map(personRow).join('') : `<p class="empty" style="padding:12px 14px">${ps.length ? 'Only bounces here: show them below.' : 'Nobody matches. Change the range or clear a filter.'}</p>`}
         <div class="pfoot">${shown.length > state.limit ? `<button class="ghost" type="button" data-act="more">Show ${Math.min(25, shown.length - state.limit)} more of ${shown.length - state.limit}</button>` : ''}
@@ -660,7 +677,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
 
       <details class="cf panel" ${state.cfOpen ? 'open' : ''}><summary><span class="lbl-s">Cloudflare · every page load, you included</span><span class="small muted">${state.cfOpen ? 'Hide' : 'Show'}</span></summary><div id="cfbody" style="margin-top:10px">${cfHtml()}</div></details>
 
-      <div class="foot"><span>Sameep only: unlocked with your PIN for 7 days on this device. Unlock once in each browser you use, phone included, so your runs land in “My tests”. <label><input type="checkbox" data-f="dev" ${state.dev ? 'checked' : ''}> Include localhost runs</label></span>
+      <div class="foot"><span>Sameep only: ${viaLink() ? 'unlocked with your private link on this device until you press Lock' : 'unlocked with your PIN for 7 days on this device'}. Unlock once in each browser you use, phone included, so your runs land in “My tests”. <label><input type="checkbox" data-f="dev" ${state.dev ? 'checked' : ''}> Include localhost runs</label></span>
         <button class="ghost" type="button" data-act="logout">Lock</button></div>
     </div>`;
     setLive();
@@ -722,6 +739,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
     if (act === 'hidden') { state.hidden = !state.hidden; return render(); }
     if (act === 'logout') { await fetch(API + '/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); ls.set(TOKEN, null); state.data = null; return lock(); }
   });
+  app.addEventListener('toggle', (e) => { const sid = e.target.dataset?.sid; if (e.target.matches?.('details.tlx') && sid) e.target.open ? state.tl.add(sid) : state.tl.delete(sid); }, true);
   app.addEventListener('change', (e) => {
     if (e.target.dataset?.f === 'dev') { state.dev = e.target.checked; savePref(); render(); }
   });
