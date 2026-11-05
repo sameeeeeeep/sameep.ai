@@ -123,11 +123,11 @@ button { cursor: pointer; }
 .grp-n { margin-top: 4px; } .grp-n b { font-size: 26px; font-weight: 650; color: var(--c); letter-spacing: -0.02em; }
 .grp-s { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-3); }
 .grp-l { list-style: none; margin: 8px 0 0; padding: 0; }
-.grp-l button { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 56px 50px; grid-template-rows: auto auto; gap: 0 8px; align-items: center; border: 0; background: none; text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); border-radius: 6px; }
+.grp-l button { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 46px 62px; grid-template-rows: auto auto; gap: 0 8px; align-items: center; border: 0; background: none; text-align: left; padding: 6px 4px; border-top: 1px solid var(--line); border-radius: 6px; }
 .grp-l li:first-child button { border-top: 0; }
 .grp-l button:hover { background: color-mix(in srgb, var(--c) 8%, transparent); }
 .grp-l .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.grp-l .t { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); font-size: 12.5px; }
+.grp-l .t { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink-2); font-size: 12.5px; }
 .grp-l .a { grid-column: 1; font-size: 12px; color: var(--ink-3); }
 .grp-l .steps i.on { background: var(--c); }
 /* the Wispr strip */
@@ -369,9 +369,9 @@ details.cf > summary::-webkit-details-marker { display: none; }
   // a teammate is their roster id (data/wispr-team.json, ~140 people, some sharing a first name: "Adam H.", "Adam S."),
   // named as the roster names them now, so a rename never splits one person in two
   const ROSTER = new Map();
-  const teamId = (v) => (v.login?.as === 'team' ? v.login.id || null : /^w-[\w-]+$/.test(v.welcome?.seat || '') ? v.welcome.seat : null);
+  const teamId = (v) => (v.login?.as === 'team' ? v.login.id || null : v.team?.id || (/^w-[\w-]+$/.test(v.welcome?.seat || '') ? v.welcome.seat : null));
   const teammate = (v) => { const id = teamId(v); if (v.login?.as !== 'team' && !id) return null;
-    return ROSTER.get(id) || v.login?.name || cap((id || '').replace(/^w-/, '').replace(/-(\w)$/, (_, c) => ' ' + c.toUpperCase() + '.')); };
+    return ROSTER.get(id) || v.login?.name || v.team?.name || cap((id || '').replace(/^w-/, '').replace(/-(\w)$/, (_, c) => ' ' + c.toUpperCase() + '.')); };
   const teamKey = (v) => { const id = teamId(v); return id ? 'team:' + id : teammate(v) ? 'team:' + teammate(v).toLowerCase() : null; };
   const strs = (a) => (Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []);
   const isWispr = (v) => v.version === 'wispr' || !!teammate(v) || strs(v.pages).some((p) => p.startsWith('/recording') || p.startsWith('/growth-os'));
@@ -415,13 +415,14 @@ details.cf > summary::-webkit-details-marker { display: none; }
 
   // ---------------------------------------------------------------- people: a teammate is one person across devices; anyone else one browser
   const NAME_RANK = { team: 5, growth: 4, account: 3, podcast: 2, typed: 1 };
-  const NAME_FROM = { growth: 'from Growth OS sign-in', account: 'their own lobby account', podcast: 'typed in the podcast', typed: 'typed in the lobby' };
+  const NAME_FROM = { team: 'picked in the Wispr lobby', growth: 'from Growth OS sign-in', account: 'their own lobby account', podcast: 'typed in the podcast', typed: 'typed in the lobby' };
   const GROUPS = [['team', 'Wispr teammates', 'var(--wispr)'], ['named', 'Named visitors', 'var(--good)'], ['anon', 'Anonymous', 'var(--accent)']];
   let keyOf = (v) => 'vid:' + v.vid;
   function makeKeys(all) {
     const team = new Map();
     for (const v of all) { const t = teamKey(v); if (t && !team.has(v.vid)) team.set(v.vid, t); }
-    keyOf = (v) => teamKey(v) || team.get(v.vid) || 'vid:' + v.vid;
+    // a browser that logged in as a teammate is that teammate on its other visits too, unless a visit gave a name of its own
+    keyOf = (v) => teamKey(v) || (!v.name && team.get(v.vid)) || 'vid:' + v.vid + (v.name ? ':' + v.name.toLowerCase() : '');
   }
   function people(list) {
     const by = new Map();
@@ -485,7 +486,7 @@ details.cf > summary::-webkit-details-marker { display: none; }
       if (stack) { let acc = 0; stack[i].forEach((c, gi) => { if (!c) return; const hh = y(c), yy = base - y(acc) - hh; svg += `<rect x="${x}" y="${yy}" width="${w}" height="${Math.max(0, hh - (acc ? 1.5 : 0))}" rx="2" fill="${GROUPS[gi][2]}" />`; acc += c; }); }
       else svg += bar(y(a[i]) * 0.999, 'var(--accent)', 0.9);
       svg += `<rect class="hit" data-i="${i}" x="${padL + i * bw}" y="0" width="${bw}" height="${H - padB}" fill="transparent" />`;
-      if (i % every === 0 || i === n - 1) svg += `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${esc(hourly ? lab(i).slice(0, 2) : lab(i))}</text>`;
+      if (i % every === 0) svg += `<text class="axis" x="${padL + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${esc(hourly ? lab(i).slice(0, 2) : lab(i))}</text>`;
     }
     const grid = [0, nice / 2, nice].map((g) => `<line class="grid-l" x1="${padL}" x2="${W}" y1="${H - padB - y(g)}" y2="${H - padB - y(g)}" /><text class="axis" x="${padL - 6}" y="${H - padB - y(g) + 4}" text-anchor="end">${esc(fmtK(k[3], g))}</text>`).join('');
     return { html: `<div class="legend">${stack ? GROUPS.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('') : `<span><i style="background:var(--accent)"></i>${esc(k[1])}, ${hourly ? 'today by hour' : 'per day'}</span>`}<span><i style="background:var(--ink-3);opacity:.45"></i>${hourly ? 'Yesterday' : 'The ' + n + ' days before'}${prev.length ? '' : ': no data'}</span></div>
