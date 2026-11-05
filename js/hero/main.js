@@ -469,7 +469,9 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   let dpr = 1;
   // adaptive quality: 2 = full, 1 = lighter, 0 = low-end (pixel budget, MSAA, particle rate)
   const QB = [0.55, 0.75, 1], QP = [0.35, 0.6, 1];
-  let quality = 1, qAcc = 0, qN = 0, qWorst = 0, qSlow = 0, qFast = 0, qSkip = 180;
+  // ?clean (capture mode): the top quality level at full devicePixelRatio, no adaptive stepping
+  const CLEAN = /[?&]clean\b/.test(location.search);
+  let quality = CLEAN ? 2 : 1, qAcc = 0, qN = 0, qWorst = 0, qSlow = 0, qFast = 0, qSkip = 180;
   // every level's render targets are pre-allocated (and warmed), so a switch is just a pointer swap
   function setQuality(q) {
     quality = q;
@@ -485,9 +487,10 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
   function resize(relayout = true) {
     vw = Math.max(1, dom.stage.clientWidth); vh = Math.max(1, dom.stage.clientHeight);
     aspect = vw / vh;
-    const cap = mobile ? 1.5 : 2;
+    const cap = CLEAN ? 4 : mobile ? 1.5 : 2;
     const native = Math.min(window.devicePixelRatio || 1, cap);
     for (let q = 0; q < 3; q++) {
+      if (CLEAN) { levelDpr[q] = native; continue; } // ?clean: crisp captures, no pixel budget
       const budget = (mobile ? 1.4e6 : 2.0e6) * QB[q];
       levelDpr[q] = vw * vh * native * native > budget ? Math.max(0.75, Math.sqrt(budget / (vw * vh))) : native;
     }
@@ -1126,7 +1129,7 @@ export async function mountHero(rootEl, { onDone, onProgress, onLoad } = {}) {
     // measure real frame pacing (after warm-up), with hysteresis: step down only after two slow
     // windows in a row, step back up after three fast ones; ignore windows with a scroll jump
     if (full && !TIMER && rawDt > 0.05 && rawDt < 2 && stats.spikes.length < 40) stats.spikes.push(`${prog.toFixed(3)}:${Math.round(rawDt * 1000)}ms:q${quality}`);
-    if (full && !TIMER && rawDt < 0.5) {
+    if (full && !TIMER && !CLEAN && rawDt < 0.5) {
       if (qSkip > 0) qSkip--;
       else {
         qAcc += rawDt; qN++; qWorst = Math.max(qWorst, rawDt);

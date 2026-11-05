@@ -1,0 +1,13 @@
+/* clean.css — ?clean capture mode (launch video): hide the chrome that isn't the product.
+   html.is-clean is set by the inline script in index.html's <head>. The real UI stays:
+   hero captions, windows, the podcast, the menubar itself. Combines with ?mute ?skip ?fast. */
+.is-clean .hero-cap__idx,          /* 01 / 12 step counter */
+.is-clean .hero-progress,          /* progress bar HUD */
+.is-clean .hero-hint,              /* "Scroll" hint */
+.is-clean .hero-skip,              /* "Skip to the work" pill */
+.is-clean .hero-sound,             /* "Sound off" pill */
+.is-clean .menubar__help,          /* the guide's ? in the menubar */
+.is-clean .gtour-help,             /* per-window guide ? buttons */
+.is-clean .gfeed,                  /* "How was that?" feedback card */
+.is-clean .desk__toast,            /* status toasts */
+.is-clean .coach { display: none !important; } /* first-time tips */

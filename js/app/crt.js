@@ -12,6 +12,7 @@
 //    corners the bent page pulls away from.
 
 import { isLow } from '../power.js';
+const CLEAN = /[?&]clean\b/.test(location.search); // ?clean: capture mode
 
 // The tube's barrel, one curve for everything: the boot pass (FS barrel()), Curved
 // (js/crtfx.js) and the boot's buttons (js/app/bootseq.js). (cx, cy): centred coords
@@ -196,7 +197,8 @@ export class CRT {
     const r = this.host.getBoundingClientRect();
     const mobile = r.width < 768;
     // screen mode benefits from DPR; glass mode is soft by nature → 1x is plenty
-    const dpr = this.mode === 0 ? Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2) : 1;
+    // ?clean (capture mode): full devicePixelRatio in both modes
+    const dpr = CLEAN ? (devicePixelRatio || 1) : this.mode === 0 ? Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2) : 1;
     this.canvas.width = Math.max(2, Math.round(r.width * dpr));
     this.canvas.height = Math.max(2, Math.round(r.height * dpr));
     this.size = { w: r.width, h: r.height };
