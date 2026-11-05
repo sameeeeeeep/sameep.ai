@@ -1,0 +1,55 @@
+/* Wispr Social page: marketing mode of /wispr-kit/wispr.css (lumen page, bordered nav, serif hero, dawn CTA, ink and
+   fathom panels). The demo inside the window is the real app, in app mode. */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; }
+em { font-family: var(--w-serif); font-style: italic; font-weight: 400; }
+.top { padding: 0 16px; }
+.w-nav .w-lockup { color: var(--vast-950); }
+.w-nav__links .w-cta { color: var(--vast-950); }
+section[id] { scroll-margin-top: 16px; }
+main { padding: 0 16px; }
+.intro { padding-bottom: 48px; }
+.intro h1 { font-size: clamp(44px, 10vw, 104px); margin-bottom: 36px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.demo { max-width: 1240px; margin: 0 auto 88px; }
+.win { background: var(--w-card); border: 2px solid var(--vast-950); border-radius: var(--w-r-xl); overflow: hidden; box-shadow: var(--w-shadow-xl); }
+.win__bar { display: flex; align-items: center; gap: 12px; padding: 9px 12px; background: var(--sand-300); border-bottom: 1px solid var(--w-border); font: 500 13px/1 var(--w-sans); color: var(--vast-700); }
+.dots { display: flex; gap: 6px; } .dots i { width: 11px; height: 11px; border-radius: 50%; background: var(--sand-700); opacity: .6; }
+.win__t { flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.win__open { color: var(--vast-800); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.win__open:hover { color: var(--vast-950); text-decoration: underline; }
+.win iframe { display: block; width: 100%; height: min(820px, 78vh); border: 0; background: var(--sand-500); }
+.demo__cap { max-width: 44em; margin: 16px auto 0; text-align: center; font: 400 15px/1.5 var(--w-sans); color: var(--vast-800); }
+.demo__cap b { font-weight: 600; color: var(--vast-950); }
+
+.sec { padding-bottom: calc(96px + var(--m-r-section)); }
+.steps { list-style: none; padding: 0; margin: 48px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.steps .w-mcard { padding: 32px 30px; }
+.steps h3 { margin: 18px 0 12px; }
+.steps p { margin: 0; font: 400 16px/1.5 var(--w-sans); opacity: .9; }
+.real { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+.real ul { margin: 18px 0 0; padding-left: 20px; font: 400 16px/1.5 var(--w-sans); }
+.real li + li { margin-top: 8px; }
+.real .small, .get .small { font: 400 14px/1.5 var(--w-sans); opacity: .85; margin: 16px 0 0; }
+
+.get { max-width: 720px; margin: 0 auto; padding: 88px 0 calc(88px + var(--m-r-section)); text-align: center; }
+.get h2 { font: 400 clamp(40px, 5.9vw, 64px)/1.1 var(--w-serif); letter-spacing: -.02em; margin: 0 0 16px; }
+.get > p { font: 400 18px/1.45 var(--w-sans); margin: 0 auto; max-width: 32em; }
+.cmd { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 24px 0 0; padding: 12px 16px; border: 2px solid var(--vast-950); border-radius: 10px; background: #fff; }
+.cmd code { font: 500 15px/1.3 var(--w-mono); overflow-wrap: anywhere; }
+.get .small a, .get > p a, .foot a, .real a { color: inherit; }
+
+.foot { display: flex; flex-direction: column; gap: 6px; }
+.foot p { margin: 0; }
+.foot__name .w-lockup__name { color: var(--lumen); font-size: 24px; }
+
+@media (max-width: 860px) {
+  .steps, .real { grid-template-columns: 1fr; }
+  .hide-sm { display: none; }
+  .win iframe { height: 720px; }
+  .win__t { display: none; }
+  .win__bar { justify-content: space-between; }
+}

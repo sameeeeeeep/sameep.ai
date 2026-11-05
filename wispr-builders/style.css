@@ -81,6 +81,9 @@ html { scroll-padding-top: 112px; }
 .coming li { display: flex; flex-direction: column; gap: 8px; padding: 28px; }
 .coming b { font: 400 28px/1.1 var(--serif); }
 .coming span { font: 400 16px/1.45 var(--sans); color: var(--fathom-50); }
+.coming span a { color: #fff; font-weight: 600; }
+.coming .w-status { align-self: flex-start; font: 600 12px/1 var(--w-sans); }
+.coming { grid-template-columns: repeat(2, 1fr); }
 
 /* ---- footer */
 .foot { text-align: center; }

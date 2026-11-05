@@ -1,5 +1,5 @@
 // status.js — one source for every Wispr product's status chip. Edit status.json, never the pages.
-// Any element with data-wstatus="<product>" (wrapped, video, guru, bridge, file, wish, review, pm)
+// Any element with data-wstatus="<product>" (wrapped, video, guru, bridge, file, wish, review, pm, social)
 // becomes a .w-status chip: Live / Testing / In progress. Also exposes window.WisprStatus.
 (() => {
   const URL_ = '/wispr-kit/status.json';
