@@ -402,34 +402,43 @@ function campCard(c, onclick) {
 function briefView(c, rerender, { go } = {}) {
   const st = statusOf(c);
   const page = document.querySelector('.gos__page');
-  // data-camp / data-guide: the campaign's own short guide (js/guide/page.js plays it the first time this brief opens)
-  return h('article.brief', { style: { '--c': tone(c.c) }, dataset: { camp: c.id, guide: c.guide ? JSON.stringify({ name: c.name, ...c.guide }) : '' } },
-    h('div.brief__head',
-      h('div', h('h3.brief__t', c.name), h('p.brief__dates', `${fmtD(c.start)} – ${fmtD(c.end)} · ${c.owner || 'Owner: tbc'}`), c.line && h('p.brief__line', c.line)),
-      h('div.row', { style: { marginTop: 0 } }, tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
+  const protos = protosOf(c);
+  // Wispr-style blocks: a small-caps label, then one kind of content per block, so each reads at a glance
+  const sec = (k, mod, ...kids) => h('section.bsec' + (mod ? '.bsec--' + mod : ''), h('p.bsec__k', k), ...kids);
+  const est = /^Estimate:\s*/i.test(c.budget || '');
+  return h('article.brief.brief--camp', { style: { '--c': tone(c.c) } },
+    h('header.brief__head',
+      h('div.brief__titles',
+        h('p.brief__kicker', `${fmtD(c.start)} – ${fmtD(c.end)}`, h('span', ' · '), c.owner || 'Owner: tbc'),
+        h('h3.brief__t', c.name),
+        c.line ? h('p.brief__line', c.line) : null),
+      h('div.brief__tools', tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
         copyBtn(() => briefText(c), 'Copy brief'))),
-    h('dl.dl',
-      h('dt', 'The idea'), h('dd', rich(c.idea)),
-      c.why && [h('dt', 'Why it works'), h('dd', rich(c.why))],
-      c.map?.length && [h('dt', 'What each mod captures'), h('dd', h('ul.ul', c.map.map((m) => h('li', h('strong', m.mod), ': ', m.job, h('span', { style: { opacity: 0.8, whiteSpace: 'nowrap' } }, ` (${m.state})`)))))],
-      c.steps?.length && [h('dt', 'First 3 steps'), h('dd', h('ol.ul', c.steps.map((t) => h('li', rich(t)))))],
-      h('dt', 'Cost and effort'), h('dd', rich(c.budget || 'tbc')),
-      h('dt', 'KPIs'), h('dd', ul(c.kpis || [])),
-      c.example && [h('dt', 'Real example'), h('dd', rich(c.example))],
-      c.install && [h('dt', 'How it installs'), h('dd', rich(c.install))],
-      protosOf(c).length && [h('dt', protosOf(c).length > 1 ? 'Try the prototypes' : 'Try the prototype'), h('dd', h('ul.ul', protosOf(c).map(protoLink)))],
-      h('dt', 'Goal'), h('dd', rich(c.goal)),
-      h('dt', 'Who for'), h('dd', rich(c.audience)),
-      h('dt', 'The insight'), h('dd', rich(c.insight)),
-      h('dt', 'Channels'), h('dd', rich((c.channels || []).join(' · '))),
-      c.links?.length && [h('dt', 'Uses'), h('dd', c.links.map((l, i) => [i ? ' · ' : '', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go?.(l.mod); } }, l.t)]))]),
+    h('div.bgrid',
+      sec('The idea', 'idea', h('p.bsec__lede', rich(c.idea))),
+      c.why ? sec('Why it works', 'why', h('p.bsec__p', rich(c.why))) : null,
+      c.example ? sec('Real example', 'ex', h('p.bsec__quote', rich(c.example))) : null,
+      c.map?.length ? sec('What each mod captures', 'map', h('ul.bmap', c.map.map((m) => h('li.bmap__row', h('span.bmap__mod', m.mod), h('span.bmap__job', m.job.replace(/^./, (x) => x.toUpperCase())), tag(m.state, /built/i.test(m.state) ? 'approved' : /live/i.test(m.state) ? 'live' : 'next'))))) : null,
+      c.steps?.length ? sec(c.steps.length === 3 ? 'First 3 steps' : 'First steps', 'steps', h('ol.bsteps', c.steps.map((t, i) => h('li.bsteps__i', h('span.bsteps__n', String(i + 1)), h('p.bsec__p', rich(t)))))) : null,
+      sec('Cost and effort', 'cost', est ? tag('Estimate', 'sample') : null, h('p.bsec__p', rich(est ? c.budget.replace(/^Estimate:\s*/i, '').replace(/^./, (x) => x.toUpperCase()) : (c.budget || 'tbc')))),
+      sec('KPIs', 'kpi', h('ul.bchecks', (c.kpis || []).map((k) => h('li', rich(k))))),
+      c.install ? sec('How it installs', 'install', h('p.bsec__p', rich(c.install))) : null,
+      protos.length ? sec(protos.length > 1 ? 'Try the prototypes' : 'Try the prototype', 'proto', h('ul.bprotos', protos.map(protoLink))) : null),
+    h('section.bmore',
+      h('p.bsec__k', 'Background'),
+      h('dl.dl',
+        h('dt', 'Goal'), h('dd', rich(c.goal)),
+        h('dt', 'Who for'), h('dd', rich(c.audience)),
+        h('dt', 'The insight'), h('dd', rich(c.insight)),
+        c.channels?.length ? [h('dt', 'Channels'), h('dd', h('span.pills', c.channels.map((t) => h('span.pill', t))))] : null,
+        c.links?.length ? [h('dt', 'Uses'), h('dd', c.links.map((l, i) => [i ? ' · ' : '', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go?.(l.mod); } }, l.t)]))] : null)),
     gbox('Second-order', secondOrder(c.so)));
 }
 // a prototype page that isn't up yet shows as "being built" instead of a dead link
 const protosOf = (c) => c.protos || (c.proto ? [c.proto] : []);
 function protoLink(p) {
-  const li = h('li', p.t, h('span', { style: { opacity: 0.8, whiteSpace: 'nowrap' } }, ' (being built)'));
-  fetch(p.href, { method: 'HEAD', cache: 'no-store' }).then((r) => { if (r.ok) li.replaceChildren(h('a', { href: p.href, target: '_blank', rel: 'noopener' }, p.t)); }, () => {});
+  const li = h('li', h('span.bproto.is-off', p.t, h('span.bproto__s', 'Being built')));
+  fetch(p.href, { method: 'HEAD', cache: 'no-store' }).then((r) => { if (r.ok) li.replaceChildren(h('a.bproto', { href: p.href, target: '_blank', rel: 'noopener' }, p.t, h('span.bproto__s', { 'aria-hidden': 'true' }, '↗'))); }, () => {});
   return li;
 }
 function briefText(c) {

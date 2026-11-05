@@ -36,16 +36,16 @@
 .gos .evl-art[data-n="3"] .gart:first-child { grid-row: span 2; }
 .gos .evl-art .gart { margin: 0; border-radius: var(--r); overflow: hidden; }
 .gos .evl-dates { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-.gos .evl-dates li { display: grid; grid-template-columns: 170px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r-sm); background: rgba(255,255,235,.06); color: #e4e4d0; font: 400 14.5px/1.4 var(--sans); }
+.gos .evl-dates li { display: grid; grid-template-columns: 170px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r-sm); background: var(--lumen); color: #2a2a24; font: 400 14.5px/1.4 var(--sans); }
 .gos .evl-dates li.is-hit { background: var(--dawn); color: var(--vast); }
 .gos .evl-dates li.is-hit .tag { background: rgba(26,26,26,.1); color: var(--vast); }
 .gos .evl-dates__d { font-weight: 600; font-variant-numeric: tabular-nums; }
 .gos .evl-plays { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.gos .evl-play { padding: 16px; border-radius: var(--r-sm); background: rgba(255,255,235,.06); }
-.gos .brief .evl-play__t { margin: 0 0 6px; font: 400 21px/1.15 var(--serif); color: var(--lumen); }
+.gos .evl-play { padding: 16px; border-radius: var(--r-sm); background: var(--lumen); }
+.gos .brief .evl-play__t { margin: 0 0 6px; font: 400 21px/1.15 var(--serif); color: var(--vast); }
 .gos .brief .evl-play__d { margin: 0; font-size: 14px; }
 .gos .evl-stats { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-.gos .evl-stats li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--r-sm); background: rgba(255,255,235,.06); color: #e4e4d0; font: 400 14.5px/1.4 var(--sans); }
+.gos .evl-stats li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--r-sm); background: var(--lumen); color: #2a2a24; font: 400 14.5px/1.4 var(--sans); }
 .gos .brief .tag--warn { background: #ffe0d4; color: var(--pulse); }
 .gos .brief .tag--sample { background: #fff0d9; color: #7a4b00; }
 .gos .brief .tag--real { background: #d6ece6; color: var(--fathom); }
@@ -55,18 +55,18 @@
 /* budget lines */
 .gos .evl-budget { display: grid; gap: 6px; }
 .gos .evl-budget__row { display: grid; grid-template-columns: minmax(0, 1fr) 150px 80px 84px; gap: 10px; align-items: center; }
-.gos .evl-budget__k { color: #e4e4d0; font: 400 14.5px/1.35 var(--sans); }
+.gos .evl-budget__k { color: #2a2a24; font: 400 14.5px/1.35 var(--sans); }
 .gos .evl-budget__k.field { min-height: 40px; }
-.gos .evl-budget__v { display: flex; align-items: center; gap: 6px; color: #bdbdab; font: 600 14px var(--sans); }
+.gos .evl-budget__v { display: flex; align-items: center; gap: 6px; color: var(--mute); font: 600 14px var(--sans); }
 .gos .evl-budget__v .field { min-height: 40px; padding: 8px 10px; text-align: right; font-variant-numeric: tabular-nums; }
-.gos .evl-budget__row--total { margin-top: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,235,.18); }
-.gos .evl-budget__row--total .evl-budget__k { font-weight: 600; color: var(--lumen); }
-.gos .evl-budget__total { font: 400 26px/1 var(--serif); color: var(--lumen); text-align: right; font-variant-numeric: tabular-nums; }
+.gos .evl-budget__row--total { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--line); }
+.gos .evl-budget__row--total .evl-budget__k { font-weight: 600; color: var(--vast); }
+.gos .evl-budget__total { font: 400 26px/1 var(--serif); color: var(--vast); text-align: right; font-variant-numeric: tabular-nums; }
 
 /* secret santa draw */
-.gos .evl-pairs { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 4px; color: #e4e4d0; font: 400 15px/1.5 var(--sans); }
-.gos .evl-pairs b { color: var(--lumen); }
-.gos .evl-pairs__msg { list-style: none; margin-left: -22px; color: #bdbdab; }
+.gos .evl-pairs { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 4px; color: #2a2a24; font: 400 15px/1.5 var(--sans); }
+.gos .evl-pairs b { color: var(--vast); }
+.gos .evl-pairs__msg { list-style: none; margin-left: -22px; color: var(--mute); }
 
 /* ---- run of show builder */
 .gos .ros-pick { margin-bottom: 0; }

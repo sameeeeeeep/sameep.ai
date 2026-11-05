@@ -145,7 +145,7 @@
 .gos .lc-agenda { display: none; }
 .gos .lc-ed { margin-top: 18px; }
 .gos .lc-form { margin-bottom: 14px; }
-.gos .lc-form label { color: var(--lumen); }
+.gos .lc-form label { color: var(--vast); }
 .gos .lc-form .field--area { min-height: 180px; font-size: 15px; line-height: 1.55; }
 .gos .lc-date { display: flex; align-items: center; gap: 6px; }
 .gos .lc-date .field { flex: 1; min-width: 0; }
