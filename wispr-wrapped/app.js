@@ -5,7 +5,7 @@
 // ?png=<mode>:<n> draws card n as a bare 1080×1920 image (the skill screenshots it with headless Chrome).
 (() => {
 const { C, STORIES } = window.WW_DATA;
-const CFG = { yours: true, foot: ['A prototype by Sameep for Wispr', 'sameep.ai'], ...window.WW_CONFIG };
+const CFG = { yours: true, foot: ['A prototype by Sameep for Wispr', 'sameep.ai'], footHref: /^https?:$/.test(location.protocol) ? '/' : null, ...window.WW_CONFIG };
 const track = (t, d) => { try { window.wwTrack?.(t, d); } catch { /* analytics never breaks the story */ } };
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -14,6 +14,8 @@ const nf = (n) => Math.round(n).toLocaleString('en-US');
 const INK = new Set(['fathom', 'vast', 'flare']);
 const fgOf = (bg) => (INK.has(bg) && bg !== 'flare' ? C.lumen : C.vast);
 const FOOT = CFG.foot;
+// on screen the foot's right side links home (never in the PNG, never from disk)
+const footEnd = () => (CFG.footHref ? el('a', { href: CFG.footHref }, FOOT[1]) : el('span', {}, FOOT[1]));
 const BLOBS = [[78, 24, 70], [18, 30, 62], [84, 58, 56], [30, 18, 80], [70, 40, 66]]; // x%, y%, size cqw, per card
 const DUR = 7500;
 
@@ -81,6 +83,7 @@ function show(i, origin, first = false) {
   const big = body.querySelector('[data-count]');
   if (big) countUp(big, Number(big.dataset.count));
   bars();
+  $('[data-act="save"]').hidden = !!c.share;  // the share card has its own Save
   $('.side--prev').disabled = i === 0;
   $('.side--next').disabled = i === S.list.length - 1;
   syncUrl();
@@ -111,7 +114,7 @@ function cardBody(c) {
     c.p ? r(0.7, el('p.c__p', {}, c.p)) : null,
     c.id === 'intro' && S.i === 0 ? r(0.95, el('p.c__go', {}, 'Tap to start  →')) : null,
     c.note ? r(0.9, el('p.c__note', {}, el('b', {}, 'Estimate. '), c.note.replace(/^Estimate:\s*/, ''))) : null,
-    r(1, el('p.c__foot', {}, el('span', {}, FOOT[0]), el('span', {}, FOOT[1]))));
+    r(1, el('p.c__foot', {}, el('span', {}, FOOT[0]), footEnd())));
 }
 
 function vizNode(v) {
@@ -150,9 +153,9 @@ function shareBody(s) {
     r(0.4, el('p.c__unit', {}, s.unit)),
     el('div.sh__grid', {}, s.tiles.map(([k, v, bg], i) => el('div', { style: { background: C[bg], color: fgOf(bg), '--d': (0.5 + i * 0.1) + 's' } }, el('small', {}, k), el('b', {}, v)))),
     r(0.9, el('div.sh__btns', {},
-      el('button.act.act--primary', { type: 'button', onclick: (e) => { e.stopPropagation(); save(); } }, 'Save card'),
-      CFG.yours ? el('button.act', { type: 'button', onclick: (e) => { e.stopPropagation(); openOwn(); } }, own ? 'Make another' : 'Make yours') : null)),
-    r(1, el('p.c__foot', {}, el('span', {}, FOOT[0]), el('span', {}, FOOT[1]))));
+      CFG.yours ? el('button.act.act--primary', { type: 'button', onclick: (e) => { e.stopPropagation(); openOwn(); } }, own ? 'Make another' : 'Make yours') : null,
+      el(CFG.yours ? 'button.act' : 'button.act.act--primary', { type: 'button', onclick: (e) => { e.stopPropagation(); save(); } }, 'Save card'))),
+    r(1, el('p.c__foot', {}, el('span', {}, FOOT[0]), footEnd())));
 }
 
 // shrink big type until it fits the card's width
