@@ -1613,7 +1613,7 @@ a.icon { text-decoration: none; }
 .lock__field .lock__user.is-pinned .lock__role, .lock__field .lock__user.is-back .lock__role { display: block; opacity: .85; max-height: 3em; font-size: 11px; }
 .lock__field .lock__user.is-pinned .lock__name, .lock__field .lock__user.is-back .lock__name { font-size: 14px; font-weight: 700; }
 .lock__field.is-tight .lock__user.is-pinned .lock__name, .lock__field.is-tight .lock__user.is-back .lock__name { font-size: 12px; }
-.lock__field.is-tight .lock__user.is-pinned .lock__role, .lock__field.is-tight .lock__user.is-back .lock__role { font-size: 10px; }
+.lock__field.is-tight .lock__user.is-pinned .lock__role, .lock__field.is-tight .lock__user.is-back .lock__role { font-size: 10px; max-width: calc(var(--bub, 54px) * 1.9); margin: 0 auto; }  /* phones: neighbours sit edge to edge, so a role wraps rather than run into the next one */
 .lock__bottom { width: min(360px, 100%); grid-template-areas: 'k' 's' 'h' 'a'; grid-template-rows: auto auto minmax(1.3em, auto) 52px; gap: 6px; }
 .lock__ask { grid-area: k; font-weight: 600; font-size: 20px; line-height: 1.2; text-align: center; margin-bottom: 4px !important; }
 .lock__search { grid-area: s; }
