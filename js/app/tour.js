@@ -52,7 +52,7 @@ export function installGuides({ area, cards, ctx }) {
     area, layer, cardFor, label: 'Desktop guide', here: () => 1,
     start: { label: 'Start the show', run: () => ctx.startShow() },
     steps: () => [
-      { at: null, say: 'Welcome to 1999. Fancy the one-minute tour? Skip whenever you like.' },
+      { at: null, say: 'Welcome to 1999. Fancy a quick tour? Skip whenever you like.' },
       // the player: opened for this stop if it isn't up (and closed again after, if the guide opened it)
       { at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing 60 songs from ’99. Skip one, or pause the lot.`,
         enter: async () => {
@@ -67,12 +67,13 @@ export function installGuides({ area, cards, ctx }) {
       // before the show: the work, then the Wispr folder, opened for them and shut again after
       { at: () => workWin()?.querySelector('.work__list'), say: 'First, my work: everything I’ve made, in one list, each with its video and links.',
         enter: async (g) => { await borrow('work', workWin, async () => { if (g.active) ctx.open('work'); }); await until(() => workWin()?.querySelector('.work__item'), 4000); }, leave: () => giveBack('work') },
-      { at: () => wisprWin()?.querySelector('.wsec[data-sec="builders"]'), when: () => isWispr, say: 'Then the Wispr folder. Up top, Wispr for Builders: Pack 1, small Claude mods you run by voice.',
+      { at: () => wisprWin()?.querySelector('.wsec[data-sec="builders"]'), when: () => isWispr, say: 'Then the Wispr folder. Up top, Wispr for Builders: small Claude mods you run by voice. Two are out, four on the way.',
         enter: (g) => borrow('wispr', wisprWin, () => ctx.openWispr({ still: () => g.active })) },
-      { at: () => wisprWin()?.querySelector('.wsec[data-sec="fun"]'), when: () => isWispr, say: 'Below: the fun one, Wispr Wrapped, and the plan, Growth OS.',
-        enter: () => until(() => wisprWin()?.querySelector('.wsec[data-sec="fun"]'), 3000), leave: () => giveBack('wispr') },
-      { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), when: () => !isWispr, card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'On the left, my work. Hover any icon for a card like this.' },
-      { at: clear(...GAMES), card: true, say: 'On the right, the toys: three games I made the ’99 way, and a few real classics.' },
+      // the fun one and the plan share a row: point at the row, so the caption sits beside it, never on Growth OS
+      { at: () => wisprWin()?.querySelector('.wsec-row'), when: () => isWispr, say: 'Below: the fun one, Wispr Wrapped, and the plan, Growth OS.',
+        enter: () => until(() => wisprWin()?.querySelector('.wsec-row'), 3000), leave: () => giveBack('wispr') },
+      { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), when: () => !isWispr, card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'Hover any icon on the left for a card like this.' },
+      { at: clear(...GAMES), card: true, say: isNarrow() ? 'Further down, the toys: three games I made the ’99 way, and a few real classics.' : 'On the right, the toys: three games I made the ’99 way, and a few real classics.' },
       { at: q('.menubar__crt'), when: () => !isNarrow() && !!window.otcvCrt, say: 'The screen has three looks. Try them, or don’t; Flat is lovely.',
         action: { label: 'Try them', run: (g) => {
           const crt = window.otcvCrt;
@@ -87,8 +88,11 @@ export function installGuides({ area, cards, ctx }) {
       isNarrow()
         ? { at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Lost? Special › Show me around replays this. Every window has a ? too.' }
         : { at: q('.menubar__help'), say: 'Lost? The ? replays this, and every window has its own. Or hold Flow and say “show me around”.' },
-      // last: Wispr is the remote. Then the guide is gone for good, and nothing opens by itself after it
-      { at: showEl, centre: true, say: 'You can come back to all of these after you try the audio experience. Wispr is the remote there: hold your Flow key and say where to go.', extra: () => flowPill() },
+      // last: start the show; Wispr is the remote there (a phone has no Flow key: chips, or just say it).
+      // Then the guide is gone for good, and nothing opens by itself after it
+      isNarrow()
+        ? { at: showEl, centre: true, say: 'Then press Start the show. Inside, tap a chip or just say where to go.' }
+        : { at: showEl, centre: true, say: 'Then press Start the show. Hold your Flow key any time and say where to go.', extra: () => flowPill() },
     ],
   });
 
@@ -112,7 +116,7 @@ export function installGuides({ area, cards, ctx }) {
   });
 
   // ------------------------------------------------------------ one guide per kind of window
-  // the Wispr folder is a folder too, but fills in late (after its probes): tell it apart by its title
+  // the Wispr folder is a folder too: tell it apart by its title
   const isWisprF = (w) => w.matches('.win--folder') && w.getAttribute('aria-label') === 'Wispr';
   const isFolder = (w) => w.matches('.win--folder') && !isWisprF(w);
   const folderW = win(isFolder);
@@ -131,9 +135,10 @@ export function installGuides({ area, cards, ctx }) {
   defineGuide('wispr', {
     area, layer, cardFor, holder: wisprW, label: 'Wispr folder guide', here: inFront(isWisprF),
     steps: () => [
-      { at: inWin(wisprW, '.wsec[data-sec="builders"] .wsec__head'), enter: () => until(wItem('wispreditor')), say: 'Wispr for Builders: small Claude mods that make voice a superpower. Pack 1 is six of them.' },
+      { at: inWin(wisprW, '.wsec[data-sec="builders"] .wsec__head'), enter: () => until(wItem('wispreditor')), say: 'Wispr for Builders: small Claude mods that make voice a superpower. Pack 1: two out now, four on the way.' },
       { at: wItem('wispreditor'), card: true, say: 'Wispr Video: a teleprompter, recorder and editor. You say the edit, Claude makes it.' },
-      { at: wItem('guru'), card: true, say: 'Wispr Guru: a voice guide for any software. “Coming” means it’s on its way.' },
+      { at: wItem('guru'), card: true, say: 'Wispr Guru: a voice guide for any software.' },
+      { at: inWin(wisprW, '.wsec__more'), say: 'The other four are on the way. Each one lands here the day it ships.' },
       { at: wItem('wrapped'), card: true, say: 'And the fun one, Wispr Wrapped: my real Flow history, as a story. Yours takes a minute of talking.', action: openIt('wrapped') },
       { at: wItem('growthos'), card: true, say: 'Growth OS is the plan: how I’d grow Wispr. Its own tab, behind a team sign-in.', action: openIt('growthos', 'Open Growth OS ↗') },
     ],
@@ -210,7 +215,7 @@ export function installGuides({ area, cards, ctx }) {
     for (const r of recs) for (const n of r.addedNodes) {
       if (!(n instanceof HTMLElement) || !n.matches('.win')) continue;
       const wasBusy = guideOn();  // opened by a guide (or while one was up): not a first open of its own
-      // the Wispr folder fills in after its probes: look once it has settled
+      // look once the window has settled
       setTimeout(() => {
         if (!n.isConnected || n.hidden || n.classList.contains('is-closing')) return;
         addHelp(n);
