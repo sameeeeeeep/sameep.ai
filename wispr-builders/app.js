@@ -5,30 +5,30 @@
 
   // key: the product's id in /wispr-kit/status.json, the one place statuses live (Live / Testing / In progress).
   const MODS = [
-    { id: 'wispr-file', name: 'Wispr File', key: 'file',
+    { id: 'wispr-file', clip: 'file', clipAlt: 'Wispr File in the browser demo: a spoken search, numbered results, one clicked and copied', name: 'Wispr File', key: 'file',
       tag: 'Find any file by saying it',
       say: ['the GST invoice from October', 'last screenshot of the admin panel', 'the signed lease PDF'],
       body: 'File searches your Mac with Spotlight and shows the results as numbered thumbnails. Click one, or press its number, and File pastes it into the app you were in, or reveals, opens, or copies it.',
       img: 'img/card.webp', alt: 'The Wispr Bridge card: three numbered poster tiles with the second one selected, a note field, and a Not now button' },
-    { id: 'wispr-wish', name: 'Wispr Wish', key: 'wish',
+    { id: 'wispr-wish', clip: 'wish', clipAlt: 'Wispr Wish converting sameep.ai’s og.png to WebP, then a timer', name: 'Wispr Wish', key: 'wish',
       tag: 'Say what should happen to a file',
       say: ['make this a PDF', 'compress this video for WhatsApp', 'transcribe this audio', 'split this bill three ways'],
       body: 'Wish works on what you selected in Finder, with ffmpeg and an on-device transcript. Ask for a small tool, like a timer or a QR code, and it opens in its own window. Wish asks before deleting anything.',
       img: 'img/wish.webp', alt: 'Three small dark windows: a bill split at 944 rupees each, a QR code for a link, and a 10 minute timer' },
-    { id: 'wispr-review', name: 'Wispr Review', key: 'review',
+    { id: 'wispr-review', clip: 'review', clipAlt: 'Wispr Review on sameep.ai: a note pinned to the hero, then sent to Claude', name: 'Wispr Review', key: 'review',
       tag: 'Review a website by talking at it',
       say: ['too big on mobile', 'say per seat, and add annual pricing'],
       body: 'Point at anything on a page and talk. Review’s Chrome extension pins your note to that element with a crop. Claude reads the notes with /wispr-review and fixes them one by one.',
       img: 'img/review.webp', alt: 'A web page with a note pinned to the price that says Price should say per seat, and a Review dock in the corner' },
-    { id: 'wispr-pm', name: 'Wispr PM', key: 'pm',
+    { id: 'wispr-pm', clip: 'pm', clipAlt: 'Wispr PM: a task parked by voice, then started from its card', name: 'Wispr PM', key: 'pm',
       tag: 'Your task boards, by voice',
       say: ['park this for the portfolio', 'split this into tasks', 'what’s waiting on me'],
       body: 'PM keeps one Markdown board per project. Click Start on a card and a Claude Code session works on it, then moves it to review when it’s done.' },
-    { id: 'wispr-guru', name: 'Wispr Guru', key: 'guru', page: '/wispr-guru/',
+    { id: 'wispr-guru', clip: 'guru', clipAlt: 'Wispr Guru pointing at File, then Export, in a pretend document', name: 'Wispr Guru', key: 'guru', page: '/wispr-guru/',
       tag: 'A second cursor that shows you where to click',
       say: ['walk me through exporting a frame in Figma', 'how do I add a page number in Pages'],
       body: 'Guru points at the control you need, shows the step beside it, and moves on when you click it. When a long Claude turn finishes, Guru gives you a card to dictate your reply into.' },
-    { id: 'wispr-video', name: 'Wispr Video', key: 'video', page: '/wispr-editor/',
+    { id: 'wispr-video', clip: 'video', clipAlt: 'A cut of the sameep.ai launch film, made in Wispr Video', name: 'Wispr Video', key: 'video', page: '/wispr-editor/',
       tag: 'A video editor you talk to',
       say: ['cut the silences', 'highlight the product name', 'export 9:16'],
       body: 'Video gives you a teleprompter that follows you as you read, word-timed captions, and edits you say out loud. It exports 9:16, 4:5, and 16:9.',
@@ -44,7 +44,7 @@
   const line = (m) => `/plugin install ${m.id}@wispr-for-builders`;
 
   document.getElementById('apps').innerHTML = MODS.map((m) => `
-    <article class="w-mcard app${m.img ? ' app--shot' : ''}${m.wide ? ' app--wide' : ''}" id="${m.id}">
+    <article class="w-mcard app${m.img || m.clip ? ' app--shot' : ''}${m.wide ? ' app--wide' : ''}" id="${m.id}">
       <div class="app__head">
         <span class="w-tile" aria-hidden="true">${esc(short(m))}</span>
         <div class="app__t">
@@ -55,7 +55,8 @@
       </div>
       <ul class="say" aria-label="Things to say">${m.say.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
       <p class="app__p">${esc(m.body)}${m.page ? ` <a href="${m.page}">Try the demo</a>` : ''}</p>
-      ${m.img ? `<img class="app__img" src="${m.img}" alt="${esc(m.alt)}" loading="lazy" decoding="async">` : ''}
+      ${m.clip ? `<video class="app__img app__clip" autoplay muted loop playsinline preload="metadata" poster="gifs/${m.clip}.jpg" aria-label="${esc(m.clipAlt)}"><source src="gifs/${m.clip}.webm" type="video/webm"><source src="gifs/${m.clip}.mp4" type="video/mp4"></video>`
+        : m.img ? `<img class="app__img" src="${m.img}" alt="${esc(m.alt)}" loading="lazy" decoding="async">` : ''}
       <div class="cmd cmd--sm">
         <code id="cmd-${m.id}">${esc(line(m))}</code>
         <button class="w-btn w-btn--primary" type="button" data-copy="cmd-${m.id}" aria-label="Copy the ${esc(m.name)} install line">Copy</button>
@@ -63,6 +64,15 @@
     </article>`).join('');
 
   window.WisprStatus && WisprStatus.fill(document.getElementById('apps'));
+
+  // clips play only while on screen; with reduced motion they stay on the poster, with controls
+  const clips = [...document.querySelectorAll('.app__clip')];
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    clips.forEach((v) => { v.removeAttribute('autoplay'); v.pause(); v.controls = true; });
+  } else if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause())), { threshold: 0.25 });
+    clips.forEach((v) => { v.removeAttribute('autoplay'); io.observe(v); });
+  }
 
   // the segmented pill: All, or one mod at a time
   const seg = document.getElementById('seg');
