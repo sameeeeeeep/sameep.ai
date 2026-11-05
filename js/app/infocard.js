@@ -1,14 +1,18 @@
 // infocard.js — a small Platinum info card for desktop project icons and folder items, so people can
 // decide what to open. Mouse: hover 300 ms, gone on mouse-out or Esc. Touch: first tap shows the card
 // with Open, second tap (or Open) opens. Any element with data-card="<id>" gets one; the copy is that
-// id's `card` in data/work.json, or a folder's own card (data-card="folder-<id>").
+// id's `card` in data/work.json, a folder's own card (data-card="folder-<id>"), or js/app/cards.js for the
+// system icons, toys and games. The guide (js/guide/guide.js) shows the same card inside its caption: content(el).
 import { h, clamp } from './util.js';
+import { MORE_CARDS } from './cards.js';
 
 const GAP = 10, EDGE = 8, DELAY = 300;
 
 // where a click goes, in a few words
-function where(el, folder) {
+function where(el, folder, opens) {
   if (folder) return `Opens a folder of ${folder.items.length}`;
+  if (el.matches('[aria-label$="still being built"]')) return 'Still being built: it opens here the moment it’s done';
+  if (opens) return opens;
   const href = el.getAttribute('href');
   if (!href) return '';
   const u = new URL(href, location.href);
@@ -17,7 +21,7 @@ function where(el, folder) {
   return `Opens ${u.hostname.replace(/^www\./, '')} ↗`;
 }
 
-export function installCards({ area, loadList, folders = [], chapter, onHear }) {
+export function installCards({ area, loadList, folders = [], chapter, onHear, quiet = () => false }) {
   let list = null;
   const ready = loadList().then((l) => { list = l; }).catch(() => { list = []; });
   const byFolder = new Map(folders.map((f) => [`folder-${f.id}`, f]));
@@ -29,8 +33,28 @@ export function installCards({ area, loadList, folders = [], chapter, onHear }) 
     const f = byFolder.get(id);
     if (f) return f.card && { title: f.label, ...f.card, folder: f };
     const w = list?.find((x) => x.id === id);
-    return w?.card && { title: w.title, ...w.card };
+    if (w?.card) return { title: w.title, ...w.card };
+    return MORE_CARDS[id] || null;
   };
+  const pic = (d) => (d.thumb ? h('img.icard__pic', { src: d.thumb, alt: '', decoding: 'async' })
+    : (d.icon || d.iconUrl) && h('img.icard__pic.is-icon', { src: d.iconUrl || `img/ui/${d.icon}.svg`, alt: '', decoding: 'async' }));
+  // the card's insides: picture, name, what it is, the one-line why, where a click goes
+  function content(el, { touch = false, guide = false } = {}) {
+    const d = data(el.dataset.card);
+    if (!d) return null;
+    const node = d.node && chapter?.(d.node);
+    return [
+      pic(d) || h('span.icard__pic.is-blank'),
+      h('div.icard__body',
+        h('p.icard__t', d.title),
+        d.what && h('p.icard__what', d.what),
+        d.proof && h('p.icard__why', d.proof)),
+      h('p.icard__where', where(el, d.folder, d.opens), node && h('span', ` · On the podcast: ${node}`)),
+      (touch || guide) && h('div.icard__btns',
+        node && onHear && h('button.btn.btn--sm', { type: 'button', onclick: () => { hide(); onHear(d.node); } }, 'Hear it'),
+        touch && h('button.btn.btn--sm.btn--primary', { type: 'button', onclick: () => { const t = el; hide(); t.dataset.cardOpen = '1'; t.click(); } }, 'Open')),
+    ].filter(Boolean);
+  }
 
   function place(el) {
     const A = area.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -49,18 +73,10 @@ export function installCards({ area, loadList, folders = [], chapter, onHear }) 
   }
 
   function show(el, touch) {
-    const d = data(el.dataset.card);
-    if (!d) return false;
-    const node = d.node && chapter?.(d.node);
-    card.replaceChildren(...[
-      d.thumb && h('img.icard__pic', { src: d.thumb, alt: '', decoding: 'async' }),
-      h('div.icard__body',
-        h('p.icard__t', d.title),
-        d.what && h('p.icard__what', d.what)),
-      h('p.icard__where', where(el, d.folder), node && h('span', ` · On the podcast: ${node}`)),
-      touch && h('div.icard__btns',
-        node && onHear && h('button.btn.btn--sm', { type: 'button', onclick: () => { hide(); onHear(d.node); } }, 'Hear it'),
-        h('button.btn.btn--sm.btn--primary', { type: 'button', onclick: () => { const t = el; hide(); t.dataset.cardOpen = '1'; t.click(); } }, 'Open'))].filter(Boolean));
+    if (quiet()) return false;  // the guide is up: it shows this card itself
+    const kids = content(el, { touch });
+    if (!kids) return false;
+    card.replaceChildren(...kids);
     card.classList.toggle('is-touch', !!touch);
     card.hidden = false;
     place(el);
@@ -109,6 +125,12 @@ export function installCards({ area, loadList, folders = [], chapter, onHear }) 
     if (show(el, true)) { e.preventDefault(); e.stopPropagation(); }
   }, true);
   area.addEventListener('scroll', hide, true);
+  document.addEventListener('guide:start', hide);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && shownFor) { e.stopPropagation(); hide(); } }, true);
-  return { hide };
+  // for the guide: the same card, as a block it can put in its caption (null if the item has none)
+  const forGuide = (el) => {
+    const kids = el?.dataset?.card && content(el, { guide: true });
+    return kids ? h('div.icard.is-on.is-inline', kids.filter((k) => !k.classList.contains('icard__btns') || k.childElementCount)) : null;
+  };
+  return { hide, content: forGuide, ready };
 }

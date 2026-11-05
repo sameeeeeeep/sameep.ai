@@ -12,9 +12,10 @@ import { stylisePhoto } from './cast.js';
 import { jukebox, installer, installed, splash, login, FOLDERS, STARS, MY_GAMES, CLASSICS, openFolder, openGames, openGame } from './era.js';
 import { fillUrl } from './demos.js';
 import { installCards } from './infocard.js';
-import { startTour, guideOn, endGuide } from './tour.js';
+import { installGuides, guideOn, endGuide } from './tour.js';
 import { loadWork } from './work.js';
 import { WISPR, openWisprFolder } from './wisprfolder.js';
+import { MORE_CARDS } from './cards.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
 
@@ -57,7 +58,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   await wait(reduced ? 0 : 420);
 
   const wm = createWM(desk.area);
-  let pod = null, juke = null;
+  let pod = null, juke = null, guides = null;
   const ctx = {
     wm, persona,
     connectedAt: Date.now(),
@@ -75,7 +76,11 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     open(id) { apps.find((a) => a.id === id)?.open(); },
     setWallHour: (hr) => desk.setWall(hr),
     endCard: (fromIcon) => { endCard(wm, persona, () => pod, fromIcon); if (!fromIcon) ctx.afterShow?.(); },
-    tour: () => startTour({ area: desk.area, openPlayer: () => ctx.openJukebox(), onStart: () => ctx.startShow() }),  // Help › Show me around, and the ? by the clock
+    // the ? by the clock and Special › Show me around: the guide for whatever is in front (the desktop's when
+    // nothing is); Help › Desktop tour: always the desktop's. Holding Flow and saying "show me around" does the same
+    tour: () => guides.here(),
+    desktopTour: () => guides.desktop(),
+    openWispr: (opts) => openWisprFolder(wm, opts),
     // "Start the show" works at any point: mid-guide, mid-install, after. The guide ends, the install
     // finishes on the spot, and the show opens as soon as it can
     startShow() {
@@ -86,10 +91,11 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       ctx.openPodcast();
     },
     // the player's icon: bring it back after it's been closed (or open it for the first time on ?fast)
-    openJukebox() {
+    openJukebox({ quiet = false } = {}) {
       const w = wm.get('jukebox');
-      if (w) { if (w.el.classList.contains('is-shaded')) w.shade(false); w.focus(); return; }
-      juke = jukebox(wm, { reduced });
+      if (w) { if (w.el.classList.contains('is-shaded')) w.shade(false); w.focus(); }
+      else juke = jukebox(wm, { reduced });
+      if (!quiet) guides?.openMacster();  // its own guide, the first time they open it themselves
     },
   };
   const apps = buildApps(ctx);
@@ -97,26 +103,30 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   // left: the work. Folders in the first column (Growth OS adds itself above them), the best of them out on
   // the desktop in the second, so nothing good hides in a folder. right: the system (HD up top, Trash at the
   // bottom) and the toys, then a column of games: mine, and the classics
+  // every icon gets its hover card (js/app/cards.js); "Make your own" is `make`, Switchboard the project keeps its own
+  const carded = (list) => list.map((a) => ({ ...a, card: a.card || (a.id === 'switchboard' ? 'make' : MORE_CARDS[a.id] ? a.id : undefined) }));
   const folderApp = (f) => ({ id: 'folder-' + f.id, card: 'folder-' + f.id, label: f.label, icon: 'folder-' + f.id, open: () => openFolder(wm, f) });
   // the Wispr folder (Growth OS and the prototypes): top left on the Wispr version, with the folders otherwise
   const wispr = { ...folderApp(WISPR), open: () => openWisprFolder(wm) };
-  desk.renderProjects([...(isWispr ? [wispr] : []), ...FOLDERS.map(folderApp), ...(isWispr ? [] : [wispr]), ...pick(['work'])],
+  desk.renderProjects([...(isWispr ? [wispr] : []), ...FOLDERS.map(folderApp), ...(isWispr ? [] : [wispr]), ...carded(pick(['work']))],
     // the application extras: the Wispr version only (the pages stay reachable by URL)
     [...STARS, ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])]);
-  desk.renderIcons([...pick(['offthecv', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
-    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, { id: 'games', label: 'More games', icon: 'proj-games', open: () => openGames(wm, { reduced }) }, ...pick(['trash'])],
+  desk.renderIcons(carded([...pick(['offthecv', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
+    { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, { id: 'games', label: 'More games', icon: 'proj-games', open: () => openGames(wm, { reduced }) }, ...pick(['trash'])]),
   // the games column: mine (in a window), then the classics (a new tab each)
-  [...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), ...CLASSICS]);
+  carded([...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), ...CLASSICS]));
   desk.renderMenus(ctx, apps);
   // hover (or first tap) on a project or folder: what it is, my part, one proof point, where it opens
-  installCards({ area: desk.area, folders: [...FOLDERS, WISPR], loadList: () => loadWork(persona).then((r) => r.list),
+  const cards = installCards({ area: desk.area, folders: [...FOLDERS, WISPR], loadList: () => loadWork(persona).then((r) => r.list),
     chapter: (id) => { const n = pod?.ep?.nodes?.[id]; return n && (n.title || n.chapter); },
-    onHear: (id) => { ctx.openPodcast(); pod?.go(id); } });
+    onHear: (id) => { ctx.openPodcast(); pod?.go(id); }, quiet: () => guideOn() });
   const era = eraOn;
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
   const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
   if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn, icon: false })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
+  // every guide on the desktop (js/app/tour.js); set up after the boot's own player, so it isn't a "first open"
+  guides = installGuides({ area: desk.area, cards, ctx });
   let tour = null;
 
   if (episode && episode.nodes) {
@@ -125,8 +135,9 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       ctx.installing = true;
       desk.setInstalling(true);
       if (isNarrow()) desk.notice('OFF THE CV is installing. It only takes a moment.');
-      // every visit: the guide plays while it installs and keeps going after; the Open countdown waits for it
-      tour = startTour({ area: desk.area, openPlayer: () => ctx.openJukebox(), onStart: () => ctx.startShow() });
+      // first visit: the guide plays while it installs and keeps going after; the Open countdown waits for it.
+      // It moves only when they say, so it holds the show until they're done (or Skip, or Start the show)
+      tour = guides.first();
       // when the guide is over (done or skipped) it leaves them to it: the install finishes quietly, the icon
       // lands, and nothing opens by itself; they start the show when they want
       let guideOver = false;
@@ -146,8 +157,10 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
       juke.win.close();
     } else await wait(reduced ? 0 : 500);
     pod.open();
-    // after the show (closed, cancelled or finished): a short "what's next" guide
-    const whatsNext = () => setTimeout(() => { if (!guideOn() && !document.querySelector('.lock')) startTour({ area: desk.area, kind: 'next', openPlayer: () => ctx.openJukebox() }); }, 900);
+    guides.podcastReady();  // the player's own guide, the first time the show is playing
+    guides.feedbackLater();  // one "How was that?", once ever: after the show, or after a while on the desktop
+    // after the show (closed, cancelled or finished), once per visitor: the Wispr folder and Growth OS
+    const whatsNext = () => setTimeout(() => { if (!document.querySelector('.lock')) guides.afterShow(); }, 900);
     new MutationObserver(() => { if (pod.win?.el.hidden) whatsNext(); }).observe(pod.win.el, { attributes: true, attributeFilter: ['hidden'] });
     ctx.afterShow = whatsNext;
     const q = new URLSearchParams(location.search);
@@ -263,7 +276,7 @@ function buildDesktop(screen, persona) {
         { label: 'Edit', items: [['Undo CV burning', null], ['Cut', null], ['Copy', null], ['Paste', null]] },
         { label: 'Podcast', items: [['Play / Pause', () => pod()?.toggle()], ['Skip', () => pod()?.skip()], ['Back', () => pod()?.back()], ['-'], ['Change my character…', () => { ctx.openPodcast(); pod()?.recast(); }]] },
         { label: 'Special', items: [['Show me around', () => ctx.tour()], ['Empty Trash', () => ctx.open('trash')], ['Make your own sameep.ai…', () => ctx.endCard(true)], ['Shut Down', () => ctx.endCard(true)]] },
-        { label: 'Help', items: [['Show me around', () => ctx.tour()], ['-'], ['Read Me', () => ctx.open('readme')], ['Résumé.doc', () => ctx.open('resume')]] },
+        { label: 'Help', items: [['Show me around', () => ctx.tour()], ['Desktop tour', () => ctx.desktopTour()], ['-'], ['Read Me', () => ctx.open('readme')], ['Résumé.doc', () => ctx.open('resume')]] },
       ];
       let openMenu = null;
       const closeAll = () => { menubar.querySelectorAll('.menu.is-open').forEach((m) => { m.classList.remove('is-open'); m.querySelector('.menu__btn').setAttribute('aria-expanded', 'false'); }); openMenu = null; };

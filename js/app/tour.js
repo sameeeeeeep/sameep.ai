@@ -1,212 +1,236 @@
-// tour.js — the desktop guide. A ghost Mac arrow glides slowly from stop to stop with a caption in
-// Wispr Flow's look, explaining everything on the desktop, one short line each. It plays on every
-// visit while OFF THE CV installs (and keeps going after: the Open countdown waits for it), advances
-// by itself, pauses while the pointer is on the caption, and has Back / Next / Skip on every bubble.
-// Esc or opening the show ends it; Help › Show me around (or the ? by the clock) plays it again.
-// After the show closes, a short "what's next" tour points at where to go from there.
-// Phones and reduced motion: no gliding cursor, the caption sits by a highlighted icon instead.
-import { h, clamp, isNarrow, reducedMotion } from './util.js';
+// tour.js — the desktop's guides, all on the one engine (js/guide/guide.js): the desktop tour, the
+// "after the show" stop at Wispr Growth OS, and a short first-open guide for each kind of window
+// (project folders, the Wispr folder, Work, the games, Macster, the podcast).
+// Every one plays once per visitor, moves only when they say (Next, Space, “next”), can be skipped from
+// any step, ends by leaving them alone, and replays from the window's own “?”, the ? by the clock, or by
+// holding Flow and saying “show me around”. Pointing at an icon shows its hover card inside the caption.
+import { isNarrow } from './util.js';
 import { isWispr } from '../version.js';
 import { PLAYER } from './era.js';
+import { defineGuide, firstOpen, play, playHere, guideOn, endGuide, flowPill, helpButton, seen, askFeedback } from '../guide/guide.js';
 
-const STOP = Symbol('stop');
-const GLIDE = 1500;                                                  // one cursor move, eased (1.2–1.8 s)
-const holdFor = (line) => Math.max(3000, line.trim().split(/\s+/).length * 250);  // 250 ms a word, 3 s at least
-const ARROW = '<svg viewBox="0 0 12 19" width="18" height="28" aria-hidden="true"><path d="M1 1v15l3.6-3.4 2.6 5.6 2.4-1.1-2.6-5.5H12L1 1z" fill="#111" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
-let current = null;                                                  // one guide at a time
-export const guideOn = () => !!current?.active;
-export const endGuide = () => current?.end();
-const seenNext = new Set();                                          // "what's next" stops already shown this visit
+export { guideOn, endGuide };
 
-// the Wispr Flow pill, mocked: hold your key and talk
-const pill = () => h('div.gtour__pill', h('span.gtour__wave', { 'aria-hidden': 'true' }, Array.from({ length: 9 }, (_, i) => h('i', { style: { animationDelay: `${(i * 97) % 600}ms` } }))), h('span', 'Hold your Flow key, say where to go'));
 const showEl = () => document.querySelector('.win--install:not(.is-closing)') || document.querySelector('.is-offthecv .icon');
+const q = (sel) => () => document.querySelector(sel);
+// the first of these that isn't hidden under a window (the installer sits over the top of the games column)
+const clear = (...sels) => () => {
+  const all = sels.map((s) => document.querySelector(s)).filter(Boolean);
+  return all.find((el) => { const r = el.getBoundingClientRect(), t = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return t && el.contains(t); }) || all[0] || null;
+};
+// the step's action opens an icon: past the hover card's "first tap shows the card" on a phone
+const openEl = (g, el) => { g.end(); if (el) { el.dataset.cardOpen = '1'; el.click(); } };
+const GAMES = ['.is-moto .icon', '.is-snake .icon', '.is-breakout .icon', '.is-roadrash .icon'];
+// wait (briefly) for something a step needs, like a folder's icons after its window opens
+const until = async (fn, ms = 3000) => { for (let t = 0; t < ms; t += 100) { if (fn()) return true; await new Promise((r) => setTimeout(r, 100)); } return false; };
 
-// every stop: what to point at, one short line, and anything it does while it's there
-function mainStops(phone) {
-  const q = (sel) => () => document.querySelector(sel);
-  return [
-    // first the room: the middle of the screen, then the music that's already on, then the show installing
-    { id: 'w-hello', at: () => null, say: 'Welcome to 1999.' },
-    // the player: opened for this stop if it isn't up (and closed again after, if the tour opened it)
-    { id: 'player', open: true, at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}: 60 songs from ’99. Skip a track, or pause it.` },
-    { id: 'install', at: showEl, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
-      ? 'My portfolio, in my voice, is installing. Start the show any time; meanwhile, the rest.'
-      : 'My portfolio, in my voice, is ready. Start the show any time; meanwhile, the rest.') },
-    phone
-      ? { id: 'left', at: q('[data-card^="folder-"]'), say: 'My work: folders, then the best bits on their own. Tap one.' }
-      : { id: 'left', at: q('.icons--proj'), say: 'On the left, my work: the best bits up front, the rest in folders. Hover for details.' },
-    phone
-      ? { id: 'right', at: q('.is-moto .icon'), say: 'Further down, three games I made the ’99 way, then the real ones: Road Rash, DOOM and more.' }
-      : { id: 'right', at: q('.icons:not(.icons--proj)'), say: 'On the right, the toys. Three games I made the ’99 way, and the real ones: Road Rash, DOOM and more.' },
-    { id: 'crt', at: q('.menubar__crt'), say: 'The screen has looks. Here they are.', desktopOnly: true, crt: true },
-    phone
-      ? { id: 'again', at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Replay this from Special › Show me around.' }
-      : { id: 'again', at: q('.menubar__help'), say: 'Replay this any time with ?.' },
-    { id: 'gos', at: q('[data-card="folder-wispr"]'), say: 'The Wispr folder: a growth plan I started for your team, and two prototypes.', wisprOnly: true },
-    // last: Wispr is the remote. Then the guide is gone for good, and nothing opens by itself after it
-    { id: 'steer', at: showEl, say: 'Last thing: Wispr drives this. In the show, hold your Flow key and say where to go, like “something fun” or “Switchboard”. Over to you.', extra: pill },
-  ];
-}
-function nextStops() {
-  const q = (s) => () => document.querySelector(s);
-  return [
-    { id: 'n-hello', at: () => null, say: 'Thanks for listening. Here’s where to go next.' },
-    { id: 'n-work', at: q('[data-card="folder-growth"]'), say: 'Open any folder on the left for a project’s own page.' },
-    { id: 'n-gos', at: q('[data-card="folder-wispr"]'), say: 'The Wispr folder: the growth plan I’d start with, and two prototypes.', wisprOnly: true },
-    { id: 'n-make', at: q('.is-switchboard .icon'), say: 'Make your own: say one sentence to your Claude or Emergent.' },
-    { id: 'n-games', at: q('.is-moto .icon'), say: 'Or play one of mine: Moto Thappad, Samosa Snake, Rangoli Breakout.' },
-    { id: 'n-juke', at: q('.win--juke, .win--island, .is-jukebox .icon'), say: `${PLAYER.name} is still here, if you want more ’99.` },
-    { id: 'n-rec', at: q('[data-card="recording"]'), say: 'And the Recording: three minutes, the short version.', wisprOnly: true },
-  ];
-}
+export function installGuides({ area, cards, ctx }) {
+  const cardFor = (el) => cards?.content(el);
+  const layer = area.closest('.desk') || area;  // drawn over the menu bar too, so its steps aren't hidden under it
+  const open = () => [...area.querySelectorAll('.win:not([hidden]):not(.is-closing):not(.is-shaded):not(.win--modal):not(.win--install)')].sort((a, b) => (+b.style.zIndex || 0) - (+a.style.zIndex || 0));
+  const inFront = (fn) => () => { const w = open()[0]; return w && fn(w) ? 2 : 0; };
+  const win = (fn) => () => open().find(fn) || null;
+  const inWin = (w, sel) => () => w()?.querySelector(sel) || null;
 
-export function startTour({ area, kind = 'main', openPlayer, onStart } = {}) {
-  current?.end();
-  if (!document.getElementById('font-wispr')) document.head.append(h('link#font-wispr', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500&family=Figtree:wght@400;600&display=swap' }));
-  const phone = isNarrow(), glide = !phone && !reducedMotion();
-  let stops = (kind === 'next' ? nextStops() : mainStops(phone)).filter((s) => (!s.wisprOnly || isWispr) && (!s.desktopOnly || !phone));
-  if (kind === 'next') { stops = stops.filter((s) => !seenNext.has(s.id)); if (stops.length < 2) return null; }
-  const keep = (s) => s.id.endsWith('hello') || s.id === 'install' || (s.open && openPlayer) || s.at();
-  stops = stops.filter(keep);  // count only stops that have something to point at
-
-  const ghost = glide ? h('div.gtour__cursor', { 'aria-hidden': 'true' }) : null;
-  if (ghost) ghost.innerHTML = ARROW;  // a fixed, local SVG string
-  const text = h('p.gtour__text'), extra = h('div.gtour__extra'), count = h('span.gtour__n');
-  const back = h('button.gtour__btn', { type: 'button', onclick: () => go(i - 1) }, 'Back');
-  const next = h('button.gtour__btn.is-primary', { type: 'button', onclick: () => go(i + 1) }, 'Next');
-  const skip = h('button.gtour__btn.is-text', { type: 'button', onclick: () => end() }, 'Skip');
-  // Start the show: on every stop of the main guide, never disabled; it ends the guide and opens the show
-  const start = onStart && kind === 'main' ? h('button.gtour__btn.is-start', { type: 'button', onclick: () => { end(); onStart(); } }, 'Start the show') : null;
-  const cap = h('div.gtour__cap', { role: 'dialog', 'aria-live': 'polite', 'aria-label': 'Desktop guide' },
-    text, extra, h('div.gtour__row', count, h('span.gtour__btns', skip, back, next)), start && h('div.gtour__row.gtour__row--start', start));
-  area.append(...[ghost, cap].filter(Boolean));
-
-  let alive = true, i = -1, token = 0, paused = false, lit = [], crtFrom = null, opened = null, hovered = null, done, side = 'right';
-  const finished = new Promise((r) => { done = r; });
-  // a wait that pauses while the pointer is on the caption, and stops if the visitor moves on
-  const wait = (ms, my) => new Promise((res, rej) => {
-    let left = ms, t0 = performance.now();
-    const tick = () => {
-      if (!alive || my !== token) return rej(STOP);
-      const now = performance.now();
-      if (!paused) left -= now - t0;
-      t0 = now;
-      if (left <= 0) return res();
-      setTimeout(tick, Math.min(120, left));
-    };
-    tick();
-  });
-  const A = () => area.getBoundingClientRect();
-  const box = (el) => { const a = A(), r = el.getBoundingClientRect(); return { x: r.left - a.left, y: r.top - a.top, w: r.width, h: r.height }; };
-  function light(...els) { lit.forEach((e) => e.classList.remove('is-tour-lit')); lit = els.filter(Boolean); lit.forEach((e) => e.classList.add('is-tour-lit')); }
-  function placeCap(x, y, near, center = false) {
-    const a = A(), cw = cap.offsetWidth, ch = cap.offsetHeight;
-    let cx, cy;
-    if (!ghost) {
-      if (near) { cx = near.x + near.w / 2 - cw / 2; cy = near.y + near.h + 10; if (cy + ch > a.height - 8) cy = near.y - ch - 10; }
-      else { cx = (a.width - cw) / 2; cy = a.height * 0.3; }
-    } else if (!near && center) { cx = (a.width - cw) / 2; cy = y + 30;  // nothing to point at: the caption sits centred under the arrow
-    } else { cx = side === 'left' ? x - cw - 16 : x + 22; cy = y + 16; if (side === 'right' && cx + cw > a.width - 10) cx = x - cw - 14; if (side === 'left' && cx < 10) cx = x + 22; }
-    cap.style.left = clamp(cx, 8, Math.max(8, a.width - cw - 8)) + 'px';
-    cap.style.top = clamp(cy, 8, Math.max(8, a.height - ch - 8)) + 'px';
-  }
-  async function moveTo(el, my, ms = GLIDE, dx = 0.5, dy = 0.5) {
-    const a = A();
-    if (el && !glide) el.scrollIntoView?.({ block: 'nearest' });
-    const b = el ? box(el) : { x: a.width * 0.5, y: a.height * 0.36, w: 0, h: 0 };  // nothing to point at: the middle
-    const x = b.x + b.w * dx, y = b.y + b.h * dy;
-    if (ghost) { ghost.style.transitionDuration = ms + 'ms'; ghost.style.transform = `translate(${x}px, ${y}px)`; placeCap(x, y, null, !el); await wait(ms, my); }
-    else placeCap(x, y, el ? b : null);
-  }
-  const press = async (my) => { if (!ghost) return; ghost.classList.add('is-press'); await wait(160, my); ghost.classList.remove('is-press'); };
-  function say(line, more = null) { text.textContent = line; extra.replaceChildren(...(more ? [more] : [])); cap.classList.add('is-on'); }
-
-  // leaving a stop puts things back: closes the folder it opened, hides the card, leaves the screen on Flat
-  // leave people on Flat, saved (they can switch with one click); the preview is only a fallback
+  // ------------------------------------------------------------ the desktop tour (first visit)
+  let crtChanged = false, look = -1, openedPlayer = false;
   const flat = () => { if (window.crtfx?.set) window.crtfx.set('flat'); else window.otcvCrt?.preview('flat'); };
-  function tidy() {
-    if (hovered) { hovered.dispatchEvent(new PointerEvent('pointerout', { bubbles: true, pointerType: 'mouse', relatedTarget: document.body })); hovered = null; }
-    if (opened?.isConnected) opened.querySelector('.win__close')?.click();
-    opened = null; side = 'right';
-    if (crtFrom) { flat(); crtFrom = null; }
-  }
+  const LOOKS = [['curved', 'Curved: the whole tube, bent like glass.'], ['off', 'Off: clean pixels, no CRT.'], ['flat', 'Flat: the iMac look, easiest on the eyes. Switch any time.']];
+  defineGuide('desktop', {
+    area, layer, cardFor, label: 'Desktop guide', here: () => 1,
+    start: { label: 'Start the show', run: () => ctx.startShow() },
+    steps: () => [
+      { at: null, say: 'Welcome to 1999. Fancy the one-minute tour? Skip whenever you like.' },
+      // the player: opened for this stop if it isn't up (and closed again after, if the guide opened it)
+      { at: q('.win--juke'), dx: 0.96, dy: 0.12, say: `${PLAYER.name}, playing 60 songs from ’99. Skip one, or pause the lot.`,
+        enter: async () => {
+          if (!document.querySelector('.win--juke')) { ctx.openJukebox({ quiet: true }); openedPlayer = true; await until(q('.win--juke'), 800); }
+          // once they touch it, it's theirs: leaving this step won't close it
+          document.querySelector('.win--juke')?.addEventListener('pointerdown', () => { openedPlayer = false; }, { once: true, capture: true });
+        },
+        leave: () => { if (openedPlayer) document.querySelector('.win--juke .win__close')?.click(); openedPlayer = false; } },
+      { at: showEl, say: () => (document.querySelector('.win--install:not(.is-closing) .inst__bar, .icon.is-installing')
+        ? 'The show, my portfolio in my voice, is installing. No rush: it waits for you.'
+        : 'The show, my portfolio in my voice, is ready. No rush: it waits for you.') },
+      { at: clear('[data-card="folder-growth"]', '[data-card="folder-switchboard"]', '[data-card="slumber"]'), card: true, say: isNarrow() ? 'My work lives up top. Tap any icon once for a card like this.' : 'On the left, my work. Hover any icon for a card like this.' },
+      { at: clear(...GAMES), card: true, say: 'On the right, the toys: three games I made the ’99 way, and a few real classics.' },
+      { at: q('.menubar__crt'), when: () => !isNarrow() && !!window.otcvCrt, say: 'The screen has three looks. Try them, or don’t; Flat is lovely.',
+        action: { label: 'Try them', run: (g) => {
+          const crt = window.otcvCrt;
+          for (let n = 0; n < LOOKS.length; n++) {
+            look = (look + 1) % LOOKS.length;
+            const [m, line] = LOOKS[look];
+            crt.preview(m);
+            if (crt.mode === m) { crtChanged = m !== 'flat'; g.say(line); return; }  // not offered on this screen: the next one
+          }
+        } },
+        leave: () => { if (crtChanged) flat(); crtChanged = false; look = -1; } },
+      { at: q('[data-card="folder-wispr"]'), when: () => isWispr, card: true, say: 'The Wispr folder: a growth plan for your team, and a few things I built for Wispr.' },
+      isNarrow()
+        ? { at: () => [...document.querySelectorAll('.menubar .menu__btn')].find((b) => /Special/.test(b.textContent)), say: 'Lost? Special › Show me around replays this. Every window has a ? too.' }
+        : { at: q('.menubar__help'), say: 'Lost? The ? replays this, and every window has its own. Or hold Flow and say “show me around”.' },
+      // last: Wispr is the remote. Then the guide is gone for good, and nothing opens by itself after it
+      { at: showEl, say: 'Last thing: Wispr is the remote. In the show, hold your Flow key and say where to go. That’s the tour; over to you.', extra: () => flowPill() },
+    ],
+  });
 
-  async function go(k) {
-    if (!alive) return;
-    tidy();
-    if (k < 0) k = 0;
-    while (k < stops.length && !keep(stops[k])) k++;  // gone since: skip it
-    if (k >= stops.length) return end(true);
-    const my = ++token; i = k;
-    const s = stops[k];
-    if (kind === 'next') seenNext.add(s.id);
-    count.textContent = `${k + 1} of ${stops.length}`;
-    back.disabled = k === 0;
-    next.textContent = k === stops.length - 1 ? 'Done' : 'Next';
-    try {
-      if (s.open && !s.at()) { openPlayer(); opened = s.at(); await wait(400, my); }
-      const el = s.at();
-      light(el);
-      const line = typeof s.say === 'function' ? s.say() : s.say;
-      say(line, s.extra?.());
-      await moveTo(el, my, GLIDE, s.dx ?? 0.5, s.dy ?? 0.5);
-      if (s.peek && glide && el) await peek(el, my);
-      else if (s.crt && el) await crtDemo(my);
-      else await wait(holdFor(line), my);
-      go(k + 1);
-    } catch (e) { if (e !== STOP) { console.warn('[tour]', e); end(); } }
-  }
-  // open the folder, glide to one project, let its hover card show for about 4 s
-  async function peek(folder, my) {
-    await press(my); folder.click();
-    await wait(700, my);
-    const win = area.querySelector('.win--folder.is-front'); opened = win;
-    const item = win?.querySelector('[data-card="slumber"]') || win?.querySelector('[data-card]');
-    if (!item) return wait(holdFor(stops[i].say), my);
-    side = 'left';
-    await moveTo(item, my, 1300);
-    item.dispatchEvent(new PointerEvent('pointerover', { bubbles: true, pointerType: 'mouse' })); hovered = item;
-    await wait(4300, my);  // the card shows after 300 ms, then stays about 4 s
-  }
-  // the CRT looks, about 2.5 s each, ending on Flat
-  async function crtDemo(my) {
-    const crt = window.otcvCrt;
-    if (!crt) return wait(3000, my);
-    crtFrom = crt.mode;
-    await wait(1800, my);
-    for (const [m, line] of [['curved', 'Curved: the whole tube, bent like glass.'], ['off', 'Off: clean pixels, no CRT.'], ['flat', 'Flat: the iMac look.']]) {
-      crt.preview(m);
-      if (crt.mode !== m) continue;                                  // not offered on this screen
-      await press(my); say(line); await wait(2500, my);
+  // ------------------------------------------------------------ after the show: Growth OS, once
+  const growthEl = () => document.querySelector('.win--folder [data-card="wispr-growthos"]');
+  defineGuide('after-show', {
+    area, layer, cardFor, label: 'What’s next',
+    steps: () => (isWispr ? [
+      { at: null, say: 'Thanks for listening. One last stop, then I’ll leave you be.' },
+      { at: growthEl, card: true, say: 'Wispr Growth OS: the growth plan I’d start with for your team. Campaigns is a good first page.',
+        // skipped while the folder is still opening: it doesn't open after all
+        enter: async (g) => { if (!growthEl()) { await ctx.openWispr({ still: () => g.active }); await until(growthEl); } },
+        action: { label: 'Open Growth OS ↗', run: (g) => openEl(g, growthEl()) } },
+      { at: q('.win--folder [data-card="wispr-wrapped"]'), card: true, enter: () => until(q('.win--folder [data-card="wispr-wrapped"]'), 1500), say: 'Beside it, the things I built for Wispr. That’s all from me; the desktop’s yours.' },
+    ] : [
+      { at: null, say: 'Thanks for listening. A few places to wander, then I’ll leave you be.' },
+      { at: q('[data-card="folder-growth"]'), card: true, say: 'Every folder on the left opens onto real projects.' },
+      { at: q('.is-switchboard .icon'), card: true, say: 'Want one of these? It takes one sentence to your Claude or Emergent.' },
+      { at: clear(...GAMES), card: true, say: 'Or play one of mine. The desktop’s yours.' },
+    ]),
+  });
+
+  // ------------------------------------------------------------ one guide per kind of window
+  // the Wispr folder is a folder too, but fills in late (after its probes): tell it apart by its title
+  const isWisprF = (w) => w.matches('.win--folder') && w.getAttribute('aria-label') === 'Wispr';
+  const isFolder = (w) => w.matches('.win--folder') && !isWisprF(w);
+  const folderW = win(isFolder);
+  defineGuide('folder', {
+    area, layer, cardFor, holder: folderW, label: 'Folder guide', here: inFront(isFolder),
+    steps: () => [
+      { at: inWin(folderW, '.folder__grid [data-card]'), card: true, say: 'Each icon is a project. Hover one (or tap once) for a card like this.' },
+      { at: inWin(folderW, '.folder__bar'), say: 'Most open the real thing in a new tab. Mine play right here.' },
+      { at: inWin(folderW, '.win__close'), say: 'Done? The box, top left, closes it.' },
+    ],
+  });
+
+  const wisprW = win(isWisprF);
+  const wItem = (id) => inWin(wisprW, `[data-card="wispr-${id}"]`);
+  const openIt = (id, label = 'Open it ↗') => ({ label, run: (g) => openEl(g, wItem(id)()) });
+  defineGuide('wispr', {
+    area, layer, cardFor, holder: wisprW, label: 'Wispr folder guide', here: inFront(isWisprF),
+    steps: () => [
+      { at: wItem('growthos'), card: true, enter: () => until(wItem('growthos')), say: 'Growth OS: the plan I’d start with for your team. Its own tab, behind a team sign-in.', action: openIt('growthos', 'Open Growth OS ↗') },
+      { at: wItem('wrapped'), card: true, say: 'Wispr Wrapped: my real Flow history, as a story. Yours takes a minute of talking.', action: openIt('wrapped') },
+      { at: wItem('wispreditor'), card: true, say: 'Wispr Video: edit by saying what you want, not by scrubbing.' },
+      { at: wItem('guru'), card: true, say: 'And Guru, a voice guide for any software. “Building…” means it’s on its way.' },
+    ],
+  });
+
+  const isWork = (w) => w.matches('.win--work');
+  const workW = win(isWork);
+  defineGuide('work', {
+    area, layer, cardFor, holder: workW, label: 'Work guide', here: inFront(isWork),
+    steps: () => [
+      { at: inWin(workW, '.work__list'), say: 'Everything I’ve made, in one list. No podcast required.', enter: () => until(inWin(workW, '.work__item')) },
+      { at: inWin(workW, '.work__pane'), say: 'Pick one and its video, screenshots and links open here.' },
+    ],
+  });
+
+  const isGame = (w) => w.matches('.win--game');
+  const gameW = win(isGame);
+  defineGuide('game', {
+    area, layer, cardFor, holder: gameW, label: 'Game guide', here: inFront(isGame),
+    steps: () => [
+      { at: inWin(gameW, '.game'), say: () => { const help = gameW()?.querySelector('.game [class$="-help"]')?.textContent; return `Click into the game, then play.${help ? ' ' + help + '.' : ''}`; } },
+      { at: inWin(gameW, '.win__close'), say: 'Close the window and the game stops. Good luck.' },
+    ],
+  });
+
+  const isJuke = (w) => w.matches('.win--juke');
+  const jukeW = win(isJuke);
+  defineGuide('macster', {
+    area, layer, cardFor, holder: jukeW, label: `${PLAYER.name} guide`, here: inFront(isJuke),
+    steps: () => [
+      { at: inWin(jukeW, '.juke__lcd'), say: 'Now playing. ⏭ skips, ❚❚ pauses.' },
+      { at: inWin(jukeW, '.juke__ctrl'), say: 'The full deck: back, play, pause, stop, next, volume.' },
+      { at: inWin(jukeW, '.win__shade'), say: 'Collapse it to the title bar; the music carries on.' },
+    ],
+  });
+
+  const isPod = (w) => w.matches('.win--podcast');
+  const podW = win(isPod);
+  let wasPlaying = false;
+  defineGuide('podcast', {
+    area, layer, cardFor, holder: podW, label: 'Podcast guide', here: inFront(isPod),
+    // the show waits while the guide talks, and carries on after
+    onStart: () => { const p = ctx.podcast(); wasPlaying = !!p?.playing; if (wasPlaying) p.pause(); },
+    onEnd: () => { const p = ctx.podcast(); if (wasPlaying && p && !p.playing && podW()) p.toggle(); wasPlaying = false; },
+    steps: () => [
+      // the Wispr version opens on the part made for them: point at it, gently
+      { at: inWin(podW, '.mcards'), when: () => isWispr, say: 'This first part is the one made for you: Wispr for Builders. Each card opens a piece of it.' },
+      isNarrow()
+        ? { at: inWin(podW, '.steer'), say: 'You steer. Tap a chip, or say where you’d like to go.' }
+        : { at: inWin(podW, '.steer'), say: 'You steer. Hold your Flow key any time and say where to go.', extra: () => flowPill('Hold Flow: “something fun”') },
+      { at: inWin(podW, '.transport'), say: isNarrow() ? 'Back, pause, skip: a part at a time.' : 'Back, pause, skip: a part at a time. Space pauses.' },
+      isNarrow()
+        ? { at: inWin(podW, '.chap-drawer'), say: 'The episode map: jump anywhere, or pick a project and hear just that. Enjoy the show.' }
+        : { at: inWin(podW, '.pod__side'), dx: 0.2, dy: 0.15, say: 'The episode map: jump anywhere, or pick a project and hear just that. Enjoy the show.' },
+    ],
+  });
+
+  // ------------------------------------------------------------ first opens, and a ? on every window that has a guide
+  const MODS = [['podcast', isPod], ['wispr', isWisprF], ['folder', isFolder], ['work', isWork], ['game', isGame], ['macster', isJuke]];
+  const idOf = (w) => MODS.find(([, fn]) => fn(w))?.[0];
+  const addHelp = (w) => {
+    const id = idOf(w), bar = w.querySelector('.win__bar'), tools = w.querySelector('.win__tools');
+    if (!id || !tools || bar.querySelector('.gtour-help')) return;
+    tools.prepend(helpButton(id, { label: 'Show me around this window' }));
+  };
+  const busy = () => guideOn() || !!document.querySelector('.lock, .win--modal:not([hidden]), .cast') || ctx.installing;
+  const endCardUp = () => !!document.querySelector('.win--end:not(.is-closing):not([hidden])');
+  // has the show really played? (closing it at the host pick isn't "after the show")
+  let played = false;
+  until(() => ctx.podcast()?.playing, 3600000).then((ok) => { played = ok; });
+  // Macster and the podcast start theirs from main.js (openMacster / podcastReady); the rest on first open
+  const AUTO = new Set(['wispr', 'folder', 'work', 'game']);
+  new MutationObserver((recs) => {
+    for (const r of recs) for (const n of r.addedNodes) {
+      if (!(n instanceof HTMLElement) || !n.matches('.win')) continue;
+      const wasBusy = guideOn();  // opened by a guide (or while one was up): not a first open of its own
+      // the Wispr folder fills in after its probes: look once it has settled
+      setTimeout(() => {
+        if (!n.isConnected || n.hidden || n.classList.contains('is-closing')) return;
+        addHelp(n);
+        const id = idOf(n);
+        if (id && AUTO.has(id) && !wasBusy && !busy()) firstOpen(id);
+      }, 600);
     }
-    flat(); crtFrom = null;
-    const last = 'Flat is easiest on the eyes. Switch any time with one click.';
-    say(last); await wait(holdFor(last), my);
-  }
+  }).observe(area, { childList: true });
+  area.querySelectorAll('.win').forEach(addHelp);
 
-  function end(complete) {
-    if (!alive) return;
-    tidy();
-    alive = false; token++;
-    light();
-    cap.classList.remove('is-on'); ghost?.classList.remove('is-on');
-    setTimeout(() => { cap.remove(); ghost?.remove(); }, 300);
-    document.removeEventListener('keydown', onKey, true);
-    if (current === api) current = null;
-    done(!!complete);
-  }
-  const onKey = (e) => { if (e.key === 'Escape' && alive) { e.stopPropagation(); end(); } };
-  document.addEventListener('keydown', onKey, true);
-  cap.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') paused = true; });
-  cap.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') paused = false; });
-  cap.addEventListener('focusin', () => { paused = true; });
-  cap.addEventListener('focusout', (e) => { if (!cap.contains(e.relatedTarget)) paused = false; });
-
-  const a = A();
-  if (ghost) { ghost.style.transitionDuration = '0ms'; ghost.style.transform = `translate(${a.width * 0.5}px, ${a.height * 0.46}px)`; requestAnimationFrame(() => ghost.classList.add('is-on')); }
-  const api = { get active() { return alive; }, end: () => end(), finished, kind };
-  current = api;
-  requestAnimationFrame(() => go(0));
-  return api;
+  return {
+    first: () => firstOpen('desktop'),
+    desktop: () => play('desktop'),
+    here: () => playHere(),
+    // once per visitor, after the show closes or ends; then (once, ever) the one-line feedback card
+    afterShow: async () => {
+      if (!played || seen('after-show')) return null;
+      // the "Make your own" card first: after-show waits for it to close, never sits on top of it
+      await until(() => !endCardUp() && !busy(), 600000);
+      if (seen('after-show') || busy()) return null;
+      const g = play('after-show');
+      const ask = () => setTimeout(() => { if (!busy()) askFeedback({ area, where: 'after-show' }); }, 1200);
+      if (g) g.finished.then(ask); else ask();
+      return g;
+    },
+    // or after a few minutes on the desktop, if the show never got them there: asked once nothing else is going on
+    feedbackLater: (ms = 5 * 60000) => setTimeout(function check() {
+      if (seen('feedback')) return;
+      const pod = ctx.podcast();
+      if (busy() || (pod?.playing && podW())) { setTimeout(check, 30000); return; }
+      askFeedback({ area, where: 'desktop' });
+    }, ms),
+    openMacster: () => setTimeout(() => { if (!busy()) firstOpen('macster'); }, 600),
+    // the first time the show is really playing (host picked, welcome closed)
+    podcastReady: async () => {
+      if (seen('podcast')) return;
+      const ok = await until(() => podW() && !document.querySelector('.cast, .win--modal:not([hidden])') && ctx.podcast()?.playing, 180000);
+      if (ok) await until(() => !busy(), 60000);
+      if (ok && !busy() && podW() && ctx.podcast()?.playing) firstOpen('podcast');
+    },
+  };
 }

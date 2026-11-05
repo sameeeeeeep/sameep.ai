@@ -1,0 +1,56 @@
+/* guide.css — the one look for every guide on sameep.ai (js/guide/guide.js): a ghost Mac arrow and a
+   caption in Wispr Flow's look (Lumen card, Figtree, Vast border-buttons), a soft ring on whatever it is
+   pointing at, and the "?" that replays a guide. Loaded by the desktop and by each standalone page. */
+.gtour__cursor { position: absolute; left: 0; top: 0; z-index: 99996; width: 18px; height: 28px; pointer-events: none; opacity: 0; transition-property: transform, opacity; transition-timing-function: cubic-bezier(.45, .05, .25, 1); filter: drop-shadow(1px 2px 1px rgba(0,0,0,.35)); }
+.gtour__cursor.is-on { opacity: 1; }
+.gtour__cursor svg { display: block; }
+.gtour__cap { --lumen: #ffffeb; --vast: #1a1a1a; position: absolute; z-index: 99995; box-sizing: border-box; width: min(280px, calc(100% - 20px)); padding: 10px 12px 9px; background: var(--lumen); color: var(--vast); border: 1px solid rgba(26,26,26,.18); border-radius: 14px; box-shadow: 0 12px 30px rgba(26,26,26,.25), 0 2px 6px rgba(26,26,26,.1); font: 500 13.5px/1.4 Figtree, var(--f-ui, system-ui), sans-serif; text-align: left; opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .25s, left .5s cubic-bezier(.45,.05,.25,1), top .5s cubic-bezier(.45,.05,.25,1); }
+.gtour__cursor.is-fixed, .gtour__cap.is-fixed { position: fixed; z-index: 2147483000; }
+.gtour__cap.has-card { width: min(320px, calc(100% - 20px)); }
+.gtour__cap.is-on { opacity: 1; transform: none; }
+.gtour__cap p { margin: 0; }
+.gtour__row { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 8px; }
+.gtour__row--act:has(> [hidden]:only-child) { display: none; }
+.gtour__extra:empty, .gtour__card:empty, .gtour__hint:empty { display: none; }
+.gtour__hint { margin-top: 6px !important; font: 500 11.5px/1.3 Figtree, var(--f-ui, system-ui), sans-serif; color: rgba(26,26,26,.55); }
+.gtour__n { font: 600 10.5px/1 Figtree, var(--f-ui, system-ui), sans-serif; letter-spacing: .06em; text-transform: uppercase; color: rgba(26,26,26,.5); white-space: nowrap; }
+.gtour__btns { display: flex; gap: 6px; }
+.gtour__btn { min-height: 30px; padding: 0 10px; border: 2px solid var(--vast); border-radius: 8px; background: var(--lumen); color: var(--vast); font: 600 12px/1 Figtree, var(--f-ui, system-ui), sans-serif; cursor: pointer; }
+.gtour__btn:hover:not(:disabled) { box-shadow: 2px 2px 0 0 var(--vast); }
+.gtour__btn:focus-visible { outline: 2px solid #7b4fd6; outline-offset: 2px; }
+.gtour__btn.is-primary { background: #f0d7ff; }
+.gtour__btn.is-text { border-color: transparent; background: none; color: rgba(26,26,26,.6); }
+.gtour__btn.is-text:hover { box-shadow: none; text-decoration: underline; }
+.gtour__btn:disabled { opacity: .35; cursor: default; }
+/* the step's own action ("Open Growth OS") and Start the show: full width, the one dark button */
+.gtour__btn.is-act, .gtour__btn.is-start { flex: 1; background: var(--vast); color: var(--lumen); }
+.gtour__row--start { margin-top: 8px; }
+/* the hover card, inside the caption: the same card a mouse hover shows, never a second popup */
+.gtour__card { margin-top: 8px; }
+.gtour__card .icard { position: static; width: auto; opacity: 1; transform: none; pointer-events: auto; box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 var(--plat-4, #888); }
+.gtour__pill { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 12px 6px 8px; border-radius: 999px; background: #1a1a1a; color: #ffffeb; font: 600 11.5px/1.2 Figtree, var(--f-ui, system-ui), sans-serif; width: max-content; max-width: 100%; box-sizing: border-box; }
+.gtour__wave { display: flex; align-items: center; gap: 2px; height: 16px; padding: 0 4px; }
+.gtour__wave i { width: 2px; height: 30%; border-radius: 2px; background: #ffffeb; animation: gtour-wave .6s ease-in-out infinite alternate; }
+@keyframes gtour-wave { to { height: 100%; } }
+.is-tour-lit { outline: 2px solid rgba(240,215,255,.95) !important; outline-offset: 3px; border-radius: 8px; box-shadow: 0 0 0 6px rgba(240,215,255,.28); transition: outline-color .3s, box-shadow .3s; }
+.win.is-tour-lit { border-radius: 2px; }
+/* a short list inside the caption (a campaign's "for Wispr / for a builder / for an editor") */
+.gtour__who { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 12.5px; line-height: 1.35; }
+.gtour__who b { display: block; font: 600 10.5px/1.2 Figtree, var(--f-ui, system-ui), sans-serif; letter-spacing: .06em; text-transform: uppercase; color: rgba(26,26,26,.55); }
+/* the "?" that replays a guide: in a window's title bar, or floating bottom right on a page */
+.gtour-help { flex: none; width: 18px; height: 18px; margin: 0 4px 0 0; padding: 0; border: 1px solid #111; border-radius: 50%; background: #fff; color: #111; font: 700 11px/1 var(--f-ui, system-ui), sans-serif; cursor: pointer; }
+.gtour-help:focus-visible { outline: 2px solid #7b4fd6; outline-offset: 2px; }
+.gtour-help.is-floating { position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); z-index: 2147482000; width: 40px; height: 40px; margin: 0; border: 2px solid #1a1a1a; background: #ffffeb; color: #1a1a1a; font: 600 17px/1 Figtree, system-ui, sans-serif; box-shadow: 2px 2px 0 0 #1a1a1a; }
+.gtour-help.is-floating:hover { background: #f0d7ff; }
+.gtour-help.is-floating.is-top { top: 68px; bottom: auto; }
+@media (max-width: 760px) { .gtour__btn { min-height: 44px; min-width: 44px; padding: 0 12px; font-size: 13px; } .gtour__cap, .gtour__cap.has-card { width: calc(100% - 16px); } .gtour-help { width: 28px; height: 28px; } .gtour-help.is-floating { width: 44px; height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .gtour__cap { transition: opacity .01s; transform: none; } .gtour__wave i { animation: none; height: 60%; } }
+/* the one-time feedback card: a guide caption, parked bottom right (bottom on a phone) */
+.gtour__cap.gfeed { left: auto; top: auto; right: 14px; bottom: 14px; width: min(300px, calc(100% - 28px)); padding-right: 30px; }
+.gfeed__x { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: 0; background: none; color: rgba(26,26,26,.6); font: 400 20px/1 Figtree, system-ui, sans-serif; cursor: pointer; }
+.gfeed__x:hover { color: #1a1a1a; }
+.gfeed__btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.gfeed__say { display: flex; gap: 6px; margin-top: 8px; }
+.gfeed__say[hidden] { display: none; }
+.gfeed__say input { flex: 1; min-width: 0; min-height: 30px; padding: 0 8px; border: 2px solid #1a1a1a; border-radius: 8px; background: #fff; color: #1a1a1a; font: 500 12.5px Figtree, system-ui, sans-serif; }
+@media (max-width: 760px) { .gtour__cap.gfeed { right: 8px; bottom: 8px; width: calc(100% - 16px); } .gfeed__say input { min-height: 44px; font-size: 16px; } }

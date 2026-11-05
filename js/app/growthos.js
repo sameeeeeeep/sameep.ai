@@ -402,7 +402,8 @@ function campCard(c, onclick) {
 function briefView(c, rerender, { go } = {}) {
   const st = statusOf(c);
   const page = document.querySelector('.gos__page');
-  return h('article.brief', { style: { '--c': tone(c.c) } },
+  // data-camp / data-guide: the campaign's own short guide (js/guide/page.js plays it the first time this brief opens)
+  return h('article.brief', { style: { '--c': tone(c.c) }, dataset: { camp: c.id, guide: c.guide ? JSON.stringify({ name: c.name, ...c.guide }) : '' } },
     h('div.brief__head',
       h('div', h('h3.brief__t', c.name), h('p.brief__dates', `${fmtD(c.start)} – ${fmtD(c.end)} · ${c.owner || 'Owner: tbc'}`), c.line && h('p.brief__line', c.line)),
       h('div.row', { style: { marginTop: 0 } }, tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),

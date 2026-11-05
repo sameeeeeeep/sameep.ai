@@ -407,7 +407,7 @@ export function openFolder(wm, f) {
   const mine = f.items.filter((g) => g.open).length;
   w.body.append(h('p.folder__bar', `${f.items.length} items · ` + (mine ? `${mine} play here, the rest open in a new tab` : 'each opens in a new tab')),
     h('ul.folder__grid', f.items.map((g) => h('li', g.open
-      ? h('button.icon.icon--file', { type: 'button', onclick: () => { sound.tick('click'); g.open(); } }, img(g), h('span.icon__label', g.label))
+      ? h('button.icon.icon--file', { type: 'button', dataset: { card: g.id }, onclick: () => { sound.tick('click'); g.open(); } }, img(g), h('span.icon__label', g.label))
       : h('a.icon.icon--file', { href: g.url, target: '_blank', rel: 'noopener', dataset: { card: g.id }, onclick: () => sound.tick('click') }, img(g), h('span.icon__label', g.label))))));
 }
 

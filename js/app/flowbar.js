@@ -71,6 +71,7 @@ export class FlowBar {
   // focus the field if that can't take anything away from the visitor
   ensureFocus(force = false) {
     if (!this.isLive()) return false;
+    if (document.querySelector('.gtour__cap.is-on')) return false;  // a guide is talking: its buttons keep the focus
     if (!force && !this.fine.matches) return false; // touch: don't pop the keyboard
     const a = document.activeElement;
     if (a === this.input) return true;
@@ -94,6 +95,7 @@ export class FlowBar {
 
   #route(e) {
     if (e.defaultPrevented || e.isComposing || !this.isLive()) return;
+    if (document.querySelector('.gtour__cap.is-on')) return;  // keys belong to the guide while it's up
     const t = e.target;
     if (t === this.input || this.#otherEditable(t)) return;
     if (document.querySelector('.win--modal:not([hidden]), .cast')) return;
