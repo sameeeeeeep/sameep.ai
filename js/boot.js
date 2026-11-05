@@ -49,7 +49,9 @@ async function handoff(info = {}) {
   handedOff = true;
   track('hero_done', { how: info.resume ? 'resume' : info.instant ? 'skip' : 'scroll' });
   store.set(SEEN_KEY, '1');
-  if (!info.resume) markStage('app');
+  // the resume stage is marked by the app once the lock screen is done (js/app/main.js), so a reload on the
+  // lobby comes back to the lobby, not to "Straight back to the iMac" (resumable() only picks up 'app')
+  if (!info.resume) markStage('lobby');
   const modP = loadApp();
 
   if (!reduced && !info.instant) {

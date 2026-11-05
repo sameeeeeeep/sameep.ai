@@ -24,7 +24,7 @@ function write(patch) {
   } catch { /* private mode: no resume */ }
 }
 
-// stage: 'app' once the hero and the CD are done
+// stage: 'lobby' at the handoff, 'app' once the lock screen is done (only 'app' is resumable)
 export const markStage = (stage) => write({ stage });
 export const markLine = (node, line, visited) => write({ stage: 'app', node, line, visited: [...(visited || [])].slice(-60) });
 export function clearResume() { try { localStorage.removeItem(KEY); } catch { /* noop */ } }

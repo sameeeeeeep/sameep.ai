@@ -17,7 +17,7 @@ import { loadWork } from './work.js';
 import { WISPR, openWisprFolder } from './wisprfolder.js';
 import { MORE_CARDS } from './cards.js';
 import { isWispr, withVersion } from '../version.js';
-import { clearResume } from '../resume.js';
+import { clearResume, markStage } from '../resume.js';
 
 // fast: the entry gate's “Skip the intro” (a returning visitor): no boot, dial-up, lock screen or installer
 export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = false } = {}) {
@@ -123,9 +123,10 @@ export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = fal
     onHear: (id) => { ctx.openPodcast(); pod?.go(id); }, quiet: () => guideOn() });
   const era = eraOn;
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
-  // a skip reuses the face picked last time: the teammate is still them (Growth OS stays)
+  // a resume skips the lock screen: the teammate who logged in last time is still them (Growth OS stays)
   const stored = () => { try { return JSON.parse(localStorage.getItem('offthecv.visitor') || 'null'); } catch { return null; } };
-  const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : skipIntro ? stored() : null;
+  const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : resume || skipIntro ? stored() : null;
+  if (!resume) markStage('app');  // only now: a reload before this (on the lobby) starts over, not "back to the iMac"
   if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn, icon: false })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
   // every guide on the desktop (js/app/tour.js); set up after the boot's own player, so it isn't a "first open"
