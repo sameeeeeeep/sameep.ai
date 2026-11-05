@@ -3,7 +3,7 @@
 // the page's guide the first time, and leaves a "?" bottom right to replay it. Holding Flow and saying
 // "show me around" replays it too (js/guide/guide.js).
 // A page with no entry below can mark its own steps: data-guide-step="1" data-guide-say="…" on each element.
-import { defineGuide, firstOpen, helpButton, guideOn } from './guide.js';
+import { defineGuide, firstOpen, helpButton, guideOn, endGuide } from './guide.js';
 import { h, isNarrow } from '../app/util.js';
 
 const PAGES = {
@@ -15,7 +15,7 @@ const PAGES = {
     { at: '.gos__menu summary', say: 'Your account and the sources live up here. Have a wander.' },
   ] },
   // Wispr Wrapped (wispr-wrapped/)
-  wrapped: { ready: '.story .card', label: 'Wispr Wrapped guide', help: 'top', steps: [
+  wrapped: { ready: '.story .card', label: 'Wispr Wrapped guide', help: '.acts', steps: [
     { at: '.tabs', say: 'Three Wrappeds: a project, my year, and yours.' },
     { at: '.story', dx: 0.5, dy: 0.3, say: 'Tap the right side for the next card, the left to go back.' },
     { at: '.acts', say: 'Like one? Save it as an image, or copy a link.' },
@@ -48,9 +48,23 @@ if (id) {
     if (!ready()) return;
     clearInterval(wait);
     defineGuide(id, { area: area(), label: def.label, here: () => 1, steps: def.steps });
-    const q = helpButton(id, { floating: true });
-    if (def.help === 'top') q.classList.add('is-top');  // clear of the page's own bottom row
-    document.body.append(q);
+    // the "?": floating bottom right, or (help: '<selector>') inside the page's own row of buttons
+    const row = def.help && document.querySelector(def.help);
+    const q = helpButton(id, { floating: !row });
+    if (row) row.append(q); else document.body.append(q);
+    // a dialog on top: hide the floating "?" and close the guide, so neither sits over it
+    const modal = () => [...document.querySelectorAll('[aria-modal="true"]')].some(shown);
+    new MutationObserver(() => {
+      const m = modal();
+      if (!row && q.hidden !== m) q.hidden = m;
+      if (m && guideOn()) endGuide();
+    }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['hidden', 'open'] });
+    // Wrapped: once they tap or swipe through the story themselves, the caption has done its job
+    if (id === 'wrapped') {
+      const done = () => { if (guideOn()) endGuide(); };
+      document.querySelector('.story')?.addEventListener('pointerup', done);
+      addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') done(); });
+    }
     setTimeout(() => firstOpen(id), 700);
     if (id === 'growthos') campaignGuides(area());
   }, 500);
