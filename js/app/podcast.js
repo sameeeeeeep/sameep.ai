@@ -22,6 +22,7 @@ import { isWispr, pick as pickVersion, shows, savedHost, saveHost, savedLength, 
 import { takeAudio } from '../unlock.js';
 import { projectCards } from './projects.js';
 import { coach } from '../coach.js';
+import { specialsFor, specialInfo, playSpecial } from './specials.js';
 
 const fmt = (s) => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const estDur = (line) => Math.max(2.4, words(line.text) * 0.36 + 0.7);
@@ -62,6 +63,8 @@ export class Podcast {
     const vStart = episode.starts?.[isWispr ? 'wispr' : 'default'];
     if (vStart && episode.nodes[vStart]) episode.start = vStart;
     this.map = new EpisodeMap(episode, null, [], this.routeId);
+    this.specials = specialsFor(episode);
+    this.specialSeen = new Set();
     this.audio = takeAudio();
     this.audio.preload = 'auto';
     this.audio.crossOrigin = 'anonymous';
@@ -265,6 +268,7 @@ export class Podcast {
     this.#build(this.win.body);
     this.#renderChapters();
     this.#loadMeta();
+    this.#probeSpecials();
     this.#loop();
     return this;
   }
@@ -308,6 +312,8 @@ export class Podcast {
     this.monitor.audio = this.audio; // menu cards light up against the line's audio clock
     this.monitor.isPlaying = () => this.playing;
     this.monitor.onSound = (on) => { if (on) this.bed.pause(); else this.#bedSync(); }; // the clip's song replaces the music bed
+    this.monitor.specials = this.specials;
+    this.monitor.onSpecial = (slug) => this.playSpecial(slug);
     this.monitor.onGo = (to) => this.#pick((this.node?.choices || []).find((c) => c.to === to) || { to }, null, true);
 
     // puppets
@@ -494,6 +500,7 @@ export class Podcast {
     this.mapFolded ||= new Set();
     this.chapEl.replaceChildren(...chapterMap(this.map, {
       visited: this.visited, currentNode: this.nodeId, nextNode: this.node ? this.#nextPart()?.to : null, folded: this.mapFolded,
+      specials: this.specialRows, specialSeen: this.specialSeen, onSpecial: (slug) => { this.chapDrawer.open = false; this.playSpecial(slug); },
       onGo: (to) => { this.chapDrawer.open = false; this.go(to, { from: 'chapter' }); },
       onToggle: (to) => { const f = this.mapFolded; f.has(to) ? f.delete(to) : f.add(to); this.#renderChapters(); this.chapEl.querySelector(`.chap[data-to="${to}"]`)?.focus({ preventScroll: true }); },
     }));
@@ -790,7 +797,9 @@ export class Podcast {
     }
     const n = this.node;
     if (n.end || (!n.choices?.length && !n.next) || this.nodeId === 'outro') { track('end', { at: this.nodeId }); this.onEnd?.(); }
-    if (n.choices?.length) {
+    // a fork that only offers a Special that isn't up yet just plays on
+    const forkGone = n.next && n.choices?.some((c) => c.special) && n.choices.filter((c) => !c.special || c.ready).length <= 1;
+    if (n.choices?.length && !forkGone) {
       this.root.classList.add('is-waiting');
       this.playing = false;
       this.#setPlayIcon();
@@ -905,8 +914,9 @@ export class Podcast {
     return nx && this.ep.nodes[nx] ? { to: nx } : null;
   }
 
-  #choiceTitle(c) { return isMainHub(c.to) || /-hub$|-again$/.test(c.to) ? c.label : this.map.title(c.to) || c.label; }
+  #choiceTitle(c) { if (c.title) return c.title; return isMainHub(c.to) || /-hub$|-again$/.test(c.to) ? c.label : this.map.title(c.to) || c.label; }
   #choiceMins(c) {
+    if (c.sec) return mins(c.sec);
     const to = c.to;
     if (isMainHub(to)) return '';
     const entry = this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== this.node?.chapter;
@@ -922,7 +932,7 @@ export class Podcast {
     this.plan = plan;
     const ctx = { visited: this.visited, current: this.nodeId, onPick: (c, said, g) => this.#pick(c, said, g) };
     const host = this.speakers[this.hostKey]?.name?.split(' ')[0] || 'The host';
-    this.chooserAud = audienceEl(this.visitor, `${host} is waiting on you`);
+    this.chooserAud = audienceEl(this.visitor, n.ask ? `${host} asks: ${n.ask}` : `${host} is waiting on you`);
     const acts = this.#demoActions();
     const head = h('div.chooser__head', this.chooserAud,
       acts.length ? h('div.chooser__acts', acts.map((a) => h('button.act' + (a.link ? '.act--link' : ''), { type: 'button', onclick: a.run }, a.label))) : null,
@@ -932,8 +942,8 @@ export class Podcast {
     if (plan.primary) {
       const { c, i } = plan.primary;
       const to = c.to;
-      const blurb = !isMainHub(to) && this.map.N[to]?.blurb;
-      const tags = isMainHub(to) ? [] : this.map.tags(to, this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== n.chapter).slice(0, 2);
+      const blurb = c.blurb || (!isMainHub(to) && this.map.N[to]?.blurb);
+      const tags = isMainHub(to) || c.title ? (c.special ? ['video', 'captions on'] : []) : this.map.tags(to, this.map.isChapterEntry(to) && this.map.N[to]?.chapter !== n.chapter).slice(0, 2);
       this.autoLine = h('span.prim__auto', { 'aria-live': 'polite' });
       this.autoFill = h('i.prim__fill', { 'aria-hidden': 'true' });
       const label = plan.menu ? 'Start with' : 'Next';
@@ -1176,9 +1186,50 @@ export class Podcast {
     if (ack) this.#ack(ack);
     setTimeout(() => {
       if (tok !== this.token) return;
+      if (choice.special) return this.playSpecial(choice.special, { then: () => this.go(choice.to, { from: 'pick' }) });
       this.go(choice.to, { from: 'pick' });
       if (ack) this.#ack(ack); // go() clears the field's message: put it back
     }, this.reduced ? 120 : 320);
+  }
+
+  // ------------------------------------------------------------------ specials
+  // which specials are up (a missing file is "Coming soon", never a broken player); forks offering one wait on it
+  async #probeSpecials() {
+    const infos = await Promise.all(this.specials.map((sp) => specialInfo(sp, this.base)));
+    this.specialRows = this.specials.map((sp, i) => ({ sp, info: infos[i] }));
+    const ok = new Set(this.specialRows.filter((r) => r.info.ok).map((r) => r.sp.slug));
+    for (const n of Object.values(this.ep.nodes)) for (const c of n.choices || []) {
+      const r = c.special && this.specialRows.find((x) => x.sp.slug === c.special);
+      if (!r) continue;
+      Object.assign(c, { ready: r.info.ok, title: c.title || r.sp.title, blurb: c.blurb || r.sp.blurb, sec: r.info.sec || c.sec });
+    }
+    this.#renderChapters();
+    if (this.node && !this.chooser.hidden) this.#renderChooser();
+  }
+
+  // a Special, full-size over the studio; the show waits and picks up where it was (or `then` takes over)
+  async playSpecial(slug, { then } = {}) {
+    const sp = this.specials.find((s) => s.slug === slug);
+    const info = sp && (await specialInfo(sp, this.base));
+    if (!info?.ok) { if (sp) this.#msg([h('span.say__k', 'Soon'), ` ${sp.title} isn’t up yet.`], 'miss'); return then?.(); }
+    if (this.specialOn) return;
+    this.specialOn = true;
+    const was = this.playing;
+    this.#stopAuto(true);
+    this.pause();
+    this.bed.pause();
+    this.root.classList.add('is-special');
+    this.stageBox.querySelectorAll('.reel__vid').forEach((v) => v.pause());
+    // over the studio; on a phone, the whole screen (the window's own transform would trap a fixed overlay)
+    await playSpecial(isNarrow() ? document.body : this.stageBox, sp, info, { reduced: this.reduced });
+    this.specialOn = false;
+    this.root.classList.remove('is-special');
+    this.specialSeen.add(slug);
+    this.stageBox.querySelectorAll('.reel__vid').forEach((v) => v.play?.().catch(() => {}));
+    this.#renderChapters();
+    this.flow?.ensureFocus();
+    if (then) then();
+    else if (was) this.play();
   }
 
   #listen(SR) {

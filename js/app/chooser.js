@@ -191,12 +191,12 @@ const keepWhole = (label) => String(label).split(/(\s+)/).map((w) => (/\S-\S/.te
 export function cardEl(map, choice, i, { rec, visited, current, onPick, size = '' }) {
   const to = choice.to;
   const entry = map.isChapterEntry(to) && map.N[to]?.chapter !== map.N[current]?.chapter;
-  const sec = entry ? map.chapterSec(to) : map.sec(to);
+  const sec = choice.sec || (entry ? map.chapterSec(to) : map.sec(to));
   const subs = entry ? map.subs(to) : [];
-  const tags = map.tags(to, entry);
+  const tags = choice.special ? ['video', 'captions on'] : map.tags(to, entry);
   const seen = visited.has(to);
-  const blurb = map.N[to]?.blurb;
-  const title = isHub(to) ? choice.label : map.title(to) || choice.label;
+  const blurb = choice.blurb || map.N[to]?.blurb;
+  const title = choice.title || (isHub(to) ? choice.label : map.title(to) || choice.label);
   const small = size === 'door' || size === 'alt';
   return h('button.card' + (size ? '.card--' + size : '') + (rec ? '.is-rec' : '') + (seen ? '.is-seen' : ''), { type: 'button', dataset: { i: String(i), to }, onclick: () => onPick(choice, choice.label, true) },
     h('span.card__head', h('span.card__t', keepWhole(title)), h('span.card__min', mins(sec))),
@@ -216,7 +216,7 @@ export function planChoices(map, nodeId, visited) {
   const n = map.N[nodeId];
   const all = (n?.choices || []).map((c, i) => ({ c, i }));
   const actions = all.filter(({ c }) => c.demo);
-  const pool = all.filter(({ c }) => !c.demo);
+  const pool = all.filter(({ c }) => !c.demo && !(c.special && !c.ready)); // a Special that isn't up yet is no option
   if (!pool.length) return { primary: null, alts: [], more: [], doors: [], actions, menu: false };
   const r = map.recommended(nodeId, visited);
   const primary = pool.find((x) => x.i === r)
@@ -267,7 +267,7 @@ export function episodeParts(map) {
 
 // The episode map: every chapter with every part (title · minutes), heard ones ticked, the one
 // playing lit, the one ⏭ goes to marked "next". Chapters can fold; all start open.
-export function chapterMap(map, { visited, currentNode, nextNode, folded, onGo, onToggle }) {
+export function chapterMap(map, { visited, currentNode, nextNode, folded, onGo, onToggle, specials, specialSeen, onSpecial }) {
   const stops = new Set(map.route.stops || []);
   let n = 0;
   const part = (s, nested) => {
@@ -277,7 +277,20 @@ export function chapterMap(map, { visited, currentNode, nextNode, folded, onGo, 
       'aria-label': `${map.title(s)}, ${mins(map.sec(s)) || 'short'}${now ? ', playing now' : heard ? ', heard' : ''}${next ? ', up next' : ''}`,
     }, h('i.sub__dot', { 'aria-hidden': 'true' }, now ? '▶' : heard ? '✓' : ''), h('span.sub__t', keepWhole(map.title(s)), next && h('span.sub__next', 'next')), h('span.sub__m', mins(map.sec(s))));
   };
-  return episodeParts(map).map((g) => {
+  // Specials: the videos, first; one that isn't up yet reads "soon" and can't be tapped
+  const sp = specials?.length ? (() => {
+    const open = !folded.has('specials');
+    const up = specials.filter((r) => r.info.ok).length;
+    const row = ({ sp: s, info }) => h('li', h(info.ok ? 'button.sub.sub--sp' : 'div.sub.sub--sp.is-soon',
+      info.ok ? { type: 'button', onclick: () => onSpecial(s.slug), 'aria-label': `Watch ${s.title}${specialSeen?.has(s.slug) ? ', watched' : ''}` } : { 'aria-label': `${s.title}, coming soon` },
+      h('i.sub__dot', { 'aria-hidden': 'true' }, specialSeen?.has(s.slug) ? '✓' : info.ok ? '▶' : ''), h('span.sub__t', keepWhole(s.title)),
+      h('span.sub__m', info.ok ? (info.sec ? mins(info.sec) : 'video') : 'soon')));
+    return [h('li.cmap__ch.cmap__ch--sp' + (open ? '.is-open' : ''),
+      h('button.chap', { type: 'button', 'aria-expanded': String(open), onclick: () => onToggle('specials') },
+        h('span.chap__n', { 'aria-hidden': 'true' }, '▶'), h('span.chap__t', 'Specials', h('span.chap__sub', ' · videos')), h('span.chap__m', up ? `${up} of ${specials.length}` : `${specials.length} coming`)),
+      open ? h('ul.cmap__subs', specials.map(row)) : null)];
+  })() : [];
+  return [...sp, ...episodeParts(map).map((g) => {
     if (g.hubOnly) {
       // the menu: one row that jumps back to it
       const cur = g.entry === currentNode || (isHub(currentNode) && map.N[currentNode]?.chapter === g.ch);
@@ -304,5 +317,5 @@ export function chapterMap(map, { visited, currentNode, nextNode, folded, onGo, 
     const list = open ? h('ul.cmap__subs', g.tree.map((t) => h('li', part(t.id, false),
       t.kids.length ? h('ul.cmap__fork', { 'aria-label': `Opens from ${map.title(t.id)}` }, t.kids.map((k) => h('li', part(k, true)))) : null))) : null;
     return h('li.cmap__ch' + (cur ? '.is-current' : '') + (heardN ? '.is-visited' : '') + (open ? '.is-open' : '') + (onRoute ? '.is-route' : ''), head, list);
-  });
+  })];
 }

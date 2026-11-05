@@ -49,6 +49,7 @@
 import { h, safeUrl } from './util.js';
 import { sound } from './audio.js';
 import { qrSVG } from './demos.js';
+import { specialInfo, specialLen } from './specials.js';
 
 const fmtNum = (v) => Math.round(v).toLocaleString('en-US');
 const CORNERS = ['tr', 'tl', 'br', 'bl'];
@@ -169,7 +170,7 @@ export class Monitor {
     this.el.dataset.layout = v.layout || '';
     this.title.textContent = v.title || '';
     // rule 3: screens have a legible small version; stats and the menu don't
-    this.smallOK = v.type !== 'stats' && v.type !== 'cards';
+    this.smallOK = v.type !== 'stats' && v.type !== 'cards' && v.type !== 'reel';
     if (v.type === 'stats') {
       this.screen.replaceChildren(this.#stats(v));
     } else if (v.type === 'video') {
@@ -187,6 +188,8 @@ export class Monitor {
       this.screen.replaceChildren(this.#link(v));
     } else if (v.type === 'cards') {
       this.screen.replaceChildren(this.#cards(v));
+    } else if (v.type === 'reel') {
+      this.screen.replaceChildren(this.#reel(v));
     } else return this.hide();
     const host = this.narrow && this.panelHost ? this.panelHost : this.stage;
     if (this.el.parentElement !== host) host.append(this.el);
@@ -293,6 +296,45 @@ export class Monitor {
     const wrap = h('div.mcards', cards);
     if (v.cue) this.#cued(v.cue, (i) => cards.forEach((c, k) => { c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen'); }));
     return wrap;
+  }
+
+  // the specials reel: the tool being talked about plays on the screen, muted under the voice (its poster, or a
+  // "coming soon" card, until the clip exists); a tap watches it full-size with sound. Chips jump between them.
+  #reel(v) {
+    const list = (v.items || []).map((s) => (this.specials || []).find((x) => x.slug === s)).filter(Boolean);
+    const scr = h('div.reel__scr'), cap = h('div.reel__cap');
+    let at = -1, manual = false;
+    const watch = (sp) => (e) => { e.stopPropagation(); this.onSpecial?.(sp.slug); };
+    const tile = (sp) => h('div.reel__tile', h('span.reel__tt', sp.title), h('span.reel__ts', 'Video coming soon'));
+    const put = (i) => {
+      if (i < 0 || i === at || !list[i]) return;
+      at = i;
+      chips.forEach((c, k) => { c.classList.toggle('is-lit', k === i); c.setAttribute('aria-pressed', String(k === i)); if (k === i) c.classList.add('is-seen'); });
+      const sp = list[i];
+      const tok = (this.reelTok = (this.reelTok || 0) + 1);
+      specialInfo(sp, this.base).then((info) => {
+        if (tok !== this.reelTok) return;
+        let media;
+        if (info.ok) {
+          media = h('video.reel__vid', { muted: true, playsInline: true, loop: true, autoplay: true, preload: 'auto', poster: info.poster || null, src: info.video, 'aria-label': sp.title + ', muted. Tap to watch with sound' });
+          media.muted = true;
+          media.addEventListener('error', () => media.replaceWith(tile(sp)), { once: true });
+          media.addEventListener('click', watch(sp));
+          media.play?.().catch(() => {});
+        } else media = info.poster ? h('img.reel__img', { src: info.poster, alt: '' }) : tile(sp);
+        scr.replaceChildren(media, info.ok ? h('button.reel__big', { type: 'button', 'aria-label': `Watch ${sp.title} with sound`, onclick: watch(sp) }) : null);
+        cap.replaceChildren(h('span.reel__t', sp.title), sp.blurb ? h('span.reel__b', sp.blurb) : null,
+          h('span.reel__acts',
+            info.ok ? h('button.reel__watch', { type: 'button', onclick: watch(sp) }, '▶ Watch with sound', info.sec ? h('span.reel__len', ' · ' + specialLen(info)) : null) : null,
+            info.page ? h('a.reel__open', { href: info.page, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation() }, 'Open ↗') : null));
+      });
+    };
+    const chips = list.map((sp, i) => h('button.reel__chip', { type: 'button', 'aria-pressed': 'false', onclick: (e) => { e.stopPropagation(); manual = true; put(i); } }, sp.title));
+    const el = h('div.reel', scr, cap, h('div.reel__chips', { role: 'group', 'aria-label': 'Pack 1' }, chips));
+    el.addEventListener('click', (e) => e.stopPropagation()); // the reel is its own surface: no tap-to-resize
+    if (v.cue) this.#cued(v.cue, (i) => { if (!manual) put(i); });
+    else put(0);
+    return el;
   }
 
   // run apply(i) as the line's audio reaches each [seconds, index] cue; cue is per clip file, so every host's take lines up
@@ -420,6 +462,7 @@ export function resolveVisual(raw, work, base) {
     return resolveVisual({ ...raw, type: 'work' }, work, base);
   }
   if (raw.type === 'link') return raw.url && raw.poster ? { ...raw, poster: abs(raw.poster), video: raw.video && abs(raw.video), webm: raw.webm && abs(raw.webm) } : null;
+  if (raw.type === 'reel') return raw;
   if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb), url: abs(it.url) })) };
   if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
   if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, size: raw.size, work: it?.id, cue: raw.cue } : null;
