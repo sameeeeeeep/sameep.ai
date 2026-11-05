@@ -1,6 +1,6 @@
 // wisprfolder.js — the Wispr folder: what I made for Wispr, in three parts.
-//   Wispr for Builders: small Claude mods that make voice a superpower (Pack 1: Video and Guru out now;
-//     Review, File, Wish and PM on the way, listed in one muted line)
+//   Wispr for Builders: small Claude mods that make voice a superpower (Pack 1 is public on GitHub:
+//     the pack page installs all of it; Video and Guru also have their own pages)
 //   The fun one: Wispr Wrapped
 //   The plan: Wispr Growth OS (its own tab, behind a team sign-in)
 // Each icon has a hover card (data-card="wispr-<id>", copy in js/app/cards.js). Nothing is probed: a mod
@@ -12,8 +12,8 @@ const at = (p) => new URL('../../' + p, import.meta.url).href;
 const mod = (id, label, path) => ({ id, label, url: at(path + '/') });
 export const SECTIONS = [
   { id: 'builders', title: 'Wispr for Builders', note: 'Pack 1 · small Claude mods that make voice a superpower',
-    items: [mod('wispreditor', 'Wispr Video', 'wispr-editor'), mod('guru', 'Wispr Guru', 'wispr-guru')],
-    soon: ['Review', 'File', 'Wish', 'PM'] },
+    items: [mod('builders', 'Pack 1', 'wispr-builders'), mod('wispreditor', 'Wispr Video', 'wispr-editor'), mod('guru', 'Wispr Guru', 'wispr-guru')],
+    soon: [] },
   { id: 'fun', title: 'The fun one', note: 'My real Flow history, as a story',
     items: [mod('wrapped', 'Wispr Wrapped', 'wispr-wrapped')] },
   { id: 'plan', title: 'The plan', note: 'How I’d grow Wispr, section by section',

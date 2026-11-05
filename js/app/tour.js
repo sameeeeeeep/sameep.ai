@@ -67,7 +67,7 @@ export function installGuides({ area, cards, ctx }) {
       // before the show: the work, then the Wispr folder, opened for them and shut again after
       { at: () => workWin()?.querySelector('.work__list'), say: 'First, my work: everything I’ve made, in one list, each with its video and links.',
         enter: async (g) => { await borrow('work', workWin, async () => { if (g.active) ctx.open('work'); }); await until(() => workWin()?.querySelector('.work__item'), 4000); }, leave: () => giveBack('work') },
-      { at: () => wisprWin()?.querySelector('.wsec[data-sec="builders"]'), when: () => isWispr, say: 'Then the Wispr folder. Up top, Wispr for Builders: small Claude mods you run by voice. Two are out, four on the way.',
+      { at: () => wisprWin()?.querySelector('.wsec[data-sec="builders"]'), when: () => isWispr, say: 'Then the Wispr folder. Up top, Wispr for Builders: small Claude mods you run by voice. Pack 1 is out: seven of them, one install.',
         enter: (g) => borrow('wispr', wisprWin, () => ctx.openWispr({ still: () => g.active })) },
       // the fun one and the plan share a row: point at the row, so the caption sits beside it, never on Growth OS
       { at: () => wisprWin()?.querySelector('.wsec-row'), when: () => isWispr, say: 'Below: the fun one, Wispr Wrapped, and the plan, Growth OS.',
@@ -135,10 +135,10 @@ export function installGuides({ area, cards, ctx }) {
   defineGuide('wispr', {
     area, layer, cardFor, holder: wisprW, label: 'Wispr folder guide', here: inFront(isWisprF),
     steps: () => [
-      { at: inWin(wisprW, '.wsec[data-sec="builders"] .wsec__head'), enter: () => until(wItem('wispreditor')), say: 'Wispr for Builders: small Claude mods that make voice a superpower. Pack 1: two out now, four on the way.' },
+      { at: inWin(wisprW, '.wsec[data-sec="builders"] .wsec__head'), enter: () => until(wItem('wispreditor')), say: 'Wispr for Builders: small Claude mods that make voice a superpower. Pack 1 is out.' },
+      { at: wItem('builders'), card: true, say: 'Pack 1: all seven mods on one page. Give the repo to your Claude and it installs them.' },
       { at: wItem('wispreditor'), card: true, say: 'Wispr Video: a teleprompter, recorder and editor. You say the edit, Claude makes it.' },
       { at: wItem('guru'), card: true, say: 'Wispr Guru: a voice guide for any software.' },
-      { at: inWin(wisprW, '.wsec__more'), say: 'The other four are on the way. Each one lands here the day it ships.' },
       { at: wItem('wrapped'), card: true, say: 'And the fun one, Wispr Wrapped: my real Flow history, as a story. Yours takes a minute of talking.', action: openIt('wrapped') },
       { at: wItem('growthos'), card: true, say: 'Growth OS is the plan: how I’d grow Wispr. Its own tab, behind a team sign-in.', action: openIt('growthos', 'Open Growth OS ↗') },
     ],

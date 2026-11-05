@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffeb">
+  <title>Wispr for Builders · Pack 1</title>
+  <meta name="description" content="Seven Claude Code mods made for Wispr Flow users: find files, convert them, review sites, run task boards, get walked through any app and edit video, all by voice. Made for Wispr by Sameep; unofficial, not a Wispr product.">
+  <meta property="og:title" content="Wispr for Builders · Pack 1">
+  <meta property="og:description" content="Wispr is for typing, and typing is for everything. Seven voice mods for Claude Code, one install.">
+  <link rel="canonical" href="https://sameep.ai/wispr-builders/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23034f46'/%3E%3Cpath d='M9 10h14M9 16h10M9 22h6' stroke='%23ffffeb' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="top__mark" href="./"><em>Wispr</em> for Builders</a>
+    <span class="top__by">made for Wispr by Sameep · unofficial</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="k">Pack 1 · 7 mods for Claude Code</p>
+      <h1>Say it. <em>Your Mac does it.</em></h1>
+      <p class="lede">Wispr is for typing, and typing is for everything. These mods take what you dictate with Wispr Flow and act on it: find the file, convert it, fix the site, park the task. I used these to build sameep.ai.</p>
+
+      <div class="get">
+        <div class="get__head">
+          <span class="get__l">Install the pack: paste this into your Claude</span>
+          <span class="soon" data-soon>Repo coming soon</span>
+        </div>
+        <div class="cmd">
+          <code id="cmd-pack">Install Wispr for Builders pack 1 from https://github.com/sameeeeeeep/wispr-for-builders</code>
+          <button class="btn btn--light" type="button" data-copy="cmd-pack">Copy</button>
+        </div>
+        <p class="get__fine">Claude clones the repo and runs its installer. Needs a Mac, Claude Code and Wispr Flow.</p>
+      </div>
+    </section>
+
+    <section class="shelf" aria-labelledby="shelf-t">
+      <h2 id="shelf-t" class="sec">In this pack</h2>
+      <div class="apps" id="apps"></div>
+    </section>
+
+    <section class="coming" aria-labelledby="coming-t">
+      <h2 id="coming-t" class="sec">Coming</h2>
+      <ul>
+        <li><b>Pack 2, for editors.</b> For people who have Claude but haven’t found what to use it for.</li>
+        <li><b>Pack 3, for designers.</b></li>
+        <li><b>A hotkey for “ask”.</b> One key, then say anything and it goes to the right mod.</li>
+      </ul>
+    </section>
+
+    <footer class="fine">
+      <p>Made for Wispr Flow users by <a href="/">Sameep Rehlan</a>. Not made, endorsed or supported by Wispr. MIT licensed.</p>
+      <p>Everything runs on your Mac. The mods read what Wispr Flow types instead of opening your mic; only Wispr Video’s recorder uses it, while you record. File contents are never uploaded. Apple silicon only for now.</p>
+    </footer>
+  </main>
+
+  <div class="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript><p class="nos">Wispr for Builders, Pack 1: seven voice mods for Claude Code (File, Wish, Review, PM, Guru, Video and Bridge). Install by giving github.com/sameeeeeeep/wispr-for-builders to your Claude.</p></noscript>
+  <script type="module">import { track } from '../js/analytics.js'; window.wbTrack = track;</script>
+  <script src="app.js"></script>
+</body>
+</html>
