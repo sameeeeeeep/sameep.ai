@@ -58,6 +58,9 @@ export class Podcast {
     // how long: a recommended route the visitor picked (episode.json "routes"), standard by default
     this.routes = episode.routes || {};
     this.routeId = this.routes[savedLength()] ? savedLength() : this.routes.standard ? 'standard' : null;
+    // a version can open on its own part first (episode.json "starts": the Wispr version opens on Wispr for Builders)
+    const vStart = episode.starts?.[isWispr ? 'wispr' : 'default'];
+    if (vStart && episode.nodes[vStart]) episode.start = vStart;
     this.map = new EpisodeMap(episode, null, [], this.routeId);
     this.audio = takeAudio();
     this.audio.preload = 'auto';
@@ -160,7 +163,8 @@ export class Podcast {
       pp.load().then(() => { if (this.cuPuppets[this.hostKey] === pp && !cuEl.classList.contains('is-placeholder')) this.studio.hasCU.host = true; });
     }
     this.#sweep(cuEl, () => this.cuPuppets[this.hostKey]);
-    // replay where we are, now in the new host's voice
+    // replay where we are, now in the new host's voice (or move on, if this part has no take in it)
+    if (this.node?.hosts && !this.node.hosts.includes(id) && this.node.next) return this.go(this.node.next, { push: false });
     if (this.node) {
       const li = this.li || 0;
       this.lines = (this.node.lines || []).filter(shows).map((l) => ({ ...l, ...pickVersion(l, this.hostId) }));
@@ -532,6 +536,8 @@ export class Podcast {
   go(id, { push = true, from, line = 0 } = {}) {
     const node = this.ep.nodes[id];
     if (!node) { console.warn('[podcast] missing node', id); return; }
+    // a part voiced only by some hosts (node.hosts) is skipped for the others
+    if (node.hosts && !node.hosts.includes(this.hostId) && node.next) return this.go(node.next, { push, from, line: 0 });
     if (push && this.nodeId) this.history.push(this.nodeId);
     this.nodeId = id;
     this.node = node;

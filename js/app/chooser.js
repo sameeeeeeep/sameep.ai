@@ -2,6 +2,7 @@
 // get, minutes from the real audio, tags, one "Recommended"), the audience
 // avatar, the recommended-route progress and the chapter map.
 import { h } from './util.js';
+import { VERSION } from '../version.js';
 
 const isHub = (id) => /-hub$|-again$/.test(id) || id === 'hub' || id === 'hub-first';
 const isOutro = (id) => id === 'outro-make' || id === 'outro';
@@ -241,6 +242,7 @@ export function episodeParts(map) {
   const order = new Map(), q = [map.ep.start || Object.keys(N)[0]];
   while (q.length) { const id = q.shift(); if (order.has(id) || !N[id]) continue; order.set(id, order.size); q.push(...map.edges(id)); }
   for (const id of Object.keys(N)) if (!order.has(id)) order.set(id, order.size);
+  for (const id of [...order.keys()]) if (N[id].only && N[id].only !== VERSION) order.delete(id); // another version's part
   const byCh = new Map();
   for (const id of [...order.keys()]) { const ch = N[id].chapter || N[id].title || id; if (!byCh.has(ch)) byCh.set(ch, []); byCh.get(ch).push(id); }
   const groups = [];

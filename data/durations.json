@@ -617,6 +617,10 @@
   "about": {
    "sec": 55.3,
    "lines": 4
+  },
+  "builders": {
+   "sec": 0.0,
+   "lines": 0
   }
  },
  "v": {
@@ -1262,6 +1266,14 @@
   "audio/clips/w-voice-04-gus.mp3": "8368718",
   "audio/clips/w-voice-04-k56.mp3": "a7a4f36",
   "audio/clips/w-voice-04-kimmy.mp3": "da12f25",
-  "audio/clips/w-voice-04.mp3": "3a15d04"
+  "audio/clips/w-voice-04.mp3": "3a15d04",
+  "audio/clips/builders-01-k56.mp3": "bfe28d4",
+  "audio/clips/builders-01.mp3": "b9d84e9",
+  "audio/clips/builders-02-k56.mp3": "267c575",
+  "audio/clips/builders-02.mp3": "396851c",
+  "audio/clips/builders-03-k56.mp3": "4f93932",
+  "audio/clips/builders-03.mp3": "58b4e1a",
+  "audio/clips/builders-04-k56.mp3": "c24c53a",
+  "audio/clips/builders-04.mp3": "5dfe6ab"
  }
 }

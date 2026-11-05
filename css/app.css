@@ -1578,3 +1578,5 @@ a.icon { text-decoration: none; }
 .side__mk.is-heard { color: var(--bondi); }
 .side__mk.is-now { color: var(--ember); font-size: 9px; }
 .side__legend .sub__next { margin-left: 0; }
+/* the long map scrolls under its tabs: By topic / By project stay in reach */
+.pod__side .side__tabs { position: sticky; top: -10px; z-index: 2; box-shadow: inset 0 1px 0 #fff, 0 3px 8px rgba(0,0,0,.18); }

@@ -275,10 +275,21 @@ export class Monitor {
   }
 
   // the menu as cards; the one being talked about lights up (cue times are per clip, so every host's take works)
+  // a card with a url opens that page in a new tab; with probe, a page that isn't up yet shows as "Coming soon"
   #cards(v) {
-    const cards = v.items.map((it) => h('button.mcard', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onGo?.(it.to); } },
-      h('span.mcard__pic', it.thumb && h('img', { src: it.thumb, alt: '', loading: 'eager', draggable: 'false' })),
-      h('span.mcard__t', it.title), h('span.mcard__b', it.blurb)));
+    const cards = v.items.map((it) => {
+      const kids = [h('span.mcard__pic', it.thumb && h('img', { src: it.thumb, alt: '', loading: 'eager', draggable: 'false' })),
+        h('span.mcard__t', it.title, it.url && h('span.mcard__ext', { 'aria-hidden': 'true' }, ' ↗')), h('span.mcard__b', it.blurb)];
+      if (!it.url) return h('button.mcard', { type: 'button', onclick: (e) => { e.stopPropagation(); this.onGo?.(it.to); } }, ...kids);
+      const a = h('a.mcard', { href: it.url, target: '_blank', rel: 'noopener', onclick: (e) => { e.stopPropagation(); if (a.classList.contains('is-soon')) e.preventDefault(); } }, ...kids);
+      if (it.probe) fetch(it.url, { method: 'HEAD', cache: 'no-store' }).then((r) => r.ok, () => false).then((ok) => {
+        if (ok) return;
+        a.classList.add('is-soon'); a.removeAttribute('href'); a.setAttribute('aria-disabled', 'true');
+        a.querySelector('.mcard__ext')?.remove();
+        a.querySelector('.mcard__t').append(h('span.mcard__soon', 'Coming soon'));
+      });
+      return a;
+    });
     const wrap = h('div.mcards', cards);
     if (v.cue) this.#cued(v.cue, (i) => cards.forEach((c, k) => { c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen'); }));
     return wrap;
@@ -409,7 +420,7 @@ export function resolveVisual(raw, work, base) {
     return resolveVisual({ ...raw, type: 'work' }, work, base);
   }
   if (raw.type === 'link') return raw.url && raw.poster ? { ...raw, poster: abs(raw.poster), video: raw.video && abs(raw.video), webm: raw.webm && abs(raw.webm) } : null;
-  if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb) })) };
+  if (raw.type === 'cards') return { ...raw, items: (raw.items || []).map((it) => ({ ...it, thumb: abs(it.thumb), url: abs(it.url) })) };
   if (raw.type === 'video') { const src = abs(raw.src || it?.video); return src ? { type: 'video', src, poster: abs(raw.poster || it?.poster), title, shots, size: raw.size, work: it?.id, layout: raw.layout, sound: raw.sound, volume: raw.volume } : null; }
   if (raw.type === 'shots') return shots.length ? { type: 'shots', shots, title, size: raw.size, work: it?.id, cue: raw.cue } : null;
   if (raw.type === 'work' && it) {
