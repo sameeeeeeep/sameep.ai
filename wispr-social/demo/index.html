@@ -21,6 +21,7 @@
     <div class="w-seg" role="group" aria-label="View">
       <button type="button" data-view="week" aria-pressed="true">Week</button>
       <button type="button" data-view="month" aria-pressed="false">Month</button>
+      <button type="button" data-view="ok" aria-pressed="false">Needs your OK<span class="okc" id="okCount"></span></button>
     </div>
     <div class="nav">
       <button class="w-btn w-btn--ghost ico" id="prev" type="button" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
@@ -81,6 +82,7 @@
           <label class="fld"><span>Format</span><select id="fFormat"></select></label>
         </div>
         <div class="steps" id="fStatus" role="radiogroup" aria-label="Status"></div>
+        <div class="approve" id="approveBar" aria-live="polite"></div>
         <div class="row when">
           <label class="fld"><span>Day</span><input type="date" id="fDate"></label>
           <label class="fld"><span>Time</span><input type="time" id="fTime" step="300"></label>
@@ -125,7 +127,7 @@
   </div>
 
   <footer class="keys" aria-label="Keys">
-    <span><kbd class="w-kbd">N</kbd> brain dump</span><span><kbd class="w-kbd">W</kbd> / <kbd class="w-kbd">M</kbd> week, month</span>
+    <span><kbd class="w-kbd">N</kbd> brain dump</span><span><kbd class="w-kbd">W</kbd> / <kbd class="w-kbd">M</kbd> / <kbd class="w-kbd">A</kbd> week, month, approvals</span>
     <span><kbd class="w-kbd">←</kbd> <kbd class="w-kbd">→</kbd> move</span><span><kbd class="w-kbd">T</kbd> today</span>
     <span><kbd class="w-kbd">⌘↵</kbd> draft</span><span><kbd class="w-kbd">Esc</kbd> close</span>
     <span class="grow"></span><span class="saved" id="saved" aria-live="polite"></span>

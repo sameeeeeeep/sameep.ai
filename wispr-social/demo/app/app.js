@@ -6,10 +6,11 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const qs = new URLSearchParams(location.search);
 
-  const S = { project: qs.get('project') || '', view: 'week', anchor: null, posts: [], queue: [], sel: null, data: null, typingAt: 0 };
+  const S = { project: qs.get('project') || '', view: qs.get('view') === 'ok' ? 'ok' : 'week', anchor: null, posts: [], queue: [], sel: null, data: null, typingAt: 0 };
   const LIMIT = { x: 280, linkedin: 3000, instagram: 2200, reddit: 40000, hn: 2000, hnTitle: 80, redditTitle: 300 };
   const SHORT = { x: 'X', linkedin: 'LI', instagram: 'IG', reddit: 'r/', hn: 'HN' };
-  const STATUS_LABEL = { idea: 'Idea', draft: 'Draft', final: 'Final', scheduled: 'Scheduled', posted: 'Posted' };
+  const STATUS_LABEL = { idea: 'Idea', draft: 'Draft', review: 'Needs your OK', approved: 'Approved', scheduled: 'Scheduled', posted: 'Posted' };
+  const GATED = ['approved', 'scheduled'];
   const FORMAT_LABEL = { thread: 'Thread', post: 'Post', document: 'Document', carousel: 'Carousel', reel: 'Reel', show: 'Show HN' };
 
   async function api(method, url, body) {
@@ -66,6 +67,10 @@
   function renderRange() {
     const a = S.view === 'week' ? monday(S.anchor) : S.anchor.slice(0, 8) + '01';
     const h = $('#range');
+    $$('.bar .w-seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === S.view)));
+    const nOk = S.posts.filter((p) => p.status === 'review').length;
+    $('#okCount').textContent = nOk ? ` ${nOk}` : '';
+    if (S.view === 'ok') { h.innerHTML = `Needs <em>your OK</em>`; return; }
     if (S.view === 'week') {
       const b = add(a, 6), da = D(a), db = D(b);
       h.innerHTML = da.getUTCMonth() === db.getUTCMonth()
@@ -91,6 +96,7 @@
 
   function renderCal() {
     const cal = $('#cal'), t = todayYmd();
+    if (S.view === 'ok') return renderApprovals(cal);
     if (S.view === 'week') {
       const a = monday(S.anchor);
       cal.innerHTML = `<div class="week">${[0, 1, 2, 3, 4, 5, 6].map((i) => {
@@ -108,6 +114,45 @@
           <div class="day__b">${postsOn(d).map((p) => card(p, true)).join('')}</div></section>`;
       }).join('')}</div>`;
     }
+  }
+
+  // the approval queue: every post waiting for your OK, in full, approvable from here
+  function full(p) {
+    const blocks = [];
+    if (p.titleLine) blocks.push(['Title', p.titleLine]);
+    if (p.link) blocks.push(['Link', p.link]);
+    if (p.platform === 'x' && p.parts.length) p.parts.forEach((x, i) => blocks.push([p.parts.length > 1 ? `Post ${i + 1} of ${p.parts.length}` : 'Post', x, xLen(x)]));
+    else if (p.copy) blocks.push([p.platform === 'instagram' ? 'Caption' : p.platform === 'hn' ? 'Text' : 'Post', p.copy]);
+    if (p.platform === 'instagram' && p.parts.length) p.parts.forEach((x, i) => blocks.push([`${p.format === 'reel' ? 'Shot' : 'Slide'} ${i + 1}`, x]));
+    if (p.firstComment) blocks.push(['First comment', p.firstComment]);
+    return blocks.map(([k, v, n]) => `<div class="ok__b"><span class="ok__k">${esc(k)}${n ? ` · ${n}/280` : ''}</span><p>${esc(v)}</p></div>`).join('');
+  }
+  function renderApprovals(cal) {
+    const ps = S.posts.filter((p) => p.status === 'review').sort((a, b) => (a.date || '9').localeCompare(b.date || '9') || (a.time || '').localeCompare(b.time || ''));
+    const done = S.posts.filter((p) => GATED.includes(p.status));
+    cal.innerHTML = `<div class="ok">
+      <p class="hint ok__lede">Nothing is scheduled or reminded until you approve it. Approving a post with a day and time arms its reminder. If you edit it afterwards, it comes back here.</p>
+      ${ps.map((p) => `<article class="ok__card" data-ok="${p.id}">
+        <header class="ok__h"><span class="pf pf--${p.platform}">${SHORT[p.platform]}</span><b>${esc(S.data.platforms[p.platform].name)} ${esc(FORMAT_LABEL[p.format] || p.format)}</b>
+          <span class="ok__when">${p.date ? `${rel(p.date)}${p.time ? `, ${p.time}` : ''}` : 'No day yet'}</span></header>
+        <h3 class="ok__t">${esc(p.title || 'Untitled')}</h3>
+        ${p.assets.length ? `<div class="ok__a">${p.assets.map((a) => `<figure><img src="${esc(thumb(a.path))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><figcaption title="${esc(a.path)}">${esc(a.path.split('/').pop())}${a.note ? ` · ${esc(a.note)}` : ''}</figcaption></figure>`).join('')}</div>` : '<p class="hint">No image or video.</p>'}
+        ${full(p)}
+        ${p.notes ? `<p class="ok__n"><b>Note</b> ${esc(p.notes)}</p>` : ''}
+        <div class="row ok__btns"><button class="w-btn w-btn--primary" type="button" data-approve="${p.id}">${p.date && p.time ? `Approve for ${rel(p.date)}, ${p.time}` : 'Approve'}</button>
+          <button class="w-btn w-btn--outline" type="button" data-open="${p.id}">Edit</button></div>
+      </article>`).join('') || '<p class="empty">Nothing is waiting for your OK.</p>'}
+      ${done.length ? `<h2 class="w-eyebrow ok__done">Approved · ${done.length}</h2>${done.map((p) => `<button class="qrow" type="button" data-open="${p.id}"><time>${p.time || '—'}</time><span><span class="pf pf--${p.platform}">${SHORT[p.platform]}</span> ${esc(p.title)}<br><small class="hint">${p.date ? rel(p.date) : 'no day'} · ${STATUS_LABEL[p.status]}</small></span></button>`).join('')}` : ''}
+    </div>`;
+  }
+
+  async function approve(id) {
+    try {
+      const np = await api('POST', `/api/posts/${id}/approve`, {});
+      const p = S.posts.find((x) => x.id === id); Object.assign(p, np);
+      toast(np.status === 'scheduled' ? `Approved. Reminder set for ${rel(np.date)}, ${np.time}.` : 'Approved. Give it a day and a time to schedule it.', 3600);
+      renderRange(); renderCal(); renderRail(); refreshQueue(); if (S.sel === id) openDrawer(id, { quiet: true });
+    } catch (e) { toast(e.message, 4000); }
   }
 
   function renderRail() {
@@ -142,7 +187,7 @@
     clearTimeout(saveT);
     const go = async () => {
       const body = pending; pending = {};
-      try { const np = await api('PATCH', `/api/posts/${p.id}`, { patch: body }); Object.assign(p, np); saved('Saved'); renderCal(); renderRail(); refreshQueue(); }
+      try { const np = await api('PATCH', `/api/posts/${p.id}`, { patch: body }); const was = p.status; Object.assign(p, np); saved('Saved'); if (np.sentBack) { toast('You changed an approved post, so it needs your OK again. Its reminder is off.', 4500); openDrawer(p.id, { quiet: true }); } else if (was !== np.status) openDrawer(p.id, { quiet: true }); renderRange(); renderCal(); renderRail(); refreshQueue(); }
       catch (e) { saved(''); toast(`Couldn't save: ${e.message}`); }
     };
     now ? go() : (saveT = setTimeout(go, 450));
@@ -156,7 +201,13 @@
     $('#fPlatform').innerHTML = Object.entries(S.data.platforms).map(([k, v]) => `<option value="${k}"${k === p.platform ? ' selected' : ''}>${esc(v.name)}</option>`).join('');
     $('#fFormat').innerHTML = S.data.platforms[p.platform].formats.map((f) => `<option value="${f}"${f === p.format ? ' selected' : ''}>${FORMAT_LABEL[f] || f}</option>`).join('');
     const si = S.data.statuses.indexOf(p.status);
-    $('#fStatus').innerHTML = S.data.statuses.map((s, i) => `<button type="button" role="radio" aria-checked="${s === p.status}" class="${i < si ? 'done' : ''}" data-status="${s}">${STATUS_LABEL[s]}</button>`).join('');
+    const okd = GATED.includes(p.status) || (p.status === 'posted' && p.approvedHash);
+    $('#fStatus').innerHTML = S.data.statuses.map((s, i) => `<button type="button" role="radio" aria-checked="${s === p.status}" class="${i < si ? 'done' : ''}" data-status="${s}"${GATED.includes(s) && !okd ? ' aria-disabled="true" title="Use Approve"' : ''}>${STATUS_LABEL[s]}</button>`).join('');
+    const ab = $('#approveBar');
+    ab.className = `approve approve--${okd ? 'ok' : p.status}`;
+    ab.innerHTML = okd
+      ? `<span><b>Approved</b>${p.approvedAt ? ` ${new Date(p.approvedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}. ${p.status === 'scheduled' ? `Reminder set for ${rel(p.date)}, ${p.time}.` : p.status === 'posted' ? 'Posted.' : 'Not scheduled yet: give it a day and a time, then press Scheduled.'} Any edit sends it back for your OK.</span>`
+      : `<span>${p.status === 'review' ? '<b>Needs your OK.</b> Read it through, then approve.' : 'Not approved. Nothing is scheduled until you approve it.'}</span><button class="w-btn w-btn--primary small" type="button" data-approve="${p.id}">${p.date && p.time ? `Approve for ${rel(p.date)}, ${p.time}` : 'Approve'}</button>`;
     $('#fDate').value = p.date || ''; $('#fTime').value = p.time || '';
     $('#fNotes').value = p.notes; $('#fDump').value = p.dump; $('#dumpBox').open = !!p.dump && p.status === 'idea';
     if (!quiet) { $('#best').hidden = true; $('#preview').hidden = true; }
@@ -220,8 +271,11 @@
     if (t.dataset.open) return openDrawer(t.dataset.open);
     if (t.dataset.view) { S.view = t.dataset.view; renderRange(); renderCal(); return; }
     if (t.dataset.new) { const p = await api('POST', '/api/posts', { post: { date: t.dataset.new, status: 'idea', platform: 'linkedin', title: '' } }); S.posts.push(p); renderCal(); openDrawer(p.id); $('#fTitle').focus(); return; }
+    if (t.dataset.approve) return approve(t.dataset.approve);
     if (t.dataset.status) {
       const p = S.posts.find((x) => x.id === S.sel);
+      if (t.getAttribute('aria-disabled') === 'true') { toast('Press Approve first. Nothing is scheduled without your OK.'); return; }
+      if (t.dataset.status === 'approved' && p.status === 'scheduled') { patch({ status: 'approved' }, { now: true }); toast('Taken out of the queue. Still approved.'); return; }
       if (t.dataset.status === 'scheduled' && (!p.date || !p.time)) { toast('Pick a day and a time first. Best time can suggest one.'); bestTime(); return; }
       patch({ status: t.dataset.status }, { now: true }); openDrawer(S.sel, { quiet: true });
       if (t.dataset.status === 'scheduled') toast(`Queued. At ${p.time} on ${rel(p.date)} the copy goes on your clipboard.`);
@@ -295,7 +349,7 @@
     const z = e.target.closest('[data-drop]'); if (!z) return; e.preventDefault(); z.classList.remove('over');
     const id = e.dataTransfer.getData('text/plain'), p = S.posts.find((x) => x.id === id); if (!p) return;
     const date = z.dataset.drop || null; if (p.date === date) return;
-    const fields = { date, ...(date ? {} : { time: null, ...(p.status === 'scheduled' ? { status: 'final' } : {}) }) };
+    const fields = { date, ...(date ? {} : { time: null, ...(p.status === 'scheduled' ? { status: 'approved' } : {}) }) };
     Object.assign(p, fields); renderCal(); renderRail();
     try { const np = await api('PATCH', `/api/posts/${id}`, { patch: fields }); Object.assign(p, np); refreshQueue(); if (S.sel === id) openDrawer(id, { quiet: true }); toast(date ? `Moved to ${rel(date)}` : 'Back in Ideas'); }
     catch (err) { toast(err.message); load(); }
@@ -309,7 +363,7 @@
     if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
     const k = e.key.toLowerCase();
     if (k === 'n') { e.preventDefault(); $('#dump').focus(); }
-    else if (k === 'w' || k === 'm') { S.view = k === 'w' ? 'week' : 'month'; renderRange(); renderCal(); }
+    else if (k === 'w' || k === 'm' || k === 'a') { S.view = { w: 'week', m: 'month', a: 'ok' }[k]; renderRange(); renderCal(); }
     else if (k === 't') $('#today').click();
     else if (e.key === 'ArrowLeft') $('#prev').click();
     else if (e.key === 'ArrowRight') $('#next').click();

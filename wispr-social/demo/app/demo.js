@@ -10,10 +10,11 @@
     instagram: { name: 'Instagram', formats: ['carousel', 'reel', 'post'], limit: 2200 }, reddit: { name: 'Reddit', formats: ['post'], limit: 40000 },
     hn: { name: 'Hacker News', formats: ['show'], limit: 4000 },
   };
-  const STATUSES = ['idea', 'draft', 'final', 'scheduled', 'posted'];
+  const STATUSES = ['idea', 'draft', 'review', 'approved', 'scheduled', 'posted'];
+  const CONTENT = ['platform', 'format', 'copy', 'parts', 'firstComment', 'titleLine', 'link', 'assets'];
   let n = 0; const id = () => 'd' + (++n).toString(36) + Math.random().toString(36).slice(2, 6);
   const norm = (p) => ({ id: id(), title: '', platform: 'linkedin', format: 'post', status: 'idea', date: null, time: null, copy: '', parts: [], firstComment: '', titleLine: '', link: '', assets: [], notes: '', dump: '', group: null, reminded: null, created: new Date(NOW).toISOString(), ...p });
-  let posts = SEED.posts.map(norm);
+  let posts = SEED.posts.map((p) => norm({ ...p, status: ['final', 'scheduled', 'approved'].includes(p.status) ? 'review' : p.status }));
 
   const tzOffset = (tz, at) => {
     const f = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -21,7 +22,7 @@
     return Date.UTC(+o.year, +o.month - 1, +o.day, +o.hour, +o.minute, +o.second) - at;
   };
   const instant = (p) => { const [y, mo, d] = p.date.split('-').map(Number); const [h, mi] = (p.time || '09:00').split(':').map(Number); const g = Date.UTC(y, mo - 1, d, h, mi); return g - tzOffset(TZ, g); };
-  const queue = () => posts.filter((p) => p.status === 'scheduled' && p.date).map((p) => ({ id: p.id, title: p.title, platform: p.platform, date: p.date, time: p.time, at: instant(p), due: instant(p) <= NOW, reminded: p.reminded, inMin: Math.round((instant(p) - NOW) / 60e3) })).sort((a, b) => a.at - b.at);
+  const queue = () => posts.filter((p) => p.status === 'scheduled' && p.date && p.approvedAt).map((p) => ({ id: p.id, title: p.title, platform: p.platform, date: p.date, time: p.time, at: instant(p), due: instant(p) <= NOW, reminded: p.reminded, inMin: Math.round((instant(p) - NOW) / 60e3) })).sort((a, b) => a.at - b.at);
 
   // best time: the same rules as lib/times.mjs
   const WD = [1, 2, 3, 4, 5], MID = [2, 3, 4], WE = [0, 6];
@@ -95,7 +96,16 @@
     if (method === 'POST' && p === '/api/posts') { const x = norm({ ...body.post }); posts.push(x); return { ...x }; }
     if ((m = p.match(/^\/api\/posts\/([\w-]+)$/))) {
       const x = posts.find((y) => y.id === m[1]);
-      if (method === 'PATCH') { Object.assign(x, body.patch); if (body.patch.date !== undefined || body.patch.time !== undefined) x.reminded = null; return { ...x }; }
+      if (method === 'PATCH') {
+        const pt = body.patch, gated = ['approved', 'scheduled'];
+        if (pt.status === 'approved' && x.status !== 'scheduled') throw new Error('Only the Approve button approves a post.');
+        if (gated.includes(pt.status) && !gated.includes(x.status)) throw new Error('Approve it first. Nothing is scheduled without your OK.');
+        const changed = CONTENT.some((k) => k in pt && JSON.stringify(pt[k]) !== JSON.stringify(x[k]));
+        Object.assign(x, pt); let sentBack = false;
+        if (changed && gated.includes(x.status)) { x.status = 'review'; x.approvedAt = null; sentBack = true; }
+        if (pt.date !== undefined || pt.time !== undefined) x.reminded = null;
+        return { ...x, sentBack };
+      }
       if (method === 'DELETE') { posts = posts.filter((y) => y.id !== m[1]); return {}; }
     }
     if (method === 'POST' && p === '/api/draft') {
@@ -111,6 +121,11 @@
       const made = body.to.map((pl) => norm({ ...SEED.sample[pl], title: src.title, status: 'draft', group, date: src.date, assets: src.assets,
         notes: 'Demo sample. On your Mac, Claude rewrites the post you opened for this platform.' }));
       posts.push(...made); return { posts: made, ms: 1400 };
+    }
+    if ((m = p.match(/^\/api\/posts\/([\w-]+)\/approve$/))) {
+      const x = posts.find((y) => y.id === m[1]);
+      x.approvedAt = new Date(NOW).toISOString(); x.status = x.date && x.time ? 'scheduled' : 'approved';
+      return { ...x };
     }
     if (method === 'POST' && p === '/api/besttime') return { suggestions: suggest(body.platform, body.from, body.id) };
     if ((m = p.match(/^\/api\/posts\/([\w-]+)\/(remind|preview|copy)$/))) {
