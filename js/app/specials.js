@@ -9,7 +9,8 @@ import { track } from '../analytics.js';
 
 const DIR = 'video/specials/';
 const cache = new Map();
-const head = (u) => fetch(u, { method: 'HEAD', cache: 'no-cache' }).then((r) => r.ok && !/text\/html/.test(r.headers.get('content-type') || ''), () => false);
+// a media file is up when it answers ok and isn't an HTML error page; a page only has to answer ok
+const head = (u, page = false) => fetch(u, { method: 'HEAD', cache: 'no-cache' }).then((r) => r.ok && (page || !/text\/html/.test(r.headers.get('content-type') || '')), () => false);
 const fmt = (s) => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
 export const specialsFor = (ep) => (ep.specials || []).filter(shows);
@@ -23,7 +24,7 @@ export function specialInfo(sp, base) {
   if (!cache.has(sp.slug)) {
     const u = specialUrls(sp, base);
     // the poster and captions are only looked for once the video itself is up
-    cache.set(sp.slug, head(u.video).then((ok) => Promise.all([ok, ok && head(u.poster), ok && head(u.vtt), u.page ? head(u.page) : false])).then(([ok, poster, vtt, page]) => {
+    cache.set(sp.slug, head(u.video).then((ok) => Promise.all([ok, ok && head(u.poster), ok && head(u.vtt), u.page ? head(u.page, true) : false])).then(([ok, poster, vtt, page]) => {
       const info = { ok, poster: poster ? u.poster : null, vtt: vtt ? u.vtt : null, page: page ? u.page : null, video: u.video, sec: sp.sec || null };
       if (!ok || info.sec) return info;
       // the length, from the file's own metadata
