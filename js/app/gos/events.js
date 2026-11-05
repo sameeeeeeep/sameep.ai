@@ -84,7 +84,7 @@ function timeline(list, win, onPick) {
         ds.map((d) => { const btn = h('button.evtl__dot', { type: 'button', style: { left: pct(d.d) + '%', '--c': f.c }, title: fmtD(d.d) + ': ' + d.t, 'aria-label': `${f.name}, ${fmtLong(d.d)}: ${d.t}`, dataset: { f: f.id, d: d.d }, onclick: () => onPick(f, d.d) }); dots.push(btn); return btn; })));
   });
   const desk = h('div.evtl', { role: 'group', 'aria-label': 'Event timeline' },
-    h('div.evtl__months', h('span'), h('div.evtl__mrow', months.map((d) => h('span.evtl__m', { style: { left: pct(isoOf(d)) + '%' } }, d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' }))),
+    h('div.evtl__months', h('span'), h('div.evtl__mrow', months.map((d, i) => h('span.evtl__m', { style: { left: pct(isoOf(d)) + '%' } }, d.toLocaleDateString('en-GB', i === 0 || d.getMonth() === 0 ? { month: 'short', year: 'numeric' } : { month: 'short' }))),
       todayIn && h('span.evtl__nowlabel', { style: { left: pct(TODAY) + '%' } }, 'Today'))),
     rows);
   // phones: the same dates as an agenda

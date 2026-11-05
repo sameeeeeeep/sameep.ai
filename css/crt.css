@@ -22,3 +22,7 @@
 /* Off: clean pixels, no tube (square corners, no inner shade) */
 .crt-plain .crt__tube { border-radius: 0; }
 .crt-plain .crt__tube::after { display: none; }
+/* Wispr Growth OS opened inside the desktop (the browser blocked its tab): it's the one window that isn't 1999,
+   so while it's open the page goes flat and clean — no bend, glass shader, fringe or hit glass */
+html:has(.win--gos:not([hidden])) .crt__screen.is-on { filter: none; text-shadow: none; }
+html:has(.win--gos:not([hidden])) :is(.crt-gl, .crt-hit) { display: none; }
