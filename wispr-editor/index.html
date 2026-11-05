@@ -42,7 +42,7 @@
         <h2>Record <em>like you talk</em></h2>
         <p>The teleprompter lights up each word as you say it and only moves on once you finish the line. It never runs on a timer. Space or → if you want to jump.</p>
         <p class="note">Camera and screen are separate tracks. Record them together, or do the screen pass later and drop it in at the playhead.</p>
-        <p class="status"><b>Being fixed:</b> on some Macs voice-follow goes quiet while the camera is recording, because both want the mic. Space and → always work.</p>
+        <p class="status"><b>New:</b> voice-follow now listens to the recording’s own mic. If Chrome still can’t hear you, hold your Wispr key and read: the dictated words move the prompt. Tested in Chrome with a simulated mic; a live-mic test is next.</p>
       </article>
       <article>
         <span class="n">2</span>
@@ -88,7 +88,8 @@
       <h2>Try it <em>yourself</em></h2>
       <p>One command. Nothing is installed or written to your settings until you keep it.</p>
       <div class="cmd"><code id="cmd">claude --plugin-url https://sameep.ai/wispr-editor/wispr-video.zip</code><button type="button" id="copy">Copy</button></div>
-      <p class="note">Then type <code>/video</code>. Needs macOS, Chrome for the teleprompter’s voice-follow, <code>ffmpeg</code>, and <code>whisper-cpp</code> (<code>brew install ffmpeg whisper-cpp</code>). Projects live in <code>~/WisprVideo</code>.</p>
+      <p>Then tell Claude what the video is about, like <code>/video a 45-second launch for my app</code>. Claude writes the script, opens the teleprompter, and edits your take when you’re done.</p>
+      <p class="note"> Needs macOS, Chrome for the teleprompter’s voice-follow, <code>ffmpeg</code>, and <code>whisper-cpp</code> (<code>brew install ffmpeg whisper-cpp</code>). Projects live in <code>~/WisprVideo</code>.</p>
     </section>
   </main>
 
