@@ -1,5 +1,5 @@
 {
- "_about": "The Wispr Flow team on the ?version=wispr lock screen. One entry per person: first name (plus a last initial when two share it), role, a public profile photo (stylised) and where it came from. Edit freely; ids starting w- unlock Wispr Growth OS. Entries with a persona.json wisprTeam match also sit in the audience as their illustrated character.",
+ "_about": "The Wispr Flow team on the ?version=wispr lock screen. One entry per person: first name (plus a last initial when two share it), role, a public profile photo (stylised) and where it came from. Investors and advisors carry tag: 'investor' | 'advisor' | 'recruiter' (shown on their bubble and in the admin). Edit freely; ids starting w- unlock Wispr Growth OS. Entries with a persona.json wisprTeam match also sit in the audience as their illustrated character.",
  "updated": "2026-11-05",
  "team": [
   {
@@ -297,7 +297,7 @@
   },
   {
    "id": "w-andrew",
-   "name": "Andrew",
+   "name": "Andrew B.",
    "role": "Operations & HR",
    "photo": "img/characters/w-andrew-thumb.webp",
    "source": "https://www.linkedin.com/in/andrew-baskin-6553b4b1/"
@@ -875,7 +875,7 @@
   },
   {
    "id": "w-steven",
-   "name": "Steven",
+   "name": "Steven M.",
    "role": "Enterprise AI deployment",
    "photo": "img/characters/w-steven-thumb.webp",
    "source": "https://www.linkedin.com/in/stevenjmoran/"
@@ -963,6 +963,197 @@
    "role": "Technical Support Engineer",
    "photo": "img/characters/w-zoheb-thumb.webp",
    "source": "https://www.linkedin.com/in/zoheb-khan-a8979325b/"
+  },
+  {
+   "id": "w-amelia",
+   "name": "Amelia",
+   "role": "Executive advisor",
+   "tag": "advisor",
+   "photo": "img/characters/w-amelia-thumb.webp",
+   "source": "https://www.linkedin.com/in/ameliaforrestkaye/"
+  },
+  {
+   "id": "w-andrew-m",
+   "name": "Andrew M.",
+   "role": "Acrew Capital",
+   "tag": "investor",
+   "photo": "img/characters/w-andrew-m-thumb.webp",
+   "source": "https://www.linkedin.com/in/andrewmckinzie/"
+  },
+  {
+   "id": "w-chelcie",
+   "name": "Chelcie",
+   "role": "Notable Capital",
+   "tag": "investor",
+   "photo": "img/characters/w-chelcie-thumb.webp",
+   "source": "https://www.linkedin.com/in/chelcie-taylor/"
+  },
+  {
+   "id": "w-chester",
+   "name": "Chester",
+   "role": "Early-stage advisor",
+   "tag": "advisor",
+   "photo": "img/characters/w-chester-thumb.webp",
+   "source": "https://www.linkedin.com/in/chesterchipperfield/"
+  },
+  {
+   "id": "w-deedy",
+   "name": "Deedy",
+   "role": "Partner, Menlo Ventures",
+   "tag": "investor",
+   "photo": "img/characters/w-deedy-thumb.webp",
+   "source": "https://www.linkedin.com/in/debarghyadas/"
+  },
+  {
+   "id": "w-faisal",
+   "name": "Faisal",
+   "role": "Investor",
+   "tag": "investor",
+   "photo": "img/characters/w-faisal-thumb.webp",
+   "source": "https://www.linkedin.com/in/faisal--alotaibi-/"
+  },
+  {
+   "id": "w-gaurav",
+   "name": "Gaurav",
+   "role": "Growth advisor",
+   "tag": "advisor",
+   "photo": "img/characters/w-gaurav-thumb.webp",
+   "source": "https://www.linkedin.com/in/gvohra/"
+  },
+  {
+   "id": "w-hans",
+   "name": "Hans",
+   "role": "Notable Capital",
+   "tag": "investor",
+   "photo": "img/characters/w-hans-thumb.webp",
+   "source": "https://www.linkedin.com/in/hans-tung/"
+  },
+  {
+   "id": "w-hironobu",
+   "name": "Hironobu",
+   "role": "Investor",
+   "tag": "investor",
+   "photo": "img/characters/w-hironobu-thumb.webp",
+   "source": "https://www.linkedin.com/in/hiroriomaeda/"
+  },
+  {
+   "id": "w-liz",
+   "name": "Liz",
+   "role": "Cambridge Wilkinson",
+   "tag": "investor",
+   "photo": "img/characters/w-liz-thumb.webp",
+   "source": "https://www.linkedin.com/in/lizrabban/"
+  },
+  {
+   "id": "w-maciek",
+   "name": "Maciek",
+   "role": "Pointer.Capital",
+   "tag": "investor",
+   "photo": "img/characters/w-maciek-thumb.webp",
+   "source": "https://www.linkedin.com/in/maciejziolkowski/"
+  },
+  {
+   "id": "w-matt",
+   "name": "Matt",
+   "role": "Partner, Menlo Ventures",
+   "tag": "investor",
+   "photo": "img/characters/w-matt-thumb.webp",
+   "source": "https://www.linkedin.com/in/matt-kraning/"
+  },
+  {
+   "id": "w-muhammad",
+   "name": "Muhammad",
+   "role": "Limited partner",
+   "tag": "investor",
+   "source": "https://www.linkedin.com/in/muhammad-azyumardi-25194031a/"
+  },
+  {
+   "id": "w-prem",
+   "name": "Prem",
+   "role": "Private markets investor",
+   "tag": "investor",
+   "photo": "img/characters/w-prem-thumb.webp",
+   "source": "https://www.linkedin.com/in/premiyer/"
+  },
+  {
+   "id": "w-rory",
+   "name": "Rory",
+   "role": "Vice-Chairman, Ogilvy UK",
+   "tag": "advisor",
+   "photo": "img/characters/w-rory-thumb.webp",
+   "source": "https://www.linkedin.com/in/rorysutherland/"
+  },
+  {
+   "id": "w-scotty",
+   "name": "Scotty",
+   "role": "Investor",
+   "tag": "investor",
+   "photo": "img/characters/w-scotty-thumb.webp",
+   "source": "https://www.linkedin.com/in/scotty-tyler-912769302/"
+  },
+  {
+   "id": "w-sherry",
+   "name": "Sherry",
+   "role": "Founder & CEO, Roster",
+   "tag": "advisor",
+   "photo": "img/characters/w-sherry-thumb.webp",
+   "source": "https://www.linkedin.com/in/sherrybywong/"
+  },
+  {
+   "id": "w-sophia",
+   "name": "Sophia",
+   "role": "Trust Fund",
+   "tag": "investor",
+   "photo": "img/characters/w-sophia-thumb.webp",
+   "source": "https://www.linkedin.com/in/sophiaamoruso/"
+  },
+  {
+   "id": "w-steven-b",
+   "name": "Steven B.",
+   "role": "Steven.com, FlightStory",
+   "tag": "investor",
+   "photo": "img/characters/w-steven-b-thumb.webp",
+   "source": "https://www.linkedin.com/in/stevenbartlett-123/"
+  },
+  {
+   "id": "w-vivek",
+   "name": "Vivek",
+   "role": "Advisor",
+   "tag": "advisor",
+   "photo": "img/characters/w-vivek-thumb.webp",
+   "source": "https://www.linkedin.com/in/viveknm/"
+  },
+  {
+   "id": "w-weston",
+   "name": "Weston",
+   "role": "MVP Ventures",
+   "tag": "investor",
+   "photo": "img/characters/w-weston-thumb.webp",
+   "source": "https://www.linkedin.com/in/westonmoyer/"
+  },
+  {
+   "id": "w-paul",
+   "name": "Paul",
+   "role": "Founder & CEO, Orama",
+   "tag": "recruiter",
+   "photo": "img/characters/w-paul-thumb.webp",
+   "source": "https://www.linkedin.com/in/paul-ioannides-97398538/"
+  },
+  {
+   "id": "w-evan",
+   "name": "Evan",
+   "role": "Managing Partner, Orama",
+   "tag": "recruiter",
+   "photo": "img/characters/w-evan-thumb.webp",
+   "source": "https://www.linkedin.com/in/evan-deluca-salesrecruiting/"
+  },
+  {
+   "id": "w-kendall",
+   "name": "Kendall",
+   "role": "Senior Consultant, Orama",
+   "tag": "recruiter",
+   "photo": "img/characters/w-kendall-thumb.webp",
+   "source": "https://www.linkedin.com/in/kendall-burdge-59694615b/"
   }
  ]
 }

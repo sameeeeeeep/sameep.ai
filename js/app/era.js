@@ -412,8 +412,8 @@ export function openFolder(wm, f) {
 }
 
 // ---------------------------------------------------------------- the lock screen
-// After the modem connects, Mac OS asks who you are. Everyone floats as a bubble (ppt.live style:
-// a little physics, they drift and nudge each other); type your name to filter, or tap your face.
+// After the modem connects, Mac OS asks who you are. Everyone is a bobbing bubble in a loose crowd that
+// takes turns on screen (the Slumber Party wall's way: kept elements, CSS motion); type to filter, or tap your face.
 // Wispr version: the whole team is there (data/wispr-team.json: first name, role, public photo, source).
 // Tapping your bubble turns it green and lets you straight in; there's no passcode. Anyone not listed
 // can add their own account (name + selfie); it lives on their device only and is there next time.
@@ -436,9 +436,40 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     const hint = h('p.lock__hint', hintText);
     const pickView = h('div.lock__picked', { hidden: true });
     const addView = h('form.lock__add', { hidden: true });
+    // skip, and the auto-guest: 20 s with nobody touching anything shows a 10 s countdown, then in as a guest.
+    // Typing, hovering a face, a click or a key cancels it (and the 20 s start again); "Stay here" turns it off.
+    const skip = h('button.lock__skip', { type: 'button', onclick: () => guestIn(false) }, 'Continue as guest →');
+    const left = h('b', '10');
+    const auto = h('div.lock__auto', { role: 'status', hidden: true },
+      h('span', 'Continuing as guest in ', left, '…'),
+      h('button', { type: 'button', onclick: () => { autoOff = true; stopAuto(); search.focus({ preventScroll: true }); } }, 'Stay here'),
+      h('button', { type: 'button', onclick: () => guestIn(false) }, 'Continue now'));
     const el = h('div.lock', { role: 'dialog', 'aria-label': 'Log in' },
       h('div.lock__top', time, date, online),
-      h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', search, hint)));
+      h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', search, hint, auto, skip)));
+    const IDLE = 20000, COUNT = 10;
+    let idleT = 0, cdT = 0, autoOff = false;
+    function stopAuto() { clearTimeout(idleT); clearInterval(cdT); idleT = cdT = 0; auto.hidden = true; }
+    // only on the faces screen with an empty name box: someone who typed a name or opened "add account" is still deciding
+    function arm() { stopAuto(); if (!autoOff && !pick && !q && el.dataset.view === 'field') idleT = setTimeout(countdown, IDLE); }
+    function countdown() {
+      if (autoOff || pick || q || el.dataset.view !== 'field') return;
+      if (document.hidden) { idleT = setTimeout(countdown, 1000); return; }  // wait until they can see it
+      let n = COUNT; left.textContent = n; auto.hidden = false;
+      cdT = setInterval(() => {
+        if (document.hidden) return;
+        left.textContent = --n;
+        if (n <= 0) { stopAuto(); guestIn(true); }
+      }, 1000);
+    }
+    const nudge = (e) => { if (!e.target.closest?.('.lock__auto')) arm(); };
+    for (const t of ['pointerdown', 'keydown', 'input', 'touchstart', 'wheel']) el.addEventListener(t, nudge, { passive: true, capture: true });
+    // hovering a face counts only when the pointer itself moves (the faces drift under a still mouse all the time)
+    el.addEventListener('pointermove', (e) => { if ((e.movementX || e.movementY) && e.target.closest?.('.lock__user, .lock__search')) nudge(e); }, { passive: true });
+    function guestIn(isAuto) {
+      const g = bubbles.find((b) => b.a.id === 'guest')?.a || { id: 'guest', label: 'Guest User' };
+      choose({ ...g, auto: isAuto });
+    }
 
     // ---- bubbles
     let bubbles = [];
@@ -463,27 +494,30 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       });
       place();
     }
-    // motion, taken from the ppt.live lobby (show.html makePillWall + the .gpill pbob/ppop keyframes):
-    // every face keeps cruising across the screen at 16–36 px/s (ppt's lane speeds), bobbing and tilting
-    // on its own 4.2–7.2 s beat, and gently bounces off the edges and off each other. A few at a time:
-    // every few seconds one drifts off an edge and a new face floats in from another. Typing pulls the
-    // matches to the middle. Reduced motion: the same flow, slower, without the bob.
-    let W = 0, H = 0, R = 58, raf = 0, last = 0, rot = 0, cap = 12, q = '';
-    const SLOW = reduced ? 0.3 : 1;
+    // the lobby, the way the Slumber Party wall does a crowd: every face is a kept element that sits in a
+    // slot of a loose, staggered grid around the clock and the name box, and only the CSS bob moves (no
+    // per-frame layout, so 60+ faces stay smooth). Tanay, Sahaj and Nimisha always hold the middle slots,
+    // Add and Guest sit by the name box; everyone else takes turns, one face at a time fading out and the
+    // next one in the queue fading in where it was, until the whole team has been round. Typing fills the
+    // middle slots with the matches at once. Reduced motion: no bob, slower turns.
+    const PINNED = ['w-tanay', 'w-sahaj', 'w-nimisha'];
+    let W = 0, H = 0, R = 40, rot = 0, cap = 12, q = '', cells = [], queue = [];
     const always = (b) => b.a.id === 'add' || b.a.id === 'guest' || b.a.own;  // never rotated out
+    const pinned = (b) => PINNED.includes(b.a.id);
     const matches = (b) => { const l = b.a.label.toLowerCase(); return l.startsWith(q) || l.split(' ').some((w) => w.startsWith(q)); };
     const hash = (str) => { let x = 0; for (const c of str) x = (x * 31 + c.charCodeAt(0)) | 0; return Math.abs(x); };
-    function vis(b, on) { if (on) { const img = b.el.querySelector('img[data-src]'); if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); } } b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); }
-    function cruise(b, ang = Math.random() * Math.PI * 2) {
-      const i = hash(b.a.id), sp = (16 + ((i * 37) % 21)) * SLOW;       // ppt: speed = 16 + ((i*37) % 21) px/s
-      b.sp = sp; b.vx = Math.cos(ang) * sp; b.vy = Math.sin(ang) * sp * 0.7;
-      b.el.style.setProperty('--d', (4.2 + (i % 30) / 10) + 's');        // ppt: --d = 4.2 + (h%30)/10 s
-      b.el.style.setProperty('--dl', (-(i % 50) / 10) + 's');            // ppt: --dl = -(h%50)/10 s
+    function vis(b, on) { if (on) { const img = b.el.querySelector('img[data-src]'); if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); } } b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); if (!on) b.cell = null; }
+    function put(b, cell) {
+      b.cell = cell; cell.b = b;
+      b.el.style.transform = `translate3d(${(cell.x - R).toFixed(1)}px, ${(cell.y - R).toFixed(1)}px, 0)`;
+      const i = hash(b.a.id);
+      b.el.style.setProperty('--d', (4.2 + (i % 30) / 10) + 's');        // ppt's bob: its own 4.2–7.2 s beat
+      b.el.style.setProperty('--dl', (-(i % 50) / 10) + 's');
     }
-    // the whole screen is the lobby, except two keep-out zones: the clock block up top and the name box
-    // at the bottom. A face is its circle plus its name under it: [x-R, x+R] x [y-R, y+1.25R].
+    // the clock block up top and the name box at the bottom are keep-out zones; a face is its circle plus its
+    // name under it: [x-R, x+R] x [y-R, y+FOOT*R]
     let zones = [];
-    const PAD = 14, FOOT = 1.25;
+    const PAD = 12, FOOT = 1.55;
     function measure() {
       const F = field.getBoundingClientRect();
       zones = [el.querySelector('.lock__top'), el.querySelector('.lock__bottom')].filter((z) => z && !z.hidden).map((z) => {
@@ -492,118 +526,73 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       });
     }
     const hits = (x, y, z) => x + R > z.l && x - R < z.r && y + R * FOOT > z.t && y - R < z.b;
-    const free = (x, y) => !zones.some((z) => hits(x, y, z));
-    // somewhere clear, fully on screen and out of the zones: the spot farthest from every face showing
-    function spot() {
-      const live = bubbles.filter((b) => b.on); let best = null, far = -1;
-      for (let k = 0; k < 80; k++) {
-        const x = R + Math.random() * Math.max(1, W - 2 * R), y = R + Math.random() * Math.max(1, H - (1 + FOOT) * R);
-        if (!free(x, y)) continue;
-        const d = live.reduce((m, b) => Math.min(m, Math.hypot(b.x - x, b.y - y)), Infinity);
-        if (d > far) { far = d; best = [x, y]; }
-      }
-      return best || [W / 2, H / 2];
-    }
-    function place() {
+    // the slots: a staggered grid over the whole screen, minus the zones, each nudged a little off true so it
+    // reads as a crowd, not a table; sorted middle-out (the middle of the clear space below the clock)
+    function grid() {
       W = field.clientWidth; H = field.clientHeight;
       measure();
       const narrow = W < 500;
-      R = narrow ? 40 : 58;
+      R = narrow ? 36 : 40;
       field.style.setProperty('--bub', R + 'px');
-      const room = W * H - zones.reduce((a, z) => a + (z.r - z.l) * (z.b - z.t), 0);
-      cap = Math.max(narrow ? 5 : 6, Math.min(narrow ? 8 : 14, Math.floor(room / ((R * 3.6) ** 2))));
-      bubbles.forEach((b) => { vis(b, false); b.leave = false; });
-      const fixed = bubbles.filter(always), rest = bubbles.filter((b) => !always(b)).sort(() => Math.random() - 0.5);  // a different few each visit
-      for (const b of [...fixed, ...rest.slice(0, Math.max(0, cap - fixed.length))]) { [b.x, b.y] = spot(); cruise(b); vis(b, true); }
-      if (q) filter();
-      draw();
+      const sx = R * (narrow ? 2.3 : 2.45), sy = R * (1 + FOOT) + (narrow ? 16 : 22);  // room for a two-line name
+      const cols = Math.max(1, Math.floor((W - R * 0.4) / sx)), x0 = (W - (cols - 1) * sx) / 2;
+      const out = [];
+      for (let r = 0, y = R + 6; y + R * FOOT <= H - 4; r++, y += sy) {
+        const shift = r % 2 && cols > 2 ? sx / 2 : 0;
+        for (let c = 0; c < cols - (shift ? 1 : 0); c++) {
+          const k = r * 31 + c * 17, x = x0 + c * sx + shift + ((k % 7) - 3) * R * 0.05, yy = y + ((k % 5) - 2) * R * 0.06;
+          if (x - R < 0 || x + R > W || zones.some((z) => hits(x, yy, z))) continue;
+          out.push({ x, y: yy, b: null });
+        }
+      }
+      const top = zones[0] ? zones[0].b : 0, bot = zones[1] ? zones[1].t : H, cx = W / 2, cy = (top + bot) / 2;
+      out.sort((p, o) => Math.hypot(p.x - cx, (p.y - cy) * 1.3) - Math.hypot(o.x - cx, (o.y - cy) * 1.3));
+      cells = out.slice(0, narrow ? 24 : 72);
+      cap = cells.length;
+      field.classList.toggle('is-tight', narrow);
     }
-    // every few seconds one face fades out where it is and another fades in somewhere clear (paused while typing)
+    // everyone in their slot: pinned ones in the middle, Add/Guest by the name box, the rest from the queue
+    function place() {
+      grid();
+      bubbles.forEach((b) => vis(b, false));
+      cells.forEach((c) => { c.b = null; });
+      if (q) return filter();
+      const free = cells.slice();
+      const take = (pick) => { const i = pick(); if (i < 0) return null; return free.splice(i, 1)[0]; };
+      const nearBox = () => { const z = zones[1]; if (!z) return free.length - 1; let best = -1, d = Infinity; free.forEach((c, i) => { const dd = Math.hypot(c.x - (z.l + z.r) / 2, c.y - z.t); if (dd < d) { d = dd; best = i; } }); return best; };
+      for (const b of bubbles.filter(pinned)) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
+      for (const b of bubbles.filter((x) => always(x) && x.a.id !== 'add' && x.a.id !== 'guest')) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
+      for (const id of ['guest', 'add']) { const b = bubbles.find((x) => x.a.id === id), c = b && take(nearBox); if (c) { put(b, c); vis(b, true); } }
+      const rest = bubbles.filter((b) => !always(b) && !pinned(b));
+      if (!queue.length || queue.some((b) => !bubbles.includes(b))) queue = rest.slice().sort(() => Math.random() - 0.5);  // a different crowd each visit
+      for (const c of free) { const b = queue.shift(); if (!b) break; put(b, c); vis(b, true); queue.push(b); }
+      queue = queue.filter((b) => !b.on).concat(queue.filter((b) => b.on));  // the ones waiting go first
+    }
+    // one face at a time hands its slot to the next one in the queue, so the whole team comes round
     function rotate() {
-      if (q || pick || document.hidden) return;
-      const out = bubbles.filter((b) => b.on && !always(b)), wait = bubbles.filter((b) => !b.on && !always(b));
-      if (!out.length || !wait.length) return;
-      vis(out[Math.floor(Math.random() * out.length)], false);
-      const n = wait[Math.floor(Math.random() * wait.length)];
-      [n.x, n.y] = spot(); cruise(n);
-      vis(n, true); n.el.classList.remove('is-new'); void n.el.offsetWidth; n.el.classList.add('is-new');
+      if (q || pick || document.hidden || el.dataset.view !== 'field') return;
+      const outs = bubbles.filter((b) => b.on && !always(b) && !pinned(b) && !b.el.matches(':hover, :focus-visible'));
+      const n = queue.find((b) => !b.on);
+      if (!outs.length || !n) return;
+      const o = outs[Math.floor(Math.random() * outs.length)], cell = o.cell;
+      vis(o, false); queue = queue.filter((b) => b !== o && b !== n).concat([n, o]);
+      cell.b = null;  // free while it's empty; a relayout or a filter in the meantime takes the slot back
+      setTimeout(() => { if (q || pick || n.on || cell.b || !cells.includes(cell)) return; put(n, cell); vis(n, true); n.el.classList.remove('is-new'); void n.el.offsetWidth; n.el.classList.add('is-new'); }, 450);
     }
-    // smooth and organic: a slow sine wander steers each face (no per-frame noise), neighbours, walls and
-    // the two zones push through soft forces on the velocity (no snapping), and the speed eases back
-    let clock = 0;
-    function step(dt) {                                                 // dt in seconds
-      clock += dt;
-      const live = bubbles.filter((b) => b.on), gap = R * (q ? 2.2 : 2.7);
-      const fx = new Map(live.map((b) => [b, [0, 0]]));
-      for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
-        const p = live[i], o = live[j], dx = o.x - p.x, dy = (o.y - p.y) * 0.72, d = Math.hypot(dx, dy) || 0.01;  // a name sits under each face: more room up and down
-        if (d >= gap) continue;
-        const k = ((gap - d) / gap) ** 2 * 90, nx = dx / d, ny = dy / d;
-        fx.get(p)[0] -= nx * k; fx.get(p)[1] -= ny * k; fx.get(o)[0] += nx * k; fx.get(o)[1] += ny * k;
-        if (d < gap * 0.62) { const c = (gap * 0.62 - d) * 0.5; p.x -= nx * c * dt * 4; p.y -= ny * c * dt * 4; o.x += nx * c * dt * 4; o.y += ny * c * dt * 4; }  // real overlap: ease apart
-      }
-      const lo = R, hi = H - R * FOOT, margin = R * 1.1;
-      for (const b of live) {
-        const f = fx.get(b);
-        if (q) {                                                        // matches glide to their slot in the middle and settle
-          f[0] += ((b.tx ?? W / 2) - b.x) * 1.6; f[1] += ((b.ty ?? H / 2) - b.y) * 1.6;
-        } else {
-          // soft walls at the screen edges
-          if (b.x < R + margin) f[0] += ((R + margin - b.x) / margin) * 60; if (b.x > W - R - margin) f[0] -= ((b.x - (W - R - margin)) / margin) * 60;
-          if (b.y < lo + margin) f[1] += ((lo + margin - b.y) / margin) * 60; if (b.y > hi - margin) f[1] -= ((b.y - (hi - margin)) / margin) * 60;
-        }
-        // the clock and the name box: a soft push away as a face comes near
-        for (const z of zones) {
-          const cx = clamp(b.x, z.l - R, z.r + R), cy = clamp(b.y, z.t - R * FOOT, z.b + R), ddx = b.x - cx, ddy = b.y - cy, dd = Math.hypot(ddx, ddy);
-          if (dd < margin && dd > 0.01) { const k = ((margin - dd) / margin) * 90; f[0] += (ddx / dd) * k; f[1] += (ddy / dd) * k; }
-        }
-        if (q) {
-          b.vx = (b.vx + f[0] * dt) * Math.pow(0.12, dt); b.vy = (b.vy + f[1] * dt) * Math.pow(0.12, dt);
-        } else {
-          // a slow, smooth wander: the heading turns along two sines, different for every face
-          const ph = b.ph ?? (b.ph = Math.random() * 6.283), w = (Math.sin(clock * 0.35 + ph) * 0.5 + Math.sin(clock * 0.13 + ph * 2) * 0.35) * dt;
-          const c = Math.cos(w), s2 = Math.sin(w); [b.vx, b.vy] = [b.vx * c - b.vy * s2, b.vx * s2 + b.vy * c];
-          b.vx += f[0] * dt; b.vy += f[1] * dt;
-          const v = Math.hypot(b.vx, b.vy) || 0.01, eased = v + (b.sp - v) * Math.min(1, 0.9 * dt);
-          b.vx *= eased / v; b.vy *= eased / v;                         // never stops, never races
-        }
-        b.x += b.vx * dt; b.y += b.vy * dt;
-        // safety only (the soft forces do the work): always fully on screen, never inside a zone
-        b.x = clamp(b.x, R, W - R); b.y = clamp(b.y, lo, hi);
-        for (const z of zones) if (hits(b.x, b.y, z)) {
-          const out = [[z.l - R - b.x, 0], [z.r + R - b.x, 0], [0, z.t - R * FOOT - b.y], [0, z.b + R - b.y]].filter(([dx, dy]) => { const x = b.x + dx, y = b.y + dy; return x >= R && x <= W - R && y >= lo && y <= hi; });
-          const m = out.sort((a, c) => Math.hypot(...a) - Math.hypot(...c))[0];
-          if (m) { b.x += m[0]; b.y += m[1]; if (m[0]) b.vx = Math.sign(m[0]) * Math.abs(b.vx); if (m[1]) b.vy = Math.sign(m[1]) * Math.abs(b.vy); }
-        }
-      }
-    }
-    function draw() { for (const b of bubbles) if (b.on) b.el.style.transform = `translate3d(${(b.x - R).toFixed(1)}px, ${(b.y - R).toFixed(1)}px, 0)`; }
-    const loop = (t) => { const dt = Math.min(0.05, (t - (last || t)) / 1000); last = t; if (!pick) step(dt); draw(); raf = requestAnimationFrame(loop); };
     const ro = new ResizeObserver(() => { if (Math.abs(field.clientWidth - W) > 4 || Math.abs(field.clientHeight - H) > 4) place(); });
 
-    // ---- typing filters: matches glide to the middle, the rest fade back
+    // ---- typing filters at once: the matches take the middle slots, everyone else steps back
     function filter() {
       if (!q) { hint.textContent = hintText; place(); return; }
-      const all = bubbles.filter((b) => b.a.id !== 'add' && matches(b)), hit = [...all.slice(0, cap), ...bubbles.filter((b) => b.a.id === 'add')];
-      hint.textContent = all.length > cap ? `${all.length - cap} more match, keep typing` : all.length ? hintText : 'Not here? Add your own account';
-      for (const b of bubbles) {
-        const on = hit.includes(b);
-        if (on && !b.on) { [b.x, b.y] = spot(); b.vx = b.vy = 0; }
-        vis(b, on);
-      }
-      slots(hit);
+      const add = bubbles.find((b) => b.a.id === 'add');
+      const all = bubbles.filter((b) => b.a.id !== 'add' && b.a.id !== 'guest' && matches(b)), hit = all.slice(0, Math.max(1, cap - 1));
+      hint.textContent = all.length > hit.length ? `${all.length - hit.length} more match, keep typing` : all.length ? hintText : 'Not here? Add your own account';
+      cells.forEach((c) => { c.b = null; });
+      for (const b of bubbles) if (!hit.includes(b) && b !== add) vis(b, false);
+      hit.forEach((b, i) => { put(b, cells[i]); vis(b, true); });
+      if (add && cells[hit.length]) { put(add, cells[hit.length]); vis(add, true); }
     }
-    // a tidy grid between the clock and the name box, so a dozen Annas never pile up on one another
-    function slots(list) {
-      const top = zones[0] ? zones[0].b + R : R, bot = (zones[1] ? zones[1].t : H) - R * FOOT, sx = R * 2.5, sy = R * (1 + FOOT) + 14;
-      const cols = Math.max(1, Math.min(list.length, Math.floor((W - R) / sx))), rows = Math.ceil(list.length / cols);
-      const y0 = Math.max(top, (top + bot) / 2 - ((rows - 1) * sy) / 2);
-      list.forEach((b, i) => {
-        const r = Math.floor(i / cols), inRow = Math.min(cols, list.length - r * cols), c = i % cols;
-        b.tx = W / 2 + (c - (inRow - 1) / 2) * sx; b.ty = Math.min(bot, y0 + r * sy);
-      });
-    }
-    search.addEventListener('input', () => { const was = q; q = search.value.trim().toLowerCase(); if (q !== was) filter(); });
+    search.addEventListener('input', () => { const was = q; q = search.value.trim().toLowerCase(); if (q !== was) filter(); arm(); });  // arm again: an emptied box counts down again
     search.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
       e.preventDefault();
@@ -620,11 +609,11 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       if (a.id === 'add') return openAdd(search.value.trim());
       if (pick) return;
       pick = a;
+      stopAuto();
       sound.tick('pick');
       const b = bubbles.find((x) => x.a.id === a.id);
       b?.el.classList.add('is-picked');
-      if (b) { b.vx = b.vy = 0; }
-      field.classList.add('has-pick');
+        field.classList.add('has-pick');
       setTimeout(finish, reduced ? 150 : 650);
     }
     function back() { pick = null; show('field'); setTimeout(() => search.focus({ preventScroll: true }), 30); }
@@ -632,6 +621,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       el.dataset.view = which;
       field.hidden = which !== 'field'; pickView.hidden = which !== 'pick'; addView.hidden = which !== 'add';
       el.querySelector('.lock__bottom').hidden = which !== 'field';
+      arm();
     }
 
     // ---- add your own account: a name and a selfie, kept on this device
@@ -660,7 +650,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
         choose({ ...a, own: true });
       };
       addView.replaceChildren(h('button.lock__facebtn', { type: 'button', onclick: () => file.click(), 'aria-label': 'Take a selfie' }, pic), file,
-        h('p.lock__big', 'New account'), h('p.lock__role', 'Your selfie stays on this device. Nothing is uploaded.'),
+        h('p.lock__big', 'New account'), h('p.lock__role', 'Your selfie stays on this device. Sameep sees the name.'),
         h('div.lock__form', nameIn, h('button.lock__go', { type: 'submit', 'aria-label': 'Create account' }, '→')), snap,
         h('button.lock__back', { type: 'button', onclick: back }, '← Other accounts'));
       show('add');
@@ -669,13 +659,18 @@ export function login(layer, persona, { reduced, stylise } = {}) {
 
     const finish = async () => {
       if (!pick) return;
+      stopAuto();
       el.classList.add('is-out');
-      clearInterval(clk); clearInterval(rot); cancelAnimationFrame(raf); ro.disconnect(); stopHere();
+      clearInterval(clk); clearInterval(rot); ro.disconnect(); stopHere();
       sound.tick('open');
       await wait(reduced ? 0 : 450);
       el.remove();
       desk?.classList.remove('is-locked');
       document.dispatchEvent(new Event('otcv:unlock'));  // the menu-bar clock catches up
+      // who came in, for analytics.js: a teammate by id and name, an own account by its name, a guest by what they typed (if anything)
+      const typed = search.value.trim().replace(/\s+/g, ' ').slice(0, 40), mate = !!(pick.team || pick.member);
+      document.dispatchEvent(new CustomEvent('otcv:login', { detail: pick.id === 'guest' ? { as: 'guest', auto: !!pick.auto, name: typed.length > 1 ? typed : undefined }
+        : { as: mate ? 'team' : 'own', id: mate ? pick.id : undefined, name: pick.label } }));
       if (pick.id === 'guest') return resolve(null);
       // team members without an illustrated character come in as their photo, keeping their w- id (Growth OS)
       const character = pick.team ? { ...pick.team } : { id: pick.member ? pick.id : 'photo', label: pick.label, src: pick.src };
@@ -690,8 +685,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     build();
     if (team.length) fetch('data/wispr-team.json').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d?.team?.length && !pick) { roster = d.team; build(); } }).catch(() => {});
     ro.observe(field);
-    raf = requestAnimationFrame(loop);  // reduced motion: same flow, slower (SLOW), no bob
-    rot = setInterval(rotate, reduced ? 6000 : 3000);
+    rot = setInterval(rotate, reduced ? 3200 : 1100);
     requestAnimationFrame(() => el.classList.add('is-on'));
   });
 }

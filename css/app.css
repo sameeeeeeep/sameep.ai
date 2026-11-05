@@ -1554,6 +1554,17 @@ a.icon { text-decoration: none; }
 .lock__search::placeholder, .lock__pw::placeholder { color: rgba(255,255,255,.78); }
 .lock__search:focus, .lock__pw:focus { box-shadow: inset 0 0 0 1.5px #fff; }
 .lock__hint { font-weight: 500; font-size: 13px; opacity: .85; }
+.lock__skip { padding: 6px 14px; min-height: 32px; border: 0; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font: 500 13px 'Bricolage Grotesque', var(--f-ui); cursor: pointer; }
+.lock__skip:hover, .lock__skip:focus-visible { background: rgba(255,255,255,.26); outline: none; box-shadow: inset 0 0 0 1.5px #fff; }
+.lock__auto { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 8px; padding: 8px 10px; border-radius: 14px; background: rgba(0,0,0,.38); color: #fff; font: 500 13px 'Bricolage Grotesque', var(--f-ui); }
+.lock__auto[hidden] { display: none; }
+/* the lobby's faces follow its grid (era.js sets --bub per screen), phones included */
+.lock__field .lock__user { width: calc(var(--bub, 54px) * 2); }
+.lock__field .lock__face { width: calc(var(--bub, 54px) * 1.41); height: calc(var(--bub, 54px) * 1.41); }
+.lock__auto b { display: inline-block; min-width: 1.2em; text-align: center; font-variant-numeric: tabular-nums; }
+.lock__auto button { padding: 4px 10px; min-height: 30px; border: 0; border-radius: 999px; background: rgba(255,255,255,.2); color: #fff; font: inherit; cursor: pointer; }
+.lock__auto button:last-child { background: #fff; color: #111; }
+.lock__auto button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .lock__picked, .lock__add { align-self: center; display: grid; justify-items: center; gap: 8px; width: min(320px, 100%); animation: lock-rise .4s var(--ease-out) both; }
 @keyframes lock-rise { from { opacity: 0; transform: translateY(12px) scale(.96); } }
 .lock__picked .lock__face, .lock__add .lock__face { width: 120px; height: 120px; }
