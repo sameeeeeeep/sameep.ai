@@ -482,14 +482,14 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       : h('span.lock__face', h('span.lock__glyph', { 'aria-hidden': 'true' }, a.glyph ?? (a.label || '?')[0].toUpperCase()));
     function build() {
       // a teammate with an illustrated character (persona.json) also takes that seat in the audience
-      const people = roster ? roster.map((m) => { const c = team.find((t) => t.id === m.id); return { id: m.id, label: m.name, blurb: m.role, src: m.photo || c?.thumb || null, team: c || null, member: true }; })
+      const people = roster ? roster.map((m) => { const c = team.find((t) => t.id === m.id); return { id: m.id, label: m.name, blurb: m.role, tag: m.tag, src: m.photo || c?.thumb || null, team: c || null, member: true }; })
         : team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c }));
       const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...people,
         { id: 'add', label: 'Add account', blurb: 'Name and a selfie', glyph: '+' }, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', glyph: '' }];
       field.replaceChildren();
       bubbles = accounts.map((a) => {
         const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
-          face(a), h('span.lock__name', a.label), a.blurb && h('span.lock__role', a.blurb));
+          face(a), a.tag && h('span.lock__tag.is-' + a.tag, a.tag[0].toUpperCase() + a.tag.slice(1)), h('span.lock__name', a.label), a.blurb && h('span.lock__role', a.blurb));
         field.append(b);
         return { a, el: b, x: 0, y: 0, vx: 0, vy: 0, on: true };
       });

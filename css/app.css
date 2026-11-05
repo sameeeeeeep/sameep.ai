@@ -1535,6 +1535,11 @@ a.icon { text-decoration: none; }
 /* the lobby's faces follow its grid (era.js sets --bub per screen), phones included */
 .lock__field .lock__user { width: calc(var(--bub, 54px) * 2); }
 .lock__field .lock__face { width: calc(var(--bub, 54px) * 1.41); height: calc(var(--bub, 54px) * 1.41); }
+/* investors, advisors and recruiters (wispr-team.json `tag`): a small pill sitting on the bottom of the face */
+.lock__tag { position: absolute; left: 50%; top: calc(var(--bub, 54px) * 1.41 - 9px); z-index: 1; transform: translateX(-50%); padding: 1px 6px; border-radius: 999px; background: #fff; color: #111; font: 700 9px/1.35 'Bricolage Grotesque', var(--f-ui); letter-spacing: .03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.35); pointer-events: none; }
+.lock__tag.is-investor { background: #ffd23f; }
+.lock__tag.is-advisor { background: #c9a6ff; }
+.lock__tag.is-recruiter { background: #7fe0c4; }
 .lock__auto b { font-variant-numeric: tabular-nums; }
 .lock__auto:not([hidden]) ~ .lock__skip { display: none; }  /* "Continue now" says the same thing while it counts */
 .lock__auto button { padding: 4px 10px; min-height: 30px; border: 0; border-radius: 999px; background: rgba(255,255,255,.2); color: #fff; font: inherit; cursor: pointer; }
