@@ -1497,8 +1497,10 @@ a.icon { text-decoration: none; }
 .lock__mid > .lock__bottom { grid-row: 2; }
 .lock__field[hidden], .lock__picked[hidden], .lock__add[hidden], .lock__bottom[hidden] { display: none; }
 .lock__user { position: absolute; left: 0; top: 0; width: calc(var(--bub, 54px) * 2); display: grid; justify-items: center; gap: 4px; padding: 0; border: 0; background: none; color: #fff; cursor: pointer; will-change: transform; font-family: inherit; }
-.lock__user > * { transition: transform .25s var(--ease-out), opacity .3s; }
-.lock__user:hover .lock__face { transform: scale(1.08); box-shadow: 0 6px 22px rgba(0,0,0,.35), 0 0 0 3px #fff; }
+.lock__user > * { transition: transform .25s var(--ease-out), scale .25s var(--ease-out), opacity .3s; }
+/* is-hover is set from JS (pointerover/out): under the curved CRT the real pointer is on the hit glass, so :hover never lands.
+   scale, not transform: the bob animation owns transform */
+.lock__user:hover .lock__face, .lock__user.is-hover .lock__face { scale: 1.08; box-shadow: 0 6px 22px rgba(0,0,0,.35), 0 0 0 3px #fff; }
 .lock__user.is-gone > * { opacity: 0; transform: scale(.3); }
 .lock__user.is-gone { pointer-events: none; }
 .lock__face { width: calc(var(--bub, 54px) * 1.41); height: calc(var(--bub, 54px) * 1.41); border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: rgba(255,255,255,.22); box-shadow: 0 4px 16px rgba(0,0,0,.3), 0 0 0 2px rgba(255,255,255,.4); }
@@ -1515,9 +1517,9 @@ a.icon { text-decoration: none; }
 .lock__field.is-tight .lock__name { font-size: 10.5px; }
 .lock__field.is-tight .lock__user { gap: 2px; }
 /* the lobby floats a few big faces at a time: name under the face, the role on hover or focus */
-.lock__field .lock__user > * { transition: transform .35s var(--ease-out), opacity .7s ease; }
+.lock__field .lock__user > * { transition: transform .35s var(--ease-out), scale .25s var(--ease-out), opacity .7s ease; }
 .lock__field .lock__role { opacity: 0; max-height: 0; overflow: hidden; transition: opacity .2s, max-height .2s; }
-.lock__field .lock__user:hover .lock__role, .lock__field .lock__user:focus-visible .lock__role { opacity: .85; max-height: 3em; }
+.lock__field .lock__user:hover .lock__role, .lock__field .lock__user.is-hover .lock__role, .lock__field .lock__user:focus-visible .lock__role { opacity: .85; max-height: 3em; }
 .lock__field .lock__user.is-add .lock__role, .lock__field .lock__user.is-guest .lock__role { opacity: .7; max-height: 3em; }
 .lock__field .lock__name { font-size: 13.5px; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
 .lock__field .lock__user.is-gone > *, .lock__field .lock__user.is-gone .lock__role { opacity: 0; }
@@ -1530,16 +1532,16 @@ a.icon { text-decoration: none; }
 /* ~140 teammates, a dozen showing: the rest drop their layer and their bob once they've faded */
 .lock__field .lock__user.is-gone { visibility: hidden; will-change: auto; transition: visibility 0s .7s; }
 .lock__field .lock__user.is-gone .lock__face { animation-play-state: paused; will-change: auto; }
-.lock__face--ini { background: linear-gradient(150deg, hsl(var(--hue) 55% 62%), hsl(calc(var(--hue) + 40) 50% 42%)); }
+.lock__face--ini { background: linear-gradient(150deg, hsl(var(--hue) 28% 60%), hsl(calc(var(--hue) + 30) 24% 44%)); }
 .lock__face--ini .lock__glyph { font-size: calc(var(--bub, 54px) * .5); font-weight: 500; letter-spacing: .02em; }
 @keyframes lock-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
 @keyframes lock-pop { 0% { transform: scale(0) rotate(-24deg); } 70% { transform: scale(1.18) rotate(4deg); } 100% { transform: scale(1) rotate(0); } }
 @media (prefers-reduced-motion: reduce) { .lock__field .lock__face, .lock__field .lock__user.is-new .lock__face { animation: none; } }
 /* picked: your bubble goes green and you're in */
-.lock__user.is-picked .lock__face { box-shadow: 0 0 0 4px #3ddc84, 0 0 28px rgba(61,220,132,.75); transform: scale(1.12); }
+.lock__user.is-picked .lock__face { box-shadow: 0 0 0 4px #3ddc84, 0 0 28px rgba(61,220,132,.75); scale: 1.12; }
 .lock__user.is-picked .lock__name { color: #3ddc84; }
 .lock__field.has-pick .lock__user:not(.is-picked) > * { opacity: .25; }
-@media (prefers-reduced-motion: reduce) { .lock__user.is-picked .lock__face { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lock__user.is-picked .lock__face { scale: none; } }
 .lock__bottom { display: grid; justify-items: center; gap: 8px; width: min(320px, 100%); }
 .lock__search, .lock__pw { width: 100%; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); color: #fff; font: 500 14px 'Bricolage Grotesque', var(--f-ui); outline: none; text-align: center; }
 .lock__search::placeholder, .lock__pw::placeholder { color: rgba(255,255,255,.78); }
@@ -1550,7 +1552,8 @@ a.icon { text-decoration: none; }
 .lock__auto { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 8px; padding: 8px 10px; border-radius: 14px; background: rgba(0,0,0,.38); color: #fff; font: 500 13px 'Bricolage Grotesque', var(--f-ui); }
 .lock__auto[hidden] { display: none; }
 /* the lobby's faces follow its grid (era.js sets --bub per screen), phones included */
-.lock__field .lock__user { width: calc(var(--bub, 54px) * 2); }
+.lock__field .lock__user { width: calc(var(--bub, 54px) * 2.3); }  /* era.js put() centres it with R * 1.15 */
+.lock__field .lock__role { max-width: calc(var(--bub, 54px) * 2.3); }
 .lock__field .lock__face { width: calc(var(--bub, 54px) * 1.41); height: calc(var(--bub, 54px) * 1.41); }
 /* investors, advisors and recruiters (wispr-team.json `tag`): a small pill sitting on the bottom of the face */
 .lock__tag { position: absolute; left: 50%; top: calc(var(--bub, 54px) * 1.41 - 9px); z-index: 1; transform: translateX(-50%); padding: 1px 6px; border-radius: 999px; background: #fff; color: #111; font: 700 9px/1.35 'Bricolage Grotesque', var(--f-ui); letter-spacing: .03em; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.35); pointer-events: none; }
@@ -1603,3 +1606,23 @@ a.icon { text-decoration: none; }
 .side__legend .sub__next { margin-left: 0; }
 /* the long map scrolls under its tabs: By topic / By project stay in reach */
 .pod__side .side__tabs { position: sticky; top: -10px; z-index: 2; box-shadow: inset 0 1px 0 #fff, 0 3px 8px rgba(0,0,0,.18); }
+
+/* the lobby, calmer (audit LL-03/04/09-13): the founders and a returning teammate read first after the clock,
+   one clear ask over the name box, and the countdown takes the skip button's place instead of growing the box */
+.lock__field .lock__user.is-pinned .lock__face, .lock__field .lock__user.is-back .lock__face { width: calc(var(--bub, 54px) * 1.62); height: calc(var(--bub, 54px) * 1.62); box-shadow: 0 4px 18px rgba(0,0,0,.32), 0 0 0 3px rgba(255,255,255,.85), 0 0 0 9px rgba(255,255,255,.14); }
+.lock__field .lock__user.is-pinned .lock__role, .lock__field .lock__user.is-back .lock__role { display: block; opacity: .85; max-height: 3em; font-size: 11px; }
+.lock__field .lock__user.is-pinned .lock__name, .lock__field .lock__user.is-back .lock__name { font-size: 14px; font-weight: 700; }
+.lock__field.is-tight .lock__user.is-pinned .lock__name, .lock__field.is-tight .lock__user.is-back .lock__name { font-size: 12px; }
+.lock__field.is-tight .lock__user.is-pinned .lock__role, .lock__field.is-tight .lock__user.is-back .lock__role { font-size: 10px; }
+.lock__bottom { width: min(360px, 100%); grid-template-areas: 'k' 's' 'h' 'a'; grid-template-rows: auto auto minmax(1.3em, auto) 52px; gap: 6px; }
+.lock__ask { grid-area: k; font-weight: 600; font-size: 20px; line-height: 1.2; text-align: center; margin-bottom: 4px !important; }
+.lock__search { grid-area: s; }
+.lock__hint { grid-area: h; text-align: center; }
+.lock__auto, .lock__skip { grid-area: a; align-self: center; }
+.lock__search, .lock__pw { height: 44px; font-size: 16px; }
+.lock__skip, .lock__auto button, .lock__back { min-height: 44px; padding: 0 16px; }
+.lock__auto { flex-wrap: nowrap; white-space: nowrap; height: 52px; box-sizing: border-box; padding: 4px 4px 4px 14px; gap: 6px; }
+.lock__auto button { padding: 0 14px; }
+.lock__go { width: 38px; height: 38px; top: 3px; right: 3px; }
+.lock__note { max-width: 260px; font-weight: 500; font-size: 12px; line-height: 1.35; opacity: .8; text-align: center; }
+.lock__top > .lock__ask { grid-area: auto; margin: 20px 0 0 !important; }

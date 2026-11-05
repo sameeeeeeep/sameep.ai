@@ -425,28 +425,32 @@ export function login(layer, persona, { reduced, stylise } = {}) {
   return new Promise((resolve) => {
     const team = (persona.characters || []).filter((c) => c.team);
     let roster = null;  // the Wispr lobby: everyone on the team, from data/wispr-team.json
-    const time = h('p.lock__time'), date = h('p.lock__date'), online = h('p.lock__online', { hidden: true });
+    const time = h('p.lock__time'), date = h('p.lock__date'), online = h('p.lock__online', { style: 'visibility:hidden' }, 'Just you in the room right now');
     const tick = () => { const d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); };
     tick(); const clk = setInterval(tick, 15000);
-    const stopHere = presence((n) => { online.hidden = !n; online.textContent = n > 1 ? `${n} in the room right now` : 'Just you in the room right now'; });
+    const stopHere = presence((n) => { online.style.visibility = n ? '' : 'hidden'; online.textContent = n > 1 ? `${n} in the room right now` : 'Just you in the room right now'; });
 
     const field = h('div.lock__field', { role: 'listbox', 'aria-label': 'Accounts' });
-    const search = h('input.lock__search', { type: 'text', placeholder: team.length ? 'Type your name, or tap your face' : 'Type your name', 'aria-label': 'Your name', autocomplete: 'off', spellcheck: false, enterkeyhint: 'go' });
-    let hintText = team.length ? 'Or add your own account' : 'Add your own account, or come in as a guest';
+    // a teammate who came in before (offthecv.visitor, written at finish) is welcomed back by name
+    const before = (() => { try { const v = JSON.parse(localStorage.getItem('offthecv.visitor') || 'null'); return typeof v?.character === 'string' && v.character.startsWith('w-') ? v : null; } catch { return null; } })();
+    const ask = h('p.lock__ask', team.length ? (before ? `Welcome back, ${before.name}` : 'Find your face') : 'Who’s coming in?');
+    const search = h('input.lock__search', { type: 'text', placeholder: 'Type your name', hidden: !team.length, 'aria-label': 'Your name', autocomplete: 'off', spellcheck: false, enterkeyhint: 'go' });
+    let hintText = before ? 'Tap your face to go in' : '';
     const hint = h('p.lock__hint', hintText);
     const pickView = h('div.lock__picked', { hidden: true });
     const addView = h('form.lock__add', { hidden: true });
     // skip, and the auto-guest: 20 s with nobody touching anything shows a 10 s countdown, then in as a guest.
     // Typing, hovering a face, a click or a key cancels it (and the 20 s start again); "Stay here" turns it off.
-    const skip = h('button.lock__skip', { type: 'button', onclick: () => guestIn(false) }, 'Continue as guest →');
+    const skip = h('button.lock__skip', { type: 'button', hidden: !team.length, onclick: () => guestIn(false, true) }, 'Continue as guest →');
     const left = h('b', '10');
     const auto = h('div.lock__auto', { role: 'status', hidden: true },
-      h('span', 'Continuing as guest in ', left, '…'),
-      h('button', { type: 'button', onclick: () => { autoOff = true; stopAuto(); search.focus({ preventScroll: true }); } }, 'Stay here'),
-      h('button', { type: 'button', onclick: () => guestIn(false) }, 'Continue now'));
+      h('span', h('span.lock__as', 'Going in as a guest in '), left, ' s'),
+      h('button', { type: 'button', onclick: () => { autoOff = true; stopAuto(); if (team.length) search.focus({ preventScroll: true }); } }, 'Stay'),
+      h('button', { type: 'button', onclick: () => guestIn(false) }, 'Go now'));
     const el = h('div.lock', { role: 'dialog', 'aria-label': 'Log in' },
-      h('div.lock__top', time, date, online),
-      h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', search, hint, auto, skip)));
+      // the plain route has only two bubbles: its question sits under the clock, above them
+      h('div.lock__top', time, date, online, !team.length && ask),
+      h('div.lock__mid', field, pickView, addView, h('div.lock__bottom', team.length && ask, search, hint, auto, skip)));
     const IDLE = 20000, COUNT = 10;
     let idleT = 0, cdT = 0, autoOff = false;
     // the countdown makes the name box taller: the faces' keep-out zone is measured again whenever it shows or goes
@@ -456,6 +460,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     function countdown() {
       if (autoOff || pick || q || el.dataset.view !== 'field') return;
       if (document.hidden) { idleT = setTimeout(countdown, 1000); return; }  // wait until they can see it
+      const back = bubbles.find((b) => b.a.back)?.a;
+      auto.querySelector('.lock__as').textContent = back ? `Going in as ${back.label} in ` : 'Going in as a guest in ';
       let n = COUNT; left.textContent = n; auto.hidden = false; measure();
       cdT = setInterval(() => {
         if (document.hidden) return;
@@ -468,9 +474,18 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     // a moving mouse anywhere on the lock screen means someone's there; only real movement counts (the faces
     // drift under a still mouse all the time), checked at most four times a second
     let movedAt = 0;
-    el.addEventListener('pointermove', (e) => { if (!(e.movementX || e.movementY) || e.timeStamp - movedAt < 250) return; movedAt = e.timeStamp; nudge(e); }, { passive: true });
-    function guestIn(isAuto) {
-      const g = bubbles.find((b) => b.a.id === 'guest')?.a || { id: 'guest', label: 'Guest User' };
+    // (by position: the curved CRT's hit glass replays moves as synthetic events with no movementX/Y)
+    let lx = -1, ly = -1;
+    el.addEventListener('pointermove', (e) => { if (e.clientX === lx && e.clientY === ly) return; lx = e.clientX; ly = e.clientY; if (e.timeStamp - movedAt < 250) return; movedAt = e.timeStamp; nudge(e); }, { passive: true });
+    // hover as a class, not :hover: under the curved CRT the real pointer sits on the hit glass, which only
+    // replays pointerover/pointerout to the faces
+    el.addEventListener('pointerover', (e) => { const u = e.target.closest?.('.lock__user'); if (u) u.classList.add('is-hover'); });
+    el.addEventListener('pointerout', (e) => { const u = e.target.closest?.('.lock__user'); if (u && !u.contains(e.relatedTarget)) u.classList.remove('is-hover'); });
+    // the countdown goes in as the returning teammate when there is one; the skip button is always a guest
+    function guestIn(isAuto, asGuest = false) {
+      const back = !asGuest && bubbles.find((b) => b.a.back)?.a;
+      if (back) return choose({ ...back, auto: isAuto });
+      const g = bubbles.find((b) => b.a.id === 'guest')?.a || { id: 'guest', label: 'Guest' };
       choose({ ...g, auto: isAuto });
     }
 
@@ -486,11 +501,14 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       // a teammate with an illustrated character (persona.json) also takes that seat in the audience
       const people = roster ? roster.map((m) => { const c = team.find((t) => t.id === m.id); return { id: m.id, label: m.name, blurb: m.role, tag: m.tag, src: m.photo || c?.thumb || null, team: c || null, member: true }; })
         : team.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, src: c.thumb || c.src, team: c }));
+      if (before) { const i = people.findIndex((m) => m.id === before.character); if (i >= 0) people.unshift({ ...people.splice(i, 1)[0], back: true });
+        else if (roster) { ask.textContent = 'Find your face'; hintText = ''; if (!q) hint.textContent = ''; } }  // no longer on the team list
+      // Wispr: the + bubble and the "Continue as guest" button; the plain route: two bubbles, guest or add
       const accounts = [...ownAccounts().map((a) => ({ ...a, own: true })), ...people,
-        { id: 'add', label: 'Add account', blurb: 'Name and a selfie', glyph: '+' }, { id: 'guest', label: 'Guest User', blurb: 'Just looking around', glyph: '' }];
+        { id: 'add', label: 'Add yours', blurb: 'Name + selfie', glyph: '+' }, ...(team.length ? [] : [{ id: 'guest', label: 'Guest', blurb: 'Just looking', glyph: '' }])];
       field.replaceChildren();
       bubbles = accounts.map((a) => {
-        const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
+        const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : '') + (PINNED.includes(a.id) ? '.is-pinned' : '') + (a.back ? '.is-back' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
           face(a), a.tag && h('span.lock__tag.is-' + a.tag, a.tag[0].toUpperCase() + a.tag.slice(1)), h('span.lock__name', a.label), a.blurb && h('span.lock__role', a.blurb));
         field.append(b);
         return { a, el: b, x: 0, y: 0, vx: 0, vy: 0, on: true };
@@ -505,7 +523,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     // middle slots with the matches at once. Reduced motion: no bob, slower turns.
     const PINNED = ['w-tanay', 'w-sahaj', 'w-nimisha'];
     let W = 0, H = 0, R = 40, rot = 0, cap = 12, q = '', cells = [], queue = [];
-    const always = (b) => b.a.id === 'add' || b.a.id === 'guest' || b.a.own;  // never rotated out
+    const always = (b) => b.a.id === 'add' || b.a.id === 'guest' || b.a.own || b.a.back;  // never rotated out
     const pinned = (b) => PINNED.includes(b.a.id);
     const matches = (b) => { const l = b.a.label.toLowerCase(); return l.startsWith(q) || l.split(' ').some((w) => w.startsWith(q)); };
     const hash = (str) => { let x = 0; for (const c of str) x = (x * 31 + c.charCodeAt(0)) | 0; return Math.abs(x); };
@@ -513,7 +531,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     function vis(b, on) { if (on) load(b); b.on = on; b.el.classList.toggle('is-gone', !on); b.el.tabIndex = on ? 0 : -1; b.el.setAttribute('aria-hidden', on ? 'false' : 'true'); if (!on) b.cell = null; }
     function put(b, cell) {
       b.cell = cell; cell.b = b;
-      b.el.style.transform = `translate3d(${(cell.x - R).toFixed(1)}px, ${(cell.y - R).toFixed(1)}px, 0)`;
+      b.el.style.transform = `translate3d(${(cell.x - R * 1.15).toFixed(1)}px, ${(cell.y - R).toFixed(1)}px, 0)`;
       const i = hash(b.a.id);
       b.el.style.setProperty('--d', (4.2 + (i % 30) / 10) + 's');        // ppt's bob: its own 4.2–7.2 s beat
       b.el.style.setProperty('--dl', (-(i % 50) / 10) + 's');
@@ -541,7 +559,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       const sx = R * (narrow ? 2.3 : 2.45), sy = R * (1 + FOOT) + (narrow ? 16 : 22);  // room for a two-line name
       const cols = Math.max(1, Math.floor((W - R * 0.4) / sx)), x0 = (W - (cols - 1) * sx) / 2;
       const out = [];
-      for (let r = 0, y = R + 6; y + R * FOOT <= H - 4; r++, y += sy) {
+      for (let r = 0, y = R + 28; y + R * FOOT <= H - 4; r++, y += sy) {
         const shift = r % 2 && cols > 2 ? sx / 2 : 0;
         for (let c = 0; c < cols - (shift ? 1 : 0); c++) {
           const k = r * 31 + c * 17, x = x0 + c * sx + shift + ((k % 7) - 3) * R * 0.05, yy = y + ((k % 5) - 2) * R * 0.06;
@@ -551,7 +569,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       }
       const top = zones[0] ? zones[0].b : 0, bot = zones[1] ? zones[1].t : H, cx = W / 2, cy = (top + bot) / 2;
       out.sort((p, o) => Math.hypot(p.x - cx, (p.y - cy) * 1.3) - Math.hypot(o.x - cx, (o.y - cy) * 1.3));
-      cells = out.slice(0, narrow ? 24 : 72);
+      cells = out.slice(0, narrow ? 14 : 36);  // a calm room, not a wall: the rest take turns
       cap = cells.length;
       field.classList.toggle('is-tight', narrow);
     }
@@ -566,8 +584,9 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       // Add and Guest always show their line under the name, so they need a deeper foot clear of the name box
       const deep = (c) => !zones.some((z) => c.x + R > z.l && c.x - R < z.r && c.y + R * (FOOT + 1) > z.t && c.y - R < z.b);
       const nearBox = () => { const z = zones[1]; if (!z) return free.length - 1; let best = -1, d = Infinity; free.forEach((c, i) => { if (!deep(c)) return; const dd = Math.hypot(c.x - (z.l + z.r) / 2, c.y - z.t); if (dd < d) { d = dd; best = i; } }); return best; };
+      for (const b of bubbles.filter((x) => x.a.back)) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
       for (const b of bubbles.filter(pinned)) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
-      for (const b of bubbles.filter((x) => always(x) && x.a.id !== 'add' && x.a.id !== 'guest')) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
+      for (const b of bubbles.filter((x) => always(x) && !x.a.back && x.a.id !== 'add' && x.a.id !== 'guest')) { const c = take(() => (free.length ? 0 : -1)); if (c) { put(b, c); vis(b, true); } }
       for (const id of ['guest', 'add']) { const b = bubbles.find((x) => x.a.id === id), c = b && take(nearBox); if (c) { put(b, c); vis(b, true); } }
       const rest = bubbles.filter((b) => !always(b) && !pinned(b));
       if (!queue.length || queue.some((b) => !bubbles.includes(b))) queue = rest.slice().sort(() => Math.random() - 0.5);  // a different crowd each visit
@@ -577,7 +596,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     // one face at a time hands its slot to the next one in the queue, so the whole team comes round
     function rotate() {
       if (q || pick || document.hidden || el.dataset.view !== 'field') return;
-      const outs = bubbles.filter((b) => b.on && !always(b) && !pinned(b) && !b.el.matches(':hover, :focus-visible'));
+      const outs = bubbles.filter((b) => b.on && !always(b) && !pinned(b) && !b.el.matches('.is-hover, :focus-visible'));
       const n = queue.find((b) => !b.on);
       if (!outs.length || !n) return;
       const o = outs[Math.floor(Math.random() * outs.length)], cell = o.cell;
@@ -628,6 +647,8 @@ export function login(layer, persona, { reduced, stylise } = {}) {
       el.dataset.view = which;
       field.hidden = which !== 'field'; pickView.hidden = which !== 'pick'; addView.hidden = which !== 'add';
       el.querySelector('.lock__bottom').hidden = which !== 'field';
+      // a mouse and keyboard: the name box is ready to type into (touch: no keyboard popping up)
+      if (which === 'field' && team.length && matchMedia('(hover: hover) and (pointer: fine)').matches) setTimeout(() => search.focus({ preventScroll: true }), 0);
       arm();
     }
 
@@ -657,7 +678,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
         choose({ ...a, own: true });
       };
       addView.replaceChildren(h('button.lock__facebtn', { type: 'button', onclick: () => file.click(), 'aria-label': 'Take a selfie' }, pic), file,
-        h('p.lock__big', 'New account'), h('p.lock__role', 'Your selfie stays on this device. Sameep sees the name.'),
+        h('p.lock__big', 'New account'), h('p.lock__note', 'Your selfie stays on this device. Sameep sees the name.'),
         h('div.lock__form', nameIn, h('button.lock__go', { type: 'submit', 'aria-label': 'Create account' }, '→')), snap,
         h('button.lock__back', { type: 'button', onclick: back }, '← Other accounts'));
       show('add');
@@ -692,7 +713,7 @@ export function login(layer, persona, { reduced, stylise } = {}) {
     build();
     if (team.length) fetch('data/wispr-team.json').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d?.team?.length && !pick) { roster = d.team; build(); } }).catch(() => {});
     ro.observe(field);
-    rot = setInterval(rotate, reduced ? 3200 : 1100);
+    rot = setInterval(rotate, reduced ? 5000 : 2800);
     requestAnimationFrame(() => el.classList.add('is-on'));
   });
 }
