@@ -40,7 +40,9 @@ function utm() {
   return tag || ss('otcv-utm') || null;
 }
 const meta = { vid, sid, site: LIVE ? 'live' : 'dev', version: VERSION, power: POWER, device: device(), ref: ref(), path: location.pathname.slice(0, 64),
-  vp: `${innerWidth}x${innerHeight}`, lang: (navigator.language || '').slice(0, 12), utm: utm() };
+  vp: `${innerWidth}x${innerHeight}`, lang: (navigator.language || '').slice(0, 12), utm: utm(),
+  // an automated browser (puppeteer, Playwright): Sameep's QA runs; the Worker files them under his tests
+  wd: navigator.webdriver === true || undefined };
 
 function flush() {
   clearTimeout(timer); timer = 0;
@@ -128,7 +130,7 @@ addEventListener('click', (e) => {
 if (!off) {
   new MutationObserver((list) => {
     for (const m of list) {
-      for (const n of m.addedNodes) if (n.nodeType === 1 && n.matches('section.win')) track('window', { title: (n.getAttribute('aria-label') || '').slice(0, 40) });
+      for (const n of m.addedNodes) if (n.nodeType === 1 && n.matches('section.win')) track('window', { title: (n.getAttribute('aria-label') || '').replace(/,\s*now playing.*$/i, '').trim().slice(0, 40) });
     }
   }).observe(document.body, { childList: true, subtree: true });
 }
