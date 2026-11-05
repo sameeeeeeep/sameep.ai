@@ -59,11 +59,19 @@
         : m.img ? `<img class="app__img" src="${m.img}" alt="${esc(m.alt)}" loading="lazy" decoding="async">` : ''}
       <div class="cmd cmd--sm">
         <code id="cmd-${m.id}">${esc(line(m))}</code>
-        <button class="w-btn w-btn--primary" type="button" data-copy="cmd-${m.id}" aria-label="Copy the ${esc(m.name)} install line">Copy</button>
+        <button class="w-cta w-cta--sm w-cta--ghost cmd__copy" type="button" data-copy="cmd-${m.id}" aria-label="Copy the ${esc(m.name)} install line">Copy</button>
       </div>
     </article>`).join('');
 
   window.WisprStatus && WisprStatus.fill(document.getElementById('apps'));
+
+  // the frosted strip under the sticky nav follows the nav's real height (it wraps on phones)
+  const topbar = document.querySelector('.top');
+  if (topbar && 'ResizeObserver' in window) new ResizeObserver(() => {
+    const h = Math.ceil(topbar.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--wb-navh', h + 'px');
+    document.documentElement.style.scrollPaddingTop = (16 + h + 24) + 'px';
+  }).observe(topbar);
 
   // clips: one plays at a time, the most visible one; the rest rest on their posters with no source, so the page
   // never holds more than one video decoder (two side by side failed to decode in testing). Reduced motion: controls.

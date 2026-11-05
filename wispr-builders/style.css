@@ -16,6 +16,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--w-ring); outlin
 
 /* ---- nav: the site's bordered box, sticky */
 .top { position: sticky; top: 16px; z-index: 10; margin: 16px 16px 0; }
+/* a frosted lumen strip under the floating nav, edge to edge from the top of the window, so nothing shows
+   through above or around it; a 1px rule closes it off. Anchors land below it. */
+body::before { content: ""; position: fixed; z-index: 9; top: 0; left: 0; right: 0; height: calc(16px + var(--wb-navh, 68px) + 10px);
+  background: rgb(255 255 235 / .86); -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15);
+  border-bottom: 1px solid rgb(26 26 26 / .08); pointer-events: none; }
+html { scroll-padding-top: 112px; }
 @media (min-width: 1056px) { .top { margin: 16px auto 0; } }
 .w-nav__links .w-cta { margin-left: 8px; }
 
@@ -32,7 +38,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--w-ring); outlin
 .cmd .w-btn { flex: none; }
 .cmd--sm { margin-top: auto; padding: 6px 6px 6px 12px; border-color: transparent; background: var(--lumen); }
 .cmd--sm code { font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
-.w-btn.is-done, .w-cta.is-done { background: var(--fathom); color: var(--lumen); }
+.w-btn.is-done, .w-cta.is-done { background: var(--fathom); color: var(--lumen); border-color: var(--fathom); }
+/* every Copy is the site's secondary button: 2px ink outline, no fill; the nav's Install stays the one dawn CTA */
+.cmd__copy { flex: none; min-width: 76px; }
+.cmd .w-cta--ghost:not(.is-done) { color: var(--vast-950); border-color: var(--vast-950); }  /* the box is lumen even on ink panels */
+.cmd--sm .cmd__copy { padding: .5rem .875rem; font-size: 14px; }
 .cmd .w-cta { flex: none; }
 
 /* ---- stacked sections */
