@@ -199,7 +199,8 @@ export function installGuides({ area, cards, ctx }) {
   area.querySelectorAll('.win').forEach(addHelp);
 
   return {
-    first: () => firstOpen('desktop'),
+    // the desktop tour plays on every visit, repeat visitors too (Sameep, 6 Nov); window guides stay once each
+    first: () => { if (guideOn()) endGuide(); return play('desktop'); },
     desktop: () => play('desktop'),
     here: () => playHere(),
     // once per visitor, after the show closes or ends; then (once, ever) the one-line feedback card
