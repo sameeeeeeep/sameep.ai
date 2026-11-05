@@ -425,6 +425,8 @@ const saveOwn = (list) => { try { localStorage.setItem(ACCOUNTS, JSON.stringify(
 export function login(layer, persona, { reduced, stylise, hold = false } = {}) {
   return new Promise((resolve) => {
     const team = (persona.characters || []).filter((c) => c.team);
+    // the lobby's "Name · Role" tooltips are set in Wispr's Figtree
+    if (team.length && !document.getElementById('font-figtree')) document.head.append(h('link#font-figtree', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Figtree:wght@500;700&display=swap' }));
     let roster = null;  // the Wispr lobby: everyone on the team, from data/wispr-team.json
     const time = h('p.lock__time'), date = h('p.lock__date'), online = h('p.lock__online', { style: 'visibility:hidden' }, 'Just you in the room right now');
     const tick = () => { const d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); };
@@ -480,8 +482,32 @@ export function login(layer, persona, { reduced, stylise, hold = false } = {}) {
     el.addEventListener('pointermove', (e) => { if (e.clientX === lx && e.clientY === ly) return; lx = e.clientX; ly = e.clientY; if (e.timeStamp - movedAt < 250) return; movedAt = e.timeStamp; nudge(e); }, { passive: true });
     // hover as a class, not :hover: under the curved CRT the real pointer sits on the hit glass, which only
     // replays pointerover/pointerout to the faces
-    el.addEventListener('pointerover', (e) => { const u = e.target.closest?.('.lock__user'); if (u) u.classList.add('is-hover'); });
+    // a face near the top of the screen shows its tooltip under the face instead (the field clips above)
+    // and one near a side edge slides its tooltip in (the arrow still points at the face)
+    const flip = (u) => {
+      const t = u?.querySelector('.lock__tip'); if (!t) return;
+      const ub = u.getBoundingClientRect(), fb = field.getBoundingClientRect(), mid = ub.left + ub.width / 2, half = t.offsetWidth / 2;
+      u.classList.toggle('is-low', ub.top - fb.top < t.offsetHeight + 14);
+      const tx = Math.max(fb.left + 6 - (mid - half), Math.min(0, fb.right - 6 - (mid + half)));
+      t.style.setProperty('--tx', Math.round(tx) + 'px');
+    };
+    el.addEventListener('pointerover', (e) => { const u = e.target.closest?.('.lock__user'); if (u) { flip(u); u.classList.add('is-hover'); } });
+    el.addEventListener('focusin', (e) => flip(e.target.closest?.('.lock__user')));
     el.addEventListener('pointerout', (e) => { const u = e.target.closest?.('.lock__user'); if (u && !u.contains(e.relatedTarget)) u.classList.remove('is-hover'); });
+    // touch: a long press (450 ms) shows that face's "Name · Role" tooltip for a moment instead of picking it
+    let lpT = 0, lpEl = null, lpHit = false, tipT = 0;
+    const tipOff = () => { el.querySelectorAll('.lock__user.is-tip').forEach((u) => u.classList.remove('is-tip')); };
+    el.addEventListener('pointerdown', (e) => {
+      const u = e.pointerType !== 'mouse' && e.target.closest?.('.lock__user');
+      clearTimeout(lpT); lpHit = false; lpEl = u || null;
+      if (!u || !u.querySelector('.lock__tip')) return;
+      lpT = setTimeout(() => { lpHit = true; tipOff(); flip(u); u.classList.add('is-tip'); clearTimeout(tipT); tipT = setTimeout(() => u.classList.remove('is-tip'), 2200); }, 450);
+    });
+    const lpEnd = () => clearTimeout(lpT);
+    el.addEventListener('pointerup', lpEnd); el.addEventListener('pointercancel', lpEnd);
+    el.addEventListener('pointermove', (e) => { if (lpEl && e.pointerType !== 'mouse' && (Math.abs(e.movementX) + Math.abs(e.movementY) > 6)) lpEnd(); });
+    el.addEventListener('contextmenu', (e) => { if (e.target.closest?.('.lock__user')) e.preventDefault(); });
+    el.addEventListener('click', (e) => { if (lpHit && e.target.closest?.('.lock__user') === lpEl) { e.preventDefault(); e.stopImmediatePropagation(); lpHit = false; } }, true);
     // the countdown goes in as the returning teammate when there is one; the skip button is always a guest
     function guestIn(isAuto, asGuest = false) {
       const back = !asGuest && bubbles.find((b) => b.a.back)?.a;
@@ -509,8 +535,13 @@ export function login(layer, persona, { reduced, stylise, hold = false } = {}) {
         { id: 'add', label: 'Add yours', blurb: 'Name + selfie', glyph: '+' }, ...(team.length ? [] : [{ id: 'guest', label: 'Guest', blurb: 'Just looking', glyph: '' }])];
       field.replaceChildren();
       bubbles = accounts.map((a) => {
-        const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : '') + (PINNED.includes(a.id) ? '.is-pinned' : '') + (a.back ? '.is-back' : ''), { type: 'button', role: 'option', onclick: () => choose(a) },
-          face(a), a.tag && h('span.lock__tag.is-' + a.tag, a.tag[0].toUpperCase() + a.tag.slice(1)), h('span.lock__name', a.label), a.blurb && h('span.lock__role', a.blurb));
+        // every teammate looks the same (no founder size, no investor/advisor pills): the name under the face,
+        // and "Name · Role" in a Wispr-style tooltip on hover, focus or a long press. Add / Guest keep their line
+        const person = !!(a.member || a.team) && !a.own;
+        const b = h('button.lock__user' + (a.id === 'add' ? '.is-add' : a.id === 'guest' ? '.is-guest' : '') + (a.back ? '.is-back' : ''),
+          { type: 'button', role: 'option', 'aria-label': person && a.blurb ? `${a.label}, ${a.blurb}` : null, onclick: () => choose(a) },
+          face(a), h('span.lock__name', a.label),
+          person ? a.blurb && h('span.lock__tip', { 'aria-hidden': 'true' }, h('b', a.label), ' · ', a.blurb) : a.blurb && h('span.lock__role', a.blurb));
         field.append(b);
         return { a, el: b, x: 0, y: 0, vx: 0, vy: 0, on: true };
       });
