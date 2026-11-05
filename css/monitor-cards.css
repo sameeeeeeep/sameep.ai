@@ -164,3 +164,15 @@ a.mcard { text-decoration: none; }
 a.sub.sub--sp.is-page { text-decoration: none; }
 .cmap .sub--sp.is-page .sub__m { color: #034f46; font-weight: 600; }
 .cmap .sub--sp.is-soon .sub__m { padding: 0 5px; border-radius: 3px; background: #f0d7ff; color: #3a2a48; font-size: 10.5px; }
+/* a card whose Pack 1 clip is live: the picture plays it (muted while lit), a tap watches it with sound */
+.mcard--vid { cursor: default; }
+.mcard--vid .mcard__pic { position: relative; width: 100%; padding: 0; border: 0; cursor: pointer; color: inherit; font: inherit; }
+.mcard--vid .mcard__pic video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mcard--vid .mcard__pic:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+.mcard__watch { position: absolute; left: 4px; bottom: 4px; padding: 1px 6px; border-radius: 2px; background: rgba(0,0,0,.72); color: var(--paper); font: 600 10px/1.5 var(--f-ui); letter-spacing: .02em; pointer-events: none; }
+.mcard__watch span { opacity: .8; }
+a.mcard__t { color: inherit; text-decoration: none; }
+a.mcard__t:hover, a.mcard__t:focus-visible { text-decoration: underline; text-underline-offset: 2px; }
+.mon[data-size="pip"] .mcard__watch { display: none; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard__watch { left: 3px; bottom: 3px; padding: 0 4px; font-size: 9px; }
+.mon:is([data-size="side"], [data-size="panel"]) .mcard__watch span { display: none; }

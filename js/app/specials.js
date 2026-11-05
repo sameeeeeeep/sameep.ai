@@ -26,7 +26,8 @@ export function specialInfo(sp, base) {
     const u = specialUrls(sp, base);
     // the poster and captions are only looked for once the video itself is up
     const up = sp.live === true ? head(u.video) : Promise.resolve(false);
-    cache.set(sp.slug, up.then((ok) => Promise.all([ok, ok && head(u.poster), ok && head(u.vtt), !!u.page])).then(([ok, poster, vtt, page]) => {
+    // "burned": true = the captions are in the picture already, so the .vtt isn't drawn over them
+    cache.set(sp.slug, up.then((ok) => Promise.all([ok, ok && head(u.poster), ok && !sp.burned && head(u.vtt), !!u.page])).then(([ok, poster, vtt, page]) => {
       const info = { ok, poster: poster ? u.poster : null, vtt: vtt ? u.vtt : null, page: page ? u.page : null, video: u.video, sec: sp.sec || null };
       if (!ok || info.sec) return info;
       // the length, from the file's own metadata

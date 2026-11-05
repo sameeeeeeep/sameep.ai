@@ -17,17 +17,24 @@
  "specials": [
   {
    "slug": "wispr-builders",
+   "live": true,
+   "burned": true,
+   "url": "wispr-builders/",
    "title": "Wispr for Builders: the launch",
    "blurb": "Sameep presents Pack 1: Claude mods you run by voice.",
    "only": "wispr"
   },
   {
    "slug": "sameep-ai",
+   "live": true,
+   "burned": true,
    "title": "sameep.ai: the launch",
    "blurb": "Why a podcast instead of a CV, and how it was made."
   },
   {
    "slug": "guru",
+   "live": true,
+   "burned": true,
    "title": "Guru",
    "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
    "url": "wispr-guru/",
@@ -35,6 +42,8 @@
   },
   {
    "slug": "wispr-video",
+   "live": true,
+   "burned": true,
    "title": "Wispr Video",
    "blurb": "Teleprompter, recorder and editor in one.",
    "url": "wispr-editor/",
@@ -150,13 +159,15 @@
         "title": "Guru",
         "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
         "thumb": "img/work/wispr/guru.jpg",
-        "url": "wispr-guru/"
+        "url": "wispr-guru/",
+        "special": "guru"
        },
        {
         "title": "Wispr Video",
         "blurb": "Teleprompter, recorder and editor in one.",
         "thumb": "img/work/wispr/video.jpg",
-        "url": "wispr-editor/"
+        "url": "wispr-editor/",
+        "special": "wispr-video"
        },
        {
         "title": "Pack 1, out now",
@@ -349,13 +360,15 @@
         "title": "Guru",
         "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
         "thumb": "img/work/wispr/guru.jpg",
-        "url": "wispr-guru/"
+        "url": "wispr-guru/",
+        "special": "guru"
        },
        {
         "title": "Wispr Video",
         "blurb": "Teleprompter, recorder and editor in one.",
         "thumb": "img/work/wispr/video.jpg",
-        "url": "wispr-editor/"
+        "url": "wispr-editor/",
+        "special": "wispr-video"
        },
        {
         "title": "Pack 1, out now",
@@ -547,13 +560,15 @@
         "title": "Guru",
         "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
         "thumb": "img/work/wispr/guru.jpg",
-        "url": "wispr-guru/"
+        "url": "wispr-guru/",
+        "special": "guru"
        },
        {
         "title": "Wispr Video",
         "blurb": "Teleprompter, recorder and editor in one.",
         "thumb": "img/work/wispr/video.jpg",
-        "url": "wispr-editor/"
+        "url": "wispr-editor/",
+        "special": "wispr-video"
        },
        {
         "title": "Pack 1, out now",
@@ -745,13 +760,15 @@
         "title": "Guru",
         "blurb": "A second cursor. Answers any Claude Code thread from the notch.",
         "thumb": "img/work/wispr/guru.jpg",
-        "url": "wispr-guru/"
+        "url": "wispr-guru/",
+        "special": "guru"
        },
        {
         "title": "Wispr Video",
         "blurb": "Teleprompter, recorder and editor in one.",
         "thumb": "img/work/wispr/video.jpg",
-        "url": "wispr-editor/"
+        "url": "wispr-editor/",
+        "special": "wispr-video"
        },
        {
         "title": "Pack 1, out now",

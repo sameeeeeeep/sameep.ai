@@ -295,11 +295,42 @@ export class Monitor {
         a.querySelector('.mcard__ext')?.remove();
         a.querySelector('.mcard__t').append(h('span.mcard__soon', 'Coming soon'));
       });
+      if (it.special) this.#cardClip(it, a, (c) => { cards[cards.indexOf(a)] = c; light(lit); });
       return a;
     });
     const wrap = h('div.mcards', cards);
-    if (v.cue) this.#cued(v.cue, (i) => cards.forEach((c, k) => { c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen'); }));
+    // the lit card's clip plays (muted, under the voice); the others hold on their poster
+    let lit = -1;
+    const light = (i) => cards.forEach((c, k) => {
+      c.classList.toggle('is-lit', k === i); if (k === i) c.classList.add('is-seen');
+      const vid = c.querySelector('video');
+      if (vid && !this.reduced) k === i ? vid.play().catch(() => {}) : vid.pause();
+    });
+    if (v.cue) this.#cued(v.cue, (i) => { lit = i; light(i); });
     return wrap;
+  }
+
+  // a card whose special is live: its picture becomes the clip (muted, looping, poster first) and a button that watches
+  // it full-size with sound; the title stays the link to the tool's page. Until the clip is live the card is unchanged.
+  #cardClip(it, a, swap) {
+    const sp = (this.specials || []).find((x) => x.slug === it.special);
+    if (!sp) return;
+    specialInfo(sp, this.base).then((info) => {
+      if (!info.ok || !a.parentNode) return;
+      const vid = h('video', { muted: true, playsInline: true, loop: true, preload: this.reduced ? 'none' : 'metadata', poster: info.poster || safeUrl(it.thumb, this.base), src: info.video, disablePictureInPicture: true, 'aria-hidden': 'true' });
+      vid.muted = true;
+      vid.addEventListener('error', () => vid.replaceWith(h('img', { src: it.thumb, alt: '', draggable: 'false' })), { once: true });
+      const watch = (e) => { e.stopPropagation(); this.onSpecial?.(sp.slug); };
+      const len = specialLen(info);
+      const c = h('div.mcard.mcard--vid' + [...a.classList].filter((k) => k.startsWith('is-')).map((k) => '.' + k).join(''),
+        h('button.mcard__pic', { type: 'button', onclick: watch, 'aria-label': `Watch ${sp.title} with sound${len ? ', ' + len : ''}` },
+          vid, h('span.mcard__watch', { 'aria-hidden': 'true' }, '▶', len && h('span', ' ' + len))),
+        a.href ? h('a.mcard__t', { href: a.href, target: '_blank', rel: 'noopener', onclick: (e) => e.stopPropagation() }, it.title, h('span.mcard__ext', { 'aria-hidden': 'true' }, ' ↗'))
+          : h('span.mcard__t', it.title),
+        h('span.mcard__b', it.blurb));
+      a.replaceWith(c);
+      swap(c);
+    });
   }
 
   // the specials reel: the tool being talked about plays on the screen, muted under the voice (its poster, or a
