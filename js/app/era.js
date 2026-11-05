@@ -647,7 +647,7 @@ export function login(layer, persona, { reduced, stylise, hold = false } = {}) {
       hint.textContent = all.length > hit.length ? `${all.length - hit.length} more match, keep typing` : all.length ? hintText : 'Not here? Add your own account';
       cells.forEach((c) => { c.b = null; });
       for (const b of bubbles) if (!hit.includes(b) && b !== add) vis(b, false);
-      hit.forEach((b, i) => { put(b, cells[i]); vis(b, true); });
+      hit.forEach((b, i) => { if (cells[i]) { put(b, cells[i]); vis(b, true); } else vis(b, false); });  // no slot yet (grid still hidden): stays out
       if (add && cells[hit.length]) { put(add, cells[hit.length]); vis(add, true); }
     }
     search.addEventListener('input', () => { const was = q; q = search.value.trim().toLowerCase(); if (q !== was) filter(); arm(); });  // arm again: an emptied box counts down again
@@ -705,8 +705,11 @@ export function login(layer, persona, { reduced, stylise, hold = false } = {}) {
         if (!label) return nameIn.focus();
         const a = { id: 'me-' + Math.random().toString(36).slice(2, 9), label, blurb: 'Your account, on this device', src: photo };
         saveOwn([...ownAccounts(), a]);
-        build();
+        // the lobby must be showing (and the name box cleared) before it's rebuilt, or the grid has no slots;
+        // and whatever happens to the lobby, the new account always goes in
+        search.value = ''; q = '';
         show('field');
+        try { build(); } catch (err) { console.warn('lobby rebuild', err); }
         choose({ ...a, own: true });
       };
       addView.replaceChildren(h('button.lock__facebtn', { type: 'button', onclick: () => file.click(), 'aria-label': 'Take a selfie' }, pic), file,
