@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffeb">
+  <title>Wispr Video · a prototype by Sameep</title>
+  <meta name="description" content="A video editor you drive by talking. Record with a teleprompter that follows your voice, add a screen take, then say what to change and Claude edits the timeline live. A Claude Code mod made for Wispr users, not a Wispr product.">
+  <meta property="og:title" content="Wispr Video · a prototype by Sameep">
+  <meta property="og:description" content="Don't edit. Just say it. A voice-first video editor that runs as a Claude Code mod.">
+  <meta property="og:image" content="https://sameep.ai/wispr-editor/editor.jpg">
+  <link rel="canonical" href="https://sameep.ai/wispr-editor/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1.25' y='1.25' width='29.5' height='29.5' rx='9' fill='%23F0D7FF' stroke='%231A1A1A' stroke-width='2.5'/%3E%3Cpath d='M12 9.5v13l11-6.5z' fill='%231A1A1A'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="mark" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.25" y="1.25" width="29.5" height="29.5" rx="9" fill="#F0D7FF" stroke="#1A1A1A" stroke-width="2.5"/><path d="M12 9.5v13l11-6.5z" fill="#1A1A1A"/></svg>Wispr <em>Video</em></a>
+    <span class="by">a prototype by Sameep for Wispr</span>
+    <a class="cta small" href="#install">Install</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Wispr for Builders · Pack 1</p>
+      <h1>Don’t edit. <em>Just say it.</em></h1>
+      <p class="lede">A video editor you drive by talking. Record yourself with a teleprompter that follows your voice, add a screen take whenever you like, then say what to change. Claude makes the edit on the timeline while you watch.</p>
+      <div class="row"><a class="cta" href="#install">Install in one command</a><a class="ghost" href="#film">Watch what it made</a></div>
+    </section>
+
+    <figure class="shot">
+      <img src="editor.jpg" width="1600" height="1000" alt="The Wispr Video editor: a 16:9 preview of the sameep.ai launch video, a box that says ‘Say an edit’, and a timeline with titles, sound, music and screen tracks.">
+      <figcaption>The editor with the sameep.ai launch video open. Every track on that timeline was put there by edit ops, the same ones Claude sends.</figcaption>
+    </figure>
+
+    <section class="steps">
+      <article>
+        <span class="n">1</span>
+        <h2>Record <em>like you talk</em></h2>
+        <p>The teleprompter lights up each word as you say it and only moves on once you finish the line. It never runs on a timer. Space or → if you want to jump.</p>
+        <p class="note">Camera and screen are separate tracks. Record them together, or do the screen pass later and drop it in at the playhead.</p>
+        <p class="status"><b>Being fixed:</b> on some Macs voice-follow goes quiet while the camera is recording, because both want the mic. Space and → always work.</p>
+      </article>
+      <article>
+        <span class="n">2</span>
+        <h2>Say <em>the edit</em></h2>
+        <ul class="says">
+          <li>“Cut the pauses and the ums.”</li>
+          <li>“Put the challenge page over the second line.”</li>
+          <li>“Show the site full while I talk about it.”</li>
+          <li>“Make the captions bigger, one word at a time.”</li>
+        </ul>
+        <p class="note">Type it, dictate it with Wispr, or say it to Claude Code. The timeline updates live.</p>
+      </article>
+      <article>
+        <span class="n">3</span>
+        <h2>Export <em>everywhere</em></h2>
+        <p>9:16 for Reels, 4:5 for the feed, 16:9 for YouTube. Word-timed captions with your keywords highlighted are burned in by ffmpeg, all on your Mac.</p>
+        <p class="note">Speech-to-text runs on-device with whisper.cpp. Your footage never leaves the machine.</p>
+      </article>
+    </section>
+
+    <section class="film" id="film">
+      <h2>Made with it: <em>the sameep.ai launch video</em></h2>
+      <p class="lede small">Cut in Wispr Video from one screen take of the site, two clips and the site’s own music bed. 51 seconds.</p>
+      <div class="vids">
+        <video src="launch-16x9.mp4" poster="launch-16x9.jpg" controls playsinline preload="none" width="1920" height="1080"></video>
+        <video class="tall" src="launch-9x16.mp4" poster="launch-9x16.jpg" controls playsinline preload="none" width="1080" height="1920"></video>
+      </div>
+    </section>
+
+    <section class="how">
+      <h2>How Claude <em>edits it</em></h2>
+      <p>The project is a plain JSON edit list. Claude reads it (clips, script lines, every word with its time) and sends ops back through a small MCP server. The editor watches the file, so you see each change land.</p>
+<pre><code>video_edit({ ops: [
+  { "op": "cut_silences", "min_gap": 0.45 },
+  { "op": "overlay", "src": "challenge-page", "start": 5.49, "end": 20.66,
+    "box": { "x": 0.08, "y": 0.12, "w": 0.84, "h": 0.46 }, "fit": "contain" },
+  { "op": "captions", "size": 0.055, "words": 3 },
+  { "op": "keywords", "add": ["Wispr", "2,000"] }
+]})</code></pre>
+    </section>
+
+    <section class="install" id="install">
+      <h2>Try it <em>yourself</em></h2>
+      <p>One command. Nothing is installed or written to your settings until you keep it.</p>
+      <div class="cmd"><code id="cmd">claude --plugin-url https://sameep.ai/wispr-editor/wispr-video.zip</code><button type="button" id="copy">Copy</button></div>
+      <p class="note">Then type <code>/video</code>. Needs macOS, Chrome for the teleprompter’s voice-follow, <code>ffmpeg</code>, and <code>whisper-cpp</code> (<code>brew install ffmpeg whisper-cpp</code>). Projects live in <code>~/WisprVideo</code>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made for Wispr users by Sameep. Not a Wispr product, not affiliated with Wispr. <a href="../">sameep.ai</a></p>
+  </footer>
+  <script>
+    document.getElementById('copy').onclick = async (e) => {
+      try { await navigator.clipboard.writeText(document.getElementById('cmd').textContent); e.target.textContent = 'Copied'; }
+      catch { e.target.textContent = 'Select it'; }
+      setTimeout(() => (e.target.textContent = 'Copy'), 1600);
+    };
+  </script>
+</body>
+</html>
