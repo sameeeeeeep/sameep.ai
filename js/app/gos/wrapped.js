@@ -355,7 +355,7 @@ function pitch(W) {
     gboxW('Who did it first', h('div.gos-grid', P.precedents.map((p) => h('div.card', h('p.card__t', p.t), h('p.card__p', rich(p.d)))))),
     gbox('What it needs from Flow', h('p', 'Counts only. Tick a row once engineering confirms it can be computed on the device.'), dataTbl,
       h('div.bar', { style: { marginTop: '12px', marginBottom: 0 } }, h('button.btn.btn--sm', { type: 'button', onclick: () => download('wispr-wrapped-data.csv', csv([['Stat', 'What', 'Source today', 'Eng confirmed'], ...rows()])) }, 'Export CSV'))),
-    h('section.brief', h('div.brief__head', h('h3.brief__t', 'Privacy rules')), h('ul.ul', P.privacy.map((t) => h('li', rich(t)))), h('p.note', { style: { color: '#bdbdab' } }, rich(P.lowUsers))),
+    h('section.brief', h('div.brief__head', h('h3.brief__t', 'Privacy rules')), h('ul.ul', P.privacy.map((t) => h('li', rich(t)))), h('p.note', rich(P.lowUsers))),
     gbox('How it spreads', h('ol.steps', P.mechanics.map((t) => h('li', rich(t))))),
     gbox('How we know it worked', h('div.kpis', P.kpis.map((k) => h('div.kpi' + (k.north ? '.kpi--north' : ''), h('span.kpi__k', k.north ? 'North star' : 'Measure'), h('span.kpi__name', k.k), h('span.kpi__d', rich(k.d)))))),
     gbox('Second-order', secondOrder(P.so)),

@@ -174,25 +174,26 @@
 .brief { container-type: inline-size; margin-top: 24px; padding: 40px; border-radius: 32px; background: var(--lumen); box-shadow: inset 0 0 0 2px var(--line); color: var(--vast); }
 .brief__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-bottom: 28px; }
 .brief__titles { min-width: 0; flex: 1 1 420px; }
-.brief__kicker { margin: 0 0 12px; font: 600 12px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
-.brief__t { margin: 0; font: 400 clamp(36px, 4vw, 52px)/1 var(--serif); letter-spacing: -.025em; color: var(--vast); }
+.brief__kicker { margin: 8px 0 14px; font: 600 12px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.brief__t { margin: 0; font: 400 clamp(32px, 3.4vw, 44px)/1.05 var(--serif); letter-spacing: -.02em; color: var(--vast); }
+.brief--camp .brief__t { font-size: clamp(38px, 4.6vw, 60px); line-height: 1; letter-spacing: -.03em; }
 .brief__dates { margin: 10px 0 0; font: 500 14px var(--sans); color: var(--mute); }
 .brief__line { margin: 12px 0 0; max-width: 44ch; font: italic 400 22px/1.3 var(--serif); color: #33332c; }
 .brief__tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .brief .gbox { margin-top: 16px; border-radius: 24px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
 
 /* the campaign brief's blocks */
-.bgrid { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+.bgrid { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; }
 .bsec { min-width: 0; padding: 26px 28px; border-radius: 24px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
 .bsec--idea, .bsec--steps, .bsec--map { grid-column: 1 / -1; }
-.bsec__k { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font: 600 11.5px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
-.bsec__k::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--k, var(--line-2)); }
+.bsec__k { display: flex; align-items: center; gap: 9px; margin: 0 0 16px; font: 600 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--vast); }
+.bsec__k::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--k, var(--line-2)); }
 .bsec__p { margin: 0; max-width: 62ch; font: 400 15.5px/1.6 var(--sans); color: #2a2a24; }
 .bsec .tag + .bsec__p { margin-top: 10px; }
 /* the idea: the one dark block, so it's the first thing the eye lands on */
-.bsec--idea { padding: 32px 34px; background: var(--vast); box-shadow: none; --k: var(--dawn); }
-.bsec--idea .bsec__k { color: #bdbdab; }
-.bsec__lede { margin: 0; max-width: 64ch; font: 400 19px/1.6 var(--sans); color: var(--lumen); }
+.bsec--idea { padding: 36px 40px; background: var(--vast); box-shadow: none; --k: var(--dawn); }
+.bsec--idea .bsec__k { color: var(--dawn); }
+.bsec__lede { margin: 0; max-width: 46ch; font: 400 25px/1.38 var(--serif); letter-spacing: -.005em; color: var(--lumen); }
 .bsec--idea a, .bsec--idea .src { color: #8fd6c0; }
 .bsec--why { --k: var(--glow); }
 /* real example: a quote, in the serif */
@@ -208,7 +209,7 @@
 .bsec--kpi { --k: var(--fathom); }
 .bchecks { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; font: 400 15px/1.5 var(--sans); color: #2a2a24; }
 .bchecks li { position: relative; padding-left: 26px; }
-.bchecks li::before { content: ""; position: absolute; left: 2px; top: 5px; width: 11px; height: 6px; border: solid var(--fathom); border-width: 0 0 2px 2px; transform: rotate(-45deg); }
+.bchecks li::before { content: ""; position: absolute; left: 1px; top: 4px; width: 13px; height: 7px; border: solid var(--fathom); border-width: 0 0 2.5px 2.5px; transform: rotate(-45deg); }
 /* what each mod captures: name, job, state */
 .bsec--map { --k: var(--dawn); }
 .bmap { margin: 0; padding: 0; list-style: none; }
@@ -216,33 +217,44 @@
 .bmap__row:first-child { border-top: 0; padding-top: 0; }
 .bmap__mod { font: 400 21px/1.2 var(--serif); color: var(--vast); }
 .bmap__job { font: 400 15px/1.45 var(--sans); color: #3c3c34; }
-.bmap__row .tag { justify-self: end; }
+.bmap__row .tag, .bmap__state { justify-self: end; }
+.bmap__state { font: 500 13px/1.2 var(--sans); color: var(--mute); white-space: nowrap; }
 .tag--next { background: var(--line); color: var(--mute); }
 .bsec--install { --k: var(--line-2); }
+.bcode { display: block; margin: 12px 0; padding: 12px 14px; border-radius: 12px; background: var(--vast); color: var(--lumen); font: 500 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; overflow-wrap: anywhere; user-select: all; }
 /* prototypes: Wispr's lilac call-to-action pill */
 .bsec--proto { --k: var(--dawn); }
 .bprotos { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
-.bproto { display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 18px; border-radius: 12px; background: var(--dawn); box-shadow: inset 0 0 0 1.5px var(--vast); color: var(--vast); font: 600 14px/1.2 var(--sans); text-decoration: none; }
+.bproto { display: inline-flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 48px; padding: 8px 18px; border-radius: 12px; background: var(--dawn); box-shadow: inset 0 0 0 1.5px var(--vast); color: var(--vast); font: 600 14px/1.2 var(--sans); text-decoration: none; }
+.win--gos a.bproto { color: var(--vast); }
 a.bproto:hover { background: #e6c3fb; }
-.bproto__s { font-weight: 500; opacity: .75; }
+.bproto__t { display: grid; gap: 1px; }
+.bproto__t b { font-weight: 600; }
+.bproto__d { font: 400 12.5px/1.3 var(--sans); color: #4a4a3f; }
+.bproto__s { flex: none; font-weight: 500; opacity: .75; }
+a.bproto:focus-visible { outline: 2px solid var(--fathom); outline-offset: 2px; }
 .bproto.is-off { background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--line); color: var(--mute); }
 .bproto.is-off .bproto__s { padding: 2px 8px; border-radius: 999px; background: var(--line); font-size: 11.5px; opacity: 1; }
 /* background: quiet hairline rows under the blocks */
 .bmore { margin-top: 28px; }
 .pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.pill { display: inline-flex; padding: 4px 12px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px var(--line-2); font: 500 13px/1.3 var(--sans); color: var(--vast); }
+.pill { display: inline-flex; padding: 5px 14px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px var(--line-2); font: 500 13px/1.3 var(--sans); color: var(--vast); }
 
 /* every brief's definition list: small-caps labels on hairline rows */
 .brief .dl { gap: 0 24px; grid-template-columns: 150px 1fr; }
 .brief .dl dt, .brief .dl dd { padding: 14px 0; border-top: 1px solid var(--line); }
-.brief .dl dt { font: 600 11.5px/1.9 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.brief .dl dt { font: 600 12px/1.8 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
 .brief .dl dd { font: 400 15px/1.6 var(--sans); color: #2a2a24; }
 
 @container (max-width: 640px) {
   .bgrid { grid-template-columns: 1fr; }
   .bsec { padding: 22px 20px; border-radius: 20px; }
   .bsec--idea { padding: 24px 22px; }
-  .bsec__lede { font-size: 17px; }
+  .bsec__lede { font-size: 20px; line-height: 1.36; }
+  .bprotos { flex-direction: column; }
+  .bprotos li, .bproto { width: 100%; }
+  .bsteps__i { grid-template-columns: 28px 1fr; gap: 10px; align-items: baseline; }
+  .bsteps__n { font-size: 30px; }
   .bmap__row { grid-template-columns: 1fr auto; }
   .bmap__job { grid-column: 1 / -1; grid-row: 2; }
   .brief .dl { grid-template-columns: 1fr; }
@@ -380,7 +392,8 @@ a.bproto:hover { background: #e6c3fb; }
   .funnel__row { grid-template-columns: 100px 1fr 52px; font-size: 13px; }
   .slider { grid-template-columns: 1fr 30px; }
   .slider span { grid-column: 1 / -1; }
-  .brief { padding: 22px 16px; border-radius: 24px; }
+  .brief { margin-bottom: 20px; padding: 8px 0 0; border-radius: 0; background: none; box-shadow: none; }
+  .brief--camp { margin-bottom: 72px; }
   .brief__line { font-size: 19px; }
   .brief .dl dd { margin-bottom: 0; }
   .tbl { font-size: 14px; }

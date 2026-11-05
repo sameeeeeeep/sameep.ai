@@ -406,23 +406,23 @@ function briefView(c, rerender, { go } = {}) {
   // Wispr-style blocks: a small-caps label, then one kind of content per block, so each reads at a glance
   const sec = (k, mod, ...kids) => h('section.bsec' + (mod ? '.bsec--' + mod : ''), h('p.bsec__k', k), ...kids);
   const est = /^Estimate:\s*/i.test(c.budget || '');
-  return h('article.brief.brief--camp', { style: { '--c': tone(c.c) } },
+  return h('article.brief.brief--camp', { style: { '--c': tone(c.c) }, dataset: { camp: c.id, guide: c.guide ? JSON.stringify({ name: c.name, ...c.guide }) : '' } },
     h('header.brief__head',
       h('div.brief__titles',
         h('p.brief__kicker', `${fmtD(c.start)} – ${fmtD(c.end)}`, h('span', ' · '), c.owner || 'Owner: tbc'),
         h('h3.brief__t', c.name),
         c.line ? h('p.brief__line', c.line) : null),
-      h('div.brief__tools', tag(st), select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
+      h('div.brief__tools', select(st, STATUSES, (v) => { S.status[c.id] = v; save(); const keep = page?.scrollTop; page?.replaceChildren(...rerender()); if (page) page.scrollTop = keep; }, 'Status'),
         copyBtn(() => briefText(c), 'Copy brief'))),
     h('div.bgrid',
       sec('The idea', 'idea', h('p.bsec__lede', rich(c.idea))),
       c.why ? sec('Why it works', 'why', h('p.bsec__p', rich(c.why))) : null,
       c.example ? sec('Real example', 'ex', h('p.bsec__quote', rich(c.example))) : null,
-      c.map?.length ? sec('What each mod captures', 'map', h('ul.bmap', c.map.map((m) => h('li.bmap__row', h('span.bmap__mod', m.mod), h('span.bmap__job', m.job.replace(/^./, (x) => x.toUpperCase())), tag(m.state, /built/i.test(m.state) ? 'approved' : /live/i.test(m.state) ? 'live' : 'next'))))) : null,
+      c.map?.length ? sec('What each mod captures', 'map', h('ul.bmap', c.map.map((m) => h('li.bmap__row', h('span.bmap__mod', m.mod), h('span.bmap__job', m.job.replace(/^./, (x) => x.toUpperCase())), /built|live/i.test(m.state) ? tag(m.state, /built/i.test(m.state) ? 'approved' : 'live') : h('span.bmap__state', m.state))))) : null,
       c.steps?.length ? sec(c.steps.length === 3 ? 'First 3 steps' : 'First steps', 'steps', h('ol.bsteps', c.steps.map((t, i) => h('li.bsteps__i', h('span.bsteps__n', String(i + 1)), h('p.bsec__p', rich(t)))))) : null,
-      sec('Cost and effort', 'cost', est ? tag('Estimate', 'sample') : null, h('p.bsec__p', rich(est ? c.budget.replace(/^Estimate:\s*/i, '').replace(/^./, (x) => x.toUpperCase()) : (c.budget || 'tbc')))),
-      sec('KPIs', 'kpi', h('ul.bchecks', (c.kpis || []).map((k) => h('li', rich(k))))),
-      c.install ? sec('How it installs', 'install', h('p.bsec__p', rich(c.install))) : null,
+      sec(est ? 'Cost and effort · estimate' : 'Cost and effort', 'cost', h('p.bsec__p', rich(est ? c.budget.replace(/^Estimate:\s*/i, '').replace(/^./, (x) => x.toUpperCase()) : (c.budget || 'tbc')))),
+      c.kpis?.length ? sec('KPIs', 'kpi', h('ul.bchecks', c.kpis.map((k) => h('li', rich(k))))) : null,
+      c.install ? sec('How it installs', 'install', ...installBits(c.install)) : null,
       protos.length ? sec(protos.length > 1 ? 'Try the prototypes' : 'Try the prototype', 'proto', h('ul.bprotos', protos.map(protoLink))) : null),
     h('section.bmore',
       h('p.bsec__k', 'Background'),
@@ -434,15 +434,27 @@ function briefView(c, rerender, { go } = {}) {
         c.links?.length ? [h('dt', 'Uses'), h('dd', c.links.map((l, i) => [i ? ' · ' : '', h('a', { href: '#', onclick: (e) => { e.preventDefault(); go?.(l.mod); } }, l.t)]))] : null)),
     gbox('Second-order', secondOrder(c.so)));
 }
+// the install line as copyable code; the rest of the sentence stays prose
+function installBits(t) {
+  const m = t.match(/claude --plugin-url \S+?(?=[.,;)]*(\s|$))/);
+  if (!m) return [h('p.bsec__p', rich(t))];
+  const [before, after] = [t.slice(0, m.index).replace(/:\s*$/, ':'), t.slice(m.index + m[0].length).replace(/^\.\s*/, '')];
+  return [before.trim() ? h('p.bsec__p', rich(before)) : null, h('code.bcode', m[0]), after ? h('p.bsec__p', rich(after)) : null];
+}
 // a prototype page that isn't up yet shows as "being built" instead of a dead link
 const protosOf = (c) => c.protos || (c.proto ? [c.proto] : []);
 function protoLink(p) {
-  const li = h('li', h('span.bproto.is-off', p.t, h('span.bproto__s', 'Being built')));
-  fetch(p.href, { method: 'HEAD', cache: 'no-store' }).then((r) => { if (r.ok) li.replaceChildren(h('a.bproto', { href: p.href, target: '_blank', rel: 'noopener' }, p.t, h('span.bproto__s', { 'aria-hidden': 'true' }, '↗'))); }, () => {});
+  const [name, ...rest] = p.t.split(', ');
+  const label = () => h('span.bproto__t', h('b', name), rest.length ? h('span.bproto__d', rest.join(', ')) : null);
+  const li = h('li', h('span.bproto.is-off', label(), h('span.bproto__s', 'Being built')));
+  const live = () => li.replaceChildren(h('a.bproto', { href: p.href, target: '_blank', rel: 'noopener', title: `${p.t} (opens in a new tab)` }, label(), h('span.bproto__s', { 'aria-hidden': 'true' }, '↗')));
+  fetch(p.href, { method: 'HEAD', cache: 'no-store' })
+    .then((r) => (r.ok || r.status === 404 || r.status === 410 ? r : fetch(p.href, { cache: 'no-store' })))
+    .then((r) => { if (r.ok) live(); }, () => {});
   return li;
 }
 function briefText(c) {
-  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? ['First 3 steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), ...(c.map?.length ? ['What each mod captures:', ...c.map.map((m) => `- ${m.mod}: ${m.job} (${m.state})`)] : []), c.example ? `Real example: ${c.example}` : '', ...protosOf(c).map((p) => `Prototype: ${p.t}, https://sameep.ai${p.href}`), '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
+  return [`${c.name} (${fmtD(c.start)} – ${fmtD(c.end)})`, '', c.line || '', c.why ? `Why it works: ${c.why}` : '', ...(c.steps?.length ? [c.steps.length === 3 ? 'First 3 steps:' : 'First steps:', ...c.steps.map((s, i) => `${i + 1}. ${s}`)] : []), ...(c.map?.length ? ['What each mod captures:', ...c.map.map((m) => `- ${m.mod}: ${m.job} (${m.state})`)] : []), c.example ? `Real example: ${c.example}` : '', c.install ? `How it installs: ${c.install}` : '', ...protosOf(c).map((p) => `Prototype: ${p.t}, https://sameep.ai${p.href}`), '', `Goal: ${c.goal}`, `Who for: ${c.audience}`, `Insight: ${c.insight}`, `Idea: ${c.idea}`, `Channels: ${(c.channels || []).join(', ')}`, 'KPIs:', ...(c.kpis || []).map((k) => '- ' + k), `Budget: ${c.budget || 'tbc'}`, '', 'Second-order',
     `- Causes: ${c.so?.causes || ''}`, `- Could backfire: ${c.so?.backfire || ''}`, `- Compounds: ${c.so?.compounds || ''}`, `- Kill if: ${c.so?.kill || ''}`].join('\n').replace(/\s\[\d+(?:,\s*\d+)*\]/g, '');
 }
 function newCampaignForm(rerender) {

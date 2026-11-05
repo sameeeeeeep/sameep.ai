@@ -27,7 +27,6 @@
 .gos .gi-chip { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--lumen); box-shadow: inset 0 0 0 1.5px var(--line); color: var(--vast); font: 500 13.5px var(--sans); cursor: pointer; }
 .gos .gi-chip:hover { box-shadow: inset 0 0 0 1.5px var(--vast); }
 .gos .gi-chip[aria-pressed="true"] { background: var(--vast); color: var(--lumen); box-shadow: none; }
-.gos .gi-gen .lede { color: var(--vast); }
 
 /* ---- brainstorm */
 .gos .gi-hmw { font-size: 22px; }

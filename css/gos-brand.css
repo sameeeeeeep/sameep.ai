@@ -150,10 +150,10 @@
 .gos .lc-date { display: flex; align-items: center; gap: 6px; }
 .gos .lc-date .field { flex: 1; min-width: 0; }
 .gos .lc-date .btn--sm { min-height: 40px; }
-.gos .lc-count { font: 500 12.5px var(--sans); color: #bdbdab; }
+.gos .lc-count { font: 500 12.5px var(--sans); color: var(--mute); }
 
 /* ---------------------------------------------------------------- 5. contests */
-.gos .ct-one { margin: 0; color: var(--lumen); }
+.gos .ct-one { margin: 0; }
 .gos .brief + div { margin-top: 18px; }
 .gos .ct-judge { display: grid; gap: 10px; }
 .gos .ct-judge__row { display: grid; grid-template-columns: minmax(140px, 1.3fr) 1fr 48px; align-items: center; gap: 12px; font: 500 14px/1.35 var(--sans); }
