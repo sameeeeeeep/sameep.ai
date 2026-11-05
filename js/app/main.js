@@ -19,7 +19,8 @@ import { MORE_CARDS } from './cards.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume } from '../resume.js';
 
-export async function mountApp(root, { episodeUrl, resume } = {}) {
+// fast: the entry gate's “Skip the intro” (a returning visitor): no boot, dial-up, lock screen or installer
+export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = false } = {}) {
   const reduced = reducedMotion();
   root.replaceChildren();
   root.classList.add('app');
@@ -31,7 +32,7 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
   const crt = new CRT(glass.querySelector('.crt__tube'), { reduced });
 
   const dataP = loadPersona({ episodeUrl });
-  const fast = new URLSearchParams(location.search).has('fast') || !!resume; // a resume skips the boot it already saw
+  const fast = new URLSearchParams(location.search).has('fast') || !!resume || skipIntro; // a resume skips the boot it already saw
   const q0 = new URLSearchParams(location.search);
   const eraOn = !fast && !q0.has('debug') && !q0.has('noera'); // the 1999 minute: music, a desktop installer, then the show
   let persona;
@@ -122,7 +123,9 @@ export async function mountApp(root, { episodeUrl, resume } = {}) {
     onHear: (id) => { ctx.openPodcast(); pod?.go(id); }, quiet: () => guideOn() });
   const era = eraOn;
   // right after the modem connects, Mac OS asks who you are (Wispr version: the team, with faces)
-  const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : null;
+  // a skip reuses the face picked last time: the teammate is still them (Growth OS stays)
+  const stored = () => { try { return JSON.parse(localStorage.getItem('offthecv.visitor') || 'null'); } catch { return null; } };
+  const loggedIn = era ? await login(desk.area, persona, { reduced, stylise: stylisePhoto }) : skipIntro ? stored() : null;
   if (loggedIn) import('./growthos.js').then((m) => m.install({ wm, area: desk.area, visitor: loggedIn, icon: false })); // Wispr teammates only
   juke = era ? jukebox(wm, { reduced }) : null;
   // every guide on the desktop (js/app/tour.js); set up after the boot's own player, so it isn't a "first open"

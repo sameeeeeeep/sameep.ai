@@ -76,7 +76,7 @@ async function handoff(info = {}) {
   };
   try {
     const { mountApp } = await modP;
-    const mounted = mountApp(appEl, { episodeUrl: EPISODE_URL, resume: info.resume });
+    const mounted = mountApp(appEl, { episodeUrl: EPISODE_URL, resume: info.resume, fast: !!info.fast });
     await nextFrame(); await wait(120); lift();
     await mounted;
   } catch (err) {
@@ -239,7 +239,7 @@ function entryGate() {
           <button type="button" class="gate__quiet" disabled>Enter muted</button>
           <button type="button" class="gate__enter" disabled><span aria-hidden="true">▶</span> Enter <span>· sound on</span></button>
         </div>
-        <p class="gate__how">Better experienced with Sound On and on a Laptop.</p>
+        <p class="gate__how">${matchMedia('(pointer: coarse)').matches ? 'Best with sound on, and on a laptop. Works here too.' : 'Best with sound on.'}</p>
         ${seen ? '<button type="button" class="gate__skip">Skip the intro, go to the work →</button>' : ''}
       </div>
     </div>`;
@@ -312,7 +312,7 @@ function entryGate() {
   g.addEventListener('gate-ready', () => { gateOpen = true; });
   g.querySelectorAll('.gate__enter, .gate__quiet, .gate__skip').forEach((b) => b.addEventListener('click', off));
   g.querySelector('.gate__quiet').addEventListener('click', () => enter(false));
-  g.querySelector('.gate__skip')?.addEventListener('click', () => { track('gate_enter', { how: 'skip' }); store.set('offthecv.sound', 'on'); close(); handoff({ instant: true }); });
+  g.querySelector('.gate__skip')?.addEventListener('click', () => { track('gate_enter', { how: 'skip' }); store.set('offthecv.sound', 'on'); close(); handoff({ instant: true, fast: true }); });
   return {
     progress(x) { real = Math.max(real, Math.min(1, x)); },
     ready() {
