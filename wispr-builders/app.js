@@ -65,8 +65,8 @@
 
   window.WisprStatus && WisprStatus.fill(document.getElementById('apps'));
 
-  // clips: each gets its source only while on screen and gives it back when it leaves, so only a couple
-  // decode at once (browsers run out of video decoders with six playing); reduced motion: poster + controls
+  // clips: one plays at a time, the most visible one; the rest rest on their posters with no source, so the page
+  // never holds more than one video decoder (two side by side failed to decode in testing). Reduced motion: controls.
   const clips = [...document.querySelectorAll('.app__clip')];
   const attach = (v) => {
     if (v.childElementCount) return;
@@ -75,19 +75,23 @@
     v.load();
   };
   const detach = (v) => { if (!v.childElementCount) return; v.pause(); v.replaceChildren(); v.load(); };
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) clips.forEach((v) => { v.controls = true; v.preload = 'metadata'; v.addEventListener('play', () => attach(v), { once: true }); attach(v); });
-  else if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((es) => es.forEach((e) => {
-      const v = e.target;
-      if (e.isIntersecting) { attach(v); v.play().catch(() => {}); } else detach(v);
-    }), { threshold: 0.25 });
-    clips.forEach((v) => {
-      io.observe(v);
-      // a decode error (rare, when the device is short on decoders): try the next source once, then rest on the poster
-      v.addEventListener('error', () => { if (v.dataset.retried) return; v.dataset.retried = '1'; detach(v); attach(v); v.play().catch(() => {}); }, true);
-    });
-  } else clips.forEach((v) => { attach(v); v.play().catch(() => {}); });
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    clips.forEach((v) => { v.controls = true; attach(v); });  // preload stays none: nothing loads until play
+  } else if ('IntersectionObserver' in window) {
+    const seen = new Map();
+    let on = null;
+    const pick = () => {
+      let best = null, top = 0.35;
+      seen.forEach((r, v) => { if (r > top) { top = r; best = v; } });
+      if (best === on) return;
+      if (on) detach(on);
+      on = best;
+      if (on) { attach(on); on.play().catch(() => {}); }
+    };
+    const io = new IntersectionObserver((es) => { es.forEach((e) => seen.set(e.target, e.intersectionRatio)); pick(); },
+      { threshold: [0, 0.35, 0.6, 0.85, 1] });
+    clips.forEach((v) => io.observe(v));
+  } else if (clips[0]) { attach(clips[0]); clips[0].play().catch(() => {}); }
 
   // the segmented pill: All, or one mod at a time
   const seg = document.getElementById('seg');
