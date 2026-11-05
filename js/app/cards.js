@@ -41,6 +41,7 @@ export const MORE_CARDS = {
   'wispr-wrapped': { title: 'Wispr Wrapped', what: 'The fun one: a Wrapped of my real Wispr Flow history', proof: 'By project or by year; make yours by talking or pasting', icon: 'proj-wrapped' },
   // Wispr for Builders, Pack 1: small Claude mods that make voice a superpower
   'wispr-builders': { title: 'Wispr for Builders · Pack 1', what: 'Seven small Claude mods for Wispr Flow: Video, Guru, Review, File, Wish, PM, Bridge', proof: 'Public on GitHub. Give the repo to your Claude and it installs.', icon: 'proj-builders' },
+  'wispr-try': { title: 'Try Pack 1', what: 'Try File, Wish, Review and PM in your browser. Hold Flow and say it.', proof: 'No install. A browser demo of what the mods do on your Mac.', icon: 'proj-try' },
   'wispr-wispreditor': { title: 'Wispr Video', what: 'Say the edit and Video makes it: teleprompter, recorder, and editor', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-wispreditor' },
   'wispr-guru': { title: 'Wispr Guru', what: 'Guru shows you where to click in any app, and lets you answer Claude from the notch', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-guru' },
   'wispr-review': { title: 'Wispr Review', what: 'Review a website out loud, right in Chrome', proof: 'Wispr for Builders · a Claude mod', icon: 'proj-review' },

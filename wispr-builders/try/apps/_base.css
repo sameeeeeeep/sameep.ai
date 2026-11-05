@@ -1,0 +1,18 @@
+:root{--bg:#f5f4f0;--fg:#1a1a1a;--mute:#71716e;--line:#eeebe3;--card:#fff;--acc:#1a1a1a;--accfg:#fcfcfb;--hover:#eeebe3;--ease:cubic-bezier(.05,.6,.4,.95);color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#202020;--fg:#e9e8e1;--mute:#9d9c98;--line:#30302f;--card:#1a1a1a;--acc:#fcfcfb;--accfg:#1a1a1a;--hover:#30302f}}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--fg);font:500 15px/1.4 "Figtree",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;display:flex;flex-direction:column;-webkit-user-select:none;user-select:none;-webkit-font-smoothing:antialiased}
+main{flex:1;display:flex;flex-direction:column;gap:14px;padding:20px 16px 12px;min-width:0}
+h1{font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0}
+button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:8px 14px;cursor:pointer;transition:background .15s var(--ease),transform .15s var(--ease)}
+button:hover{background:var(--hover)}button:active{transform:scale(.98)}
+button.primary{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+button.primary:hover{opacity:.88;background:var(--acc)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+input{font:inherit;min-width:0;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;width:100%;-webkit-user-select:text;user-select:text;transition:border-color .15s var(--ease)}
+input:focus{outline:none;border-color:var(--mute)}
+label{font-size:12px;color:var(--mute);display:block;margin-bottom:4px}
+.row{display:flex;gap:8px}.row>*{flex:1 1 0;min-width:0}
+button{white-space:nowrap;min-width:0}
+footer{font-size:12px;color:var(--mute);padding:8px 16px 12px;gap:8px;display:flex;justify-content:space-between}
+footer span:first-child{color:var(--fg);font-weight:700;letter-spacing:-.01em}

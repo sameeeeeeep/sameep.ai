@@ -12,7 +12,7 @@ const at = (p) => new URL('../../' + p, import.meta.url).href;
 const mod = (id, label, path) => ({ id, label, url: at(path + '/') });
 export const SECTIONS = [
   { id: 'builders', title: 'Wispr for Builders', note: 'Pack 1. Small Claude mods that make your voice a superpower.',
-    items: [mod('builders', 'Pack 1', 'wispr-builders'), mod('wispreditor', 'Wispr Video', 'wispr-editor'), mod('guru', 'Wispr Guru', 'wispr-guru')],
+    items: [mod('builders', 'Pack 1', 'wispr-builders'), mod('try', 'Try Pack 1', 'wispr-builders/try'), mod('wispreditor', 'Wispr Video', 'wispr-editor'), mod('guru', 'Wispr Guru', 'wispr-guru')],
     soon: [] },
   { id: 'fun', title: 'The fun one', note: 'My real Flow history, as a story.',
     items: [mod('wrapped', 'Wispr Wrapped', 'wispr-wrapped')] },
