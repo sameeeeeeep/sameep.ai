@@ -10,8 +10,8 @@
 These are facts with links, so you can check each one. It works in layers, and each layer is a piece of work in its own right.
 
 ### 1. The hook: no CVs
-- Wispr asked for no more CVs. CVs became a commodity after 2000, once anyone could make one, so the
-  site takes the reader back to 1999 instead.
+- Wispr already had 2,000+ CVs, so he didn't send another one. CVs became a commodity after 2000, once
+  anyone could make one, so the site takes the reader back to 1999 instead.
 - The opening is one continuous 3D scene in the browser (three.js, no video): the CV is folded into a
   paper plane, thrown, crumpled, shredded, burned, and turned into a CD. The CD boots a Bondi iMac that
   dials up to a Mac OS 8 desktop. https://sameep.ai/
@@ -32,7 +32,7 @@ These are facts with links, so you can check each one. It works in layers, and e
   spoken commands like "next" or "done".
 
 ### 4. Built by voice: the numbers
-- Built in seven days (29 Oct to 4 Nov 2026): 21 Claude Code sessions, up to 7 at once, 191 prompts,
+- Built from 29 Oct to 4 Nov 2026: 21 Claude Code sessions, up to 7 at once, 191 prompts,
   8,541 tool calls.
 - 10,122 words dictated in Wispr Flow across 120 dictations, at 129 wpm on average (peak 206 wpm).
   98.8% of it went to Claude.
@@ -65,7 +65,7 @@ These are facts with links, so you can check each one. It works in layers, and e
 ### 6. Growth built in
 - The site is its own distribution loop. It is open source, with a "make your own" skill: any visitor's agent
   can build them a copy (see "Make your own" below). Every copy carries a card pointing the next person here.
-- Personal invites with a tracked link per person. Analytics are first-party and aggregate-only.
+- Personal invites, with a tracked link per person.
 
 ### 7. The track record behind it
 - Chief of Staff at Nailinit, a D2C nail brand, overseeing everything:
@@ -164,13 +164,6 @@ A static site (plain HTML/JS, no build step, no server) that is the person's own
 - Never read private repos, notes or inboxes without asking. Never publish without an explicit yes.
 - Don't pass it off as Sameep's work, and don't keep his name, case studies or domain in theirs.
   Keep the MIT LICENSE.
-
-## How this one was built
-
-- Built by voice: dictated in Wispr Flow, built with Emergent and Claude Code.
-- Four days (Friday night, 30 Oct, to 4 Nov 2026), 21 Claude Code sessions running up to 7 at once, 191 prompts from Sameep,
-  8,541 tool calls, 110 commits. 10,122 words dictated in Wispr Flow at an average of 129 wpm.
-- Every number comes from the real logs: https://sameep.ai/data/build-stats.json
 
 ## Links
 
