@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hire my clone: an AI chief of staff · Sameep Rehlan</title>
+<meta name="description" content="An AI chief of staff that has already run a D2C brand. Messages become work, your team's agents vote, you tap once, and nothing goes out without a human.">
+<link rel="canonical" href="https://sameep.ai/clone/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sameep.ai">
+<meta property="og:url" content="https://sameep.ai/clone/">
+<meta property="og:title" content="Hire my clone: an AI chief of staff">
+<meta property="og:description" content="An AI chief of staff that has already run a D2C brand.">
+<meta property="og:image" content="https://sameep.ai/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap">
+<link rel="stylesheet" href="./clone.css">
+</head>
+<body>
+<header class="top"><a href="../?skip">← sameep.ai</a></header>
+<main class="page">
+
+  <section class="hero">
+    <h1>Hire my clone</h1>
+    <p>An AI chief of staff that has already run a D2C brand. It reads your team's messages, turns them into work, and asks the right people before anything leaves the building.</p>
+    <button class="cta" type="button" data-open>Hire my clone</button>
+  </section>
+
+  <section class="sec">
+    <h2>How it works</h2>
+    <figure class="demo" aria-label="An example of one request moving through the clone, in four steps">
+      <ol class="beats" id="demo">
+        <li class="beat" data-step="1">
+          <h3>Messages become work</h3>
+          <div class="bubble">“Our bestseller is almost out”</div>
+          <div class="card" data-show="2">Task for ops: restock, 400 units</div>
+        </li>
+        <li class="beat" data-step="3">
+          <h3>Your team's agents vote</h3>
+          <ul class="votes">
+            <li data-show="3">Ops: 400</li>
+            <li data-show="4">Growth: 400</li>
+            <li data-show="5">Finance: 250</li>
+          </ul>
+        </li>
+        <li class="beat" data-step="6">
+          <h3>You tap once</h3>
+          <div class="opts">
+            <span class="opt" data-pick="7">Order 400</span>
+            <span class="opt">Order 250</span>
+          </div>
+        </li>
+        <li class="beat" data-step="8">
+          <h3>Nothing goes out without a human</h3>
+          <div class="swap">
+            <div class="card" data-show="8" data-hide="9">Email to the vendor: drafted, waiting for you</div>
+            <div class="card" data-show="9">Email to the vendor: sent, by you</div>
+          </div>
+        </li>
+      </ol>
+      <figcaption>An example. The request, the votes and the numbers are made up.</figcaption>
+    </figure>
+  </section>
+
+  <section class="sec">
+    <h2>One AI plan for the whole team</h2>
+    <p>Your team shares one AI plan. The clone routes it to everyone's agent: ops, growth, finance and your agency each get their own, with their own memory and their own tools. No new seat for every person, no new AI bill for every agent.</p>
+    <p>Approvals come to your phone. The clone drafts; a person sends.</p>
+  </section>
+
+  <section class="sec">
+    <h2>Who it's for</h2>
+    <p>D2C brands, and the agencies that run them. If your week is WhatsApp threads, sheets and “can someone check stock”, it's for you. An agency gets one clone across every brand it runs.</p>
+  </section>
+
+  <section class="sec">
+    <h2>Who it's a clone of</h2>
+    <p>Me, Sameep. I'm chief of staff at Nailinit, a D2C nail care brand from Mumbai, and I built <a href="../nia/">Nia</a>, the internal OS it runs on. Before that I co-founded Often, an AI for travel hacking that powered about 1,200 trips, and was a product manager on Nykaa's biggest sales. I've also worked at Mosaic Wellness and ShopClues.</p>
+    <p>The clone is built from the agents I use every day, with what I've learned about running a brand written into it.</p>
+  </section>
+
+  <section class="sec end">
+    <h2>Tell me what's on your plate</h2>
+    <button class="cta" type="button" data-open>Hire my clone</button>
+  </section>
+
+</main>
+
+<dialog class="form" id="hire" aria-labelledby="hire-title">
+  <form id="hire-form" novalidate>
+    <h2 id="hire-title">Hire my clone</h2>
+    <label>Your name<input name="name" autocomplete="name" maxlength="80"></label>
+    <label>Company<input name="company" autocomplete="organization" maxlength="120"></label>
+    <label>Email or WhatsApp number<input name="contact" autocomplete="email" maxlength="160"></label>
+    <label>What's on your plate<textarea name="plate" rows="4" maxlength="2000"></textarea></label>
+    <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+    <p class="msg" id="hire-msg" role="status" hidden></p>
+    <div class="row">
+      <button class="cta" type="submit">Send</button>
+      <button class="plain" type="button" data-close>Close</button>
+    </div>
+  </form>
+  <div class="done" id="hire-done" hidden>
+    <h2>Sent</h2>
+    <p>I read every one and I'll write back.</p>
+    <button class="plain" type="button" data-close>Close</button>
+  </div>
+</dialog>
+
+<script src="./clone.js"></script>
+<script type="module" src="../js/analytics.js"></script>
+</body>
+</html>

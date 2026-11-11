@@ -1,0 +1,73 @@
+/* sameep.ai/clone. One family (DM Sans, 400/600), one text colour, the accent only on things you press. */
+:root { --bg: #f5f0e8; --ink: #1d1a17; --line: #e2d9cd; --card: #fff; --acc: #c8623f; --acc-ink: #fff; --f: 'DM Sans', system-ui, sans-serif; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 18px/1.55 var(--f); }
+a { color: inherit; }
+h1, h2, h3, p { margin: 0; }
+
+.top { max-width: 1040px; margin: 0 auto; padding: 18px 20px; }
+.top a { text-decoration: none; }
+.top a:hover { text-decoration: underline; }
+
+.page { max-width: 1040px; margin: 0 auto; padding: 0 20px 80px; }
+.hero { max-width: 760px; padding: 40px 0 56px; }
+.hero h1 { font: 600 clamp(44px, 8vw, 80px)/1.02 var(--f); letter-spacing: -.02em; }
+.hero p { margin-top: 20px; font-size: clamp(18px, 2.4vw, 24px); }
+.hero .cta { margin-top: 28px; font-size: clamp(18px, 2.4vw, 24px); }
+
+.sec { padding: 40px 0; border-top: 2px solid var(--line); }
+.sec h2 { font: 600 28px/1.2 var(--f); margin-bottom: 14px; }
+.sec p { max-width: 40em; }
+.sec p + p { margin-top: 12px; }
+.sec.end { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+.sec.end h2 { margin: 0; }
+
+.cta { display: inline-flex; align-items: center; min-height: 52px; padding: 0 24px; border: 0; border-radius: 999px; background: var(--acc); color: var(--acc-ink); font: 600 18px/1 var(--f); cursor: pointer; }
+.cta:hover { background: var(--ink); }
+.cta:focus-visible, .plain:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.plain { min-height: 52px; padding: 0 18px; border: 2px solid var(--ink); border-radius: 999px; background: none; color: var(--ink); font: 600 18px/1 var(--f); cursor: pointer; }
+
+/* the example: four beats, each one cuts in; nothing fades */
+.demo { margin: 8px 0 0; }
+.beats { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.beat { display: grid; align-content: start; gap: 10px; padding: 18px; background: var(--card); border: 2px solid var(--line); border-radius: 14px; min-height: 230px; }
+.beat h3 { font: 600 18px/1.3 var(--f); }
+.bubble { justify-self: start; padding: 8px 14px; border-radius: 14px 14px 14px 4px; background: var(--bg); }
+.card { padding: 8px 14px; border: 2px solid var(--ink); border-radius: 12px; }
+.votes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.votes li { padding: 6px 0; border-bottom: 2px solid var(--line); }
+.swap { display: grid; }
+.swap > * { grid-area: 1 / 1; }
+.opts { display: grid; gap: 8px; }
+.opt { padding: 8px 14px; border: 2px solid var(--line); border-radius: 12px; }
+.opt.on { background: var(--acc); border-color: var(--acc); color: var(--acc-ink); }
+.demo figcaption { margin-top: 12px; }
+.is-off { visibility: hidden; }
+
+/* the form */
+.form { width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: 16px; background: var(--bg); color: var(--ink); }
+.form > form, .form > .done { padding: 28px; }
+.form::backdrop { background: rgba(29, 26, 23, .55); }
+.form h2 { font: 600 28px/1.2 var(--f); margin-bottom: 18px; }
+.form label { display: grid; gap: 6px; margin-bottom: 14px; }
+.form input, .form textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); font: 400 18px/1.4 var(--f); }
+.form input:focus, .form textarea:focus { outline: none; border-color: var(--ink); }
+.form textarea { resize: vertical; }
+.form .hp { position: absolute; left: -9999px; }
+.form .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.form .msg { margin: 0 0 12px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 12px; }
+.form .done p { margin-bottom: 20px; }
+.form [aria-invalid="true"] { border-color: var(--ink); }
+
+@media (max-width: 860px) {
+  .beats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .hero { padding: 24px 0 40px; }
+  .sec { padding: 32px 0; }
+  .beats { grid-template-columns: minmax(0, 1fr); }
+  .beat { min-height: 0; }
+  .form > form, .form > .done { padding: 22px 18px; }
+  .sec.end .cta, .form .cta { flex: 1; justify-content: center; }
+}
