@@ -14,9 +14,13 @@
     setInterval(() => { step = step >= LAST + HOLD ? 1 : step + 1; set(Math.min(step, LAST)); }, 1200);
   }
 
-  // ---- the form. Same origin on sameep.ai; locally the Worker runs on :8790 (analytics-dev) or ?api=<origin>.
-  const live = /^(www\.)?sameep\.ai$/.test(location.hostname);
-  const API = (live ? '' : new URLSearchParams(location.search).get('api') || 'http://localhost:8790') + '/api/clone';
+  // ---- the form. Same origin on sameep.ai; on localhost the Worker runs on :8790, or ?api=http://localhost:<port>.
+  // Only a page on localhost talks to another origin, and only to a localhost one: anywhere else it's same-origin,
+  // so a crafted ?api= link can't send what people type somewhere else.
+  const LOCAL = /^(localhost|127\.0\.0\.1)$/;
+  const override = new URLSearchParams(location.search).get('api') || '';
+  const API = (!LOCAL.test(location.hostname) ? ''
+    : /^http:\/\/(localhost|127\.0\.0\.1):\d{1,5}$/.test(override) ? override : 'http://localhost:8790') + '/api/clone';
   const dlg = document.getElementById('hire'), form = document.getElementById('hire-form');
   const msg = document.getElementById('hire-msg'), done = document.getElementById('hire-done');
   const send = form.querySelector('[type=submit]');
