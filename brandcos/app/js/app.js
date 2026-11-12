@@ -16,6 +16,7 @@ import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
 
 export const NAV = [
   { section: 'today',   label: 'Today',   page: '../pages/today.js' },
+  { section: 'company', label: 'Company', page: '../pages/company.js' },
   { section: 'inbox',   label: 'Inbox',   page: '../pages/inbox.js' },
   { section: 'chats',   label: 'Work',    page: '../pages/chats.js' },
   { section: 'hub',     label: 'Hub',     page: '../pages/hub.js' },
@@ -34,6 +35,7 @@ export const ASKS = {
   chats: ['What is everyone working on?', 'What is waiting for a tap?'],
   hub: ['Which tools have not synced today?', 'What does each agent read?'],
   os: ['What stocks out this week?', 'Which vendor invoices are due?', 'Draft a restock for low stock'],
+  company: ['Which function is behind?', 'What is waiting on a tap for the launch?', 'What did the agents do today?'],
   inbox: ['What did the agent find today?', 'What is overdue?', 'What is waiting on me?'],
   hiring: ['Which roles are open?', 'Who is on the shortlist?'],
   team: ['Who still needs to sign in?', 'Who approves money items?'],
