@@ -33,13 +33,13 @@ check('owner with no plan gets the form and an empty table', (() => { const h = 
 
 for (const role of ['admin', 'member', 'viewer']) {
   const h = s(data(false), role);
-  check(`${role}: read-only note, no buttons, no form`, h.includes('Read-only. Only the owner can change the plan') && !h.includes('<button') && !h.includes('<form') && !h.includes('data-paid'));
+  check(`${role}: read-only note, no buttons, no form`, h.includes('Only Sameep can change the plan or mark invoices paid') && !h.includes('<button') && !h.includes('<form') && !h.includes('data-paid'));
   check(`${role}: sees the plan and invoices`, h.includes('2 Nov 2026') && h.includes('UNF-001') && h.includes('Founders, Ops and warehouse, Growth and ads'));
 }
 check('read-only with no plan', s(data(false, { plan: null, summary: null, invoices: [] }), 'viewer').includes('No plan yet.'));
 
 const demo = s(data(false), 'viewer', true), live = s(data(false, { sample: false }), 'viewer', false);
-check('demo: Sample data tag and Sample invoices', demo.includes('Sample data') && (demo.match(/class="sample-tag">Sample</g) || []).length === 2);
+check('demo: billing is real, no sample tags anywhere', !demo.includes('sample-tag') && !demo.includes('Sample'));
 check('live: no sample labels', !live.includes('sample-tag'));
 check('statuses shown as pills', demo.includes('is-paid') && demo.includes('is-upcoming'));
 check('money as whole dollars', demo.includes('$1,000') && demo.includes('$1,100'));

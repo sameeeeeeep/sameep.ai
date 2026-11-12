@@ -1,7 +1,7 @@
 // billing.js (module D): the plan picked on the pricing page and the invoices it makes.
 // The owner (the operator) edits the plan with the same toggles as the pricing page and marks invoices paid;
 // everyone else in the workspace sees it read-only. API: GET/PUT /w/:wid/billing..., see CONTRACT.md "Billing".
-import { html, usd, day, pill, sampleTag } from '../js/ui.js';
+import { html, usd, day, pill } from '../js/ui.js';
 
 export const title = 'Billing';
 
@@ -124,16 +124,17 @@ function planReadOnly(p) {
       <div><dt>Custom development and training</dt><dd>${p.custom ? (p.custom_until ? `Yes, through ${p.custom_until}` : 'Yes, monthly') : 'No'}</dd></div>
       <div><dt>Teams to train</dt><dd>${p.teams.length ? p.teams.map((t) => TEAMS[t] || t).join(', ') : 'Not picked yet'}</dd></div>
     </dl>
-    <p class="note bl-ro-note">Read-only. Only the owner can change the plan or mark invoices paid. Ask Sameep if something looks wrong.</p>
+    <p class="note bl-ro-note">Only Sameep can change the plan or mark invoices paid. Ask him if something looks wrong.</p>
   </div>`;
 }
 
-function invoiceTable(invoices, editable, demo, rowBusy) {
+// Billing is real in every workspace, demo or not: no sample tags here.
+function invoiceTable(invoices, editable, rowBusy) {
   if (!invoices.length) return html`<div class="tbl-wrap"><p class="empty">Invoices appear once a plan is saved.</p></div>`;
   return html`<div class="tbl-wrap"><table class="tbl bl-tbl">
     <thead><tr><th>Invoice</th><th>Month</th><th>Issued</th><th>Due</th><th>Items</th><th class="r">Total</th><th>Status</th>${editable ? html`<th><span class="sr">Action</span></th>` : ''}</tr></thead>
     <tbody>${invoices.map((i) => html`<tr>
-      <td class="mono">${i.no}${demo ? html` <span class="sample-tag">Sample</span>` : ''}</td>
+      <td class="mono">${i.no}</td>
       <td>${i.month}</td>
       <td class="bl-d">${day(i.issue_date)}</td>
       <td class="bl-d">${day(i.due_date)}</td>
@@ -150,14 +151,14 @@ function invoiceTable(invoices, editable, demo, rowBusy) {
 // data = Billing from the API, plus the page's own state: draft (owner's working plan), busy, error,
 // rowBusy, rowError. Pure: no DOM, so Node can test it.
 export function view(data, ctx) {
-  const ws = ctx.ws || {};
+
   const editable = !!data.editable;
   const draft = editable ? (data.draft || planOf(data.plan, data.today || '')) : null;
   const sum = editable ? summaryFor(draft) : data.summary;
   const dirty = editable && (!data.plan || !samePlan(draft, data.plan));
   return html`<section class="pg bl">
     <div class="pg-top"><div>
-      <h1 class="pg-h">Billing ${sampleTag(ws)}</h1>
+      <h1 class="pg-h">Billing</h1>
       <p class="pg-sub">The plan picked on the pricing page and the invoices it makes.${editable ? ' Invoices are worked out from the plan, so a change here recalculates every invoice below.' : ''}</p>
     </div></div>
     <div class="bl-layout">
@@ -166,7 +167,7 @@ export function view(data, ctx) {
     </div>
     <h2 class="bl-h2">Invoices</h2>
     ${data.rowError ? html`<p class="err" role="alert">${data.rowError}</p>` : ''}
-    ${invoiceTable(data.invoices || [], editable, !!(ws.demo || data.sample), data.rowBusy)}
+    ${invoiceTable(data.invoices || [], editable, data.rowBusy)}
     <p class="note">Worked out from the plan: month 1 on the start date, then the same day each month, each due 7 days later. Month 1 is the integration and any extra weeks; from month 2, access plus anything added. US dollars, before tax.</p>
   </section>`;
 }

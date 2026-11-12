@@ -68,6 +68,8 @@ check('default tab is tasks', /os\/tasks" aria-current="page"/.test(o({ items: [
 check('status pills', pos.includes('is-draft') && pos.includes('is-approved') && pos.includes('is-checked') && pos.includes('is-rejected'));
 check('approve only where can.approve', (pos.match(/data-act="approve"/g) || []).length === 1 && pos.includes('data-act="approve" data-id="1"'));
 check('check only where can.check', (pos.match(/data-act="check"/g) || []).length === 1 && pos.includes('data-act="check" data-id="2"'));
+check('a PO check is called Goods received', /data-act="check" data-id="2">Goods received</.test(pos));
+check('goods received toast lists the new stock', os.appliedLine({ location: 'Main warehouse', lines: [{ sku: 'UF-TEE-BLK', qty: 300, on_hand: 338 }], untracked: ['PKG-MAILER'] }) === ' Stock at Main warehouse: UF-TEE-BLK now 338. Not in stock records: PKG-MAILER.');
 check('reject only where can.reject', (pos.match(/data-act="reject"/g) || []).length === 2);
 const none = o({ items: items.map((i) => ({ ...i, can: { edit: false, approve: false, check: false, reject: false } })) }, 'viewer', 'pos');
 check('viewer: no action buttons, no create form', !/data-act="(approve|check|reject)"/.test(none) && !none.includes('id="os-form"') && none.includes('Viewers can read the OS'));

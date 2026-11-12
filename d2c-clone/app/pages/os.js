@@ -19,6 +19,15 @@ const who = (email) => { const n = String(email || '').split('@')[0] || ''; retu
 const rupees = (v) => { const n = Number(String(v ?? '').replace(/[,\s₹]/g, '')); return Number.isFinite(n) ? Math.round(n * 100) : NaN; };
 export const linesTotal = (lines) => (lines || []).reduce((s, l) => { const q = Number(l.qty), c = rupees(l.unit_cost); return s + (Number.isFinite(q) && Number.isFinite(c) ? q * c : 0); }, 0);
 const signed = (n) => (n > 0 ? '+' + num(n) : num(n));
+// the stock change a check made: an adjustment's new on-hand, or what a received PO added
+export function appliedLine(a) {
+  if (!a) return '';
+  if (Array.isArray(a.lines)) {
+    const got = a.lines.map((l) => `${l.sku} now ${num(l.on_hand)}`).join(', ');
+    return (got ? ` Stock at ${a.location}: ${got}.` : '') + (a.untracked && a.untracked.length ? ` Not in stock records: ${a.untracked.join(', ')}.` : '');
+  }
+  return ` Stock now ${a.on_hand} at ${a.location}.`;
+}
 const href = (wid, tab) => `#/w/${encodeURIComponent(wid)}/os/${tab}`;
 
 // Approve / Check / Reject, straight from item.can (the Worker decides who may do what)
@@ -34,7 +43,8 @@ function actions(item, data, ctx, kind) {
   const dis = data.busy ? ' disabled' : '';
   const out = [];
   if (c.approve) out.push(html`<button class="btn is-small is-primary" type="button" data-act="approve" data-id="${item.id}"${dis}>Approve</button>`);
-  if (c.check) out.push(html`<button class="btn is-small is-primary" type="button" data-act="check" data-id="${item.id}"${dis}>Check</button>`);
+  // for a PO the check is the goods-received step: it adds the stock
+  if (c.check) out.push(html`<button class="btn is-small is-primary" type="button" data-act="check" data-id="${item.id}"${dis}>${kind === 'pos' ? 'Goods received' : 'Check'}</button>`);
   if (c.reject) out.push(html`<button class="btn is-small" type="button" data-act="reject" data-id="${item.id}"${dis}>Reject</button>`);
   const me = ctx.me && ctx.me.user && ctx.me.user.email;
   if (item.status === 'approved' && !c.check && me && item.approved_by === me) out.push(html`<span class="muted os-hint">You approved this; a second person checks it.</span>`);
@@ -147,7 +157,7 @@ function createForm(data, ctx, tab) {
       ${body}
       <div class="os-wide os-submit">
         <button class="btn is-primary is-small" type="submit"${data.busy ? ' disabled' : ''}>${data.busy ? 'Saving' : 'Save as draft'}</button>
-        <span class="muted">Drafts wait for ${APPROVER[tab.kind] === 'admin' ? 'an admin' : 'a member'} to approve, then a different person checks.</span>
+        <span class="muted">Drafts wait for ${APPROVER[tab.kind] === 'admin' ? 'an admin' : 'a member'} to approve, then a different person ${tab.kind === 'pos' ? 'marks the goods received, which adds the stock' : 'checks'}.</span>
       </div>
       ${data.form_error ? html`<p class="err os-wide" role="alert">${data.form_error}</p>` : ''}
     </form>
@@ -257,7 +267,7 @@ export async function mount(root, ctx) {
       run(async () => {
         const r = await ctx.api('POST', `${base}/${tab.kind}/${id}/${act}`);
         if (r.match) s.matches = { ...s.matches, [id]: r.match };
-        ctx.toast(`${r.item.ref} ${act === 'approve' ? 'approved' : 'checked'}.${r.applied ? ` Stock now ${r.applied.on_hand} at ${r.applied.location}.` : ''}`);
+        ctx.toast(`${r.item.ref} ${act === 'approve' ? 'approved' : tab.kind === 'pos' ? 'received' : 'checked'}.${appliedLine(r.applied)}`);
         await load();
       });
     }

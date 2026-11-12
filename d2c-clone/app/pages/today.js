@@ -62,6 +62,7 @@ export function view(data, ctx) {
         <ul class="td-ch">${channels.map((c) => {
           const pct = chTotal ? Math.round((c.revenue / chTotal) * 100) : 0;
           return html`<li><span class="td-ch-n">${c.label} <span class="td-ch-p mono">${pct}%</span></span><span class="td-ch-v">${inr(c.revenue)} <span class="muted">${num(c.orders)} orders</span></span>
+            ${c.source_label ? html`<span class="td-ch-src muted">${c.source ? `From ${c.source_label}` : c.source_label}</span>` : ''}
             <span class="td-ch-bar" aria-hidden="true"><span style="width:${pct}%"></span></span></li>`;
         })}</ul></div>
     </div>`

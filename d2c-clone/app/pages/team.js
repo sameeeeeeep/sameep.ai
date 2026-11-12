@@ -2,6 +2,9 @@
 // their work email and a 6-digit code. Admins and the owner add people, change roles, remove people and
 // re-send invites; members and viewers see the list. Operator rows (owner) cannot be changed or removed.
 // API: GET/POST /w/:wid/team, PATCH/DELETE /w/:wid/team/:email, POST /w/:wid/team/:email/invite.
+// Change email (PATCH {email}) moves someone's login here to their real address, keeping their role, title
+// and history: how the sample team becomes the client's real team on day 1. Admins can do it until the person
+// has signed in; the operator any time.
 import { html, raw, sampleTag, can, ago, day, ROLE_NAMES } from '../js/ui.js';
 
 export const title = 'Team';
@@ -13,6 +16,16 @@ const ROLE_HELP = {
 };
 const TEAM_ROLES = ['admin', 'member', 'viewer'];
 const isSample = (email) => /\.example$/i.test(email || '');
+
+// What happened to an invite, in words an admin can act on. r = {invited, printed, reason, invite_url}.
+// Returns { text, url }: url is the sign-in link to share by hand when the invite email is not switched on.
+export function inviteNotice(who, r, added = true) {
+  const lead = added ? `${who} was added` : '';
+  if (r.reason === 'sample') return { text: added ? `${lead}. This is a sample address, so no email was sent.` : `${who} has a sample address, so no email was sent.`, url: null };
+  if (r.printed) return { text: `${added ? `${lead}, but the` : 'The'} invite email is not switched on yet. Share this link with ${added ? 'them' : who}:`, url: r.invite_url || null };
+  if (r.invited) return { text: added ? `${lead} and invited.` : `Invite sent to ${who}.`, url: null };
+  return { text: added ? `${lead}, but the invite could not be sent. Try Send invite.` : 'The invite could not be sent. Try again in a minute.', url: null };
+}
 
 const rolePill = (m) => html`<span class="tm-role is-${m.role}">${ROLE_NAMES[m.role] || m.role}</span>`;
 
@@ -41,8 +54,18 @@ function actions(m, admins, data, ctx) {
       <button class="btn is-small" type="button" data-act="remove-no">Cancel</button>
     </span>`;
   }
+  if (data.changing === m.email) {
+    return html`<form class="tm-confirm tm-change" data-email="${m.email}" novalidate>
+      <label class="field"><span>New email for ${m.name || m.email}</span><input name="newEmail" type="email" autocomplete="off" required value="${data.changeTo || ''}"></label>
+      <button class="btn is-small is-primary" type="submit"${data.busy ? raw(' disabled') : ''}>Change email</button>
+      <button class="btn is-small" type="button" data-act="change-no">Cancel</button>
+    </form>`;
+  }
   const lastAdmin = m.role === 'admin' && admins <= 1;
+  // admins fix an address until the person has signed in; the operator any time
+  const canChange = !m.last_seen || !!ctx.me?.user?.is_operator;
   return html`<span class="tm-acts">
+    ${canChange ? html`<button class="btn is-small" type="button" data-act="change" data-email="${m.email}"${data.busy ? raw(' disabled') : ''}>Change email</button>` : ''}
     <button class="btn is-small" type="button" data-act="invite" data-email="${m.email}"${data.busy ? raw(' disabled') : ''}>${m.invited_at ? 'Re-send invite' : 'Send invite'}</button>
     <button class="btn is-small" type="button" data-act="remove" data-email="${m.email}"${lastAdmin ? raw(' disabled title="The last admin cannot be removed. Make someone else an admin first."') : data.busy ? raw(' disabled') : ''}>Remove</button>
   </span>`;
@@ -65,7 +88,7 @@ function addForm(data, ctx) {
     </div>
     <p class="muted tm-help">${ROLE_NAMES[role]}: ${ROLE_HELP[role]}</p>
     <label class="tm-check"><input type="checkbox" name="invite"${f.invite === false ? '' : raw(' checked')}> Email them an invite now</label>
-    ${ctx.ws?.demo ? html`<p class="muted tm-help">Demo workspace: invites to sample addresses (ending in .example) are printed in the server log, never sent.</p>` : ''}
+    ${ctx.ws?.demo ? html`<p class="muted tm-help">Sample addresses (ending in .example) cannot receive email, so no invite goes to them. Use Change email to move a sample person to a real address.</p>` : ''}
     <div class="tm-add-foot">
       <button class="btn is-primary" type="submit"${data.busy ? raw(' disabled') : ''}>${data.busy === 'add' ? 'Adding' : 'Add person'}</button>
       ${data.formError ? html`<p class="err" role="alert">${data.formError}</p>` : ''}
@@ -91,7 +114,7 @@ export function view(data, ctx) {
       <h1 class="pg-h">Team ${sampleTag(ctx.ws)}</h1>
       <p class="pg-sub">Everyone here has their own login from day 1. No passwords: each person signs in with their work email and a 6-digit code.</p>
     </div></div>
-    ${data.notice ? html`<p class="tm-notice" role="status">${data.notice}</p>` : ''}
+    ${data.notice ? html`<p class="tm-notice" role="status">${data.notice}${data.shareUrl ? html` <span class="mono tm-share">${data.shareUrl}</span> <button class="btn is-small" type="button" data-act="copy" data-url="${data.shareUrl}">Copy link</button>` : ''}</p>` : ''}
     ${data.error ? html`<p class="err" role="alert">${data.error}</p>` : ''}
     ${members.length ? html`<div class="tbl-wrap"><table class="tbl tm-tbl">
       <thead><tr><th>Person</th><th>Role</th><th>Title</th><th>Last seen</th><th class="r"><span class="sr">Actions</span></th></tr></thead>
@@ -107,7 +130,7 @@ export function view(data, ctx) {
 
 export async function mount(root, ctx) {
   const path = `/w/${encodeURIComponent(ctx.wid)}/team`;
-  const s = { members: [], can_manage: false, error: '', notice: '', confirm: null, busy: false, form: { role: 'member' }, formError: '' };
+  const s = { members: [], can_manage: false, error: '', notice: '', shareUrl: null, confirm: null, changing: null, changeTo: '', busy: false, form: { role: 'member' }, formError: '' };
   const paint = () => { root.innerHTML = String(view(s, ctx)); };
   const load = async () => { const d = await ctx.api('GET', path); s.members = d.members; s.can_manage = d.can_manage; };
   const member = (email) => `${path}/${encodeURIComponent(email)}`;
@@ -118,7 +141,7 @@ export async function mount(root, ctx) {
   };
 
   async function run(kind, fn) {
-    Object.assign(s, { busy: kind, error: '', notice: '', formError: '' });
+    Object.assign(s, { busy: kind, error: '', notice: '', shareUrl: null, formError: '' });
     paint();
     try { await fn(); } catch (e) { if (kind === 'add') s.formError = e.message; else s.error = e.message; }
     s.busy = false;
@@ -131,6 +154,13 @@ export async function mount(root, ctx) {
     const email = b.dataset.email;
     if (b.dataset.act === 'remove') { Object.assign(s, { confirm: email, error: '', notice: '' }); paint(); return; }
     if (b.dataset.act === 'remove-no') { s.confirm = null; paint(); return; }
+    if (b.dataset.act === 'change') { Object.assign(s, { changing: email, changeTo: '', confirm: null, error: '', notice: '', shareUrl: null }); paint(); root.querySelector('.tm-change input')?.focus(); return; }
+    if (b.dataset.act === 'change-no') { s.changing = null; paint(); return; }
+    if (b.dataset.act === 'copy') {
+      const url = b.dataset.url;
+      Promise.resolve(navigator.clipboard?.writeText(url)).then(() => ctx.toast('Link copied.'), () => ctx.toast('Copy did not work. Select the link and copy it.'));
+      return;
+    }
     if (b.dataset.act === 'remove-yes') {
       const who = nameOf(email);
       run('remove', async () => {
@@ -143,7 +173,8 @@ export async function mount(root, ctx) {
       run('invite', async () => {
         const r = await ctx.api('POST', member(email) + '/invite');
         await load();
-        s.notice = r.printed ? `Invite for ${nameOf(email)} printed in the server log, not emailed.` : `Invite sent to ${email}.`;
+        const n = inviteNotice(nameOf(email), r, false);
+        s.notice = n.text; s.shareUrl = n.url;
       });
     }
   };
@@ -161,9 +192,25 @@ export async function mount(root, ctx) {
     // keep what was typed in the add form across repaints; the role help line follows the role picked
     const form = e.target.closest('#tm-add');
     if (form) { s.form = readForm(form); if (e.target.name === 'role') paint(); }
+    if (e.target.name === 'newEmail') s.changeTo = e.target.value;
   };
 
   const onSubmit = (e) => {
+    if (e.target.classList?.contains('tm-change')) {
+      e.preventDefault();
+      if (s.busy) return;
+      const from = e.target.dataset.email, to = String(new FormData(e.target).get('newEmail') || '').trim();
+      s.changeTo = to;
+      if (!/^\S+@\S+\.\S+$/.test(to)) { s.error = 'Enter a valid email address.'; paint(); return; }
+      const who = nameOf(from);
+      run('change', async () => {
+        await ctx.api('PATCH', member(from), { email: to });
+        s.changing = null; s.changeTo = '';
+        await load();
+        s.notice = `${who} now signs in with ${to.toLowerCase()}. Their role and history stayed. Send them an invite when you are ready.`;
+      });
+      return;
+    }
     if (e.target.id !== 'tm-add') return;
     e.preventDefault();
     if (s.busy) return;
@@ -176,9 +223,9 @@ export async function mount(root, ctx) {
       s.form = { role: f.role, invite: f.invite };
       await load();
       const who = r.member?.name || f.email;
-      s.notice = !f.invite ? `${who} was added. Their login works now; send an invite when you are ready.`
-        : r.printed ? `${who} was added. The invite was printed in the server log, not emailed.`
-          : r.invited ? `${who} was added and invited.` : `${who} was added, but the invite could not be sent. Try Send invite.`;
+      if (!f.invite) { s.notice = `${who} was added. Their login works now; send an invite when you are ready.`; return; }
+      const n = inviteNotice(who, r, true);
+      s.notice = n.text; s.shareUrl = n.url;
     });
   };
 

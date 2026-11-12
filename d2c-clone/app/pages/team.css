@@ -45,3 +45,5 @@
 @media (max-width: 760px) {
   .tm-confirm > span { text-align: left; }
 }
+.tm-change .field { min-width: 14em; text-align: left; }
+.tm-share { word-break: break-all; font-size: 13px; }

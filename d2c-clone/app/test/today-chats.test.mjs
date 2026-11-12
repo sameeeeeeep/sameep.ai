@@ -15,12 +15,12 @@ const T = {
     { key: 'orders', label: 'Orders', value: 224, unit: 'count', prev: 200, delta_pct: 12 },
     { key: 'aov', label: 'Average order', value: 100749, unit: 'inr', prev: 0, delta_pct: null },
     { key: 'ad_spend', label: 'Ad spend', value: 390140, unit: 'inr', prev: 378870, delta_pct: 3 },
-    { key: 'roas', label: 'ROAS', value: 5.78, unit: 'ratio', prev: 6.91, delta_pct: -16.4 },
+    { key: 'roas', label: 'Blended ROAS', value: 5.78, unit: 'ratio', prev: 6.91, delta_pct: -16.4 },
     { key: 'returns', label: 'Returns', value: 10, unit: 'count', prev: 9, delta_pct: 11.1 },
   ],
   channels: [
-    { channel: 'website', label: 'Website', revenue: 1277560, orders: 106 },
-    { channel: 'marketplace', label: 'Marketplaces', revenue: 558790, orders: 62 },
+    { channel: 'website', label: 'Website', revenue: 1277560, orders: 106, source: 'shopify', source_label: 'Shopify · sample numbers' },
+    { channel: 'marketplace', label: 'Marketplaces', revenue: 558790, orders: 62, source: null, source_label: 'Sample numbers · no marketplace connector yet' },
     { channel: 'quick_commerce', label: 'Quick commerce', revenue: 297320, orders: 47 },
     { channel: 'offline', label: 'Offline and events', revenue: 123100, orders: 9 },
   ],
@@ -53,7 +53,7 @@ check('fmt units', fmt(12345600, 'inr') === '₹1,23,456' && fmt(3.1, 'ratio') =
 
 // ---- Chats -------------------------------------------------------------------------------------
 const card = (id, status, extra = {}) => ({
-  id, group: 'ops', kind: 'restock', title: 'Restock UF-TEE-BLK', fields: [{ label: 'Quantity', value: '300 units' }], status, needs_second: 1,
+  id, group: 'ops', kind: 'restock', title: 'Restock UF-TEE-BLK', fields: [{ label: 'Quantity', value: '300 units' }], status, version: 3, needs_second: 1,
   requested_by: 'Ops agent', approved_by: null, checked_by: null, edited_by: null, reason: null, ts: 1, decided_ts: null,
   can: { approve: false, check: false, edit: false, reject: false }, ...extra,
 });
@@ -105,5 +105,13 @@ check('error shown inline', s(chats({ groups, slug: 'nope', group: null, message
 check('no sample tag in a live workspace', !s(chats(D, { ...ctxFor('member', false), me: member.me })).includes('sample-tag'));
 check('person names from emails', person('meera@unfiltrd.example') === 'Meera' && person('Ops agent') === 'Ops agent');
 
+{
+  const tv = String(today(T, ctxFor('viewer', true)));
+  check('Today names each channel source', tv.includes('From Shopify · sample numbers') && tv.includes('no marketplace connector yet') && tv.includes('Blended ROAS'));
+  const cv = String(chats({ ...D, messages: [messages[1], messages[2]] }, ctxFor('member', true)));
+  check('Approve and Check carry the version on screen', cv.includes('data-act="approve" data-id="10" data-version="3"') && cv.includes('data-act="check" data-id="11" data-version="3"'));
+  const ed = String(chats({ ...D, messages: [{ ...messages[1], card: card(10, 'pending', { edited_by: 'me@unfiltrd.example', can: { approve: false, check: false, edit: true, reject: true } }) }] }, { ...ctxFor('member', true), me: { user: { email: 'me@unfiltrd.example' } } }));
+  check('the editor sees Approve disabled with the reason', ed.includes('You edited this card, so someone else approves it.') && !ed.includes('data-act="approve"'));
+}
 for (const out of [t1, t2, c1, c2, c3]) check('no banned names or emojis in output', !hasBanned(out) && !EMOJI.test(out));
 done();

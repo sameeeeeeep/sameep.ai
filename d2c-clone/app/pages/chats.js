@@ -26,11 +26,14 @@ function cardActions(c, ctx, ui) {
   const me = ctx.me?.user?.email;
   const member = can(ctx.role, 'member');
   const out = [];
-  if (c.can.approve) out.push(html`<button class="btn is-primary is-small" type="button" data-act="approve" data-id="${c.id}">Approve</button>`);
-  else if (member && c.status === 'pending' && c.kind === 'drive_read') {
+  // data-version: the card version painted on screen; the API refuses a decision on any other version
+  if (c.can.approve) out.push(html`<button class="btn is-primary is-small" type="button" data-act="approve" data-id="${c.id}" data-version="${c.version}">Approve</button>`);
+  else if (member && c.status === 'pending' && me && c.edited_by === me) {
+    out.push(html`<button class="btn is-small" type="button" disabled title="You edited this card, so someone else approves it.">Approve</button>`);
+  } else if (member && c.status === 'pending' && c.kind === 'drive_read') {
     out.push(html`<button class="btn is-small" type="button" disabled title="Only admins and the owner can approve Drive and Calendar reads.">Approve</button>`);
   }
-  if (c.can.check) out.push(html`<button class="btn is-primary is-small" type="button" data-act="check" data-id="${c.id}">Check and approve</button>`);
+  if (c.can.check) out.push(html`<button class="btn is-primary is-small" type="button" data-act="check" data-id="${c.id}" data-version="${c.version}">Check and approve</button>`);
   else if (member && c.status === 'awaiting_check' && me && c.approved_by === me) {
     out.push(html`<button class="btn is-small" type="button" disabled title="A second person must check this. You approved it.">Check</button>`);
   }
@@ -49,7 +52,7 @@ function cardView(c, ctx, ui) {
   if (c.checked_by) who.push(`checked by ${c.names?.checked_by || person(c.checked_by)}`);
   if (c.edited_by) who.push(`edited by ${c.names?.edited_by || person(c.edited_by)}`);
   const body = editing
-    ? html`<form class="ch-edit" data-form="edit" data-id="${c.id}">
+    ? html`<form class="ch-edit" data-form="edit" data-id="${c.id}" data-version="${c.version}">
         <label class="field"><span>Title</span><input name="title" value="${c.title}" maxlength="160" required></label>
         ${c.fields.map((f, i) => html`<label class="field"><span>${f.label}</span>
           <input name="f${i}" data-label="${f.label}" value="${f.value}" maxlength="600"></label>`)}
@@ -66,7 +69,7 @@ function cardView(c, ctx, ui) {
     ${c.status === 'rejected' && c.reason ? html`<p class="ch-note">Rejected: ${c.reason}</p>` : ''}
     ${c.status === 'approved' && ctx.ws?.demo ? html`<p class="ch-note">Demo mode: nothing was sent.</p>` : ''}
     ${rejecting
-      ? html`<form class="ch-reject" data-form="reject" data-id="${c.id}">
+      ? html`<form class="ch-reject" data-form="reject" data-id="${c.id}" data-version="${c.version}">
           <label class="field"><span>Why reject it?</span><input name="reason" maxlength="300" required></label>
           <div class="ch-acts"><button class="btn is-primary is-small" type="submit">Reject</button>
             <button class="btn is-small" type="button" data-act="cancel">Cancel</button></div></form>`
@@ -195,7 +198,8 @@ export async function mount(root, ctx) {
     if (a === 'reject') { s.ui.rejecting = id; s.ui.editing = null; return paint(); }
     if (a === 'approve' || a === 'check') {
       s.ui.busy = id; b.disabled = true;
-      act(() => ctx.api('POST', cardPath(id, a)), a === 'check' ? 'Checked and approved.' : 'Approved.');
+      const version = Number(b.dataset.version);
+      act(() => ctx.api('POST', cardPath(id, a), { version }), a === 'check' ? 'Checked and approved.' : 'Approved.');
     }
   };
 
@@ -216,14 +220,14 @@ export async function mount(root, ctx) {
       const title = f.querySelector('[name="title"]').value.trim();
       const fields = [...f.querySelectorAll('input[data-label]')].map((i) => ({ label: i.dataset.label, value: i.value.trim() }));
       s.ui.editing = null; stale = false;
-      act(() => ctx.api('POST', cardPath(id, 'edit'), { title, fields }), 'Card updated.');
+      act(() => ctx.api('POST', cardPath(id, 'edit'), { title, fields, version: Number(f.dataset.version) }), 'Card updated. Someone else approves it now.');
       return;
     }
     if (kind === 'reject') {
       const reason = f.querySelector('[name="reason"]').value.trim();
       if (!reason) { s.ui.error = 'Say why it is rejected.'; return paint(); }
       s.ui.rejecting = null; stale = false;
-      act(() => ctx.api('POST', cardPath(id, 'reject'), { reason }), 'Rejected.');
+      act(() => ctx.api('POST', cardPath(id, 'reject'), { reason, version: Number(f.dataset.version) }), 'Rejected.');
     }
   };
 

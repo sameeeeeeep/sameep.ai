@@ -1,6 +1,8 @@
 // app.js: the shell and the router. Shared and frozen (owned by Design).
 // Routes are hashes: #/w/<workspace>/<section>/<params...>, e.g. #/w/unfiltrd/chats/ops, #/w/unfiltrd/os/pos.
-// A magic link lands with #s=<token> (or #s=expired); the token is kept and dropped from the address bar.
+// A magic link lands with #l=<link token>: the sign-in screen asks the person to tap "Open my workspace",
+// which POSTs it to /auth/link for a session. Opening the link alone (a mail scanner) changes nothing.
+// #s=expired means the link was malformed. Either way the hash is dropped from the address bar.
 //
 // Page contract (pages/<name>.js): export `title`, a pure `view(data, ctx)` (string-in, string-out, no DOM,
 // so Node can test it) and `mount(root, ctx)`, which fetches, renders and binds; it may return a cleanup fn.
@@ -30,11 +32,11 @@ if (typeof document !== 'undefined') boot();
 function boot() {
   const $ = (id) => document.getElementById(id);
   apiBase(); // resolve (and on localhost remember) ?api= before the hash or search changes
-  let me = null, cleanup = null, linkExpired = false, seq = 0;
+  let me = null, cleanup = null, linkExpired = false, linkToken = null, seq = 0;
 
-  const m = location.hash.match(/^#s=([a-z0-9]+)$/i);
+  const m = location.hash.match(/^#([sl])=([a-z0-9]+)$/i);
   if (m) {
-    if (m[1] === 'expired') linkExpired = true; else token.set(m[1]);
+    if (m[1] === 'l' && /^[a-f0-9]{48}$/.test(m[2])) linkToken = m[2]; else linkExpired = true;
     history.replaceState(null, '', location.pathname + location.search);
   }
 
@@ -49,14 +51,14 @@ function boot() {
     $('shell').hidden = true; $('signin').hidden = false;
     const mod = await import('../pages/signin.js');
     const email = new URLSearchParams(location.search).get('email') || '';
-    mod.mount($('signin'), { api, token, expired: linkExpired, email, toast, onSignedIn: start });
-    linkExpired = false;
+    mod.mount($('signin'), { api, token, expired: linkExpired, link: linkToken, email, toast, onSignedIn: start });
+    linkExpired = false; linkToken = null;
   }
 
   async function loadMe() { me = await api('GET', '/me'); return me; }
 
   async function start() {
-    if (!token.get()) return showSignin();
+    if (!token.get() || linkToken) return showSignin();
     try { await loadMe(); } catch (e) {
       if (e instanceof ApiError && e.status === 401) return showSignin();
       $('signin').hidden = false; $('signin').innerHTML = String(html`<div class="si"><h1>Can’t open your workspace</h1><p class="si-note">${e.message}</p><button class="btn" id="retry">Try again</button></div>`);
@@ -83,7 +85,7 @@ function boot() {
     $('ws').disabled = me.workspaces.length < 2;
     $('role').textContent = ROLE_NAMES[ws.role] || ws.role;
     $('nav').innerHTML = NAV.map((n) => `<a href="${hrefFor(ws.id, n.section)}"${n.section === r.section ? ' aria-current="page"' : ''}>${esc(n.label)}</a>`).join('');
-    $('banner').innerHTML = ws.demo ? String(html`<div class="demo-banner"><b>Sample data.</b> ${ws.name} is in demo mode: the numbers and people are made up, and nothing is sent anywhere.</div>`) : '';
+    $('banner').innerHTML = ws.demo ? String(html`<div class="demo-banner"><b>Sample data.</b> ${ws.name} is in demo mode: the shop numbers, chats and sample people are made up, and nothing is sent anywhere. Billing is real.</div>`) : '';
 
     if (cleanup) { try { cleanup(); } catch { /* */ } cleanup = null; }
     // a fresh #page per route: a slow page that finishes after the user moved on paints into a detached
