@@ -1,0 +1,32 @@
+/* inbox.css: work the agent found, with its source; what's late; what's waiting on you. */
+.ib .pg-h .sample-tag { margin-left: 6px; }
+.ib-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 8px; }
+.ib-kpis .kpi { min-height: 96px; }
+.ib-kpis .kpi-v { font-size: 24px; }
+.ib-sec { margin-top: 26px; }
+.ib-sub { margin: -4px 0 12px; }
+.ib-list { display: grid; gap: 10px; }
+.ib-card { padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); display: grid; gap: 10px; min-width: 0; }
+.ib-card.is-late { border-color: rgba(240, 163, 90, .45); }
+.ib-card.is-esc { box-shadow: inset 3px 0 0 var(--bad); }
+.ib-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-size: 13px; color: var(--muted); }
+.ib-t { color: var(--ink-2); font-weight: 600; }
+.ib-due { margin-left: auto; font-family: var(--f-mono); font-size: 12.5px; }
+.ib-due.is-late { color: var(--warn); }
+.ib-title { margin: 0; font-size: 16.5px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.ib-src { margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--line); }
+.ib-src blockquote { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.5; }
+.ib-src figcaption { margin-top: 6px; font-size: 12.5px; color: var(--muted); }
+.ib-people { margin: 0; font-size: 13.5px; color: var(--muted); }
+.ib-esc { color: var(--bad); font-weight: 600; }
+.ib-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ib-reassign, .ib-reject, .ib-back { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: end; width: 100%; }
+.ib-reassign .field, .ib-reject .field, .ib-back .field { min-width: 0; flex: 1 1 180px; }
+.ib-reassign select, .ib-reject input, .ib-back input { width: 100%; }
+.ib-read td, .ib-read th { font-size: 13.5px; }
+
+@media (max-width: 760px) {
+  .ib-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ib-due { margin-left: 0; }
+  .ib-read { display: block; overflow-x: auto; }
+}
