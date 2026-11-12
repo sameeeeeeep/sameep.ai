@@ -1,0 +1,141 @@
+/* standup.css: the Standup screen. Uses the app.css tokens and blocks (.card .kpis .kpi .tabs .btn .sec-h), so it
+   reads the same in dark and light. The voiceover and the one question sit side by side at the top; people, areas
+   and history below. Walkthroughs play one slide at a time with the real decision card under the player. */
+
+.su .pg-top .btn { flex: none; }
+.su-top { display: grid; gap: 14px; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; margin-bottom: 18px; }
+
+/* the voiceover and its transcript */
+.su-voice { padding: 16px 18px 6px; }
+.su-voice-h { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.su-play { display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 16px 0 6px; border: 1px solid var(--acc-edge); border-radius: 999px; background: var(--acc); color: var(--acc-ink); font: 600 14px/1 var(--f-body); cursor: pointer; }
+.su-play:hover { background: var(--acc-hover); }
+.su-play.is-on { background: var(--card-2); color: var(--ink); border-color: var(--line-2); }
+.su-play[disabled] { opacity: .45; cursor: not-allowed; }
+.su-play-i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--acc-ink); color: var(--acc); }
+.su-play.is-on .su-play-i { background: var(--ink); color: var(--bg); }
+.su-play-i svg { width: 14px; height: 14px; fill: currentColor; }
+.su-voice-m { font-size: 13px; color: var(--muted); }
+.su-voice-m b { color: var(--ink); font-weight: 600; }
+.su-script { list-style: none; margin: 0; padding: 4px 0; display: grid; max-height: 330px; overflow-y: auto; overscroll-behavior: contain; }
+.su-script li { padding: 9px 0 9px 14px; border-left: 2px solid transparent; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+.su-script li + li { border-top: 1px solid var(--line); }
+.su-script li.is-past { color: var(--muted); }
+.su-script li.is-now { border-left-color: var(--acc-fg); color: var(--ink); }
+
+/* the one question: a notch-style card, one tap */
+.su-ask { display: grid; gap: 10px; align-content: start; padding: 18px; border: 1px solid var(--line-2); border-radius: 18px; background: var(--card-2); box-shadow: 0 10px 30px var(--shadow); }
+.su-ask.is-quiet { box-shadow: none; background: var(--card); border-color: var(--line); color: var(--muted); font-size: 14px; }
+.su-ask-q { font: 600 18px/1.3 var(--f-head); letter-spacing: -.01em; }
+.su-ask-s { font-size: 13.5px; color: var(--muted); }
+.su-ask-b { display: grid; gap: 8px; }
+.su-ask-b .btn { justify-content: flex-start; min-height: 44px; text-align: left; line-height: 1.35; padding: 8px 14px; white-space: normal; }
+.su-ask-a { font-size: 14.5px; color: var(--ink-2); }
+.su-ask-a b { color: var(--ink); font-weight: 600; }
+.su-ask.is-done .linkish { justify-self: start; font-size: 13px; color: var(--muted); }
+.su-other { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+.su-other input { min-height: 40px; padding: 8px 12px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--bg); color: var(--ink); font: 400 14.5px/1.4 var(--f-body); }
+.su-other input:focus { outline: none; border-color: var(--ink-2); }
+
+/* numbers */
+.su-kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); margin-bottom: 14px; }
+.su-kpi { min-height: 96px; }
+.su-vlink { margin: 0 0 22px; font-size: 14px; color: var(--muted); }
+.su-sec { margin-top: 26px; }
+.su-sec .sec-h { display: flex; align-items: baseline; gap: 12px; }
+.su-sec .sec-h .mono { font-weight: 400; }
+
+/* people */
+.su-people { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); }
+.su-person { display: grid; gap: 10px; align-content: start; padding: 16px; }
+.su-person.is-me { border-color: var(--line-2); }
+.su-person header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.su-person h3 { font: 600 15.5px/1.3 var(--f-body); }
+.su-person header p { font-size: 13px; }
+.su-you { margin-left: 4px; padding: 0 6px; border-radius: 5px; border: 1px solid var(--line-2); color: var(--muted); font-size: 11px; font-weight: 400; vertical-align: 1px; }
+.su-chip { flex: none; padding: 0 9px; border-radius: 999px; border: 1px solid var(--line-2); font: 400 11.5px/1.9 var(--f-mono); color: var(--muted); white-space: nowrap; }
+.su-chip.is-ok { color: var(--ok); border-color: var(--ok-line); }
+.su-chip.is-bad { color: var(--bad); border-color: var(--bad-line); }
+.su-said { font-size: 13.5px; color: var(--ink-2); padding: 8px 10px; border-left: 2px solid var(--bad-line); background: var(--wash); border-radius: 0 8px 8px 0; }
+.su-cols { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.su-col-h { display: flex; justify-content: space-between; color: var(--muted); font-size: 11.5px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.su-col-h span { color: var(--ink-2); }
+.su-col.is-blocked.has-n .su-col-h span { color: var(--bad); }
+.su-col ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.su-col li { font-size: 13px; line-height: 1.4; color: var(--ink-2); overflow-wrap: anywhere; }
+.su-none { margin-top: 6px; font-size: 13px; color: var(--faint); }
+.su-taps { font-size: 13px; color: var(--muted); padding-top: 8px; border-top: 1px solid var(--line); }
+
+/* areas */
+.su-areas { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.su-area { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 4px 18px; padding: 14px 16px; }
+.su-area + .su-area { border-top: 1px solid var(--line); }
+.su-area-h { display: grid; gap: 2px; }
+.su-area-h .mono { font-size: 11.5px; }
+.su-area-c { grid-column: 1; font-size: 11.5px; color: var(--muted); }
+.su-moved { grid-column: 2; grid-row: 1 / span 2; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.su-moved li { font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.su-area .su-none { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+
+/* history */
+.su-hist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.su-hist li { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.su-hist a { display: grid; gap: 2px; min-width: 0; text-decoration: none; }
+.su-hist a:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.su-hist b { font-weight: 600; font-size: 14.5px; }
+.su-hist .muted { font-size: 13px; }
+.su-hist .mono { flex: none; font-size: 11.5px; }
+
+/* walkthroughs */
+.su-videos { display: grid; gap: 14px; }
+.su-video { display: grid; gap: 12px; padding: 18px; scroll-margin-top: calc(var(--top-h) + 12px); }
+.su-video.is-open { border-color: var(--line-2); }
+.su-video-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.su-video-h h3 { margin-top: 4px; font: 600 17px/1.3 var(--f-body); letter-spacing: -.01em; }
+.su-video-h .mono { font-size: 11.5px; }
+.su-why { margin-top: 4px; font-size: 13.5px; color: var(--muted); }
+.su-watched { font-size: 11.5px; color: var(--muted); }
+.su-player { display: grid; gap: 12px; }
+.su-steps { display: flex; gap: 4px; }
+.su-steps span { flex: 1; height: 3px; border-radius: 2px; background: var(--line-2); }
+.su-steps span.is-past { background: var(--ink-2); }
+.su-steps span.is-now { background: var(--acc-fg); }
+.su-slide { display: grid; align-content: start; gap: 12px; min-height: 300px; padding: 26px 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); }
+.su-slide-n { font-size: 11.5px; color: var(--muted); }
+.su-slide-t { font: 600 clamp(20px, 2.2vw, 28px)/1.2 var(--f-head); letter-spacing: -.02em; max-width: 30em; }
+.su-figs { display: flex; flex-wrap: wrap; gap: 10px; }
+.su-fig { padding: 8px 14px; border: 1px solid var(--line-2); border-radius: 10px; background: var(--card); font: 400 clamp(18px, 1.8vw, 24px)/1.2 var(--f-mono); color: var(--ink); white-space: nowrap; }
+.su-slide-l { font-size: 15.5px; line-height: 1.55; color: var(--ink-2); max-width: 46em; }
+.su-slide-v { font-size: 12.5px; color: var(--muted); }
+.su-bars { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 10px; max-width: 640px; }
+.su-bars li { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) 28px; align-items: center; gap: 12px; font-size: 14px; }
+.su-bar-l { overflow-wrap: anywhere; }
+.su-bar-l .mono { font-size: 11px; }
+.su-bar { height: 10px; border-radius: 5px; background: var(--wash-2); overflow: hidden; }
+.su-bar span { display: block; height: 100%; border-radius: 5px; background: var(--ink-2); }
+.su-bars .mono { text-align: right; }
+.su-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.su-ctl .mono { margin-left: auto; font-size: 11.5px; }
+.su-trans summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.su-trans ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+.su-trans li.is-now { color: var(--ink); }
+.su-end { font-size: 14px; color: var(--ink); }
+/* the real decision card under the player: the Work card, without the Work screen's full-height frame */
+.su-card.wk { display: block; height: auto; min-height: 0; margin: 0; padding: 0; overflow: visible; background: none; }
+.su-card .dc { margin-top: 0; }
+
+@media (max-width: 1100px) {
+  .su-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .su-top { grid-template-columns: minmax(0, 1fr); }
+  .su-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .su-cols { grid-template-columns: minmax(0, 1fr); }
+  .su-area { grid-template-columns: minmax(0, 1fr); }
+  .su-moved, .su-area .su-none { grid-column: 1; grid-row: auto; }
+  .su-slide { min-height: 0; padding: 18px; }
+  .su-bars li { grid-template-columns: minmax(0, 1fr) 90px 24px; }
+  .su-video-h { flex-direction: column; }
+  .su-other { grid-template-columns: minmax(0, 1fr); }
+  .su-hist li { flex-direction: column; align-items: flex-start; }
+}

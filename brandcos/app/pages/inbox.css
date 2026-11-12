@@ -7,7 +7,7 @@
 .ib-sub { margin: -4px 0 12px; }
 .ib-list { display: grid; gap: 10px; }
 .ib-card { padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); display: grid; gap: 10px; min-width: 0; }
-.ib-card.is-late { border-color: rgba(240, 163, 90, .45); }
+.ib-card.is-late { border-color: var(--warn-line); }
 .ib-card.is-esc { box-shadow: inset 3px 0 0 var(--bad); }
 .ib-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-size: 13px; color: var(--muted); }
 .ib-t { color: var(--ink-2); font-weight: 600; }

@@ -4,6 +4,7 @@
 // API: /d2c-api/w/:wid/taskos/* and /intake (d2c-clone-app docs/taskos.md). view() is pure; mount() fetches and binds.
 import { html, sampleTag, can, day, ago, safeHref } from '../js/ui.js';
 import { hrefFor } from '../js/app.js';
+import { stepsSection } from '../js/steps.js';
 
 export const title = 'Inbox';
 
@@ -131,6 +132,7 @@ export function view(data, ctx) {
     ${data.error ? html`<p class="err" role="alert">${data.error}</p>` : ''}
     ${viewer ? html`<p class="note">You can read everything here. A member accepts, approves and checks.</p>` : ''}
     ${section('Found by the agent', 'Each one shows the line it came from. Accept it, hand it to someone else, or drop it.', found, 'Nothing new. The agent files work here as soon as it hears about it.')}
+    ${stepsSection(data.steps, ctx)}
     ${decisionsSection(data, ctx)}
     ${section('Overdue and escalated', '', late, 'Nothing is late.', { showSource: false })}
     ${section('Waiting on you', '', mine, 'Nothing needs you right now.', { showSource: false })}
@@ -147,11 +149,13 @@ export async function mount(root, ctx) {
   const base = `/w/${ctx.wid}`;
   const s = { tasks: [], summary: {}, sources: [], people: [], decisions: [], open: null, busy: false, error: '' };
   async function load() {
-    const [list, sum, src, team, dec] = await Promise.all([
+    const [list, sum, src, team, dec, st] = await Promise.all([
       ctx.api('GET', `${base}/taskos/tasks`), ctx.api('GET', `${base}/taskos/summary`), ctx.api('GET', `${base}/intake`),
       ctx.api('GET', `${base}/team`).catch(() => ({ members: [] })),
       ctx.api('GET', `${base}/decisions?mine=1`).catch(() => ({ cards: [] })),
+      ctx.api('GET', `${base}/steps`).catch(() => ({ steps: [] })),
     ]);
+    s.steps = st.steps || [];
     s.decisions = dec.cards || [];
     s.tasks = list.tasks; s.summary = sum; s.sources = src.sources; s.people = team.members || team.people || [];
   }

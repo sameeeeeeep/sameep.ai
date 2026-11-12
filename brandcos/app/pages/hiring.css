@@ -10,7 +10,7 @@
 
 .hr-wait { display: inline-flex; gap: 8px; align-items: baseline; font-size: 14px; color: var(--ink-2); }
 .hr-wait b { font: 500 11.5px/1.9 var(--f-mono); padding: 0 8px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--ink); }
-.hr-wait.is-person b, .hr-wait.is-founder b { border-color: var(--acc); color: var(--acc); }
+.hr-wait.is-person b, .hr-wait.is-founder b { border-color: var(--acc-fg); color: var(--acc-fg); }
 .hr-wait.is-done { color: var(--muted); }
 
 .hr-back { margin: 0 0 10px; font-size: 14px; }
@@ -21,7 +21,7 @@
 .hr-steps { list-style: none; display: flex; gap: 4px; margin: 0 0 16px; padding: 0; overflow-x: auto; scrollbar-width: none; }
 .hr-steps li { flex: 1 0 auto; min-width: 88px; padding-top: 8px; border-top: 2px solid var(--line-2); font-size: 12.5px; color: var(--faint); white-space: nowrap; }
 .hr-steps li.is-done { border-top-color: var(--ink-2); color: var(--muted); }
-.hr-steps li.is-now { border-top-color: var(--acc); color: var(--ink); font-weight: 600; }
+.hr-steps li.is-now { border-top-color: var(--acc-fg); color: var(--ink); font-weight: 600; }
 
 .hr-gate { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; margin-bottom: 14px; }
 .hr-gate-acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -42,7 +42,7 @@
 .hr-c-n { font-weight: 600; font-size: 14px; }
 .hr-c-m { color: var(--muted); font-size: 12.5px; }
 .hr-c-s { color: var(--ink-2); font-size: 12.5px; }
-.hr-c-s b { color: var(--acc); font-weight: 600; }
+.hr-c-s b { color: var(--acc-fg); font-weight: 600; }
 .hr-out { font-size: 13.5px; color: var(--muted); }
 .hr-out summary { cursor: pointer; }
 .hr-out ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }

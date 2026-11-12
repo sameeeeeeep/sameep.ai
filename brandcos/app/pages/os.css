@@ -17,7 +17,7 @@
 .os-flow .is-rejected .os-flow-n { color: var(--muted); }
 
 .os-h2 { margin: 24px 0 10px; display: flex; align-items: center; gap: 10px; }
-.os-low { display: inline-block; padding: 0 8px; border-radius: 999px; border: 1px solid rgba(240, 163, 90, .55); color: var(--warn); font: 400 11px/1.7 var(--f-mono); letter-spacing: 0; text-transform: none; vertical-align: middle; }
+.os-low { display: inline-block; padding: 0 8px; border-radius: 999px; border: 1px solid var(--warn-line); color: var(--warn); font: 400 11px/1.7 var(--f-mono); letter-spacing: 0; text-transform: none; vertical-align: middle; }
 .os-stock tr.is-low td:first-child { box-shadow: inset 2px 0 0 var(--warn); }
 
 .os-new { margin: 0 0 14px; padding: 0; }

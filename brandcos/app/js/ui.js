@@ -76,5 +76,6 @@ export const ICONS = {
   billing: I('<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/>'),
   company: I('<rect x="3.5" y="3.5" width="6" height="6" rx="1.5"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.5"/><rect x="9" y="14.5" width="6" height="6" rx="1.5"/><path d="M6.5 9.5v2.5h11V9.5M12 12v2.5"/>'),
   inbox: I('<path d="M3.5 13.5 6 5.5h12l2.5 8"/><path d="M3.5 13.5V18a1.5 1.5 0 0 0 1.5 1.5h14a1.5 1.5 0 0 0 1.5-1.5v-4.5H15a3 3 0 0 1-6 0H3.5z"/>'),
+  standup: I('<path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/>'),
   hiring: I('<circle cx="10" cy="8" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/>'),
 };

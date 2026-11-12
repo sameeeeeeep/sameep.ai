@@ -257,6 +257,7 @@ function dcDecision(c, ctx, ui) {
     ${c.can.decide ? html`<div class="dc-decide"><span>${c.rule === 'owner' ? 'You decide this one.' : 'It is tied. You break the tie.'}</span>
       ${tied.map((o) => html`<button class="wk-btn" type="button" data-dc="decide" data-id="${c.id}" data-opt="${o.id}" data-version="${c.version}"${busy ? ' disabled' : ''}>Go with ${o.label}</button>`)}</div>` : ''}
     ${c.status === 'open' ? html`<p class="dc-wait">${c.waiting_on}</p>` : dcDecided(c, ui)}
+    ${c.status === 'open' && ui.videos && ui.videos[c.id] ? html`<p class="dc-vid"><a href="${hrefFor(ctx.wid, 'standup', 'videos', c.id)}">Watch the walkthrough, ${ui.videos[c.id]}</a></p>` : ''}
     ${dcComments(c, ui)}
   </article>`;
 }
@@ -459,6 +460,11 @@ export async function mount(root, ctx) {
       ctx.api('GET', `${D}?group=${enc}`).catch(() => ({ cards: [] })), ctx.api('GET', `${D}/summary`).catch(() => ({ by_group: {} }))]);
     s.groups = g.groups; s.group = t.group; s.messages = t.messages; s.board = b; boardSig = sig(b);
     s.decisions = d.cards || []; s.decisionsByGroup = ds.by_group || {}; dcSig = dsig(s.decisions);
+    // [standup] open cards that have a walkthrough get a link to it (worker src/modules/standup.js)
+    if (s.decisions.some((c) => c.status === 'open')) {
+      const v = await ctx.api('GET', `/w/${ctx.wid}/standup/videos`).catch(() => null);
+      if (v) s.ui.videos = Object.fromEntries((v.videos || []).map((x) => { const n = Math.max(0, Math.round(x.seconds || 0)); return [x.card_id, n < 60 ? `${n} s` : `${Math.floor(n / 60)} min${n % 60 ? ` ${n % 60} s` : ''}`]; }));
+    }
   }
 
   async function refresh() {

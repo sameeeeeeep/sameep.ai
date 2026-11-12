@@ -5,7 +5,7 @@
 
 .tm-tbl { min-width: 820px; }
 .tm-tbl td { vertical-align: middle; }
-.tm-tbl tr.is-owner td { background: rgba(236,235,228,.02); }
+.tm-tbl tr.is-owner td { background: var(--tint); }
 .tm-name { font-weight: 600; }
 .tm-tbl td:first-child { min-width: 240px; }
 .tm-email { margin-top: 2px; overflow-wrap: anywhere; }
@@ -24,7 +24,7 @@
 
 .tm-acts, .tm-confirm { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px; }
 .tm-confirm > span { font-size: 13px; text-align: right; max-width: 22em; }
-.tm-danger { border-color: rgba(238,124,108,.5); color: var(--bad); }
+.tm-danger { border-color: var(--bad-line); color: var(--bad); }
 
 .tm-add { margin-top: 22px; display: grid; gap: 12px; }
 .tm-h2 { margin: 0; font: 600 17px/1.2 var(--f-head); }
@@ -32,7 +32,7 @@
 .tm-add-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
 .tm-help { margin: 0; font-size: 13px; }
 .tm-check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
-.tm-check input { width: 18px; height: 18px; accent-color: var(--acc); }
+.tm-check input { width: 18px; height: 18px; accent-color: var(--acc-fg); }
 .tm-add-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .tm-add-foot .err { margin: 0; }
 .tm-readonly { margin: 18px 0 0; font-size: 14px; }

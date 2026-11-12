@@ -4,6 +4,7 @@
 // view() is pure (Node tests import it); mount() fetches and binds.
 import { html, inr, num, day, pill, sampleTag, spark } from '../js/ui.js';
 import { hrefFor } from '../js/app.js';
+import { stepList, waitingOnMe } from '../js/steps.js';
 
 export const title = 'Today';
 
@@ -107,7 +108,7 @@ export function view(data, ctx) {
     return html`<section class="pg td">${tabs}
       <div class="pg-top"><div><h1 class="pg-h">Needs you ${sampleTag(ws)}</h1>
         <p class="pg-sub">Everything an agent or a teammate has drafted that waits for a person: approve it, check it, or send it back. Newest first.</p></div></div>
-      <div class="card td-needs-wrap">${needsList(ctx, needs)}</div>
+      <div class="card td-needs-wrap">${stepList(waitingOnMe(data.steps))}${needs.length || !waitingOnMe(data.steps).length ? needsList(ctx, needs) : ''}</div>
     </section>`;
   }
 
@@ -157,7 +158,7 @@ export function view(data, ctx) {
     ${tiles}
     <div class="td-two${hasNumbers ? '' : ' is-one'}">
       <section class="card td-needs-wrap"><div class="td-needs-h"><h2 class="sec-h">Needs you</h2>
-        <a class="td-conn mono" href="${hrefFor(ctx.wid, 'hub')}" data-go="hub">${connLine}</a></div>${needsList(ctx, needs, 7)}</section>
+        <a class="td-conn mono" href="${hrefFor(ctx.wid, 'hub')}" data-go="hub">${connLine}</a></div>${stepList(waitingOnMe(data.steps), { max: 4, moreHref: hrefFor(ctx.wid, 'today', 'needs') })}${needs.length || !waitingOnMe(data.steps).length ? needsList(ctx, needs, 7) : ''}</section>
       ${right}
     </div>
   </section>`;
@@ -169,11 +170,12 @@ export async function mount(root, ctx) {
   const paint = () => { root.innerHTML = String(view(data && { ...data, now: now.getTime(), hour: now.getHours() }, ctx)); };
   paint();
   const base = `/w/${ctx.wid}`;
-  const [today, os] = await Promise.all([
+  const [today, os, st] = await Promise.all([
     ctx.api('GET', `${base}/today`),
     ctx.api('GET', `${base}/os`).catch(() => null),
+    ctx.api('GET', `${base}/steps`).catch(() => null),
   ]);
-  data = { ...today, low_stock: os ? os.low_stock : 0 };
+  data = { ...today, low_stock: os ? os.low_stock : 0, steps: st ? st.steps : [] };
   paint();
 
   const onClick = (e) => {

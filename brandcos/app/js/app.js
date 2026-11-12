@@ -13,9 +13,11 @@
 // ctx = { wid, ws: {id, name, demo, role}, role, me: {user, workspaces}, params, api, go, toast, refreshMe }
 import { api, apiBase, token, ApiError } from './api.js';
 import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
+import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
 export const NAV = [
   { section: 'today',   label: 'Today',   page: '../pages/today.js' },
+  { section: 'standup', label: 'Standup', page: '../pages/standup.js' },
   { section: 'company', label: 'Company', page: '../pages/company.js' },
   { section: 'inbox',   label: 'Inbox',   page: '../pages/inbox.js' },
   { section: 'chats',   label: 'Work',    page: '../pages/chats.js' },
