@@ -45,9 +45,9 @@ function cardView(c, ctx, ui) {
   const editing = ui.editing === c.id && c.can.edit;
   const rejecting = ui.rejecting === c.id && c.can.reject;
   const who = [];
-  if (c.approved_by) who.push(`Approved by ${person(c.approved_by)}`);
-  if (c.checked_by) who.push(`checked by ${person(c.checked_by)}`);
-  if (c.edited_by) who.push(`edited by ${person(c.edited_by)}`);
+  if (c.approved_by) who.push(`Approved by ${c.names?.approved_by || person(c.approved_by)}`);
+  if (c.checked_by) who.push(`checked by ${c.names?.checked_by || person(c.checked_by)}`);
+  if (c.edited_by) who.push(`edited by ${c.names?.edited_by || person(c.edited_by)}`);
   const body = editing
     ? html`<form class="ch-edit" data-form="edit" data-id="${c.id}">
         <label class="field"><span>Title</span><input name="title" value="${c.title}" maxlength="160" required></label>

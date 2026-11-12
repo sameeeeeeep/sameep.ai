@@ -45,7 +45,7 @@ button { font: inherit; color: inherit; }
 .tbl th { text-align: left; font: 400 12px/1.4 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }
 .tbl td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .tbl .r { text-align: right; white-space: nowrap; }
-.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.tbl-wrap { position: relative; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
 .field { display: grid; gap: 6px; font-size: 14px; font-weight: 500; }
 .field input, .field select, .field textarea { min-height: 42px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font: 400 15px/1.4 var(--f-body); color: var(--ink); }
 .field textarea { min-height: 84px; resize: vertical; }

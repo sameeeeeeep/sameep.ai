@@ -15,7 +15,7 @@ const APPROVER = { tasks: 'member', pos: 'admin', invoices: 'admin', adjustments
 const AREAS = [['', 'No area'], ['website', 'Website'], ['performance', 'Performance'], ['ops', 'Ops'], ['content', 'Content'], ['finance', 'Finance'], ['support', 'Support'], ['all-hands', 'All hands']];
 
 export const tabFor = (params) => TABS.find((t) => t.key === (params && params[0])) || TABS[0];
-const who = (email) => String(email || '').split('@')[0] || '';
+const who = (email) => { const n = String(email || '').split('@')[0] || ''; return n.charAt(0).toUpperCase() + n.slice(1); };
 const rupees = (v) => { const n = Number(String(v ?? '').replace(/[,\s₹]/g, '')); return Number.isFinite(n) ? Math.round(n * 100) : NaN; };
 export const linesTotal = (lines) => (lines || []).reduce((s, l) => { const q = Number(l.qty), c = rupees(l.unit_cost); return s + (Number.isFinite(q) && Number.isFinite(c) ? q * c : 0); }, 0);
 const signed = (n) => (n > 0 ? '+' + num(n) : num(n));
@@ -45,9 +45,9 @@ function actions(item, data, ctx, kind) {
 
 function people(item) {
   return html`<span class="os-people">
-    <span>Drafted by ${who(item.created_by)}</span>
-    ${item.approved_by ? html`<span>Approved by ${who(item.approved_by)}</span>` : ''}
-    ${item.checked_by ? html`<span>Checked by ${who(item.checked_by)}</span>` : ''}
+    <span>Drafted by ${item.names?.created_by || who(item.created_by)}</span>
+    ${item.approved_by ? html`<span>Approved by ${item.names?.approved_by || who(item.approved_by)}</span>` : ''}
+    ${item.checked_by ? html`<span>Checked by ${item.names?.checked_by || who(item.checked_by)}</span>` : ''}
     ${item.status === 'rejected' ? html`<span>Rejected${item.data && item.data.rejected_by ? html` by ${who(item.data.rejected_by)}` : ''}${item.reason ? html`: ${item.reason}` : ''}</span>` : ''}
   </span>`;
 }

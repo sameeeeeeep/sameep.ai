@@ -30,7 +30,7 @@ if (typeof document !== 'undefined') boot();
 function boot() {
   const $ = (id) => document.getElementById(id);
   apiBase(); // resolve (and on localhost remember) ?api= before the hash or search changes
-  let me = null, cleanup = null, linkExpired = false;
+  let me = null, cleanup = null, linkExpired = false, seq = 0;
 
   const m = location.hash.match(/^#s=([a-z0-9]+)$/i);
   if (m) {
@@ -69,6 +69,7 @@ function boot() {
 
   async function route() {
     if (!me) return;
+    const mine = ++seq; // a later route() makes this one stale
     if (!me.workspaces.length) {
       $('nav').innerHTML = ''; $('ws').innerHTML = ''; $('banner').innerHTML = '';
       $('page').innerHTML = String(html`<section class="pg"><h1 class="pg-h">No workspace yet</h1><p class="pg-sub">This email is signed in but not part of a workspace. Ask your admin to add you.</p></section>`);
@@ -85,7 +86,10 @@ function boot() {
     $('banner').innerHTML = ws.demo ? String(html`<div class="demo-banner"><b>Sample data.</b> ${ws.name} is in demo mode: the numbers and people are made up, and nothing is sent anywhere.</div>`) : '';
 
     if (cleanup) { try { cleanup(); } catch { /* */ } cleanup = null; }
-    const root = $('page');
+    // a fresh #page per route: a slow page that finishes after the user moved on paints into a detached
+    // node, and listeners a page bound on the old root go with it
+    const old = $('page'), root = old.cloneNode(false);
+    old.replaceWith(root);
     root.innerHTML = '<p class="loading">Loading</p>';
     const nav = NAV.find((n) => n.section === r.section);
     document.title = `${nav.label} · ${ws.name} · D2C Clone`;
@@ -96,9 +100,12 @@ function boot() {
     };
     try {
       const mod = await import(nav.page);
-      if (parseHash(location.hash).section !== r.section) return; // moved on while loading
-      cleanup = (await mod.mount(root, ctx)) || null;
+      if (mine !== seq) return; // moved on while loading
+      const done = (await mod.mount(root, ctx)) || null;
+      if (mine !== seq) { if (done) { try { done(); } catch { /* */ } } return; } // moved on while mounting
+      cleanup = done;
     } catch (e) {
+      if (mine !== seq) return;
       root.innerHTML = String(html`<section class="pg"><h1 class="pg-h">${nav.label}</h1><p class="err">${e.status === 501 ? 'This part is still being built.' : e.message}</p></section>`);
     }
   }

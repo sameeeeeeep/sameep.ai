@@ -75,8 +75,8 @@ const mem = o({ items: [item(1, 'draft', {}), item(2, 'approved', {}, { approved
 check('member sees why there is no approve', mem.includes('An admin approves this.'));
 check('approver sees second-person hint', mem.includes('a second person checks it'));
 check('amount in rupees', pos.includes('₹3,000'));
-check('rejection reason escaped', pos.includes('Duplicate &lt;order&gt;') && pos.includes('Rejected by asha'));
-check('people trail', pos.includes('Approved by asha') && pos.includes('Checked by rohan'));
+check('rejection reason escaped', pos.includes('Duplicate &lt;order&gt;') && pos.includes('Rejected by Asha'));
+check('people trail', pos.includes('Approved by Asha') && pos.includes('Checked by Rohan'));
 check('PO lines editor', pos.includes('id="os-form"') && pos.includes('name="unit_cost"') && pos.includes('data-act="add-line"') && pos.includes('id="os-total"'));
 const two = o({ items: [], lines: [{ sku: 'A', qty: '2', unit_cost: '150' }, { sku: 'B', qty: '1', unit_cost: '99.5' }], open: true }, 'member', 'pos');
 check('lines total and remove buttons', two.includes('₹400') && (two.match(/data-act="del-line"/g) || []).length === 2 && two.includes('<details class="card os-new" open'));
