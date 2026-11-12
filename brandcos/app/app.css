@@ -96,7 +96,7 @@ a.pill-top:hover { border-color: var(--ink-2); color: var(--ink); }
 .pg-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; margin-bottom: 22px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
 .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
-.sec-h { margin: 0 0 12px; font: 400 11.5px/1.4 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sec-h { margin: 0 0 12px; font: 600 14px/1.4 var(--f-body); color: var(--ink); }
 
 /* tabs: the row under the breadcrumb */
 .tabs { display: flex; gap: 2px; padding: 8px 28px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
@@ -116,7 +116,7 @@ a.pill-top:hover { border-color: var(--ink-2); color: var(--ink); }
 
 /* tables */
 .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
-.tbl th { text-align: left; font: 400 11px/1.4 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--card-2); }
+.tbl th { text-align: left; font: 500 12.5px/1.4 var(--f-body); color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--card-2); }
 .tbl td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .tbl tbody tr:last-child td { border-bottom: 0; }
 .tbl .r { text-align: right; white-space: nowrap; }
@@ -142,7 +142,7 @@ a.pill-top:hover { border-color: var(--ink-2); color: var(--ink); }
 .pill-s.is-approved::before, .pill-s.is-checked::before, .pill-s.is-connected::before, .pill-s.is-paid::before { background: var(--ok); }
 .pill-s.is-rejected::before { background: var(--bad); }
 .pill-s.is-rejected, .pill-s.is-not_connected, .pill-s.is-upcoming { color: var(--muted); }
-.sample-tag { display: inline-block; padding: 0 8px; border-radius: 6px; border: 1px dashed var(--line-2); color: var(--muted); font: 400 11px/1.8 var(--f-mono); letter-spacing: .04em; text-transform: uppercase; vertical-align: middle; }
+.sample-tag { display: inline-block; padding: 0 8px; border-radius: 6px; border: 1px dashed var(--line-2); color: var(--muted); font: 400 11.5px/1.8 var(--f-mono); vertical-align: middle; }
 
 /* KPI tiles (Today, OS, Billing) */
 .kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }

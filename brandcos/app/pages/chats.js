@@ -299,6 +299,8 @@ export async function mount(root, ctx) {
   const sig = (b) => (b?.tasks || []).map((t) => `${t.id}:${t.version}`).join(',');
   const working = () => (s.board?.tasks || []).some((t) => t.working && t.next_at && t.next_at - Date.now() < 90_000);
 
+  // after you send something, the thread follows it down even if you had scrolled up
+  let stickUntil = 0;
   function paint() {
     if (dead) return;
     const box = root.querySelector('#ch-msgs');
@@ -310,7 +312,7 @@ export async function mount(root, ctx) {
     s.ui.now = Date.now();
     root.innerHTML = String(view(s, ctx));
     const nb = root.querySelector('#ch-msgs');
-    if (nb && atBottom) nb.scrollTop = nb.scrollHeight;
+    if (nb && (atBottom || Date.now() < stickUntil)) nb.scrollTop = nb.scrollHeight;
     const bd = root.querySelector('.wk-board');
     if (bd) bd.scrollTop = boardTop;
     if (hadFocus) root.querySelector('#ch-body')?.focus();
@@ -414,6 +416,7 @@ export async function mount(root, ctx) {
   }
   async function recSend() {
     if (!rec || s.ui.rec?.sending) return;
+    stickUntil = Date.now() + 6000;
     const r = rec;
     const ms = Date.now() - r.start;
     clearInterval(r.tick);
@@ -508,7 +511,7 @@ export async function mount(root, ctx) {
     if (kind === 'send') {
       const body = f.querySelector('textarea').value.trim();
       if (!body) { s.ui.error = 'Write a message first.'; return paint(); }
-      s.ui.sending = true; paint();
+      s.ui.sending = true; stickUntil = Date.now() + 6000; paint();
       act(async () => { await ctx.api('POST', `${W}/${enc}/messages`, { body }); s.ui.draft = ''; const ta = root.querySelector('#ch-body'); if (ta) ta.value = ''; })
         .finally(() => { s.ui.sending = false; paint(); });
       return;

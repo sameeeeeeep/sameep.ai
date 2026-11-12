@@ -168,7 +168,7 @@ function boot() {
     const mine = ++seq; // a later route() makes this one stale
     if (!me.workspaces.length) {
       $('nav').innerHTML = ''; $('ws').innerHTML = ''; $('banner').innerHTML = '';
-      $('crumb-ws').textContent = 'brandcos'; $('crumb-sec').textContent = 'No workspace';
+      $('crumb-ws').textContent = 'Chief of Staff'; $('crumb-sec').textContent = 'No workspace';
       $('page').innerHTML = String(html`<section class="pg"><h1 class="pg-h">No workspace yet</h1><p class="pg-sub">This email is signed in but not part of a workspace. Ask your admin to add you.</p></section>`);
       return;
     }
@@ -199,7 +199,7 @@ function boot() {
     const old = $('page'), root = old.cloneNode(false);
     old.replaceWith(root);
     root.innerHTML = '<p class="loading">Loading</p>';
-    document.title = `${nav.label} · ${ws.name} · brandcos`;
+    document.title = `${nav.label} · ${ws.name} · Chief of Staff`;
     const ctx = {
       wid: ws.id, ws, role: ws.role, me, params: r.params, api, toast,
       go: (section, ...params) => { location.hash = hrefFor(ws.id, section, ...params); },

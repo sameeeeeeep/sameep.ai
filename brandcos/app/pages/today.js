@@ -125,7 +125,7 @@ export function view(data, ctx) {
 
   const brief = briefText(data)
     ? html`<article class="card td-brief">
-        <header class="td-brief-h"><span class="td-mark" aria-hidden="true">b</span><div><h2>Daily brief</h2>
+        <header class="td-brief-h"><span class="td-mark" aria-hidden="true">C</span><div><h2>Daily brief</h2>
           <p class="mono muted">Written from ${conn.connected || 'no'} connected ${conn.connected === 1 ? 'tool' : 'tools'}, the OS and every agent run</p></div></header>
         <p class="td-brief-p">${briefText(data)}</p>
       </article>`

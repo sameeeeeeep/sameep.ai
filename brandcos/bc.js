@@ -229,6 +229,8 @@
   if (local && qs.get('api')) {
     try { var u = new URL(qs.get('api')); if (LOCAL.indexOf(u.hostname) >= 0) { API = u.origin + '/d2c-api'; apiParam = u.origin; } } catch (e) {}
   }
+  // local dev: the demo doors carry the same ?api= so the app talks to the local worker too
+  if (apiParam) document.querySelectorAll('a[href="./app/#demo"]').forEach(function (a) { a.href = './app/?api=' + encodeURIComponent(apiParam) + '#demo'; });
   var lf = document.getElementById('lf'), cf = document.getElementById('cf'), msg = document.getElementById('lf-msg');
   var email = '';
 

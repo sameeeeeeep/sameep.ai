@@ -29,7 +29,7 @@
 .os-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 13px; }
 .os-form .err { margin: 0; }
 .os-lines { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 10px; min-width: 0; }
-.os-lines legend { padding: 0 6px; font: 400 11px/1.4 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.os-lines legend { padding: 0 6px; font: 600 13px/1.4 var(--f-body); color: var(--ink); }
 .os-line { display: grid; gap: 8px; grid-template-columns: minmax(0, 1.4fr) minmax(0, .7fr) minmax(0, 1fr) auto; align-items: end; }
 .os-line .field input { min-width: 0; width: 100%; }
 .os-lines-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }

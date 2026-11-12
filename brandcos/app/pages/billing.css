@@ -18,7 +18,7 @@
 .bl-kpis .kpi { min-height: 100px; }
 .bl-kpis .kpi-v { font-size: 22px; }
 .bl-ro-note { margin-top: 14px; }
-.bl-h2 { margin: 34px 0 12px; font: 400 11.5px/1.4 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.bl-h2 { margin: 34px 0 12px; font: 600 14px/1.4 var(--f-body); color: var(--ink); }
 .bl-tbl { min-width: 860px; }
 .bl-tbl td.mono, .bl-tbl .bl-d { white-space: nowrap; }
 .bl-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; min-width: 260px; }

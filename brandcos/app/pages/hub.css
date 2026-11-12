@@ -12,7 +12,7 @@
 .hub-c.is-on { background: var(--card-2); }
 .hub-c-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .hub-c-head b { font-weight: 600; font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
-.hub-mode { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; border: 1px dashed var(--line-2); border-radius: 5px; padding: 0 5px; }
+.hub-mode { font-size: 10.5px; color: var(--muted); border: 1px dashed var(--line-2); border-radius: 5px; padding: 0 5px; }
 .hub-what { font-size: 13.5px; }
 .hub-meta { font-size: 11.5px; color: var(--muted); }
 .hub-fresh { display: block; height: 3px; margin: 4px 0 2px; border-radius: 999px; background: var(--raise); overflow: hidden; }
