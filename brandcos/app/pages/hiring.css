@@ -1,0 +1,91 @@
+/* hiring.css: the Hiring page (pages/hiring.js). App tokens from app.css; one accent, only on what you press. */
+.hr-roles { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.hr-role { display: grid; gap: 8px; color: inherit; text-decoration: none; }
+.hr-role:hover { border-color: var(--line-2); }
+.hr-role-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.hr-role-t { font-size: 17px; font-weight: 600; }
+.hr-src { margin: 0; color: var(--muted); font-size: 13.5px; }
+.hr-reason { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.5; }
+.hr-role-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13.5px; }
+
+.hr-wait { display: inline-flex; gap: 8px; align-items: baseline; font-size: 14px; color: var(--ink-2); }
+.hr-wait b { font: 500 11.5px/1.9 var(--f-mono); padding: 0 8px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--ink); }
+.hr-wait.is-person b, .hr-wait.is-founder b { border-color: var(--acc); color: var(--acc); }
+.hr-wait.is-done { color: var(--muted); }
+
+.hr-back { margin: 0 0 10px; font-size: 14px; }
+.hr-back a { color: var(--muted); text-decoration: none; }
+.hr-back a:hover { color: var(--ink); }
+.hr-meta { margin: 8px 0 0; font-size: 13.5px; }
+
+.hr-steps { list-style: none; display: flex; gap: 4px; margin: 0 0 16px; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.hr-steps li { flex: 1 0 auto; min-width: 88px; padding-top: 8px; border-top: 2px solid var(--line-2); font-size: 12.5px; color: var(--faint); white-space: nowrap; }
+.hr-steps li.is-done { border-top-color: var(--ink-2); color: var(--muted); }
+.hr-steps li.is-now { border-top-color: var(--acc); color: var(--ink); font-weight: 600; }
+
+.hr-gate { display: flex; justify-content: space-between; align-items: center; gap: 12px 20px; flex-wrap: wrap; margin-bottom: 14px; }
+.hr-gate-acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.hr-flash { margin: 0 0 14px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line-2); color: var(--ink-2); font-size: 14px; }
+
+.hr-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; padding-bottom: 28px; }
+.hr-main.has-open { grid-template-columns: minmax(0, 1fr) 380px; }
+.hr-left { display: grid; gap: 14px; min-width: 0; }
+.hr-right { position: sticky; top: 12px; min-width: 0; }
+
+.hr-board { display: grid; grid-template-columns: repeat(6, minmax(168px, 1fr)); gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.hr-col { display: grid; align-content: start; gap: 6px; min-height: 160px; padding: 8px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
+.hr-col-h { display: flex; justify-content: space-between; align-items: center; padding: 2px 2px 6px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.hr-none { margin: 4px 2px; color: var(--faint); font-size: 13px; }
+.hr-c { display: grid; gap: 2px; padding: 9px 10px; border-radius: 10px; background: var(--card-2); border: 1px solid var(--line); color: inherit; text-decoration: none; }
+.hr-c:hover { border-color: var(--line-2); }
+.hr-c.is-open { border-color: var(--ink-2); }
+.hr-c-n { font-weight: 600; font-size: 14px; }
+.hr-c-m { color: var(--muted); font-size: 12.5px; }
+.hr-c-s { color: var(--ink-2); font-size: 12.5px; }
+.hr-c-s b { color: var(--acc); font-weight: 600; }
+.hr-out { font-size: 13.5px; color: var(--muted); }
+.hr-out summary { cursor: pointer; }
+.hr-out ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.hr-out a { color: var(--ink-2); }
+
+.hr-cand, .hr-jd { display: grid; gap: 12px; }
+.hr-cand-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.hr-cand-n { font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+.hr-cand-top p { margin: 4px 0 0; font-size: 13.5px; }
+.hr-dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; margin: 0; }
+.hr-dl dt { color: var(--muted); font-size: 12.5px; }
+.hr-dl dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+.hr-sum, .hr-note { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.hr-note { padding: 8px 10px; border-left: 2px solid var(--line-2); }
+.hr-k { margin: 0 0 6px; font-weight: 600; font-size: 13.5px; }
+.hr-screen ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; color: var(--ink-2); }
+.hr-ivs p { margin: 0 0 6px; font-size: 13.5px; }
+.hr-sub { display: block; margin-top: 2px; font-size: 13px; }
+.hr-score { display: grid; gap: 10px; }
+.hr-scale { grid-template-columns: 1fr 80px; align-items: center; }
+.hr-drop, .hr-acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.hr-drop .field { flex: 1 1 200px; }
+
+.hr-tabs { padding: 0; border: 0; margin: -4px 0 0; }
+.hr-doc { margin: 0; white-space: pre-wrap; font: 400 14px/1.6 var(--f-body); color: var(--ink-2); max-height: 460px; overflow: auto; }
+.hr-post { padding: 14px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--line); }
+.hr-post-h { margin: 0 0 8px; font-weight: 600; }
+.hr-by { margin: 0; font-size: 13px; }
+
+.hr-drafts ul { list-style: none; margin: 0; padding: 0; display: grid; }
+.hr-drafts li { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.hr-drafts li:first-child { border-top: 0; }
+.hr-drafts details summary { cursor: pointer; color: var(--ink-2); margin-top: 4px; }
+.hr-dacts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; flex: none; }
+
+@media (max-width: 1100px) {
+  .hr-main.has-open { grid-template-columns: minmax(0, 1fr); }
+  .hr-right { position: static; order: -1; }
+}
+@media (max-width: 640px) {
+  .hr-board { grid-template-columns: repeat(6, 78vw); scroll-snap-type: x mandatory; }
+  .hr-col { scroll-snap-align: start; }
+  .hr-drafts li { flex-direction: column; }
+  .hr-dacts { justify-content: flex-start; }
+  .hr-dl { grid-template-columns: 1fr; }
+}
