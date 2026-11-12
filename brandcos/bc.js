@@ -1,102 +1,174 @@
 // sameep.ai/brandcos: one day at a brand, scrubbed by scroll (every frame is a pure function of scroll position, so it
-// runs backwards too), the two doors (instant demo; email -> 6-digit code -> ./app/) and the plan builder.
+// runs backwards too), the close with its login, and the plan builder.
 (function () {
-  // ── the real product screens. Swap any of these for a final capture and every scene picks it up. ──
-  var SCREENS = {
-    today: 'assets/ui-today.webp',       // 1 morning brief (phone)
-    board: 'assets/ui-board.webp',       // 2 vendor call -> board card, Plan to In progress (laptop)
-    stock: 'assets/ui-stock.webp',       // 3 stock mismatch -> ops card with votes (laptop)
-    revision: 'assets/ui-revision.webp', // 4 listing price -> card to Revision (phone)
-    plan: 'assets/ui-plan.webp',         // 5 creator shoot -> launch timeline (laptop)
-    thread: 'assets/ui-thread.webp',     // 6 11pm -> notch card in the team group chat (phone)
-    hub: 'assets/ui-hub.webp',           // 7 GST invoice -> the hub (laptop)
-    hiring: 'assets/ui-hiring.webp'      // 8 interview -> hiring (laptop)
-  };
-  Array.prototype.forEach.call(document.querySelectorAll('img[data-screen]'), function (img) {
-    var src = SCREENS[img.dataset.screen]; if (src && img.getAttribute('src') !== src) img.src = src;
-  });
-
   var root = document.documentElement;
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
-  var ease = function (x) { x = clamp(x, 0, 1); return 1 - Math.pow(1 - x, 3); };
+  var ease = function (x) { x = clamp(x, 0, 1); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
   var lerp = function (a, b, t) { return a + (b - a) * t; };
   var span = function (p, a, b) { return clamp((p - a) / (b - a), 0, 1); };
-
-  // reduced motion (or a change to it mid-visit): the stacked, finished version
   var mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var small = window.matchMedia ? matchMedia('(max-width: 700px)') : { matches: false };
   function motion() { return root.classList.contains('motion'); }
+  var GW = 390, GH = 844; // the glass is a phone screen, 390 x 844, mapped onto the device in the photo
+
+  // the 2D projective map from the glass rectangle onto a quad (TL, TR, BR, BL), as a CSS matrix3d
+  function m3d(q) {
+    var x0 = q[0][0], y0 = q[0][1], x1 = q[1][0], y1 = q[1][1], x2 = q[2][0], y2 = q[2][1], x3 = q[3][0], y3 = q[3][1];
+    var dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, dy3 = y0 - y1 + y2 - y3;
+    var det = dx1 * dy2 - dx2 * dy1, g = (dx3 * dy2 - dx2 * dy3) / det, h = (dx1 * dy3 - dx3 * dy1) / det;
+    var a = x1 - x0 + g * x1, b = x3 - x0 + h * x3, d = y1 - y0 + g * y1, e = y3 - y0 + h * y3;
+    return 'matrix3d(' + [a / GW, d / GW, 0, g / GW, b / GH, e / GH, 0, h / GH, 0, 0, 1, 0, x0, y0, 0, 1].map(function (n) { return +n.toFixed(6); }).join(',') + ')';
+  }
+  function parseQuad(el) {
+    var q = (el.dataset.quad || '').trim().split(/\s+/).map(function (s) { return s.split(',').map(Number); });
+    var k = parseFloat(el.dataset.inset) || 0, cx = 0, cy = 0;
+    q.forEach(function (p) { cx += p[0] / 4; cy += p[1] / 4; });
+    return q.map(function (p) { return [p[0] + (cx - p[0]) * k, p[1] + (cy - p[1]) * k]; });
+  }
+  // where the image sits in a box under object-fit: cover at object-position fx% 50%
+  function cover(W, H, fx) {
+    var s = Math.max(W / 3, H / 2), iw = 3 * s, ih = 2 * s;
+    return { ox: (W - iw) * fx / 100, oy: (H - ih) / 2, iw: iw, ih: ih };
+  }
+  function toPx(q, c) { return q.map(function (p) { return [c.ox + c.iw * p[0] / 100, c.oy + c.ih * p[1] / 100]; }); }
+  var dist = function (a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1]); };
 
   var scenes = Array.prototype.map.call(document.querySelectorAll('.sc'), function (el) {
-    var f = (el.dataset.from || '50,50,10,0').split(',').map(Number);
-    return { el: el, stage: el.querySelector('.sc-stage'), scr: el.querySelector('.scr'), copy: el.querySelector('.copy'),
-      hero: el.classList.contains('sc-hero'), txt: el.querySelector('.hero-txt'), dusk: el.querySelector('.dusk'),
-      fx: parseFloat(getComputedStyle(el).getPropertyValue('--fx')) || 50, from: f, geo: null, last: -1 };
+    var $ = function (s) { return el.querySelector(s); };
+    return { el: el, kind: el.dataset.kind, stage: $('.sc-stage'), cam: $('.cam'), plate: $('.plate'), glass: $('.glass'), shade: $('.shade'),
+      copy: $('.copy'), txt: $('.hero-txt'), notch: $('.notch'), strip: $('.strip'), side: $('.side'), funnel: $('.funnel'),
+      rows: el.querySelectorAll('.fn li'), fnShot: $('.fn-shot'), states: el.querySelectorAll('.states'), quad: el.dataset.quad ? parseQuad(el) : null,
+      hero: el.classList.contains('sc-hero'), geo: null, last: -1 };
   });
 
-  // where the device in the photo sits on screen: object-fit: cover math on a 3:2 image
+  function pinned(s) { return motion() && (s.kind === 'device' || ((s.kind === 'strip' || s.kind === 'split' || s.kind === 'funnel') && !small.matches)); }
+
   function measure(s) {
-    var W = s.stage.clientWidth, H = s.stage.clientHeight;
-    var sc = Math.max(W / 3, H / 2), iw = 3 * sc, ih = 2 * sc;
-    var ox = (W - iw) * s.fx / 100, oy = (H - ih) / 2;
-    var cx = ox + iw * s.from[0] / 100, cy = oy + ih * s.from[1] / 100, dw = iw * s.from[2] / 100;
-    var r = s.scr, fw = r.offsetWidth, fh = r.offsetHeight;
-    var fcx = r.offsetLeft + fw / 2, fcy = r.offsetTop + fh / 2;
-    s.geo = { dx: cx - fcx, dy: cy - fcy, s0: Math.max(dw / fw, .04), rot: s.from[3] };
+    var W = s.cam.clientWidth, H = s.cam.clientHeight, m = small.matches;
+    var fx = parseFloat(s.el.dataset.fx); if (isNaN(fx)) fx = 50;
+    var g = { W: W, H: H };
+    if (s.quad) {
+      // on a phone, slide the photo so the device sits in the middle of the frame
+      if (m) { var c0 = cover(W, H, 50), mid = (s.quad[0][0] + s.quad[2][0]) / 2; fx = clamp((c0.iw * mid / 100 - W / 2) / (c0.iw - W) * 100, 0, 100); }
+      var c = cover(W, H, fx), q = toPx(s.quad, c);
+      var C = [(q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4, (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4];
+      var len = Math.max(dist(q[0], q[3]), dist(q[1], q[2]));
+      var to = (m ? s.el.dataset.toM : s.el.dataset.to || '50,50').split(',').map(Number);
+      var z = parseFloat(m ? s.el.dataset.zoomM : s.el.dataset.zoom) || .8;
+      g.C = C; g.D = [W * to[0] / 100, H * to[1] / 100]; g.Z = Math.max(1, z * H / len); g.mat = m3d(q);
+    }
+    s.plate.style.objectPosition = fx + '% 50%';
+    if (s.glass) s.glass.style.transform = g.mat || '';
+    s.geo = g;
   }
+
+  function setStates(s, p) {
+    Array.prototype.forEach.call(s.states, function (box) {
+      var at = (box.dataset.steps || '').split(',').map(Number), q = p;
+      if (!pinned(s)) { var r = box.getBoundingClientRect(); q = clamp((innerHeight * .9 - r.top) / (innerHeight * .7), 0, 1); at = at.map(function (a) { return a * .9; }); }
+      var n = 0; at.forEach(function (a) { if (q >= a) n++; });
+      Array.prototype.forEach.call(box.children, function (st, i) { st.classList.toggle('on', i === n); });
+    });
+  }
+  function show(el, o, dy) { if (!el) return; el.style.opacity = String(o); el.style.visibility = o > 0 ? 'visible' : 'hidden'; el.style.transform = dy ? 'translateY(' + dy.toFixed(1) + 'px)' : ''; }
 
   function draw(s, p) {
     var g = s.geo;
-    // the screen: rises out of the device, straightens, and grows to a readable frame
-    var a = s.hero ? .28 : .08, b = s.hero ? .62 : .5;
-    var k = ease(span(p, a, b));
-    s.scr.style.opacity = String(span(p, a, a + (b - a) * .45));
-    s.scr.style.transform = 'translate(' + (g.dx * (1 - k)).toFixed(1) + 'px,' + (g.dy * (1 - k)).toFixed(1) + 'px) rotate(' + (g.rot * (1 - k)).toFixed(2) + 'deg) scale(' + lerp(g.s0, 1, k).toFixed(4) + ')';
-    // the line: comes in once the screen has landed
-    var c = s.hero ? span(p, .56, .7) : span(p, .36, .52);
-    s.copy.style.opacity = String(c);
-    s.copy.style.transform = 'translateY(' + ((1 - ease(c)) * 18).toFixed(1) + 'px)';
-    s.copy.style.visibility = c > 0 ? 'visible' : 'hidden';
-    if (s.hero) {
-      // dawn: the room brightens as the headline gives way
-      var h = span(p, .1, .26);
-      s.txt.style.opacity = String(1 - h);
-      s.txt.style.transform = 'translateY(' + (-h * 24).toFixed(1) + 'px)';
-      s.txt.style.visibility = h < 1 ? 'visible' : 'hidden';
-      s.dusk.style.opacity = String(.52 * (1 - ease(span(p, .04, .4))));
+    if (s.kind === 'device') {
+      var glassIn = s.hero ? span(p, .06, .2) : span(p, .04, .16);
+      var e = ease(s.hero ? span(p, .16, .6) : span(p, .12, .52));
+      var k = lerp(1, g.Z, e), De = [lerp(g.C[0], g.D[0], e), lerp(g.C[1], g.D[1], e)];
+      var tx = clamp(De[0] - k * g.C[0], g.W - k * g.W, 0), ty = clamp(De[1] - k * g.C[1], g.H - k * g.H, 0);
+      s.cam.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + k.toFixed(4) + ')';
+      s.glass.style.opacity = String(glassIn);
+      if (s.shade) s.shade.style.opacity = String((parseFloat(s.el.dataset.dark) || .5) * e);
+      if (s.hero) { var h = span(p, .08, .22); show(s.txt, 1 - h, -h * 24); }
+      var c = s.hero ? span(p, .52, .64) : span(p, .44, .56);
+      if (s.notch) {
+        var d = ease(span(p, .3, .46));
+        s.notch.style.opacity = String(span(p, .3, .38)); s.notch.style.visibility = d > 0 ? 'visible' : 'hidden';
+        s.notch.style.transform = 'translate(-50%,' + ((1 - d) * -60).toFixed(1) + 'px)';
+        c = span(p, .5, .6);
+      }
+      show(s.copy, c, (1 - ease(c)) * 16);
+    } else if (s.kind === 'strip') {
+      s.plate.style.transform = 'scale(' + lerp(1.28, 1.42, p).toFixed(4) + ')';
+      var t = ease(span(p, .06, .26)); s.strip.style.opacity = String(t); s.strip.style.transform = 'translateX(' + ((1 - t) * 60).toFixed(1) + 'px)';
+      var c2 = span(p, .14, .28); show(s.copy, c2, (1 - ease(c2)) * 16);
+    } else if (s.kind === 'split') {
+      var c3 = span(p, .08, .22); show(s.copy, c3, (1 - ease(c3)) * 16);
+    } else if (s.kind === 'funnel') {
+      Array.prototype.forEach.call(s.rows, function (li, i) { var o = span(p, .1 + i * .12, .18 + i * .12); show(li, o, (1 - ease(o)) * 14); });
+      var fs = span(p, .62, .72); show(s.fnShot, fs, (1 - ease(fs)) * 14);
+      var c4 = span(p, .04, .16); show(s.copy, c4, (1 - ease(c4)) * 16);
     }
   }
 
-  function clear() {
+  function clearAll() {
     scenes.forEach(function (s) {
-      [s.scr, s.copy, s.txt, s.dusk].forEach(function (el) { if (el) { el.style.opacity = ''; el.style.transform = ''; el.style.visibility = ''; } });
-      s.last = -1;
+      [s.cam, s.glass, s.shade, s.copy, s.txt, s.notch, s.strip, s.plate, s.fnShot].concat(Array.prototype.slice.call(s.rows)).forEach(function (el) {
+        if (el) { el.style.opacity = ''; el.style.transform = ''; el.style.visibility = ''; } });
+      s.last = -1; s.geo = null;
     });
   }
 
-  var vh = window.innerHeight;
+  var vh = innerHeight;
   function frame() {
-    if (!motion()) return;
     scenes.forEach(function (s) {
       var r = s.el.getBoundingClientRect();
       if (r.bottom < -vh || r.top > vh * 2) return;
       var p = clamp(-r.top / Math.max(1, r.height - vh), 0, 1);
+      setStates(s, p);
+      if (!pinned(s)) { if (s.glass && !s.geo) { measure(s); s.glass.style.opacity = '1'; } return; }
       if (!s.geo) measure(s);
-      if (Math.abs(p - s.last) < .0005) return;
+      if (Math.abs(p - s.last) < .0004) return;
       s.last = p; draw(s, p);
     });
+    placeClose();
   }
+
+  // the close: the end-of-day brief on the phone in the photo
+  var close = document.querySelector('.close'), closeQ = close && close.dataset.quad ? parseQuad(close) : null, closeKey = '';
+  function placeClose() {
+    if (!closeQ) return;
+    var box = close.querySelector('.close-media'), W = box.clientWidth, H = box.clientHeight, key = W + 'x' + H;
+    if (key === closeKey) return; closeKey = key;
+    var fx = 50;
+    if (small.matches) { var c0 = cover(W, H, 50), mid = (closeQ[0][0] + closeQ[2][0]) / 2; fx = clamp((c0.iw * mid / 100 - W / 2) / (c0.iw - W) * 100, 0, 100); }
+    box.querySelector('.plate').style.objectPosition = fx + '% 50%';
+    box.querySelector('.glass').style.transform = m3d(toPx(closeQ, cover(W, H, fx)));
+  }
+
+  // the bar steps aside while you read down, and comes back as soon as you scroll up
+  var top = document.getElementById('top'), lastY = scrollY;
+  function bar() {
+    var y = scrollY;
+    if (y < 80 || y < lastY - 4) top.classList.remove('is-away');
+    else if (y > lastY + 4) top.classList.add('is-away');
+    lastY = y;
+  }
+
   function relayout() {
-    vh = window.innerHeight;
-    if (!motion()) return;
+    vh = innerHeight; closeKey = '';
+    scenes.forEach(function (s) { s.el.classList.toggle('pin', pinned(s)); });
     scenes.forEach(function (s) { s.geo = null; s.last = -1; });
+    if (!motion()) clearAll();
     frame();
   }
   var tick = false;
-  window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(function () { tick = false; frame(); }); } }, { passive: true });
-  window.addEventListener('resize', relayout);
-  if (mq && mq.addEventListener) mq.addEventListener('change', function () { root.classList.toggle('motion', !mq.matches); if (mq.matches) clear(); relayout(); });
+  addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(function () { tick = false; frame(); bar(); }); } }, { passive: true });
+  addEventListener('resize', relayout);
+  if (small.addEventListener) small.addEventListener('change', function () { clearAll(); relayout(); });
+  if (mq && mq.addEventListener) mq.addEventListener('change', function () { root.classList.toggle('motion', !mq.matches); clearAll(); relayout(); });
   relayout();
-  window.addEventListener('load', relayout);
+  addEventListener('load', relayout);
+
+  // log in: a text link under the demo button opens the form
+  var lfOpen = document.getElementById('lf-open'), login = document.getElementById('login');
+  function openLogin() { login.hidden = false; lfOpen.setAttribute('aria-expanded', 'true'); }
+  lfOpen.addEventListener('click', function () { if (login.hidden) { openLogin(); document.getElementById('lf-email').focus(); } else { login.hidden = true; lfOpen.setAttribute('aria-expanded', 'false'); } });
+  document.querySelectorAll('a[href="#start"]').forEach(function (a) { a.addEventListener('click', function () { openLogin(); }); });
+  if (location.hash === '#start') openLogin();
 
   // ── log in to your brand ──
   var qs = new URLSearchParams(location.search);

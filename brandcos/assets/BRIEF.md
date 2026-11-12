@@ -121,3 +121,12 @@ Sub: brandcos is the chief of staff for brands and agencies. It finds the work i
 - Copy is in the founder's voice: first person, plain, no product jargon, at most two sentences per scene.
 - Each screen is a real product screenshot, captured from brandcos/app at 1440 and 390, composited into the dark screen area or set beside the photo. Do not draw fake UI in CSS.
 - Do not edit brandcos/app/. Another workflow owns it.
+
+## Revision 2 (12 Nov): reality on the screens, one device per frame
+
+- **Screens are the real app, rendered from a fixture.** brandcos/app's own page modules render a seeded un:fltrd workspace (fixture JSON served in place of the API, clock fixed at 7:10 am IST), captured at 2x. One screen per beat, matching the line: Today (Good morning, 3 need you), the NPD board with S-04 moving Plan to In progress, the S-04 stock card at 0, 1 and 2 votes, the MRP card in Revision with Approve plan, the creator brief with every step done, the Move-the-shoot card at 0 and 2 votes, the GSTIN invoice held, the Warehouse lead finalists, and the evening brief for the close. No sample-data pills, no agents-live dot, brand spelled un:fltrd.
+- **The UI lives on the device in the photo.** Phone scenes (7:10 am, 10:52 pm, 11:04 pm, the close) map the capture onto the photographed screen with a corner-pinned matrix3d, then push the camera in until it reads. There is never a dead device beside a floating copy.
+- **Each beat has its own frame.** 10 am: swatch close-up with the board as a side strip. 1 pm: split, shelf against the two numbers and the vote. 4 pm: unpinned, the brief card over the photo's edge. 11:04 pm: the phone glowing on a dark desk, the vote card dropping in from the top. 1 am: flat lay beside the held invoice. Nine days: a funnel, 140 to 1. Captions sit on a local scrim, no boxes.
+- **Captions are narration**, present tense with the time, not quotes. One plain line says the day is illustrative and the numbers are sample data.
+- **The ledger became a recap rail** after the scenes: a thumbnail per beat at its time, the old way struck through, the new way under it, each a link back.
+- **Plates regenerated:** 4 (10:52 pm, a phone held in a dark bedroom), 6 and 7 (props removed, no lipstick, no chai), 8 (the interview at the kitting table on the warehouse floor). The hero product appears only in the hero, lab, warehouse, shoot and close.
