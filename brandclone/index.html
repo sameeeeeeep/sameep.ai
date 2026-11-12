@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand Clone: run your D2C brand with AI · Sameep Rehlan</title>
+<meta name="description" content="From group chats and sheets to one hub, an agent in every group, and a tap to approve. See how it runs, then log in to your brand's demo.">
+<link rel="canonical" href="https://sameep.ai/brandclone/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sameep.ai">
+<meta property="og:url" content="https://sameep.ai/brandclone/">
+<meta property="og:title" content="Brand Clone: run your D2C brand with AI">
+<meta property="og:description" content="Scroll through how it works, then log in to your brand's demo.">
+<meta property="og:image" content="https://sameep.ai/img/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<link rel="stylesheet" href="./bc.css">
+</head>
+<body>
+<header class="cs-top"><a href="../?skip">← sameep.ai</a><a href="#login">Log in to your demo</a></header>
+
+<main>
+  <section class="intro">
+    <h1>Run your D2C brand with AI.</h1>
+    <p>Scroll to see how a week of group chats and sheets turns into work that gets done, approved and checked.</p>
+  </section>
+
+  <section class="story" id="story" aria-label="How it works, in six steps">
+    <div class="stage">
+      <div class="caps">
+        <div class="cap" data-beat="0"><h2>Your brand runs on group chats and sheets.</h2><p>Stock, invoices, ad costs, deadlines. Everything lands in the same few threads, and someone has to chase all of it.</p></div>
+        <div class="cap" data-beat="1"><h2>Every message goes to the right room.</h2><p>One group per part of the business, each with its own agent: Website, Performance, Ops, Content, Finance and All hands.</p></div>
+        <div class="cap" data-beat="2"><h2>Your tools, in one hub.</h2><p>Shopify, Meta Ads, Razorpay, Shiprocket, Blinkit and Zepto, WhatsApp, Gmail and Drive. Every number keeps its source and the time it was fetched.</p></div>
+        <div class="cap" data-beat="3"><h2>The agent does the work.</h2><p>In the Ops group, the agent reads stock, works out how long it will last, and drafts the purchase order.</p></div>
+        <div class="cap" data-beat="4"><h2>Every function runs on one board.</h2><p>Plan, final, in progress, done, revision. Agents do the work inside each column. Your team only approves the plan and checks the result, whether it's a purchase order, a hire, an ad or a campaign.</p></div>
+        <div class="cap" data-beat="5"><h2>The whole company, one screen.</h2><p>Yesterday's sales, ad spend, what's running low, and every decision waiting on you.</p></div>
+      </div>
+
+      <div class="canvas-wrap"><div class="canvas" id="canvas">
+
+        <!-- scene: pile + groups (beats 0 and 1) -->
+        <div class="scene" data-scene="sort">
+          <div class="groups">
+            <div class="grp" data-g="website">Website</div>
+            <div class="grp" data-g="performance">Performance</div>
+            <div class="grp" data-g="ops">Ops</div>
+            <div class="grp" data-g="content">Content</div>
+            <div class="grp" data-g="finance">Finance</div>
+            <div class="grp" data-g="all">All hands</div>
+          </div>
+          <div class="bub" data-g="ops">Vitamin C Serum is almost out</div>
+          <div class="bub" data-g="finance">Invoice from Pune Fill &amp; Pack, ₹84,200</div>
+          <div class="bub" data-g="performance">Meta cost per purchase up 34% since Monday</div>
+          <div class="bub" data-g="content">Diwali reel is due Thursday</div>
+          <div class="bub" data-g="website">Checkout is slow on mobile</div>
+          <div class="bub" data-g="all">Bundle or 25% off for the festive sale?</div>
+        </div>
+
+        <!-- scene: hub (beat 2) -->
+        <div class="scene" data-scene="hub">
+          <div class="tool" data-i="0">Shopify</div>
+          <div class="tool" data-i="1">Meta Ads</div>
+          <div class="tool" data-i="2">Razorpay</div>
+          <div class="tool" data-i="3">Shiprocket</div>
+          <div class="tool" data-i="4">Blinkit · Zepto</div>
+          <div class="tool" data-i="5">WhatsApp</div>
+          <div class="tool" data-i="6">Gmail</div>
+          <div class="tool" data-i="7">Drive</div>
+          <div class="hub">
+            <div class="hub-h">Company hub</div>
+            <div class="hub-r" data-r="0"><span>Sales yesterday</span><span>₹1.84L</span><em>Shopify · 4 min ago</em></div>
+            <div class="hub-r" data-r="1"><span>Ad spend</span><span>₹38.2K</span><em>Meta Ads · 11 min ago</em></div>
+            <div class="hub-r" data-r="2"><span>Settled</span><span>₹1.52L</span><em>Razorpay · 4 min ago</em></div>
+            <div class="hub-r" data-r="3"><span>Vitamin C Serum</span><span>142 left</span><em>Warehouse · 2 min ago</em></div>
+            <div class="hub-note">Example data</div>
+          </div>
+        </div>
+
+        <!-- scene: ops agent (beat 3) -->
+        <div class="scene" data-scene="ops">
+          <div class="app">
+            <div class="app-bar"><b>Ops</b><span>Riya, Arjun, Ops agent</span></div>
+            <div class="msgs">
+              <div class="msg" data-m="0"><b>Riya</b>Vitamin C Serum is almost out. Blinkit orders are up this week.</div>
+              <div class="msg is-agent" data-m="1"><b>Ops agent</b>142 left, about 9 days at this week's rate. The vendor's last lead time was 12 days.</div>
+              <div class="po" data-m="2">
+                <div class="po-h">Purchase order, draft</div>
+                <div class="po-r"><span>Vendor</span><span>Pune Fill &amp; Pack</span></div>
+                <div class="po-r"><span>Item</span><span>Vitamin C Serum, 400 units</span></div>
+                <div class="po-r"><span>Needs</span><span>Arjun's approval</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- scene: board (beat 4) -->
+        <div class="scene" data-scene="board">
+          <div class="tabs">
+            <span class="tab" data-tab="0">Ops</span><span class="tab" data-tab="1">Hiring</span><span class="tab" data-tab="2">Ads</span><span class="tab" data-tab="3">Campaigns</span>
+          </div>
+          <div class="lane" data-l="0"><span>Plan</span></div>
+          <div class="lane" data-l="1"><span>Final</span></div>
+          <div class="lane" data-l="2"><span>In progress</span></div>
+          <div class="lane" data-l="3"><span>Done</span></div>
+          <div class="lane is-rev" data-l="4"><span>Revision</span></div>
+          <div class="kcard" id="kcard">
+            <div class="k-t" data-k="title">Purchase order: Vitamin C Serum, 400</div>
+            <div class="k-s" data-k="state">Waiting for approval</div>
+            <div class="k-w" data-w="0">Compared 3 vendor quotes</div>
+            <div class="k-w" data-w="1">PO sent, pickup booked</div>
+          </div>
+          <div class="k-act" id="kact"></div>
+        </div>
+
+        <!-- scene: today (beat 5) -->
+        <div class="scene" data-scene="today">
+          <div class="app">
+            <div class="app-bar"><b>Today</b><span>Example data</span></div>
+            <div class="kpis">
+              <div><span>Sales yesterday</span><b data-count="184000" data-fmt="L">₹0</b></div>
+              <div><span>Ad spend</span><b data-count="38200" data-fmt="K">₹0</b></div>
+              <div><span>Low stock</span><b data-count="4" data-fmt="n">0</b></div>
+            </div>
+            <div class="needs">
+              <div class="n-h">Needs you</div>
+              <div class="n-r" data-n="0"><span>Approve vendor invoice, ₹84,200</span><i>Finance</i></div>
+              <div class="n-r" data-n="1"><span>Meta cost per purchase up 34%</span><i>Performance</i></div>
+              <div class="n-r" data-n="2"><span>Festive sale: bundle or 25% off?</span><i>All hands</i></div>
+            </div>
+          </div>
+        </div>
+
+      </div></div>
+    </div>
+  </section>
+
+  <section class="login" id="login">
+    <div class="login-in">
+      <h2>Log in to your brand's demo</h2>
+      <p>Your workspace is set up with sample data, so your team can try every part of it before anything is connected.</p>
+      <form id="lf" novalidate>
+        <label for="lf-email">Work email</label>
+        <div class="lf-row">
+          <input id="lf-email" name="email" type="email" autocomplete="email" required placeholder="you@yourbrand.com">
+          <button class="btn is-primary" type="submit">Send my code</button>
+        </div>
+      </form>
+      <form id="cf" novalidate hidden>
+        <label for="cf-code">The 6-digit code we emailed to <span id="cf-to"></span></label>
+        <div class="lf-row">
+          <input id="cf-code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="123456">
+          <button class="btn is-primary" type="submit">Log in</button>
+        </div>
+        <button class="linkbtn" type="button" id="cf-back">Use a different email</button>
+      </form>
+      <p class="msg-out" id="lf-msg" role="status" aria-live="polite"></p>
+      <p class="more"><a href="../d2c-clone/#pricing">See plans and pricing</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="cs-foot">Part of Sameep Rehlan’s portfolio, sameep.ai. Built by voice with Wispr Flow, Emergent and Claude.</footer>
+<script src="./bc.js"></script>
+<script type="module" src="../js/analytics.js"></script>
+</body>
+</html>
