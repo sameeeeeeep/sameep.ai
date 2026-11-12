@@ -2,7 +2,7 @@
 // and a checker, and shows it here with the exact quote it came from. The owner accepts, hands it on, or drops it.
 // Below that: what's overdue or escalated, and what's waiting on you (approve, check).
 // API: /d2c-api/w/:wid/taskos/* and /intake (d2c-clone-app docs/taskos.md). view() is pure; mount() fetches and binds.
-import { html, sampleTag, can, day, ago } from '../js/ui.js';
+import { html, sampleTag, can, day, ago, safeHref } from '../js/ui.js';
 import { hrefFor } from '../js/app.js';
 
 export const title = 'Inbox';
@@ -23,10 +23,11 @@ export const due = (t, now = Date.now()) => {
 function source(t) {
   if (!t.source_kind && !t.source_quote) return '';
   const where = KIND[t.source_kind] || 'Source';
+  const link = safeHref(t.source_link); // http(s) only, checked again here whatever the API sent
   return html`<figure class="ib-src">
     <blockquote>${t.source_quote}</blockquote>
     <figcaption>${where}${t.source_sender ? html`, ${t.source_sender}` : ''}${t.source_title ? html`, ${t.source_title}` : ''}${
-      t.source_link ? html` <a class="linkish" href="${t.source_link}" target="_blank" rel="noopener noreferrer">Open the source</a>` : ''}</figcaption>
+      link ? html` <a class="linkish" href="${link}" target="_blank" rel="noopener noreferrer">Open the source</a>` : ''}</figcaption>
   </figure>`;
 }
 

@@ -11,6 +11,14 @@ export function html(strings, ...vals) {
   return new Safe(out);
 }
 
+// An outside link from API data, for href: only absolute http(s) URLs pass; anything else (javascript:, data:, a
+// relative path, a protocol-relative //host) gives null, so the caller renders no link at all.
+export function safeHref(v) {
+  const s = typeof v === 'string' ? v.trim() : '';
+  if (!/^https?:\/\//i.test(s)) return null;
+  try { const u = new URL(s); return (u.protocol === 'http:' || u.protocol === 'https:') && u.hostname ? u.href : null; } catch { return null; }
+}
+
 // money: sample shop data is INR paise; billing is whole US dollars
 export const inr = (paise) => '₹' + Math.round((paise || 0) / 100).toLocaleString('en-IN');
 export const usd = (n) => '$' + Number(n || 0).toLocaleString('en-US');
