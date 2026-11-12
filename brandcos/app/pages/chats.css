@@ -187,3 +187,54 @@
   .wk-board { display: block; border-top: 1px solid var(--k-line); padding: 0 16px 20px; }
   .wk-board-h { margin: 0 -16px; padding: 14px 16px 10px; }
 }
+
+/* decision cards: a question, its options, one tap. The option you picked is the only lime on the card.
+   Recommended is a word, not a colour. Your agent's lean is a dashed outline until you tap. */
+.wk .ch-msg.is-dc { max-width: 600px; }
+.dc { margin-top: 8px; padding: 14px 16px 12px; border: 1px solid var(--k-line); border-radius: 14px; background: var(--k-panel); }
+.dc.is-you { border-color: var(--k-line2); }
+.dc.is-resolved, .dc.is-checked, .dc.is-sent_back { background: transparent; }
+.dc-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 400 11px/1.4 var(--k-mono); color: var(--k-dim); }
+.dc-top > span:last-child { display: inline-flex; align-items: center; gap: 8px; flex: none; color: var(--k-mut); }
+.dc-q { margin: 8px 0 0; font: 600 16px/1.35 var(--k-body); letter-spacing: -.01em; color: var(--k-ink); }
+.dc-ctx, .dc-draft { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--k-mut); white-space: pre-wrap; overflow-wrap: anywhere; }
+.dc-draft { color: var(--k-ink); }
+.dc-opts { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.dc-opt { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 12px; border: 1px solid var(--k-line2); border-radius: 10px; background: var(--k-bg); color: var(--k-ink); text-align: left; font: inherit; }
+button.dc-opt { cursor: pointer; }
+button.dc-opt:hover { border-color: var(--k-mut); }
+button.dc-opt[disabled] { cursor: progress; opacity: .7; }
+.dc-opt.is-pre { border-style: dashed; border-color: var(--k-mut); }
+.dc-opt.is-mine { border-color: var(--k-acc); box-shadow: inset 3px 0 0 var(--k-acc); }
+.dc-opt.is-won { border-color: var(--k-ink); }
+.dc-opt.is-out { opacity: .55; }
+.dc-opt-l { grid-column: 1; grid-row: 1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font: 600 14px/1.35 var(--k-body); }
+.dc-rec, .dc-won { font-size: 10.5px; font-weight: 400; color: var(--k-mut); padding: 1px 6px; border: 1px solid var(--k-line2); border-radius: 5px; }
+.dc-won { color: var(--k-bg); background: var(--k-ink); border-color: var(--k-ink); }
+.dc-n { grid-column: 2; grid-row: 1 / span 2; align-self: center; min-width: 22px; text-align: right; font-size: 14px; color: var(--k-mut); }
+.dc-opt.is-mine .dc-n { color: var(--k-ink); }
+.dc-opt-d { grid-column: 1; font-size: 12.5px; line-height: 1.45; color: var(--k-mut); }
+.dc-opt-by, .dc-opt-who { grid-column: 1; font-size: 11.5px; color: var(--k-dim); }
+.dc-else { width: 100%; min-height: 40px; padding: 0 12px; border: 1px dashed var(--k-line2); border-radius: 10px; background: none; color: var(--k-mut); text-align: left; font: 500 13.5px/1 var(--k-body); cursor: pointer; }
+button.dc-else:hover { color: var(--k-ink); border-color: var(--k-mut); }
+.dc-else.is-open { display: grid; gap: 8px; padding: 10px 12px; cursor: default; }
+.dc-else input, .dc-line input { min-height: 36px; padding: 6px 10px; border: 1px solid var(--k-line2); border-radius: 8px; background: var(--k-bg); color: var(--k-ink); font: 400 13.5px/1.4 var(--k-body); }
+.dc-else .wk-acts { margin-top: 0; }
+.dc-pre { margin: 10px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--k-mut); }
+.dc-pre b { font-weight: 600; color: var(--k-ink); }
+.dc-decide { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--k-line); font-size: 13px; color: var(--k-ink); }
+.dc-decide > span { margin-right: 4px; }
+.dc-wait, .dc-out, .dc-note { margin: 10px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--k-mut); }
+.dc-out b { font-weight: 600; color: var(--k-ink); }
+.dc-note { color: var(--k-dim); }
+.dc-talk { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--k-line); }
+.dc-talk .wk-link { margin: 0 0 6px; }
+.dc-comments { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 5px; font-size: 13px; line-height: 1.45; color: var(--k-ink); }
+.dc-comments b { font-weight: 600; margin-right: 4px; }
+.dc-comments .ch-time { margin-left: 4px; font: 400 11px/1 var(--k-mono); color: var(--k-dim); }
+.dc-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.dc-line .wk-btn { min-height: 36px; }
+@media (max-width: 760px) {
+  .dc { padding: 12px 12px 10px; }
+  .dc-decide .wk-btn { flex: 1 1 100%; }
+}

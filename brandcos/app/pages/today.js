@@ -7,7 +7,7 @@ import { hrefFor } from '../js/app.js';
 
 export const title = 'Today';
 
-const KIND = { card: 'Card', task: 'Task', po: 'Purchase order', invoice: 'Vendor invoice', adjustment: 'Stock adjustment' };
+const KIND = { card: 'Card', decision: 'Decision', result: 'Result to check', task: 'Task', po: 'Purchase order', invoice: 'Vendor invoice', adjustment: 'Stock adjustment' };
 const AREA = { website: 'Website', performance: 'Performance', ops: 'Ops', content: 'Content', finance: 'Finance', support: 'Support', 'all-hands': 'All hands' };
 // up is good for these; for ad spend and returns a change is shown without judging it
 const UP_IS_GOOD = new Set(['revenue', 'orders', 'aov', 'roas']);

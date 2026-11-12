@@ -3,6 +3,7 @@
 //           "needs you" counts.
 //   Middle: the thread. People, vendors and the area's agent; text and voice notes (recorded here, played back
 //           here). The agent replies and turns a message into a task card. Approval cards work as before.
+//           Decision cards sit in the thread: a question, options, one recommended, "Something else", one tap.
 //   Right:  the area's board: Plan, Final, In progress, Done, Revision. The agent moves cards as it works; people
 //           tap Approve plan (Plan -> Final), Check (In progress or Done, never by whoever approved the plan) and
 //           Send back (-> Revision). Every tap is recorded with who and when.
@@ -186,11 +187,119 @@ function messageView(m, ctx, ui) {
   </li>`;
 }
 
+// ---- decision cards: a question, 2 to 4 options, one recommended, "something else", one tap ----------
+// Members vote with one tap, add their own option, or comment. Each voter's agent has pre-voted with a reason
+// (advice, never counted). The card resolves by its rule and says who decided; the agent then posts its draft as
+// a result card for someone other than the decider to check. API: worker src/modules/cards.js (/decisions).
+
+export const RULE_NAME = { owner: 'Owner decides', majority: 'Majority vote', founder: 'Majority, founder breaks ties' };
+const HOW = { owner: 'the owner', majority: 'majority', founder_tiebreak: 'the founder, breaking a tie' };
+
+function dcOption(c, o, ui) {
+  const mine = c.my_vote === o.id;
+  const pre = c.my_pre && c.my_pre.option_id === o.id && c.my_vote == null;
+  const closed = c.status !== 'open';
+  const names = o.voters.map((v) => v.name).filter(Boolean);
+  const inner = html`<span class="dc-opt-l">${o.label}${o.recommended ? html`<span class="dc-rec mono">Recommended</span>` : ''}${o.won ? html`<span class="dc-won mono">Decided</span>` : ''}</span>
+    <span class="dc-n mono" aria-label="${o.count} ${o.count === 1 ? 'vote' : 'votes'}">${o.count}</span>
+    ${o.detail ? html`<span class="dc-opt-d">${o.detail}</span>` : ''}
+    ${o.author_kind === 'person' ? html`<span class="dc-opt-by">Suggested by ${o.author_name}</span>` : ''}
+    ${names.length ? html`<span class="dc-opt-who">Voted: ${names.join(', ')}</span>` : ''}`;
+  const cls = `dc-opt${mine ? ' is-mine' : ''}${pre ? ' is-pre' : ''}${o.won ? ' is-won' : ''}${closed && !o.won ? ' is-out' : ''}`;
+  if (c.can.vote) {
+    return html`<li><button class="${cls}" type="button" data-dc="vote" data-id="${c.id}" data-opt="${o.id}" aria-pressed="${mine}"${ui.busy === `d${c.id}` ? ' disabled' : ''}>${inner}</button></li>`;
+  }
+  return html`<li><div class="${cls}">${inner}</div></li>`;
+}
+
+function dcDecided(c, ui) {
+  const d = c.decided;
+  if (!d) return '';
+  const o = c.options.find((x) => x.id === d.option_id);
+  const by = d.how === 'majority' ? `By majority, ${d.note}${d.name ? `. The deciding vote was ${d.name}'s` : ''}` : `By ${HOW[d.how] || d.how}, ${d.name}`;
+  return html`<p class="dc-out"><b>${o ? o.label : 'Decided'}.</b> ${by}, ${ago(d.ts, ui.now)}.${c.results.length ? ' The agent drafted the work below.' : ''}</p>`;
+}
+
+function dcComments(c, ui) {
+  const all = c.comments || [];
+  const open = ui.dcThread === c.id;
+  const shown = open ? all : all.slice(-2);
+  return html`<div class="dc-talk">
+    ${all.length > shown.length ? html`<button class="wk-link" type="button" data-dc="thread" data-id="${c.id}">All ${all.length} comments</button>` : ''}
+    ${shown.length ? html`<ul class="dc-comments">${shown.map((m) => html`<li><b>${m.name}</b> ${m.body} <span class="ch-time">${ago(m.ts, ui.now)}</span></li>`)}</ul>` : ''}
+    ${c.can.comment ? html`<form class="dc-line" data-form="dc-comment" data-id="${c.id}">
+      <label class="sr" for="dc-c-${c.id}">Comment on this card</label>
+      <input id="dc-c-${c.id}" name="body" maxlength="600" placeholder="Comment" autocomplete="off">
+      <button class="wk-btn" type="submit">Post</button></form>` : ''}
+  </div>`;
+}
+
+function dcDecision(c, ctx, ui) {
+  const busy = ui.busy === `d${c.id}`;
+  const tied = c.tally.tied ? c.options.filter((o) => o.count === Math.max(...c.options.map((x) => x.count))) : c.options;
+  return html`<article class="dc is-${c.status}${c.needs_you ? ' is-you' : ''}" data-dc-card="${c.id}">
+    <header class="dc-top"><span>${c.kind === 'handoff' ? 'Hand-off' : 'Decision'}${c.project ? ` · ${c.project}` : ''}</span>
+      <span>${c.needs_you ? html`<span class="wk-you">Needs you</span> ` : ''}${RULE_NAME[c.rule]}</span></header>
+    <h3 class="dc-q">${c.title}</h3>
+    ${c.context ? html`<p class="dc-ctx">${c.context}</p>` : ''}
+    <ol class="dc-opts">
+      ${c.options.map((o) => dcOption(c, o, ui))}
+      ${c.can.suggest ? (ui.suggesting === c.id
+        ? html`<li><form class="dc-else is-open" data-form="dc-suggest" data-id="${c.id}">
+            <label class="sr" for="dc-s-${c.id}">Your option</label>
+            <input id="dc-s-${c.id}" name="label" maxlength="120" placeholder="Your option, in a few words" required autocomplete="off">
+            <input name="detail" maxlength="300" placeholder="Why (optional)" autocomplete="off" aria-label="Why">
+            <div class="wk-acts"><button class="wk-btn is-go" type="submit"${busy ? ' disabled' : ''}>Add option</button><button class="wk-btn" type="button" data-dc="cancel">Cancel</button></div>
+          </form></li>`
+        : html`<li><button class="dc-else" type="button" data-dc="suggest" data-id="${c.id}">Something else</button></li>`) : ''}
+    </ol>
+    ${c.status === 'open' && c.my_pre && c.my_vote == null ? html`<p class="dc-pre">Your agent leans <b>${(c.options.find((o) => o.id === c.my_pre.option_id) || {}).label}</b>: ${c.my_pre.reason} It does not count until you tap.</p>` : ''}
+    ${c.can.decide ? html`<div class="dc-decide"><span>${c.rule === 'owner' ? 'You decide this one.' : 'It is tied. You break the tie.'}</span>
+      ${tied.map((o) => html`<button class="wk-btn" type="button" data-dc="decide" data-id="${c.id}" data-opt="${o.id}" data-version="${c.version}"${busy ? ' disabled' : ''}>Go with ${o.label}</button>`)}</div>` : ''}
+    ${c.status === 'open' ? html`<p class="dc-wait">${c.waiting_on}</p>` : dcDecided(c, ui)}
+    ${dcComments(c, ui)}
+  </article>`;
+}
+
+function dcResult(c, ctx, ui) {
+  const busy = ui.busy === `d${c.id}`;
+  const me = ctx.me?.user?.email;
+  const lines = String(c.context || '').split('\n\n');
+  return html`<article class="dc is-result is-${c.status}${c.needs_you ? ' is-you' : ''}" data-dc-card="${c.id}">
+    <header class="dc-top"><span>Result to check${c.revision > 1 ? ` · revision ${c.revision}` : ''}</span>
+      <span>${c.needs_you ? html`<span class="wk-you">Needs you</span> ` : ''}${c.status === 'checked' ? 'Checked' : c.status === 'sent_back' ? 'Sent back' : 'Draft'}</span></header>
+    <h3 class="dc-q">${c.title}</h3>
+    ${lines.map((p) => html`<p class="dc-draft">${p}</p>`)}
+    <p class="dc-note">${ctx.ws?.demo ? 'Demo mode: a draft, nothing was sent or published.' : 'A draft. Nothing leaves until a person sends it.'}</p>
+    ${c.status === 'to_check' ? html`<p class="dc-wait">${c.waiting_on}</p>` : ''}
+    ${c.checked ? html`<p class="dc-out">Checked by <b>${c.checked.name}</b>, ${ago(c.checked.ts, ui.now)}.</p>` : ''}
+    ${c.sent_back ? html`<p class="dc-out">Sent back by <b>${c.sent_back.name}</b>, ${ago(c.sent_back.ts, ui.now)}: ${c.sent_back.reason}</p>` : ''}
+    ${ui.dcBack === c.id && c.can.send_back
+      ? html`<form class="wk-sendback" data-form="dc-back" data-id="${c.id}" data-version="${c.version}">
+          <label class="wk-field"><span>What needs to change?</span><input name="reason" maxlength="300" required autocomplete="off"></label>
+          <div class="wk-acts"><button class="wk-btn is-go" type="submit">Send back</button><button class="wk-btn" type="button" data-dc="cancel">Cancel</button></div></form>`
+      : c.can.check || c.can.send_back ? html`<div class="wk-acts">
+          ${c.can.check ? html`<button class="wk-btn is-go" type="button" data-dc="check" data-id="${c.id}" data-version="${c.version}"${busy ? ' disabled' : ''}>Check</button>` : ''}
+          ${c.can.send_back ? html`<button class="wk-btn" type="button" data-dc="back" data-id="${c.id}">Send back</button>` : ''}</div>`
+        : c.status === 'to_check' && me && c.checker?.email !== me && can(ctx.role, 'member') ? html`<div class="wk-acts"><button class="wk-btn" type="button" disabled title="Someone other than the person who decided checks the result.">Check</button></div>` : ''}
+  </article>`;
+}
+
+export const decisionView = (c, ctx, ui) => (c.kind === 'result' ? dcResult(c, ctx, ui) : dcDecision(c, ctx, ui));
+
+function decisionItem(c, ctx, ui) {
+  const author = c.posted_kind === 'person' ? c.posted_name : c.posted_by;
+  return html`<li class="ch-msg is-${c.posted_kind === 'person' ? 'person' : 'agent'} is-dc" data-dc-id="${c.id}">
+    <div class="ch-msg-h"><b>${author}</b>${c.posted_kind !== 'person' ? html` <span class="ch-tag mono">Agent</span>` : ''}<span class="muted ch-time">${ago(c.ts, ui.now)}</span></div>
+    ${decisionView(c, ctx, ui)}
+  </li>`;
+}
+
 // ---- the page ---------------------------------------------------------------------------------------
 
-function threadsView(groups, slug, ctx) {
+function threadsView(groups, slug, ctx, dec = {}) {
   return html`<nav class="ch-groups wk-threads" aria-label="Threads">${groups.map((x) => {
-    const needs = x.needs_you ?? x.open_cards ?? 0;
+    const needs = (x.needs_you ?? x.open_cards ?? 0) + (dec[x.slug] || 0);
     const unread = x.slug === slug ? 0 : x.unread || 0;
     return html`<a class="ch-group" href="${hrefFor(ctx.wid, 'chats', x.slug)}"${x.slug === slug ? html` aria-current="page"` : ''}>
       <span class="ch-group-n"><span class="wk-gname">${x.name}</span>${unread ? html`<span class="wk-unread" title="${unread} unread">${count(unread)}</span>` : ''}</span>
@@ -248,7 +357,7 @@ export function view(data, ctx) {
   const pane = ui.pane || 'thread';
   const top = html`<div class="wk-top"><h1 class="wk-h">Work ${sampleTag(ctx.ws)}</h1>
     <p class="wk-sub">Talk to each area by text or voice. Its agent turns asks into planned tasks and works them across the board. A person approves the plan, and someone else checks the work.</p></div>`;
-  const threads = threadsView(groups, slug, ctx);
+  const threads = threadsView(groups, slug, ctx, data?.decisionsByGroup || {});
 
   if (!g) {
     return html`<section class="wk ch" data-pane="thread">${top}<div class="wk-grid">${threads}<div class="ch-thread wk-thread">
@@ -256,11 +365,14 @@ export function view(data, ctx) {
   }
 
   const messages = [...(data.messages || [])].sort((a, b) => a.ts - b.ts || a.id - b.id);
+  const decisions = (data.decisions || []).filter((c) => c.group === g.slug);
+  const timeline = [...messages.map((m) => ({ ts: m.ts, m })), ...decisions.map((c) => ({ ts: c.ts, c }))].sort((a, b) => a.ts - b.ts);
   const tools = (g.connectors || []).length
     ? html`<span class="ch-tools">${g.connectors.map((c) => html`<span class="ch-tool is-${c.status || 'not_connected'}" title="${c.status === 'connected' ? 'Connected' : 'Not connected'}">${c.name}</span>`)}</span>`
     : html`<span class="ch-tools muted">Reads the other groups' summaries, never a tool directly.</span>`;
   const people = (g.members || []).map((p) => p.name).filter(Boolean);
   const needs = (data.board?.tasks || []).filter((t) => t.needs_you).length;
+  const decNeeds = decisions.filter((c) => c.needs_you).length;
 
   return html`<section class="wk ch" data-pane="${pane}">${top}
     <div class="wk-grid">${threads}
@@ -271,11 +383,12 @@ export function view(data, ctx) {
     <div class="ch-thread wk-thread">
       <header class="ch-head wk-head"><h2 class="ch-title">${g.name}</h2>
         <p class="ch-meta"><span>${g.agent}</span>${tools}</p>
+        ${decNeeds ? html`<p class="ch-meta"><button class="wk-link" type="button" data-dc="jump">${decNeeds} ${decNeeds === 1 ? 'card needs' : 'cards need'} your tap in this thread</button></p>` : ''}
         ${people.length ? html`<p class="ch-meta muted">With ${people.join(', ')}</p>` : ''}
       </header>
       ${ui.error ? html`<p class="err ch-err" role="alert">${ui.error}</p>` : ''}
-      ${messages.length
-        ? html`<ol class="ch-msgs" id="ch-msgs">${messages.map((m) => messageView(m, ctx, ui))}</ol>`
+      ${timeline.length
+        ? html`<ol class="ch-msgs" id="ch-msgs">${timeline.map((x) => (x.c ? decisionItem(x.c, ctx, ui) : messageView(x.m, ctx, ui)))}</ol>`
         : html`<p class="empty ch-msgs">No messages in ${g.name} yet.${can(ctx.role, 'member') ? ' Ask for a piece of work to start.' : ''}</p>`}
       ${composerView(g, ctx, ui)}
     </div>
@@ -288,14 +401,18 @@ export function view(data, ctx) {
 export async function mount(root, ctx) {
   const slug = ctx.params[0] || 'all-hands';
   const canRecord = typeof window !== 'undefined' && !!window.MediaRecorder && !!navigator.mediaDevices?.getUserMedia;
-  const s = { groups: [], slug, group: null, messages: [], board: null,
-    ui: { pane: 'thread', editing: null, rejecting: null, sendingBack: null, busy: null, error: '', draft: '', sending: false, rec: null, playing: null, playPos: 0, focus: null, canRecord } };
-  let dead = false, timer = null, stale = false, placed = false, readTo = 0, boardSig = '';
+  const s = { groups: [], slug, group: null, messages: [], board: null, decisions: [], decisionsByGroup: {},
+    ui: { pane: 'thread', editing: null, rejecting: null, sendingBack: null, busy: null, error: '', draft: '', sending: false, rec: null, playing: null, playPos: 0, focus: null, canRecord,
+      suggesting: null, dcBack: null, dcThread: null } };
+  let dead = false, timer = null, stale = false, placed = false, readTo = 0, boardSig = '', dcSig = '';
+  const D = `/w/${ctx.wid}/decisions`;
   const W = `/w/${ctx.wid}/chats`;
   const enc = encodeURIComponent(slug);
 
   const lastId = () => s.messages.reduce((n, m) => Math.max(n, m.id), 0);
-  const holding = () => s.ui.editing != null || s.ui.rejecting != null || s.ui.sendingBack != null;
+  const holding = () => s.ui.editing != null || s.ui.rejecting != null || s.ui.sendingBack != null || s.ui.suggesting != null || s.ui.dcBack != null
+    || (typeof document !== 'undefined' && !!document.activeElement?.closest?.('.dc-line') && !!document.activeElement.value);
+  const dsig = (list) => (list || []).map((c) => `${c.id}:${c.version}:${c.status}:${c.tally.voted}:${c.comments.length}:${c.options.length}`).join(',');
   const sig = (b) => (b?.tasks || []).map((t) => `${t.id}:${t.version}`).join(',');
   const working = () => (s.board?.tasks || []).some((t) => t.working && t.next_at && t.next_at - Date.now() < 90_000);
 
@@ -309,6 +426,10 @@ export async function mount(root, ctx) {
     const ta = root.querySelector('#ch-body');
     if (ta) s.ui.draft = ta.value;
     const hadFocus = ta && document.activeElement === ta;
+    // comment boxes on decision cards keep what you typed across a repaint
+    const lines = {};
+    root.querySelectorAll('.dc-line input').forEach((i) => { if (i.value) lines[i.id] = i.value; });
+    const lineFocus = document.activeElement?.closest?.('.dc-line') ? document.activeElement.id : null;
     s.ui.now = Date.now();
     root.innerHTML = String(view(s, ctx));
     const nb = root.querySelector('#ch-msgs');
@@ -316,11 +437,13 @@ export async function mount(root, ctx) {
     const bd = root.querySelector('.wk-board');
     if (bd) bd.scrollTop = boardTop;
     if (hadFocus) root.querySelector('#ch-body')?.focus();
+    for (const [id, v] of Object.entries(lines)) { const i = root.querySelector(`#${id}`); if (i) i.value = v; }
+    if (lineFocus) root.querySelector(`#${lineFocus}`)?.focus();
     if (!placed) { // on a phone the thread strip scrolls sideways: bring the open one into view once
       const cur = root.querySelector('.ch-group[aria-current="page"]');
       if (cur && s.groups.length) { cur.parentElement.scrollLeft = Math.max(0, cur.offsetLeft - cur.parentElement.offsetLeft - 16); placed = true; }
     }
-    root.querySelector('[data-form="edit"] input, [data-form="reject"] input, [data-form="send-back"] input')?.focus();
+    root.querySelector('[data-form="edit"] input, [data-form="reject"] input, [data-form="send-back"] input, [data-form="dc-suggest"] input, [data-form="dc-back"] input')?.focus();
     markRead();
   }
 
@@ -332,8 +455,10 @@ export async function mount(root, ctx) {
   }
 
   async function load() {
-    const [g, t, b] = await Promise.all([ctx.api('GET', W), ctx.api('GET', `${W}/${enc}`), ctx.api('GET', `${W}/work?group=${enc}`)]);
+    const [g, t, b, d, ds] = await Promise.all([ctx.api('GET', W), ctx.api('GET', `${W}/${enc}`), ctx.api('GET', `${W}/work?group=${enc}`),
+      ctx.api('GET', `${D}?group=${enc}`).catch(() => ({ cards: [] })), ctx.api('GET', `${D}/summary`).catch(() => ({ by_group: {} }))]);
     s.groups = g.groups; s.group = t.group; s.messages = t.messages; s.board = b; boardSig = sig(b);
+    s.decisions = d.cards || []; s.decisionsByGroup = ds.by_group || {}; dcSig = dsig(s.decisions);
   }
 
   async function refresh() {
@@ -345,9 +470,9 @@ export async function mount(root, ctx) {
   async function poll() {
     if (dead || (typeof document !== 'undefined' && document.hidden)) return;
     try {
-      const [b, r] = await Promise.all([ctx.api('GET', `${W}/work?group=${enc}`), ctx.api('GET', `${W}/${enc}?after=${lastId()}`)]);
+      const [b, r, d] = await Promise.all([ctx.api('GET', `${W}/work?group=${enc}`), ctx.api('GET', `${W}/${enc}?after=${lastId()}`), ctx.api('GET', `${D}?group=${enc}`).catch(() => null)]);
       if (dead) return;
-      if (sig(b) !== boardSig || r.messages.length) await refresh();
+      if (sig(b) !== boardSig || r.messages.length || (d && dsig(d.cards) !== dcSig)) await refresh();
     } catch { /* a missed poll is fine; the next one tries again */ }
   }
   function schedule() {
@@ -361,7 +486,7 @@ export async function mount(root, ctx) {
   }
 
   async function act(fn, okMsg) {
-    try { await fn(); s.ui.error = ''; if (okMsg) ctx.toast(okMsg); } catch (e) { s.ui.error = e.message; }
+    try { await fn(); s.ui.error = ''; if (okMsg) ctx.toast(typeof okMsg === 'function' ? okMsg() : okMsg); } catch (e) { s.ui.error = e.message; }
     s.ui.busy = null;
     await refresh();
     schedule();
@@ -465,7 +590,32 @@ export async function mount(root, ctx) {
 
   const cardPath = (id, a) => `/w/${ctx.wid}/cards/${id}/${a}`;
 
+  // one tap on a decision card: vote, decide, check; or open "Something else" / Send back
+  function onDecision(b) {
+    const id = Number(b.dataset.id), a = b.dataset.dc;
+    if (a === 'cancel') { s.ui.suggesting = s.ui.dcBack = null; stale = false; return paint(); }
+    if (a === 'suggest') { s.ui.suggesting = id; s.ui.dcBack = null; return paint(); }
+    if (a === 'back') { s.ui.dcBack = id; s.ui.suggesting = null; return paint(); }
+    if (a === 'thread') { s.ui.dcThread = s.ui.dcThread === id ? null : id; return paint(); }
+    if (a === 'jump') { s.ui.pane = 'thread'; paint(); root.querySelector('.dc.is-you')?.scrollIntoView?.({ block: 'center' }); return; }
+    if (b.disabled) return;
+    s.ui.busy = `d${id}`; b.disabled = true;
+    if (a === 'vote') {
+      let msg = 'Vote counted.';
+      act(async () => {
+        const r = await ctx.api('POST', `${D}/${id}/vote`, { option_id: Number(b.dataset.opt) });
+        if (r.card.status === 'resolved') msg = 'That settled it. The agent drafted the work for a check.';
+      }, () => msg);
+      return;
+    }
+    if (a === 'decide') { act(() => ctx.api('POST', `${D}/${id}/decide`, { option_id: Number(b.dataset.opt), version: Number(b.dataset.version) }), 'Decided. The agent is drafting the work.'); return; }
+    if (a === 'check') { act(() => ctx.api('POST', `${D}/${id}/check`, { version: Number(b.dataset.version) }), 'Checked.'); return; }
+    s.ui.busy = null;
+  }
+
   const onClick = (e) => {
+    const dc = e.target.closest('[data-dc]');
+    if (dc) { onDecision(dc); return; }
     const sw = e.target.closest('[data-switch]');
     if (sw) { s.ui.pane = sw.dataset.switch; return paint(); }
     const rb = e.target.closest('[data-rec]');
@@ -516,6 +666,27 @@ export async function mount(root, ctx) {
         .finally(() => { s.ui.sending = false; paint(); });
       return;
     }
+    if (kind === 'dc-suggest') {
+      const label = f.querySelector('[name="label"]').value.trim(), detail = f.querySelector('[name="detail"]').value.trim();
+      if (!label) { s.ui.error = 'Write your option first.'; return paint(); }
+      s.ui.suggesting = null; stale = false;
+      act(() => ctx.api('POST', `${D}/${id}/suggest`, { label, detail }), 'Your option is on the card. Anyone can vote for it.');
+      return;
+    }
+    if (kind === 'dc-comment') {
+      const input = f.querySelector('[name="body"]'), body = input.value.trim();
+      if (!body) return;
+      input.value = '';
+      act(() => ctx.api('POST', `${D}/${id}/comment`, { body }));
+      return;
+    }
+    if (kind === 'dc-back') {
+      const reason = f.querySelector('[name="reason"]').value.trim();
+      if (!reason) { s.ui.error = 'Say what needs to change.'; return paint(); }
+      s.ui.dcBack = null; stale = false;
+      act(() => ctx.api('POST', `${D}/${id}/send-back`, { reason, version: Number(f.dataset.version) }), 'Sent back. The agent posted a revised draft.');
+      return;
+    }
     if (kind === 'send-back') {
       const reason = f.querySelector('[name="reason"]').value.trim();
       if (!reason) { s.ui.error = 'Say what needs to change.'; return paint(); }
@@ -540,7 +711,7 @@ export async function mount(root, ctx) {
 
   const onKey = (e) => {
     if (e.target.id === 'ch-body' && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); e.target.form?.requestSubmit(); }
-    if (e.key === 'Escape' && (holding() || s.ui.rec)) { if (s.ui.rec) recCancel(); else { s.ui.editing = s.ui.rejecting = s.ui.sendingBack = null; paint(); } }
+    if (e.key === 'Escape' && (holding() || s.ui.rec)) { if (s.ui.rec) recCancel(); else { s.ui.editing = s.ui.rejecting = s.ui.sendingBack = s.ui.suggesting = s.ui.dcBack = null; paint(); } }
   };
 
   root.addEventListener('click', onClick);

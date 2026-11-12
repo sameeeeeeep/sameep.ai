@@ -3,6 +3,7 @@
 // Below that: what's overdue or escalated, and what's waiting on you (approve, check).
 // API: /d2c-api/w/:wid/taskos/* and /intake (d2c-clone-app docs/taskos.md). view() is pure; mount() fetches and binds.
 import { html, sampleTag, can, day, ago } from '../js/ui.js';
+import { hrefFor } from '../js/app.js';
 
 export const title = 'Inbox';
 
@@ -85,6 +86,23 @@ function card(t, data, { showSource = true } = {}) {
   </article>`;
 }
 
+// decision and result cards in the groups that wait on this person: a vote, an owner's or founder's call, a check
+const RULE = { owner: 'Owner decides', majority: 'Majority vote', founder: 'Majority, founder breaks ties' };
+function decisionsSection(data, ctx) {
+  const list = data.decisions || [];
+  return html`<section class="ib-sec">
+    <h2 class="sec-h">Cards waiting on you <span class="tab-n">${list.length}</span></h2>
+    <p class="pg-sub ib-sub">Agents ask in the groups. Vote, decide or check in one tap from the thread.</p>
+    ${list.length ? html`<div class="ib-list">${list.map((c) => html`<article class="ib-card">
+      <header class="ib-h"><span class="ib-t">${c.kind === 'result' ? 'Result to check' : c.kind === 'handoff' ? 'Hand-off' : 'Decision'}</span>
+        <span class="ib-meta">${AREA[c.group] || c.group_name}${c.kind === 'result' ? '' : `, ${RULE[c.rule]}`}</span></header>
+      <h3 class="ib-title">${c.title}</h3>
+      <p class="ib-people">${c.waiting_on}</p>
+      <div class="ib-acts"><a class="btn is-small is-primary" href="${hrefFor(ctx.wid, 'chats', c.group)}">Open in ${AREA[c.group] || c.group_name}</a></div>
+    </article>`)}</div>` : html`<p class="empty">No card in any group is waiting on you.</p>`}
+  </section>`;
+}
+
 export function view(data, ctx) {
   const all = data.tasks || [];
   const me = ctx.me && ctx.me.user && ctx.me.user.email;
@@ -112,6 +130,7 @@ export function view(data, ctx) {
     ${data.error ? html`<p class="err" role="alert">${data.error}</p>` : ''}
     ${viewer ? html`<p class="note">You can read everything here. A member accepts, approves and checks.</p>` : ''}
     ${section('Found by the agent', 'Each one shows the line it came from. Accept it, hand it to someone else, or drop it.', found, 'Nothing new. The agent files work here as soon as it hears about it.')}
+    ${decisionsSection(data, ctx)}
     ${section('Overdue and escalated', '', late, 'Nothing is late.', { showSource: false })}
     ${section('Waiting on you', '', mine, 'Nothing needs you right now.', { showSource: false })}
     ${(data.sources || []).length ? html`<section class="ib-sec">
@@ -125,12 +144,14 @@ export function view(data, ctx) {
 
 export async function mount(root, ctx) {
   const base = `/w/${ctx.wid}`;
-  const s = { tasks: [], summary: {}, sources: [], people: [], open: null, busy: false, error: '' };
+  const s = { tasks: [], summary: {}, sources: [], people: [], decisions: [], open: null, busy: false, error: '' };
   async function load() {
-    const [list, sum, src, team] = await Promise.all([
+    const [list, sum, src, team, dec] = await Promise.all([
       ctx.api('GET', `${base}/taskos/tasks`), ctx.api('GET', `${base}/taskos/summary`), ctx.api('GET', `${base}/intake`),
       ctx.api('GET', `${base}/team`).catch(() => ({ members: [] })),
+      ctx.api('GET', `${base}/decisions?mine=1`).catch(() => ({ cards: [] })),
     ]);
+    s.decisions = dec.cards || [];
     s.tasks = list.tasks; s.summary = sum; s.sources = src.sources; s.people = team.members || team.people || [];
   }
   const paint = () => { root.innerHTML = String(view(s, ctx)); };
