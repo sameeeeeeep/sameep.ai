@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D2C Clone · Workspace</title>
+<meta name="description" content="Sign in to your D2C Clone workspace.">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&family=Spline+Sans+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="../d2c.css">
+<link rel="stylesheet" href="./app.css">
+<!-- one stylesheet per page module; each module owns only its own file -->
+<link rel="stylesheet" href="./pages/signin.css">
+<link rel="stylesheet" href="./pages/team.css">
+<link rel="stylesheet" href="./pages/today.css">
+<link rel="stylesheet" href="./pages/chats.css">
+<link rel="stylesheet" href="./pages/hub.css">
+<link rel="stylesheet" href="./pages/os.css">
+<link rel="stylesheet" href="./pages/billing.css">
+</head>
+<body>
+<div id="signin" class="signin-wrap" hidden></div>
+
+<div id="shell" class="shell" hidden>
+  <aside class="side">
+    <a class="brand" href="../">D2C Clone</a>
+    <label class="ws-pick"><span class="sr">Workspace</span><select id="ws"></select></label>
+    <p class="role">Your role: <b id="role"></b></p>
+    <nav id="nav" class="side-nav" aria-label="Sections"></nav>
+    <div class="side-foot">
+      <p id="who" class="who-me"></p>
+      <button id="signout" class="linkish" type="button">Sign out</button>
+    </div>
+  </aside>
+  <main class="main">
+    <div id="banner"></div>
+    <div id="page"></div>
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<noscript><p class="si-note">This workspace needs JavaScript.</p></noscript>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

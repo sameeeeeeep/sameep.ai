@@ -1,0 +1,5 @@
+{
+  "//": "Lets Node import these browser modules for the DOM-free tests in test/. Not a build: the site is static.",
+  "private": true,
+  "type": "module"
+}
