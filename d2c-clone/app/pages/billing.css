@@ -1,1 +1,33 @@
-/* billing.css (module D) */
+/* billing.css (module D): the plan (pricing page toggles from ../d2c.css: .fs .presets .pick .lines .line
+   .tog .chip .sum) beside its summary, then the invoice table. */
+.bl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+.bl-main { min-width: 0; }
+.bl-form .presets { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bl-date { max-width: 260px; }
+.bl-until { max-width: 360px; margin-top: 12px; }
+.bl-until input[disabled] { opacity: .5; }
+.bl-save { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.bl-sum { top: 20px; }
+.bl-sum h3 { margin-top: 0; }
+.bl-ro { padding: 6px 18px 16px; }
+.bl-dl { margin: 0; display: grid; }
+.bl-dl div { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.bl-dl dt { margin: 0; color: var(--muted); }
+.bl-dl dd { margin: 0; font-weight: 500; text-align: right; }
+.bl-ro-note { margin-top: 14px; }
+.bl-h2 { margin: 40px 0 14px; font: 400 30px/1.1 var(--f-head); }
+.bl-tbl { min-width: 860px; }
+.bl-tbl td.mono, .bl-tbl .bl-d { white-space: nowrap; }
+.bl-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; min-width: 260px; }
+.bl-items li { display: flex; justify-content: space-between; gap: 12px; }
+.bl-paid { margin-top: 4px; font-size: 13px; }
+
+@media (max-width: 980px) {
+  .bl-layout { grid-template-columns: minmax(0, 1fr); }
+  .bl-sum { position: static; order: -1; }
+}
+@media (max-width: 600px) {
+  .bl-form .presets { grid-template-columns: minmax(0, 1fr); }
+  .bl-dl div { flex-direction: column; gap: 2px; }
+  .bl-dl dd { text-align: left; }
+}
