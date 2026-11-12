@@ -9,3 +9,7 @@
 .si-form .btn { justify-content: center; }
 #si-code { font: 400 28px/1 var(--f-head); letter-spacing: .2em; }
 .si-alt { margin-top: 18px; font-size: 14px; }
+.si-kicker { margin: 0 0 10px; font: 400 12px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--acc); }
+.si-foot { margin: 28px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; }
+.si-alt .linkish[disabled] { opacity: .5; cursor: progress; }
+@media (max-width: 480px) { .si-brand { margin-bottom: 26px; } }
