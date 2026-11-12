@@ -67,7 +67,6 @@
       'Link: ' + link(s), '', 'Company:', 'Best time to talk:'
     ];
     $('send').href = 'mailto:hello@sameep.ai?subject=' + encodeURIComponent('D2C clone plan') + '&body=' + encodeURIComponent(lines.join('\n'));
-    try { history.replaceState(null, '', query(s)); } catch (e) {}
   }
 
   function query(s) {
@@ -76,9 +75,9 @@
     if (s.m2) q.push('m2=1');
     if (s.custom) q.push('custom=1');
     if (s.teams.length) q.push('teams=' + s.teams.join(','));
-    return location.pathname + (q.length ? '?' + q.join('&') : '');
+    return location.pathname + (q.length ? '?' + q.join('&') : '') + location.hash;
   }
-  function link(s) { return location.origin + query(s); }
+  function link(s) { return location.origin + query(s).replace(/#.*$/, '') + '#pricing'; }
 
   // Start from the link if it carries a plan, else Balanced.
   var qs = new URLSearchParams(location.search);
@@ -98,6 +97,7 @@
       box('m1').checked = p.m1; box('m2').checked = p.m2; box('custom').checked = p.custom;
     }
     render();
+    try { history.replaceState(null, '', query(state())); } catch (err) {}
   });
   form.addEventListener('submit', function (e) { e.preventDefault(); });
 
