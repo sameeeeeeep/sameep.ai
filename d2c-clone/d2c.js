@@ -19,7 +19,7 @@
     agents: ['Agents', 'One per area of the business, plus a chief of staff.', ['Website, Performance, Ops, Content, Finance, Support', 'The chief of staff turns discussions into decision cards', 'Each agent only has the tools of its own area'], 'Who is in the chat'],
     team: ['Team members', 'Your people, by role.', ['Join with one link and land in the right groups', 'Founder and finance joins wait for your approval', 'Each person approves or checks their own work from their phone'], 'Who is in the chat'],
     vendors: ['Vendors and agencies', 'The people outside the company you work with.', ['Invite your agency into Performance or Content', 'Vendors join only the groups you add them to', 'Agents in groups with outsiders never touch private data'], 'Who is in the chat'],
-    os: ['The OS (Nia)', 'The company on one screen.', ['Today: yesterday\'s sales, ad spend, low stock and everything waiting on you', 'Tasks from every group in one list', 'POs and vendor invoices, drafted by agents and approved by people', 'Warehouse and inventory, boards and custom views'], 'Where work happens']
+    os: ['The OS', 'The company on one screen.', ['Today: yesterday\'s sales, ad spend, low stock and everything waiting on you', 'Tasks from every group in one list', 'POs and vendor invoices, drafted by agents and approved by people', 'Warehouse and inventory, boards and custom views'], 'Where work happens']
   };
   var box = document.getElementById('detail');
   var nodes = document.querySelectorAll('#sys .node');
