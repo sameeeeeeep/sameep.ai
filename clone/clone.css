@@ -1,8 +1,8 @@
 /* sameep.ai/clone. One family (DM Sans, 400/600), one text colour, the accent only on things you press. */
-:root { --bg: #f5f0e8; --ink: #1d1a17; --line: #e2d9cd; --card: #fff; --acc: #c8623f; --acc-ink: #fff; --f: 'DM Sans', system-ui, sans-serif; }
+:root { --bg: #f5f0e8; --ink: #1d1a17; --line: #e2d9cd; --card: #fff; --acc: #c8623f; --acc-ink: #fff; --f: 'Inter', system-ui, sans-serif; --f-head: 'Instrument Serif', Georgia, serif; --f-mono: 'Spline Sans Mono', monospace; }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 18px/1.55 var(--f); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.6 var(--f); }
 a { color: inherit; }
 h1, h2, h3, p { margin: 0; }
 
@@ -10,14 +10,14 @@ h1, h2, h3, p { margin: 0; }
 .top a { text-decoration: none; }
 .top a:hover { text-decoration: underline; }
 
-.page { max-width: 1040px; margin: 0 auto; padding: 0 20px 80px; }
+.page { max-width: 1040px; margin: 0 auto; padding: 8px 20px 64px; }
 .hero { max-width: 760px; padding: 40px 0 56px; }
-.hero h1 { font: 600 clamp(44px, 8vw, 80px)/1.02 var(--f); letter-spacing: -.02em; }
+.hero h1 { font: 400 clamp(44px, 8vw, 80px)/1.02 var(--f-head); letter-spacing: -.01em; }
 .hero p { margin-top: 20px; font-size: clamp(18px, 2.4vw, 24px); }
 .hero .cta { margin-top: 28px; font-size: clamp(18px, 2.4vw, 24px); }
 
 .sec { padding: 40px 0; border-top: 2px solid var(--line); }
-.sec h2 { font: 600 28px/1.2 var(--f); margin-bottom: 14px; }
+.sec h2 { font: 400 30px/1.2 var(--f-head); margin-bottom: 14px; }
 .sec p { max-width: 40em; }
 .sec p + p { margin-top: 12px; }
 .sec.end { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
@@ -49,7 +49,7 @@ h1, h2, h3, p { margin: 0; }
 .form { width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: 16px; background: var(--bg); color: var(--ink); }
 .form > form, .form > .done { padding: 28px; }
 .form::backdrop { background: rgba(29, 26, 23, .55); }
-.form h2 { font: 600 28px/1.2 var(--f); margin-bottom: 18px; }
+.form h2 { font: 400 30px/1.2 var(--f-head); margin-bottom: 18px; }
 .form label { display: grid; gap: 6px; margin-bottom: 14px; }
 .form input, .form textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); font: 400 18px/1.4 var(--f); }
 .form input:focus, .form textarea:focus { outline: none; border-color: var(--ink); }
@@ -71,3 +71,6 @@ h1, h2, h3, p { margin: 0; }
   .form > form, .form > .done { padding: 22px 18px; }
   .sec.end .cta, .form .cta { flex: 1; justify-content: center; }
 }
+
+/* site shell: matches the other project pages (case.css header and footer) */
+.demo figcaption { font: 400 13px/1.45 var(--f-mono); color: #5d5a55; }
