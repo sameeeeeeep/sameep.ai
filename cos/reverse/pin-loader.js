@@ -123,6 +123,13 @@
   ].join('\n');
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
+  var REF = /^@(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.[a-z0-9]+$/i;
+  var MEDIA = /^(assets|audio|faces|images|media)$/;
+  var TYPES = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', mp3: 'audio/mpeg' };
+  function safeHref(v) {
+    if (typeof v !== 'string' || !v) return '';
+    try { var u = new URL(v, location.href); return /^(https?|mailto):$/.test(u.protocol) ? v : ''; } catch (e) { return ''; }
+  }
   function h(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   /* ---------- the lock screen ---------- */
@@ -250,22 +257,36 @@
   function load(wid) {
     return findShow(wid).then(function (r) {
       var refs = {};
-      (function walk(v) {
-        if (typeof v === 'string') { if (/^@[a-z0-9_\-/.]+$/i.test(v)) refs[v] = 1; return; }
-        if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { walk(v[k]); });
-      })(r.cfg);
+      /* only media fields take files: kit images, faces, product pictures, chat photos, audio clips */
+      (function walk(v, media) {
+        if (typeof v === 'string') { if (media && REF.test(v)) refs[v] = 1; return; }
+        if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { walk(v[k], media || MEDIA.test(k)); });
+      })(r.cfg, false);
       var list = Object.keys(refs), done = 0, urls = {};
       var auth = { authorization: 'Bearer ' + token() };
       function one(ref) {
-        return realFetch(API + '/w/' + encodeURIComponent(r.wid) + '/landing/asset/' + ref.slice(1), { headers: auth })
+        var path = ref.slice(1).split('/').map(encodeURIComponent).join('/');
+        return realFetch(API + '/w/' + encodeURIComponent(r.wid) + '/landing/asset/' + path, { headers: auth })
           .then(function (res) { if (!res.ok) throw new Error(res.status); return res.blob(); })
-          .then(function (b) { urls[ref] = URL.createObjectURL(b); }, function () { urls[ref] = ''; })
+          .then(function (b) {
+            var type = TYPES[ref.split('.').pop().toLowerCase()];
+            if (!type || (b.type && b.type !== type)) throw new Error('type');
+            urls[ref] = URL.createObjectURL(new Blob([b], { type: type }));
+          }).catch(function () { urls[ref] = ''; })
           .then(function () { done++; msg.textContent = 'Loading ' + done + ' of ' + list.length; });
       }
       var q2 = list.slice(), workers = [];
       for (var k = 0; k < 6; k++) workers.push((function run() { var ref = q2.shift(); return ref ? one(ref).then(run) : null; })());
       return Promise.all(workers).then(function () {
-        var cfg = JSON.parse(JSON.stringify(r.cfg), function (k, v) { return typeof v === 'string' && Object.prototype.hasOwnProperty.call(urls, v) ? urls[v] : v; });
+        var cfg = (function swap(v, media) {
+          if (typeof v === 'string') return media && Object.prototype.hasOwnProperty.call(urls, v) ? urls[v] : v;
+          if (Array.isArray(v)) return v.map(function (x) { return swap(x, media); });
+          if (v && typeof v === 'object') { var o = {}; Object.keys(v).forEach(function (k) { o[k] = swap(v[k], media || MEDIA.test(k)); }); return o; }
+          return v;
+        })(r.cfg, false);
+        /* links from the config become hrefs here and in the ending: http(s) and mailto only */
+        var end = cfg.end || {}, ln = end.links || {};
+        Object.keys(ln).forEach(function (k) { if (!safeHref(ln[k])) delete ln[k]; });
         open(cfg);
       });
     });
@@ -345,7 +366,7 @@
     var ctas = h('div', 'sc-ctas');
     var a1 = h('a', 'sc-cta', ((cfg.page || {}).cta || {}).demo || 'Open your workspace');
     a1.href = '../app/' + (ws ? '#/w/' + encodeURIComponent(ws) + '/today' : '');
-    var a2 = h('a', 'sc-cta is-2', 'Talk to Sameep'); a2.href = links.talk || 'mailto:hello@sameep.ai';
+    var a2 = h('a', 'sc-cta is-2', 'Talk to Sameep'); a2.href = safeHref(links.talk) || 'mailto:hello@sameep.ai';
     ctas.appendChild(a1); ctas.appendChild(a2); w.appendChild(ctas);
     function place() {
       var end = document.getElementById('end');
