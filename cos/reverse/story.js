@@ -1,28 +1,33 @@
-/* story.js (v4): the product's journey through the Chief of Staff, idea to doorstep. Interactive by default.
-   Used when the brand config has a `story` block; scroll.js plays the parcel opening, then hands over
-   (window.cosStory(cfg, {from: 'parcel'})). A deep link (?step=N) opens on an Enter gate instead.
+/* story.js (v5): the product's journey through the Chief of Staff, idea to doorstep.
+   Used when the brand config has a `story` block; scroll.js plays the parcel opening and hands over
+   (window.cosStory(cfg, {from: 'parcel', keep, retire})); a deep link (?step=N) opens on an Enter gate instead.
 
-   Screen: header (brand, team, Prev / Play demo / Next, sound) · a strip of stages with days · three columns:
-   module tiles | the active module (its people and agents, the stage of objects, a caption, the thread) | the dark
-   Now card, "OS · this product" and the stage checklist.
+   Screen: header (brand, team, Prev / Play demo / Next, sound) · stage strip with days · four columns:
+     sidebar (modules: owners, agent status, latest preview)
+     Chat (the module thread, with a Sources row that lights up the channel each input comes from)
+     Tasks (the Now card, tasks and decisions, agents at work: what each is doing, steps done, last output, reports to)
+     Canvas (the stage of objects and infographics, the caption under it, the product's stats strip)
+   Phones: a module strip and Chat / Tasks / Canvas tabs (Canvas comes forward when an object lands).
 
-   Beats run in strict order, one at a time: a message (its voice note plays to the end), an agent's "working…" then its
-   result, a task that ticks, a decision. Decisions wait for the VIEWER: the AI pick is marked, either option is real,
-   and each option has its own object, OS values, delay in days and consequence beats (`then`) before the story rejoins.
-   Next finishes the current beat at once; at a decision it takes the AI pick; at the end of a stage it opens the
-   next one. Play demo runs it all (decisions take the AI pick after a pause), paced by the audio and reading time.
+   Beats run in strict order. An input arrives with its channel (WhatsApp, Gmail, Meet, Instagram, Shopify, ...) and
+   shows its native look on the canvas for a moment; agents show "working" then their result; tasks tick; the chief
+   announces and @mentions people and agents. Decisions wait for the viewer: visual option cards (image or swatch,
+   cost, days, a comparison bar, the AI pick and its reason); each option is real and has its own objects, numbers,
+   delay and consequence beats before the story rejoins. When a module's last beat lands the story moves on by itself
+   ("Moving to #logistics…"); Next skips ahead; Play demo also takes the AI pick at decisions.
 
    config.story = { title, line, product{name,img}, os_keys, modules[], chapters[{ title, stops[] }] }
-   stop  = { id, module, label, day, when, title, scene{objs[]}, thread[item] }
+   stop  = { id, module, label, day, when, title, scene{objs[]}, thread[item], agents{name: {reports}} }
    item  = { k: msg|cos|task|decision|record, who, agent, text, voice, len, via, where, desc, media, done, owner, land,
-             os{}, options[{ label, ai, land, os{}, delay, then[item] }], title, rows, area, tray }
-   Sound: on after the first tap (parcel or Enter); never with ?mute. ?autoplay starts Play demo; ?step=N opens stage N. */
+             os{}, line, options[{ label, ai, reason, img, swatch, cost, days, bar, land, os{}, delay, note, then[item] }] }
+   Sound: on after the first tap (parcel or Enter); never with ?mute. ?autoplay = Play demo; ?step=N opens stage N. */
 (function () {
   'use strict';
   var Q = new URLSearchParams(location.search);
   var MUTED = Q.has('mute'), REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var PHONE = function () { return innerWidth <= 860; };
   var cfg, stops = [], mods = [], si = -1, maxSeen = 0, tok = 0, AUTO = Q.has('autoplay'), ui = {}, tiles = {};
-  var CH = {}, OS = {}, DELAY = {}, state = 'idle';
+  var CH = {}, OS = {}, DELAY = {}, state = 'idle', AG = {};
 
   function h(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function str(v, d) { return (typeof v === 'string' && v.trim()) ? v.trim() : (d || ''); }
@@ -31,6 +36,7 @@
   function first(w) { return str(w).split(/\s+/)[0]; }
   function each(list, fn) { Array.prototype.forEach.call(list, fn); }
   function raf2(fn) { requestAnimationFrame(function () { requestAnimationFrame(fn); }); }
+  function fmt(n) { return Math.round(n).toLocaleString('en-IN'); }
 
   /* ---------- waits that Next can cut short ---------- */
   var W = null;
@@ -71,6 +77,7 @@
     ask: function () { tone(1800, 0, .03, .03, 'square', 900); },
     decision: function () { tone(659, 0, .14, .03); tone(880, .09, .14, .03); tone(1319, .18, .26, .026); },
     land: function () { tone(110, 0, .22, .06, 'sine', 60); noise(0, .12, .02, 900, 300); },
+    tick: function () { tone(2200, 0, .02, .012, 'triangle'); },
     stage: function () { noise(0, .6, .025, 400, 2200); tone(392, .12, .7, .018); }
   };
   function sfx(k) { if (!SOUND || !AC || MUTED || !SFX[k]) return; try { SFX[k](); } catch (e) { /* */ } }
@@ -90,6 +97,21 @@
     return true;
   }
   function setSoundBtn() { if (!ui.sound) return; ui.sound.textContent = SOUND ? 'Sound on' : 'Sound off'; ui.sound.setAttribute('aria-pressed', SOUND ? 'true' : 'false'); }
+
+  /* ---------- channels: where each input comes from (a neutral mark: a glyph in the channel's colour) ---------- */
+  var SRC = {
+    dm: ['Instagram', 'IG', '#c13584'], whatsapp: ['WhatsApp', 'W', '#1f9d55'], email: ['Gmail', 'M', '#c5221f'],
+    meeting: ['Meet', 'Me', '#0f7b6c'], call: ['Call', 'C', '#5b616e'], shopify: ['Shopify', 'S', '#5e8e3e'],
+    zepto: ['Zepto', 'Z', '#5a2a82'], blinkit: ['Blinkit', 'B', '#b78a00'], nykaa: ['Nykaa', 'N', '#d6116b'],
+    amazon: ['Amazon', 'A', '#232f3e'], delhivery: ['Delhivery', 'D', '#b3261e'], ads: ['Meta Ads', 'Ad', '#2f5bd3'], app: ['Chief of Staff', 'CS', '#15171c']
+  };
+  var SRC_ROW = ['dm', 'meeting', 'whatsapp', 'email', 'shopify', 'ads', 'delhivery'];
+  function srcMark(v, cls) {
+    var s = SRC[v] || SRC.app, m = h('span', 'sx-src' + (cls ? ' ' + cls : ''));
+    var g = h('i', null, s[1]); g.style.background = s[2]; m.appendChild(g); m.appendChild(h('span', null, s[0]));
+    return m;
+  }
+  function lightSource(v) { if (!ui.sources) return; each(ui.sources.children, function (c) { c.classList.toggle('is-on', c.dataset.v === v); }); }
 
   /* ---------- assets, people, agents ---------- */
   function asset(key) {
@@ -125,6 +147,14 @@
     else el.textContent = /^GG/.test(w) ? 'GG' : w.charAt(0);
     return el;
   }
+  function shortName(w) { return /^GG/.test(str(w)) ? 'GG' : isAgent(w) ? str(w) : first(w); }
+  /* text with @mentions picked out */
+  function textEl(tag, cls, text) {
+    var el = h(tag, cls), re = /@(?:[A-Z][a-z]+ agent|Chief of staff|[A-Z][\w]+)/g, s = String(text || ''), last = 0, m;
+    while ((m = re.exec(s))) { if (m.index > last) el.appendChild(document.createTextNode(s.slice(last, m.index))); el.appendChild(h('b', 'sx-at', m[0])); last = m.index + m[0].length; }
+    if (last < s.length) el.appendChild(document.createTextNode(s.slice(last)));
+    return el;
+  }
 
   /* ---------- public brands: stops from the older stage schema ---------- */
   var STAGE_MOD = { voice: 'ideas', standup: 'ideas', hire: 'npd', samples: 'npd', vendor: 'npd', packaging: 'npd', po: 'npd',
@@ -132,6 +162,18 @@
   var STAGE_AGENT = { voice: 'Research agent', standup: 'Chief of staff', samples: 'Research agent', vendor: 'Vendor agent', packaging: 'Design agent',
     po: 'Vendor agent', shoot: 'Content agent', listing: 'Website agent', ad: 'Ads agent', order: 'Ops agent', packed: 'Ops agent', courier: 'Ops agent', support: 'Support agent', delivered: 'Chief of staff' };
   var STAGE_LABEL = { voice: 'Idea', standup: 'Plan', samples: 'Samples', vendor: 'Vendor', packaging: 'Packaging', po: 'PO', shoot: 'Shoot', listing: 'Listing', ad: 'Ads', order: 'First order', delivered: 'Loop closed' };
+  /* each module's identity: a small icon, one muted tint, and the boards it works on */
+  var LOOK = {
+    ideas: { tint: '#9a6b1f', title: 'Ideas', icon: 'M8 1.5a4.5 4.5 0 0 0-2.6 8.2V12h5.2V9.7A4.5 4.5 0 0 0 8 1.5zM6 13.5h4M6.6 15h2.8', boards: ['Inbox', 'Sparks', 'Idea score'] },
+    npd: { tint: '#6c4f93', title: 'Product development', icon: 'M2.5 3.5h11v9h-11zM2.5 6.5h11M6 6.5v6', boards: ['Concept board', 'Mockups', 'Spec sheet', 'Vendors', 'Shades', 'Label'] },
+    logistics: { tint: '#2d6a86', title: 'Logistics', icon: 'M1.5 4.5h8v6h-8zM9.5 7h3l2 2v1.5h-5M4 12.5a1.2 1.2 0 1 0 .01 0M11.5 12.5a1.2 1.2 0 1 0 .01 0', boards: ['Route', 'Shipments', 'Carriers'] },
+    warehouse: { tint: '#66622f', title: 'Warehouse', icon: 'M1.5 6.5 8 2.5l6.5 4v7h-13zM5 13.5v-4h6v4', boards: ['Dock schedule', 'Receiving', 'QC', 'Pick-pack'] },
+    listing: { tint: '#2f7556', title: 'Listing', icon: 'M2.5 2.5h11v11h-11zM5 5.5h6M5 8h6M5 10.5h3.5', boards: ['Channels', 'Product page', 'Price parity'] },
+    marketing: { tint: '#9c4466', title: 'Marketing', icon: 'M2.5 9.5V6.5l8-3.5v10l-8-3.5zM10.5 6v4M4.5 9.5l1 4h2l-.8-3.6', boards: ['Calendar', 'Shoot board', 'Creators', 'Ads'] },
+    crm: { tint: '#3d58a8', title: 'Customers', icon: 'M8 8a2.8 2.8 0 1 0 0-5.6A2.8 2.8 0 0 0 8 8zM2.5 14c.8-2.8 3-4.2 5.5-4.2s4.7 1.4 5.5 4.2', boards: ['Funnel', 'Delivered', 'Care notes', 'Reviews'] }
+  };
+  function look(id) { var m = modOf(id), L = LOOK[id] || {}; return { tint: m.tint || L.tint || '#5b616e', title: m.title || L.title || m.name, icon: m.icon || L.icon || 'M3 3h10v10H3z', boards: m.boards || L.boards || [] }; }
+  function iconEl(id, cls) { var sp = h('span', 'sx-mi' + (cls ? ' ' + cls : '')); sp.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="' + look(id).icon + '" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'; return sp; }
   var DEFAULT_MODS = [
     { id: 'ideas', name: '#ideas', about: 'Voice notes and DMs become ideas', agent: 'Research agent' },
     { id: 'npd', name: '#npd', about: 'Concepts, samples, vendors, packaging', agent: 'Vendor agent' },
@@ -140,31 +182,31 @@
     { id: 'listing', name: '#listing', about: 'D2C and marketplaces', agent: 'Website agent' },
     { id: 'marketing', name: '#marketing', about: 'Shoots, creators, ads', agent: 'Ads agent' },
     { id: 'crm', name: '#crm', about: 'Delivered, check-ins, repeat', agent: 'Support agent' }];
-  function stageStop(id, n) {
+  function stageStop(id) {
     var st = arr(cfg.stages).filter(function (s) { return s.id === id; })[0];
     if (!st) return null;
     var fl = arr(st.flow), A = cfg.audio || {}, th = [], ag = STAGE_AGENT[id] || 'Chief of staff';
     fl.forEach(function (b, i) {
       if ((b.t === 'raised' && b.who) || b.t === 'q') {
         var v = id === 'voice' && i === 0 ? 'voice-note' : A[id + '-' + (i + 1)] ? id + '-' + (i + 1) : b.t === 'q' && A[id + '-q'] ? id + '-q' : isAgency(b.who) && A[id + '-agency'] ? id + '-agency' : '';
-        th.push({ k: 'msg', who: b.who, via: b.via, where: b.where, text: id === 'voice' && i === 0 && cfg.voice ? cfg.voice.words : b.text, voice: v,
+        th.push({ k: 'msg', who: b.who, via: b.via || (isCustomer(b.who) ? 'whatsapp' : 'app'), where: b.where, text: id === 'voice' && i === 0 && cfg.voice ? cfg.voice.words : b.text, voice: v,
           len: id === 'voice' && i === 0 && cfg.voice ? cfg.voice.length : (b.media && b.media.len) || '' });
         if (b.t === 'q' && b.answer) th.push({ k: 'cos', agent: ag, text: b.answer });
       } else if (b.t === 'ask') {
         var ops = arr(b.options);
         th.push({ k: 'decision', who: b.who, text: b.text, options: ops.map(function (o, j) {
-          return j === 0 ? { label: o, ai: true } : { label: o, then: [{ k: 'cos', agent: ag, text: 'Noted. Going with "' + ops[0] + '" after a second look: it keeps the date.' }] }; }) });
+          return j === 0 ? { label: o, ai: true, reason: 'Keeps the date and the plan.' } : { label: o, then: [{ k: 'cos', agent: ag, text: 'Noted. Going with "' + ops[0] + '" after a second look: it keeps the date.' }] }; }) });
       } else if (b.t === 'assign' || b.t === 'done') th.push({ k: 'task', owner: ag, text: b.text, done: b.desc || 'Done' });
       else th.push({ k: 'cos', agent: ag, text: b.text, desc: b.desc || b.caught, media: b.media && b.media.type !== 'photo' ? b.media : null });
     });
     var obj = st.object === 'phone' ? 'hero' : st.object === 'wireframe' ? 'wireframe_ink' : st.object;
-    var objs = id === 'voice' ? [{ id: 'vn', voice: { who: (cfg.voice || {}).who, len: (cfg.voice || {}).length, time: (cfg.voice || {}).time }, x: 50, y: 50, w: 60 }]
+    var objs = id === 'voice' ? [{ id: 'vn', voice: { who: (cfg.voice || {}).who, len: (cfg.voice || {}).length, time: (cfg.voice || {}).time }, x: 50, y: 50, w: 64 }]
       : [{ id: 'main', src: obj, x: 50, y: 52, w: 64 }];
     return { id: id, module: STAGE_MOD[id] || 'ideas', label: STAGE_LABEL[id] || id, day: null, when: st.when, title: st.summary, scene: { objs: objs }, thread: th.slice(0, 6) };
   }
 
   /* ---------- the page ---------- */
-  function svg(d) { return '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="' + d + '" fill="currentColor"/></svg>'; }
+  function svgIcon(d) { return '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2"/></svg>'; }
   function build(keep) {
     document.documentElement.classList.add('is-story');
     var track = document.getElementById('track');
@@ -179,12 +221,10 @@
     top.appendChild(br);
     var team = h('div', 'sx-team');
     var stack = h('span', 'sx-people'); arr(cfg.team).forEach(function (m) { stack.appendChild(faceEl(m.name, 'is-sm')); }); team.appendChild(stack);
-    var agents = {}; stops.forEach(function (s) { arr(s.thread).forEach(function (it) { var a = it.k === 'cos' ? str(it.agent, 'Chief of staff') : isAgent(it.owner) ? it.owner : ''; if (a) agents[a] = 1; }); });
-    team.appendChild(h('span', 'sx-team-n', arr(cfg.team).length + ' people · ' + Object.keys(agents).length + ' agents'));
+    team.appendChild(h('span', 'sx-team-n', arr(cfg.team).length + ' people · ' + allAgents().length + ' agents'));
     top.appendChild(team);
     var ctl = h('div', 'sx-ctl');
-    ui.prev = h('button', 'sx-btn sx-icon'); ui.prev.type = 'button'; ui.prev.setAttribute('aria-label', 'Previous stage'); ui.prev.innerHTML = svg('M10.5 3 5.5 8l5 5');
-    ui.prev.querySelector('path').setAttribute('fill', 'none'); ui.prev.querySelector('path').setAttribute('stroke', 'currentColor'); ui.prev.querySelector('path').setAttribute('stroke-width', '2');
+    ui.prev = h('button', 'sx-btn sx-icon'); ui.prev.type = 'button'; ui.prev.setAttribute('aria-label', 'Previous stage'); ui.prev.innerHTML = svgIcon('M10.5 3 5.5 8l5 5');
     ui.play = h('button', 'sx-btn sx-play'); ui.play.type = 'button';
     ui.next = h('button', 'sx-btn sx-next'); ui.next.type = 'button';
     ui.prev.addEventListener('click', function () { if (si > 0) open(si - 1, -1); });
@@ -199,7 +239,6 @@
     top.appendChild(ctl);
     stage.appendChild(top);
 
-    /* the journey strip */
     ui.strip = h('nav', 'sx-strip'); ui.strip.setAttribute('aria-label', 'Stages');
     stops.forEach(function (s, i) {
       var b = h('button', 'sx-st'); b.type = 'button'; b.dataset.i = i;
@@ -210,15 +249,26 @@
     });
     stage.appendChild(ui.strip);
 
-    var main = h('div', 'sx-main'); stage.appendChild(main);
-    /* left: module tiles */
+    /* phones: Chat / Tasks / Canvas tabs */
+    ui.tabs = h('div', 'sx-tabs'); ui.tabs.setAttribute('role', 'tablist');
+    ['canvas', 'chat', 'tasks'].forEach(function (k) {
+      var b = h('button', 'sx-tab', k === 'chat' ? 'Chat' : k === 'tasks' ? 'Tasks' : 'Canvas'); b.type = 'button'; b.dataset.k = k; b.setAttribute('role', 'tab');
+      b._dot = h('i'); b.appendChild(b._dot);
+      b.addEventListener('click', function () { tab(k, true); }); ui.tabs.appendChild(b);
+    });
+    stage.appendChild(ui.tabs);
+
+    var main = h('div', 'sx-main'); ui.main = main; stage.appendChild(main);
+
+    /* sidebar: modules */
     ui.tiles = h('nav', 'sx-tiles'); ui.tiles.setAttribute('aria-label', 'Modules'); main.appendChild(ui.tiles);
     mods.forEach(function (m) {
-      var t = h('button', 'sx-tile'); t.type = 'button'; t.dataset.mod = m.id;
-      var hd = h('div', 'sx-tile-hd'); hd.appendChild(h('b', null, m.name)); t._status = h('span', 'sx-tile-st', ''); hd.appendChild(t._status); t.appendChild(hd);
+      var t = h('button', 'sx-tile'); t.type = 'button'; t.dataset.mod = m.id; t.style.setProperty('--tint', look(m.id).tint);
+      var hd = h('div', 'sx-tile-hd'); var nm0 = h('span', 'sx-tile-n'); nm0.appendChild(iconEl(m.id)); nm0.appendChild(h('b', null, m.name)); hd.appendChild(nm0); t._status = h('span', 'sx-tile-st', ''); hd.appendChild(t._status); t.appendChild(hd);
       var pv = h('div', 'sx-tile-pv'); t._pvFace = h('span', 'sx-tile-face'); pv.appendChild(t._pvFace); t._pv = h('span', 'sx-tile-tx', m.about || ''); pv.appendChild(t._pv); t.appendChild(pv);
       var ft = h('div', 'sx-tile-ft'); t._people = h('span', 'sx-people'); ft.appendChild(t._people); t._agent = h('span', 'sx-agent', m.agent || ''); ft.appendChild(t._agent); t.appendChild(ft);
       owners(m).forEach(function (p) { t._people.appendChild(faceEl(p, 'is-xs')); });
+      t._people.appendChild(h('span', 'sx-tile-own', owners(m).map(shortName).join(', ')));
       t.addEventListener('click', function () {
         var last = -1; stops.forEach(function (s, i) { if (s.module === m.id && i <= maxSeen) last = i; });
         if (last >= 0 && last !== si) { unlock(); open(last, last < si ? -1 : 1); }
@@ -226,38 +276,66 @@
       tiles[m.id] = t; ui.tiles.appendChild(t);
     });
 
-    /* centre: the active module */
-    var card = h('section', 'sx-card'); main.appendChild(card);
-    var ch = h('div', 'sx-card-hd');
+    /* pane 1: chat */
+    var chat = h('section', 'sx-pane sx-chatp'); chat.dataset.k = 'chat'; main.appendChild(chat);
+    var ch = h('div', 'sx-pane-hd');
+    ui.chanIcon = h('span', 'sx-chan-i'); ch.appendChild(ui.chanIcon);
     var cn = h('div', 'sx-chan'); ui.chan = h('b', null, ''); cn.appendChild(ui.chan); ui.purpose = h('span', null, ''); cn.appendChild(ui.purpose); ch.appendChild(cn);
     ui.who = h('div', 'sx-card-who'); ch.appendChild(ui.who);
-    card.appendChild(ch);
-    ui.scene = h('div', 'sx-scene'); card.appendChild(ui.scene);
-    ui.cap = h('div', 'sx-cap'); ui.cap.setAttribute('aria-live', 'polite'); card.appendChild(ui.cap);
-    ui.thread = h('div', 'sx-thread'); ui.thread.setAttribute('role', 'log'); ui.thread.setAttribute('aria-live', 'polite'); card.appendChild(ui.thread);
+    chat.appendChild(ch);
+    ui.sources = h('div', 'sx-sources'); ui.sources.setAttribute('aria-label', 'Sources');
+    SRC_ROW.forEach(function (v) { var m = srcMark(v, 'is-row'); m.dataset.v = v; ui.sources.appendChild(m); });
+    chat.appendChild(ui.sources);
+    ui.thread = h('div', 'sx-thread'); ui.thread.setAttribute('role', 'log'); ui.thread.setAttribute('aria-live', 'polite'); chat.appendChild(ui.thread);
 
-    /* right: now, OS, checklist */
-    var side = h('aside', 'sx-side'); main.appendChild(side);
+    /* pane 2: tasks (now card, tasks and decisions, agents at work) */
+    var tasks = h('section', 'sx-pane sx-tasksp'); tasks.dataset.k = 'tasks'; main.appendChild(tasks);
     var now = h('section', 'sx-now'); ui.now = now;
     var nh = h('div', 'sx-now-hd'); ui.nowDay = h('span', null, ''); ui.nowN = h('span', null, ''); nh.appendChild(ui.nowDay); nh.appendChild(ui.nowN); now.appendChild(nh);
     var nb = h('div', 'sx-now-bd'); ui.nowImg = h('span', 'sx-now-img'); nb.appendChild(ui.nowImg);
     var nt = h('div'); ui.nowLabel = h('b', null, ''); ui.nowLine = h('span', null, ''); nt.appendChild(ui.nowLabel); nt.appendChild(ui.nowLine); nb.appendChild(nt); now.appendChild(nb);
-    ui.nowPeople = h('div', 'sx-now-people'); now.appendChild(ui.nowPeople);
     ui.nowBtn = h('button', 'sx-now-btn'); ui.nowBtn.type = 'button'; ui.nowBtn.addEventListener('click', function () { unlock(); next(); }); now.appendChild(ui.nowBtn);
-    side.appendChild(now);
-    var os = h('section', 'sx-os'); os.appendChild(h('b', 'sx-side-h', 'OS · this product'));
-    ui.os = h('dl', 'sx-os-dl'); os.appendChild(ui.os); side.appendChild(os);
+    tasks.appendChild(now);
+    var tk = h('section', 'sx-box sx-check'); ui.checkH = h('b', 'sx-side-h', 'Tasks and decisions'); tk.appendChild(ui.checkH);
+    ui.check = h('ul', 'sx-check-ul'); tk.appendChild(ui.check); tasks.appendChild(tk);
+    var ag = h('section', 'sx-box sx-agents'); ag.appendChild(h('b', 'sx-side-h', 'Agents at work'));
+    ui.agents = h('ul', 'sx-ag-ul'); ag.appendChild(ui.agents); tasks.appendChild(ag);
+
+    /* pane 3: canvas */
+    var canvas = h('section', 'sx-pane sx-canvasp'); canvas.dataset.k = 'canvas'; main.appendChild(canvas);
+    ui.cvHd = h('div', 'sx-cv-hd'); canvas.appendChild(ui.cvHd);
+    ui.scene = h('div', 'sx-scene'); canvas.appendChild(ui.scene);
+    ui.handoff = h('div', 'sx-handoff'); ui.scene.appendChild(ui.handoff);
+    ui.cap = h('div', 'sx-cap'); ui.cap.setAttribute('aria-live', 'polite'); canvas.appendChild(ui.cap);
+    ui.stats = h('div', 'sx-stats'); ui.stats.setAttribute('aria-label', 'This product'); canvas.appendChild(ui.stats);
     arr(cfg.story.os_keys || ['Idea', 'Format', 'Vendor', 'Shade', 'Units', 'Launch', 'Channels', 'Orders']).forEach(function (k) {
-      var dt = h('dt', null, k), dd = h('dd', null, '—'); ui.os.appendChild(dt); ui.os.appendChild(dd); ui['os_' + k] = dd;
+      var c = h('div', 'sx-stat-c'); c.appendChild(h('span', null, k)); var v = h('b', null, '—'); c.appendChild(v); ui.stats.appendChild(c); ui['os_' + k] = v; v._c = c;
     });
-    var ck = h('section', 'sx-check'); ui.checkH = h('b', 'sx-side-h', 'This stage'); ck.appendChild(ui.checkH);
-    ui.check = h('ul', 'sx-check-ul'); ck.appendChild(ui.check); side.appendChild(ck);
 
     var endEl = document.getElementById('end');
     if (window.renderEnding && endEl) { endEl.innerHTML = ''; window.renderEnding(cfg, endEl); }
+    tab('canvas');
   }
   function owners(m) { return (Array.isArray(m.owners) ? m.owners : m.owner ? [m.owner] : []).slice(0, 3); }
   function modOf(id) { return mods.filter(function (m) { return m.id === id; })[0] || { id: id, name: '#' + id }; }
+  function allAgents() {
+    var a = {}; stops.forEach(function (s) { (function walk(l) { arr(l).forEach(function (it) { var n = agentOfItem(it); if (n) a[n] = 1; arr(it.options).forEach(function (o) { walk(o.then); }); }); })(s.thread); });
+    mods.forEach(function (m) { if (m.agent) a[m.agent] = 1; });
+    return Object.keys(a);
+  }
+  function agentOfItem(it) { return it.k === 'cos' ? str(it.agent, 'Chief of staff') : it.k === 'task' && isAgent(it.owner) ? it.owner : ''; }
+
+  /* phones: which pane is showing */
+  function tab(k, byUser) {
+    ui.main.dataset.tab = k;
+    each(ui.tabs.children, function (b) { var on = b.dataset.k === k; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); if (on) b.classList.remove('has-new'); });
+    if (byUser) ui.userTab = Date.now();
+  }
+  function nudgeTab(k) {
+    if (!PHONE()) return;
+    if (ui.userTab && Date.now() - ui.userTab < 4000) { var b = ui.tabs.querySelector('[data-k="' + k + '"]'); if (b && ui.main.dataset.tab !== k) b.classList.add('has-new'); return; }
+    tab(k);
+  }
 
   /* ---------- preload this stage and the next two ---------- */
   var LOADED = {};
@@ -269,25 +347,66 @@
     arr(s.scene && s.scene.objs).forEach(function (o) { if (o.src) img(asset(o.src)); if (o.voice) img(faceSrc(o.voice.who)); if (o.listing) img(asset(o.listing.src || (cfg.story.product || {}).img)); });
     (function walk(list) { arr(list).forEach(function (it) {
       if (it.who) img(faceSrc(it.who));
-      if (it.media && (it.media.src || it.media.kit)) img(asset(it.media.src || it.media.kit));
       var u = clipUrl(it.voice); if (u) clip(u);
-      arr(it.options).forEach(function (o) { walk(o.then); });
+      arr(it.options).forEach(function (o) { if (o.img) img(asset(o.img)); walk(o.then); });
     }); })(s.thread);
     LOADED[i] = Promise.race([Promise.all(jobs), new Promise(function (r) { setTimeout(r, 3000); })]);
     return LOADED[i];
   }
 
-  /* ---------- objects ---------- */
+  /* ---------- infographics (used in the thread and on the canvas) ---------- */
   function bars(n, cls) {
     var w = h('span', cls);
     for (var i = 0; i < n; i++) { var b = h('i'); b.style.height = (25 + Math.round(70 * Math.abs(Math.sin(i * 2.3 + 1) * Math.cos(i * .7)))) + '%'; w.appendChild(b); }
     return w;
   }
+  function svgEl(tag, attrs) { var e = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); }); return e; }
+  function chart(m) {
+    var el = h('div', 'sx-viz sx-v-' + m.type);
+    if (m.type === 'chart' || m.type === 'bars') {
+      var max = Math.max.apply(null, arr(m.values).map(Number)) || 1;
+      arr(m.values).forEach(function (v, i) {
+        var row = h('div', 'sx-bar' + (i === (m.hi || 0) ? ' is-hi' : ''));
+        row.appendChild(h('span', 'sx-bar-l', str(arr(m.labels)[i])));
+        var tr = h('span', 'sx-bar-t'); var f = h('i'); f.style.transform = 'scaleX(' + (Number(v) / max).toFixed(3) + ')'; tr.appendChild(f); row.appendChild(tr);
+        row.appendChild(h('span', 'sx-bar-v', String(v)));
+        el.appendChild(row);
+      });
+    } else if (m.type === 'stat') {
+      arr(m.items).forEach(function (s) { var c = h('div', 'sx-big'); c.appendChild(h('b', null, s[0])); c.appendChild(h('span', null, s[1])); el.appendChild(c); });
+    } else if (m.type === 'spark') {
+      var vals = arr(m.values).map(Number), mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals), W2 = 200, H2 = 44;
+      var pts = vals.map(function (v, i) { return (i * W2 / (vals.length - 1)).toFixed(1) + ',' + (H2 - 4 - (v - mn) / ((mx - mn) || 1) * (H2 - 10)).toFixed(1); }).join(' ');
+      var sv = svgEl('svg', { viewBox: '0 0 ' + W2 + ' ' + H2, preserveAspectRatio: 'none', 'aria-hidden': 'true' });
+      sv.appendChild(svgEl('polyline', { points: pts, fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'vector-effect': 'non-scaling-stroke' }));
+      el.appendChild(sv);
+      var lb = h('div', 'sx-spark-l'); lb.appendChild(h('b', null, str(m.big, String(vals[vals.length - 1])))); lb.appendChild(h('span', null, m.label || '')); el.appendChild(lb);
+    } else if (m.type === 'donut') {
+      var total = arr(m.parts).reduce(function (a, p) { return a + Number(p[1]); }, 0) || 1, acc = 0, stops2 = [];
+      arr(m.parts).forEach(function (p) { var a0 = acc / total * 360; acc += Number(p[1]); stops2.push(p[2] + ' ' + a0.toFixed(1) + 'deg ' + (acc / total * 360).toFixed(1) + 'deg'); });
+      var d = h('div', 'sx-donut'); d.style.background = 'conic-gradient(' + stops2.join(',') + ')'; var hole = h('span', null, str(m.center)); d.appendChild(hole); el.appendChild(d);
+      var lg = h('ul', 'sx-legend'); arr(m.parts).forEach(function (p) { var li = h('li'); var sw = h('i'); sw.style.background = p[2]; li.appendChild(sw); li.appendChild(h('span', null, p[0])); li.appendChild(h('b', null, String(p[1]) + (m.unit || ''))); lg.appendChild(li); }); el.appendChild(lg);
+    } else if (m.type === 'funnel') {
+      var top0 = Number((arr(m.steps)[0] || [0, 1])[1]) || 1;
+      arr(m.steps).forEach(function (s) { var r = h('div', 'sx-fun'); var b = h('i'); b.style.transform = 'scaleX(' + (Number(s[1]) / top0).toFixed(3) + ')'; r.appendChild(b); r.appendChild(h('span', null, s[0])); r.appendChild(h('b', null, fmt(Number(s[1])))); el.appendChild(r); });
+    } else if (m.type === 'channels') {
+      arr(m.items).forEach(function (c) { var t = h('div', 'sx-chtile'); t.appendChild(srcMark(c[0])); t.appendChild(h('b', null, String(c[1]))); if (c[2]) t.appendChild(h('span', null, c[2])); el.appendChild(t); });
+    } else if (m.type === 'swatch') {
+      var sw2 = h('div', 'sx-sw'); arr(m.colors).forEach(function (c) { var i = h('i'); i.style.background = c; sw2.appendChild(i); }); el.appendChild(sw2);
+    } else if (m.type === 'doc' || m.type === 'link') {
+      el.appendChild(h('b', null, str(m.name || m.title)));
+    } else return null;
+    if (m.unit && m.type !== 'donut' || m.note) el.appendChild(h('span', 'sx-media-note', str(m.note, m.unit)));
+    if (m.label && m.type === 'swatch') el.appendChild(h('span', 'sx-media-note', m.label));
+    return el;
+  }
+
+  /* ---------- canvas objects ---------- */
   function objEl(o) {
     var el = h('div', 'sx-ob'); el.dataset.id = o.id || '';
-    el.style.left = (o.x != null ? o.x : 50) + '%'; el.style.top = (o.y != null ? o.y : 55) + '%';
+    if (o.slot) { el.style.gridArea = o.slot; el.dataset.slot = o.slot; } else { el.style.left = (o.x != null ? o.x : 50) + '%'; el.style.top = (o.y != null ? o.y : 55) + '%'; }
     el.style.setProperty('--w', (o.w || 50) + '%'); el.style.setProperty('--r', (o.rot || 0) + 'deg'); el.style.zIndex = o.z || 1;
-    var body;
+    var body, card = true;
     if (o.doc || o.idea) {
       var d = o.doc || o.idea;
       body = h('div', 'sx-paper' + (o.idea ? ' is-idea' : ''));
@@ -311,82 +430,150 @@
       body.appendChild(row);
     } else if (o.listing) {
       var L = o.listing; body = h('div', 'sx-listing');
-      body.appendChild(h('span', 'sx-listing-ch', L.channel));
+      var lh = h('div', 'sx-listing-hd'); lh.appendChild(srcMark(L.via || 'shopify')); el._live = h('span', 'sx-live', str(L.status, 'Live')); lh.appendChild(el._live); body.appendChild(lh);
+      el.classList.add(/^live/i.test(str(L.status, 'Live')) ? 'is-live' : /^paused/i.test(str(L.status)) ? 'is-paused' : 'is-draft');
       var im = h('img'); im.alt = ''; im.src = asset(L.src || (cfg.story.product || {}).img); body.appendChild(im);
       el._line = h('b', null, str(L.title, (cfg.story.product || {}).name)); body.appendChild(el._line);
       var pr = h('div', 'sx-listing-pr'); pr.appendChild(h('span', null, str(L.price, '₹999'))); if (L.note) pr.appendChild(h('span', 'sx-listing-n', L.note)); body.appendChild(pr);
+    } else if (o.counter) {
+      var C = o.counter; body = h('div', 'sx-counter');
+      body.appendChild(h('span', 'sx-counter-k', str(C.label)));
+      el._num = h('b', null, (C.prefix || '') + '0'); el._count = C; body.appendChild(el._num);
+      if (C.sub) body.appendChild(h('span', 'sx-counter-s', C.sub));
+    } else if (o.stat) {
+      body = h('div', 'sx-statcard'); arr(o.stat).forEach(function (s) { var c = h('div'); c.appendChild(h('b', null, s[0])); c.appendChild(h('span', null, s[1])); body.appendChild(c); });
+    } else if (o.chart) {
+      body = h('div', 'sx-chartcard'); if (o.chart.title) body.appendChild(h('b', 'sx-chartcard-t', o.chart.title)); var c2 = chart(o.chart); if (c2) body.appendChild(c2);
+    } else if (o.route) {
+      var R = o.route; body = h('div', 'sx-route');
+      var sv = svgEl('svg', { viewBox: '0 0 300 150', 'aria-hidden': 'true' });
+      sv.appendChild(svgEl('path', { d: 'M40 110 C 110 40, 190 140, 260 50', fill: 'none', stroke: '#d3d3cc', 'stroke-width': '3', 'stroke-dasharray': '6 6' }));
+      var prog = svgEl('path', { d: 'M40 110 C 110 40, 190 140, 260 50', fill: 'none', stroke: '#2f5bd3', 'stroke-width': '3', pathLength: '1', 'stroke-dasharray': '1', 'stroke-dashoffset': '1', class: 'sx-route-p' });
+      sv.appendChild(prog);
+      [[40, 110], [260, 50]].forEach(function (p) { sv.appendChild(svgEl('circle', { cx: p[0], cy: p[1], r: 7, fill: '#15171c' })); });
+      var truck = svgEl('g', { class: 'sx-truck' }); truck.appendChild(svgEl('rect', { x: -11, y: -7, width: 22, height: 14, rx: 3, fill: '#8e2a3b' }));
+      truck.style.offsetPath = "path('M40 110 C 110 40, 190 140, 260 50')"; sv.appendChild(truck);
+      body.appendChild(sv);
+      var lb = h('div', 'sx-route-l'); lb.appendChild(h('span', null, R.from)); lb.appendChild(h('b', null, str(R.eta))); lb.appendChild(h('span', null, R.to)); body.appendChild(lb);
+    } else if (o.stack) {
+      var K = o.stack; body = h('div', 'sx-stack'); var grid = h('div', 'sx-stack-g');
+      for (var i = 0; i < (K.boxes || 12); i++) { var bx = h('i'); bx.style.transitionDelay = (i * 70) + 'ms'; grid.appendChild(bx); }
+      body.appendChild(grid); el._num = h('b', null, '0'); el._count = { to: K.to, label: K.label }; var lab = h('div', 'sx-stack-l'); lab.appendChild(el._num); lab.appendChild(h('span', null, K.label)); body.appendChild(lab);
+    } else if (o.checklist) {
+      body = h('div', 'sx-cklist'); body.appendChild(h('b', 'sx-cklist-t', o.checklist.title));
+      arr(o.checklist.rows).forEach(function (r, i) { var li = h('div', 'sx-cklist-r' + (r[1] === false ? ' is-miss' : '')); li.style.transitionDelay = (i * 160) + 'ms'; li.appendChild(h('i')); li.appendChild(h('span', null, r[0])); body.appendChild(li); });
+    } else if (o.list) {
+      var Ls = o.list; body = h('div', 'sx-list'); if (Ls.title) body.appendChild(h('b', 'sx-list-t', Ls.title));
+      arr(Ls.rows).forEach(function (r, i) {
+        var li = h('div', 'sx-list-r'); li.style.transitionDelay = (i * 120) + 'ms';
+        if (r.who) li.appendChild(faceEl(r.who, 'is-xs')); else if (r.via) li.appendChild(srcMark(r.via, 'is-xs is-g')); else if (r.color) { var lc = h('i', 'sx-list-c'); lc.style.background = r.color; li.appendChild(lc); }
+        var lt = h('span', 'sx-list-x'); lt.appendChild(h('b', null, r.name)); if (r.note) lt.appendChild(h('span', null, r.note)); li.appendChild(lt);
+        if (r.value) li.appendChild(h('span', 'sx-list-v' + (r.tone ? ' is-' + r.tone : ''), r.value));
+        body.appendChild(li);
+      });
+    } else if (o.tracker) {
+      var Tr = o.tracker; body = h('div', 'sx-tracker'); if (Tr.title) body.appendChild(h('b', 'sx-list-t', Tr.title));
+      arr(Tr.steps).forEach(function (st, i) { var r = h('div', 'sx-trk' + (st.done ? ' is-done' : st.now ? ' is-now' : '')); r.style.transitionDelay = (i * 200) + 'ms'; r.appendChild(h('i')); r.appendChild(h('span', null, st.label)); r.appendChild(h('em', null, st.at || '')); body.appendChild(r); });
+    } else if (o.calendar) {
+      var Ca = o.calendar; body = h('div', 'sx-cal'); if (Ca.title) body.appendChild(h('b', 'sx-list-t', Ca.title));
+      var cg = h('div', 'sx-cal-g'); arr(Ca.days).forEach(function (d, i) { var c = h('div', 'sx-cal-d'); c.style.transitionDelay = (i * 80) + 'ms'; c.appendChild(h('span', null, d[0])); arr(d[1]).forEach(function (x) { c.appendChild(h('em', null, x)); }); cg.appendChild(c); }); body.appendChild(cg);
+    } else if (o.pins) {
+      var Pn = o.pins; body = h('div', 'sx-pins'); if (Pn.title) body.appendChild(h('b', 'sx-list-t', Pn.title));
+      var mp = h('div', 'sx-map'); arr(Pn.points).forEach(function (p, i) { var d = h('i'); d.style.left = p[0] + '%'; d.style.top = p[1] + '%'; d.style.setProperty('--s', p[3] || 1); d.style.transitionDelay = (i * 90) + 'ms'; d.title = p[2] || ''; mp.appendChild(d); if (p[2]) { var lb = h('span', null, p[2]); lb.style.left = p[0] + '%'; lb.style.top = p[1] + '%'; mp.appendChild(lb); } }); body.appendChild(mp);
+      if (Pn.note) body.appendChild(h('span', 'sx-media-note', Pn.note));
+    } else if (o.quotes) {
+      body = h('div', 'sx-quotes');
+      arr(o.quotes).forEach(function (q, i) {
+        var c = h('div', 'sx-quote' + (q.pick ? ' is-pick' : '')); c.style.setProperty('--i', i - (o.quotes.length - 1) / 2);
+        if (q.img) { var qi = h('img'); qi.alt = ''; qi.src = asset(q.img); c.appendChild(qi); } else if (q.color) { var qs = h('i', 'sx-quote-sw'); qs.style.background = q.color; c.appendChild(qs); }
+        c.appendChild(h('b', null, q.name)); c.appendChild(h('span', 'sx-quote-p', q.price)); if (q.note) c.appendChild(h('span', 'sx-quote-n', q.note));
+        body.appendChild(c);
+      });
+      card = false;
     } else {
-      body = h('img', 'sx-ob-img'); body.alt = ''; body.decoding = 'async'; body.src = asset(o.src);
+      body = h('img', 'sx-ob-img'); body.alt = ''; body.decoding = 'async'; body.src = asset(o.src); card = false; el.classList.add('is-img');
     }
+    if (card) el.classList.add('is-card');
     if (o.label) el.appendChild(h('span', 'sx-ob-label', o.label));
     el._stamp = h('span', 'sx-stamp', ''); el.appendChild(el._stamp);
     var inner = h('div', 'sx-ob-in'); inner.appendChild(body); el.appendChild(inner);
     if (o.at === 'cue') el.classList.add('is-wait');
     return el;
   }
+  function countUp(el, quiet) {
+    var C = el._count; if (!C || !el._num) return;
+    var to = Number(C.to) || 0, pre = C.prefix || '';
+    if (quiet || REDUCED) { el._num.textContent = pre + fmt(to); return; }
+    var t0 = performance.now(), dur = C.ms || 1600, lastTick = 0;
+    (function f(now) {
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el._num.textContent = pre + fmt(to * e);
+      if (now - lastTick > 90 && p < 1) { lastTick = now; sfx('tick'); }
+      if (p < 1) requestAnimationFrame(f);
+    })(t0);
+  }
   function setScene(stop, dir) {
     each(ui.scene.querySelectorAll('.sx-set'), function (old) {
       old.classList.add(dir < 0 ? 'is-out-back' : 'is-out'); setTimeout(function () { if (old.parentNode) old.parentNode.removeChild(old); }, 700);
     });
-    var set = h('div', 'sx-set');
-    arr((stop.scene || {}).objs).forEach(function (o) { set.appendChild(objEl(o)); });
+    var set = h('div', 'sx-set' + ((stop.scene || {}).layout ? ' is-grid is-' + stop.scene.layout : ''));
+    arr((stop.scene || {}).objs).forEach(function (o) { var e = objEl(o); set.appendChild(e); if (o.at !== 'cue') { e.classList.add('is-on'); countUp(e, true); } });
     set.classList.add(dir < 0 ? 'is-in-back' : 'is-in');
-    ui.scene.appendChild(set); ui.set = set;
+    ui.scene.insertBefore(set, ui.handoff); ui.set = set;
     raf2(function () { set.classList.remove('is-in', 'is-in-back'); });
   }
   function land(id, quiet, note) {
     var set = ui.set; if (!set || !id) return;
-    if (Array.isArray(id)) { id.forEach(function (x, n) { if (quiet) land(x, true); else setTimeout(function () { land(x); }, n * 220); }); return; }
+    if (Array.isArray(id)) { id.forEach(function (x, n) { if (quiet) land(x, true); else setTimeout(function () { land(x); }, n * 240); }); return; }
     var e = set.querySelector('.sx-ob[data-id="' + id + '"]'); if (!e) return;
     if (note) { e._stamp.textContent = note; e.classList.add('has-stamp'); }
+    /* a draft listing on the stage goes live in place */
+    if (e._live && e.classList.contains('is-draft') && !e.classList.contains('is-wait')) { if (quiet) { e._live.textContent = 'Live'; e.classList.replace('is-draft', 'is-live'); return; } setTimeout(function () { e._live.textContent = 'Live'; e.classList.replace('is-draft', 'is-live'); sfx('tick'); }, 120); return; }
     if (!e.classList.contains('is-wait')) return;
-    /* an object that takes another's place (the glass mockup, a vendor chip) hides the one already there */
-    each(set.querySelectorAll('.sx-ob:not(.is-wait)'), function (o) { if (o !== e && o.style.left === e.style.left && o.style.top === e.style.top) o.classList.add('is-gone'); });
-    e.classList.remove('is-wait'); if (!quiet) { e.classList.add('is-land'); setTimeout(function () { sfx('land'); }, 380); }
+    each(set.querySelectorAll('.sx-ob:not(.is-wait)'), function (o) { if (o !== e && (e.dataset.slot ? o.dataset.slot === e.dataset.slot : o.style.left === e.style.left && o.style.top === e.style.top)) o.classList.add('is-gone'); });
+    e.classList.remove('is-wait');
+    if (quiet) { e.classList.add('is-on'); countUp(e, true); return; }
+    e.classList.add('is-land'); nudgeTab('canvas');
+    setTimeout(function () { sfx('land'); e.classList.add('is-on'); countUp(e); }, 380);
   }
   function listingLine(text) { if (!ui.set) return; each(ui.set.querySelectorAll('.sx-ob'), function (e) { if (e._line && text) e._line.textContent = text; }); }
 
-  /* ---------- the caption under the stage ---------- */
+  /* an input's native look, for a moment, on the canvas */
+  function sourcePop(it) {
+    var v = it.via; if (!v || v === 'app' || !SRC[v] || !ui.scene) return;
+    clearPop();
+    var p = h('div', 'sx-pop sx-pop-' + v), s = SRC[v];
+    var hd = h('div', 'sx-pop-hd'); hd.appendChild(srcMark(v)); if (it.where) hd.appendChild(h('span', null, it.where)); p.appendChild(hd);
+    var who = it.k === 'cos' ? str(it.desc, s[0]) : str(it.who);
+    if (v === 'email') { var em = h('div', 'sx-pop-mail'); em.appendChild(h('span', null, 'From: ' + who)); em.appendChild(h('b', null, str(it.where, 'Subject'))); em.appendChild(h('p', null, it.text)); p.appendChild(em); }
+    else if (v === 'meeting') { var tr = h('div', 'sx-pop-tr'); tr.appendChild(h('span', null, str(it.at, '11:02') + '  ' + shortName(who))); tr.appendChild(h('p', null, it.text)); p.appendChild(tr); }
+    else if (v === 'shopify') { var od = h('div', 'sx-pop-order'); od.appendChild(h('b', null, str(it.title, it.text))); p.appendChild(od); }
+    else { var bb = h('div', 'sx-pop-bub'); bb.appendChild(faceEl(who, 'is-xs')); var t = h('div'); t.appendChild(h('b', null, shortName(who))); t.appendChild(h('p', null, it.text)); bb.appendChild(t); p.appendChild(bb); }
+    ui.scene.appendChild(p); ui.pop = p;
+    raf2(function () { p.classList.add('is-on'); });
+  }
+  function clearPop() { var p = ui.pop; if (!p) return; ui.pop = null; p.classList.remove('is-on'); p.classList.add('is-off'); setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, 500); }
+
+  /* ---------- the caption under the canvas ---------- */
   function caption(stop) {
     each(ui.cap.children, function (old) { old.classList.add('is-gone'); setTimeout(function () { if (old.parentNode) old.parentNode.removeChild(old); }, 350); });
-    var c = h('div', 'sx-cap-in');
-    c.appendChild(h('span', 'sx-cap-mod', modOf(stop.module).name + (stop.when ? ' · ' + stop.when : '')));
+    var c = h('div', 'sx-cap-in'), d = dayOf(stops.indexOf(stop));
+    c.appendChild(h('span', 'sx-cap-mod', modOf(stop.module).name + ' · ' + stop.label + (d != null ? ' · Day ' + d : '')));
     c.appendChild(h('h2', 'sx-title', str(stop.title)));
     ui.cap.appendChild(c);
   }
 
   /* ---------- the thread ---------- */
-  var VIA = { whatsapp: 'WhatsApp', email: 'Email', meeting: 'Meeting', call: 'Call', dm: 'Instagram DM', app: '' };
-  function mediaEl(m) {
-    if (!m || !m.type) return null;
-    var el = h('div', 'sx-media sx-m-' + m.type);
-    if (m.type === 'chart') {
-      var max = Math.max.apply(null, arr(m.values).map(Number)) || 1;
-      arr(m.values).forEach(function (v, i) {
-        var row = h('div', 'sx-bar' + (i === (m.hi || 0) ? ' is-hi' : ''));
-        row.appendChild(h('span', 'sx-bar-l', str(arr(m.labels)[i])));
-        var tr = h('span', 'sx-bar-t'); var f = h('i'); f.style.transform = 'scaleX(' + (Number(v) / max).toFixed(3) + ')'; tr.appendChild(f); row.appendChild(tr);
-        row.appendChild(h('span', 'sx-bar-v', String(v)));
-        el.appendChild(row);
-      });
-      if (m.unit) el.appendChild(h('span', 'sx-media-note', m.unit));
-    } else if (m.type === 'swatch') {
-      var sw = h('div', 'sx-sw'); arr(m.colors).forEach(function (c) { var i = h('i'); i.style.background = c; sw.appendChild(i); });
-      el.appendChild(sw); if (m.label) el.appendChild(h('span', 'sx-media-note', m.label));
-    } else if (m.type === 'doc' || m.type === 'link') {
-      el.appendChild(h('b', null, str(m.name || m.title))); if (m.note) el.appendChild(h('span', 'sx-media-note', m.note));
-    } else return null;
-    return el;
-  }
   function row(it) {
     var k = it.k, r = h('div', 'sx-row sx-' + k);
     if (k === 'msg' || k === 'cos') {
       var who = k === 'cos' ? str(it.agent, 'Chief of staff') : str(it.who);
       r.appendChild(faceEl(who));
-      var b = h('div', 'sx-bub');
+      var b = h('div', 'sx-bub' + (/^chief/i.test(who) ? ' is-chief' : ''));
       var hd = h('div', 'sx-bub-hd'); hd.appendChild(h('b', null, who));
-      var meta = k === 'cos' ? str(it.desc) : [roleOf(who), Object.prototype.hasOwnProperty.call(VIA, it.via) ? VIA[it.via] : it.via, it.where].filter(Boolean).join(' · ');
+      var meta = k === 'cos' ? str(it.desc) : [roleOf(who), it.where].filter(Boolean).join(' · ');
       if (meta) hd.appendChild(h('span', null, meta));
+      if (it.via && it.via !== 'app') hd.appendChild(srcMark(it.via, 'is-xs'));
       b.appendChild(hd);
       var url = clipUrl(it.voice);
       if (url || it.len) {
@@ -397,26 +584,36 @@
         vn.addEventListener('click', function (e) { e.stopPropagation(); unlock(); if (NOW && NOW.el === vn) skip(); else playVoice(url, vn); });
         b.appendChild(vn); r._voice = { url: url, btn: vn };
       }
-      b.appendChild(h('p', url || it.len ? 'sx-tr' : 'sx-text', it.text));
-      var md = mediaEl(it.media); if (md) b.appendChild(md);
+      b.appendChild(textEl('p', url || it.len ? 'sx-tr' : 'sx-text', it.text));
+      var md = it.media ? chart(it.media) : null; if (md) b.appendChild(md);
       r.appendChild(b);
     } else if (k === 'task') {
       r.appendChild(h('span', 'sx-chk'));
       var t = h('div', 'sx-task-b');
       t.appendChild(h('span', 'sx-kind', 'Task' + (it.owner ? ' · ' + it.owner : '')));
-      t.appendChild(h('p', null, it.text)); t.appendChild(h('span', 'sx-task-done', it.done || 'Done'));
+      t.appendChild(textEl('p', null, it.text)); t.appendChild(h('span', 'sx-task-done', it.done || 'Done'));
       r.appendChild(t);
     } else if (k === 'decision') {
       var w2 = first(it.who) || 'Someone', d = h('div', 'sx-dec');
       var dh = h('div', 'sx-dec-hd'); dh.appendChild(faceEl(it.who, 'is-xs')); dh.appendChild(h('span', 'sx-kind', 'Decision for ' + w2 + ' · you decide')); d.appendChild(dh);
-      d.appendChild(h('p', null, it.text));
+      d.appendChild(textEl('p', null, it.text));
       var ops = h('div', 'sx-opts'); r._opts = [];
-      arr(it.options).forEach(function (o, i) {
-        var b2 = h('button', 'sx-opt'); b2.type = 'button'; b2.disabled = true; b2.appendChild(h('span', null, o.label));
-        if (o.ai) b2.appendChild(h('em', 'sx-pick', 'AI pick'));
-        ops.appendChild(b2); r._opts.push(b2);
+      var bmax = Math.max.apply(null, arr(it.options).map(function (o) { return Number(o.bar) || 0; })) || 1;
+      arr(it.options).forEach(function (o) {
+        var b2 = h('button', 'sx-opt' + (o.ai ? ' is-ai' : '')); b2.type = 'button'; b2.disabled = true;
+        if (o.img) { var oi = h('img', 'sx-opt-img'); oi.alt = ''; oi.src = asset(o.img); b2.appendChild(oi); }
+        else if (o.swatch) { var os = h('i', 'sx-opt-sw'); os.style.background = o.swatch; b2.appendChild(os); }
+        else if (o.face) b2.appendChild(faceEl(o.face, 'is-sm'));
+        var ob = h('span', 'sx-opt-b');
+        var top = h('span', 'sx-opt-top'); top.appendChild(h('b', null, String(o.label).replace(/^["“]|["”]$/g, ''))); if (o.ai) top.appendChild(h('em', 'sx-pick', 'AI pick')); ob.appendChild(top);
+        var chips = h('span', 'sx-opt-chips'); if (o.cost) chips.appendChild(h('span', null, o.cost)); if (o.days != null) chips.appendChild(h('span', o.days > 0 ? 'is-late' : 'is-ok', o.days > 0 ? '+' + o.days + ' days' : o.days < 0 ? o.days + ' days' : 'on time'));
+        if (chips.children.length) ob.appendChild(chips);
+        if (o.bar != null) { var br = h('span', 'sx-opt-bar'); var bi = h('i'); bi.style.transform = 'scaleX(' + (Number(o.bar) / bmax).toFixed(3) + ')'; br.appendChild(bi); if (o.barLabel) br.appendChild(h('em', null, o.barLabel)); ob.appendChild(br); }
+        b2.appendChild(ob); ops.appendChild(b2); r._opts.push(b2);
       });
       d.appendChild(ops);
+      var ai = arr(it.options).filter(function (o) { return o.ai; })[0];
+      if (ai && ai.reason) d.appendChild(h('span', 'sx-dec-why', 'AI pick: ' + ai.reason));
       r._by = h('span', 'sx-dec-by', ''); d.appendChild(r._by);
       r.appendChild(d);
     } else if (k === 'record') {
@@ -426,7 +623,7 @@
       r.appendChild(rc);
     } else if (k === 'typing') {
       r.appendChild(faceEl(it.agent));
-      var ty = h('div', 'sx-typing'); ty.appendChild(h('span', null, str(it.agent) + ' is working')); ty.appendChild(h('i', 'sx-dots')); r.appendChild(ty);
+      var ty = h('div', 'sx-typing'); ty.appendChild(h('span', null, str(it.agent) + (/^chief/i.test(it.agent) ? ' is writing' : ' is working'))); ty.appendChild(h('i', 'sx-dots')); r.appendChild(ty);
     }
     return r;
   }
@@ -435,8 +632,7 @@
     if (r) y = Math.min(y, r.offsetTop - 12);
     if (instant || REDUCED) t.scrollTop = y; else t.scrollTo({ top: y, behavior: 'smooth' });
   }
-  function divider(stop) { var d = h('div', 'sx-div'); d.appendChild(h('span', null, [stop.label, dayOf(stopIndex(stop)) ? 'Day ' + dayOf(stopIndex(stop)) : ''].filter(Boolean).join(' · '))); return d; }
-  function stopIndex(stop) { return stops.indexOf(stop); }
+  function divider(stop) { var d = h('div', 'sx-div'); var dd = dayOf(stops.indexOf(stop)); d.appendChild(h('span', null, [stop.label, dd != null ? 'Day ' + dd : ''].filter(Boolean).join(' · '))); return d; }
 
   /* ---------- choices, days, OS ---------- */
   function key(stop, k) { return stop.id + ':' + k; }
@@ -444,13 +640,12 @@
   function dayOf(i) { var s = stops[i]; return s && s.day != null ? s.day + delayBefore(i) : null; }
   function setOS(o, flash) {
     Object.keys(o || {}).forEach(function (k) {
-      OS[k] = o[k]; var dd = ui['os_' + k]; if (!dd) return;
-      dd.textContent = o[k]; dd.classList.add('is-set');
-      if (flash) { dd.classList.remove('is-flash'); void dd.offsetWidth; dd.classList.add('is-flash'); }
+      OS[k] = o[k]; var v = ui['os_' + k]; if (!v) return;
+      v.textContent = o[k]; v._c.classList.add('is-set');
+      if (flash) { v._c.classList.remove('is-flash'); void v._c.offsetWidth; v._c.classList.add('is-flash'); }
     });
   }
-  function resetOS() { OS = {}; each(ui.os.querySelectorAll('dd'), function (dd) { dd.textContent = '—'; dd.classList.remove('is-set', 'is-flash'); }); }
-  /* the items of a stop in the order they happen, with the viewer's choices and their consequences spliced in */
+  function resetOS() { OS = {}; each(ui.stats.children, function (c) { c.classList.remove('is-set', 'is-flash'); c.querySelector('b').textContent = '—'; }); }
   function itemsOf(stop) {
     var out = [];
     arr(stop.thread).forEach(function (it, k) {
@@ -461,7 +656,7 @@
   }
   function aiIndex(it) { var i = 0; arr(it.options).forEach(function (o, j) { if (o.ai) i = j; }); return i; }
 
-  /* ---------- the side: now card, checklist, tiles, strip ---------- */
+  /* ---------- tasks pane: now card, tasks and decisions, agents ---------- */
   function nowCard(i) {
     var s = stops[i], m = modOf(s.module), d = dayOf(i);
     ui.nowDay.textContent = 'Now' + (d != null ? ' · Day ' + d : '');
@@ -469,50 +664,72 @@
     ui.nowImg.innerHTML = '';
     if (i === 0) ui.nowImg.appendChild(faceEl(owners(m)[0] || (cfg.brand || {}).founder, 'is-big'));
     else { var im = h('img'); im.alt = ''; im.src = asset((cfg.story.product || {}).img || 'hero'); ui.nowImg.appendChild(im); }
-    ui.nowLabel.textContent = s.label + ' · ' + m.name; ui.nowLine.textContent = s.title;
-    ui.nowPeople.innerHTML = '';
-    owners(m).forEach(function (p) { var e = h('span', 'sx-np'); e.appendChild(faceEl(p, 'is-sm')); var tx = h('span'); tx.appendChild(h('b', null, first(p) === 'GG' ? 'GG' : first(p))); tx.appendChild(h('span', null, roleOf(p))); e.appendChild(tx); ui.nowPeople.appendChild(e); });
-    var ag = h('span', 'sx-np is-agent'); ui.nowAgent = ag; ag.appendChild(faceEl(m.agent || 'Chief of staff', 'is-sm')); var at = h('span'); at.appendChild(h('b', null, str(m.agent, 'Chief of staff'))); ag._st = h('span', null, 'ready'); at.appendChild(ag._st); ag.appendChild(at);
-    ui.nowPeople.appendChild(ag);
+    ui.nowLabel.textContent = s.label + ' · ' + m.name; ui.nowLine.textContent = owners(m).map(shortName).join(', ') + ' with ' + str(m.agent, 'the chief of staff');
   }
-  function agentState(text, on) { if (ui.nowAgent) { ui.nowAgent._st.textContent = text; ui.nowAgent.classList.toggle('is-working', !!on); } }
-  function setState(st, who) {
+  function setState(st) {
     state = st;
-    var s = stops[si], nx = stops[si + 1];
-    var label = st === 'decide' ? 'Take the AI pick' : st === 'done' ? (nx ? 'Next: ' + nx.label + ' in ' + modOf(nx.module).name : 'See the team') : 'Next';
-    ui.nowBtn.textContent = label; ui.next.textContent = st === 'done' && nx ? 'Next stage' : label === 'See the team' ? 'See the team' : st === 'decide' ? 'AI pick' : 'Next';
-    ui.now.classList.toggle('is-ready', st === 'done');
+    var nx = stops[si + 1];
+    var label = st === 'decide' ? 'Your call: pick an option' : st === 'done' ? (nx ? 'Moving to ' + modOf(nx.module).name + '…' : 'See the team') : st === 'run' ? 'Skip ahead' : 'Next';
+    ui.nowBtn.textContent = label;
+    ui.next.textContent = st === 'decide' ? 'AI pick' : st === 'done' && !nx ? 'See the team' : 'Next';
     ui.now.classList.toggle('is-decide', st === 'decide');
+    ui.now.classList.toggle('is-ready', st === 'done');
     ui.prev.disabled = si <= 0;
     ui.stage.classList.toggle('is-decide', st === 'decide');
   }
   function setAuto(on) {
     AUTO = on; ui.play.textContent = on ? 'Pause' : 'Play demo'; ui.play.classList.toggle('is-on', on);
-    if (on) { if (state === 'done') next(); else if (state === 'decide' && ui.pick) setTimeout(function () { if (AUTO && state === 'decide' && ui.pick) ui.pick(null); }, 1600); }
+    if (on && state === 'decide' && ui.pick) setTimeout(function () { if (AUTO && state === 'decide' && ui.pick) ui.pick(null); }, 1600);
   }
   function checklist(stop) {
-    ui.check.innerHTML = ''; ui.checkH.textContent = stop.label + ': the checklist';
-    arr(stop.thread).forEach(function (it, k) {
-      if (it.k !== 'task' && it.k !== 'decision') return;
-      ui.check.appendChild(checkLine(it, stop, k));
-    });
+    ui.check.innerHTML = '';
+    arr(stop.thread).forEach(function (it, k) { if (it.k === 'task' || it.k === 'decision') ui.check.appendChild(checkLine(it, k)); });
   }
-  function checkLine(it, stop, k) {
+  function checkLine(it, k) {
     var li = h('li', 'sx-ck'); li.dataset.k = k;
     li.appendChild(h('span', 'sx-ck-box'));
-    li.appendChild(h('span', 'sx-ck-t', it.k === 'task' ? it.text : str(it.tray, it.text)));
+    li.appendChild(textEl('span', 'sx-ck-t', it.k === 'task' ? it.text : str(it.tray, it.text)));
     var own = it.k === 'decision' ? it.who : it.owner || 'Chief of staff';
-    var o = h('span', 'sx-ck-o'); o.appendChild(faceEl(own, 'is-xs')); o.appendChild(h('span', null, first(own) === 'GG' ? 'GG' : isAgent(own) ? own : first(own))); li.appendChild(o);
+    var o = h('span', 'sx-ck-o'); o.appendChild(faceEl(own, 'is-xs')); o.appendChild(h('span', null, (it.k === 'decision' ? 'Decision · ' : '') + shortName(own))); li.appendChild(o);
     return li;
   }
   function ck(k) { return ui.check.querySelector('.sx-ck[data-k="' + k + '"]'); }
   function ckState(k, st, text) { var li = ck(k); if (!li) return; li.className = 'sx-ck is-' + st; if (text) li.querySelector('.sx-ck-t').textContent = text; }
+  /* agents at work: derived from the stage's beats */
+  function agentsFor(stop) {
+    AG = {}; ui.agents.innerHTML = '';
+    var m = modOf(stop.module), boss = owners(m)[0] || (cfg.brand || {}).founder;
+    var names = [];
+    (function walk(l) { arr(l).forEach(function (it) { var n = agentOfItem(it); if (n && names.indexOf(n) < 0) names.push(n); arr(it.options).forEach(function (o) { walk(o.then); }); }); })(stop.thread);
+    if (m.agent && names.indexOf(m.agent) < 0) names.push(m.agent);
+    names.forEach(function (n) {
+      var total = 0; arr(stop.thread).forEach(function (it) { if (agentOfItem(it) === n) total++; });
+      var rep = (stop.agents && stop.agents[n] && stop.agents[n].reports) || (/^chief/i.test(n) ? (cfg.brand || {}).founder || boss : 'Chief of staff');
+      var li = h('li', 'sx-ag'); li.appendChild(faceEl(n, 'is-sm'));
+      var b = h('div', 'sx-ag-b');
+      var t1 = h('div', 'sx-ag-t'); t1.appendChild(h('b', null, n)); var stt = h('span', 'sx-ag-st', 'ready'); t1.appendChild(stt); b.appendChild(t1);
+      var doing = h('span', 'sx-ag-do', 'Waiting for its next task'); b.appendChild(doing);
+      var pr = h('div', 'sx-ag-pr'); var bar = h('span', 'sx-ag-bar'); var fill = h('i'); bar.appendChild(fill); pr.appendChild(bar); var cnt = h('span', null, '0 of ' + Math.max(1, total)); pr.appendChild(cnt); b.appendChild(pr);
+      var last = h('span', 'sx-ag-last', ''); b.appendChild(last);
+      b.appendChild(h('span', 'sx-ag-rep', 'Reports to ' + shortName(rep)));
+      li.appendChild(b); ui.agents.appendChild(li);
+      AG[n] = { li: li, st: stt, doing: doing, fill: fill, cnt: cnt, last: last, n: 0, total: Math.max(1, total) };
+    });
+  }
+  function agent(n, status, doing, out, step) {
+    var a = AG[n]; if (!a) return;
+    a.st.textContent = status; a.li.className = 'sx-ag is-' + status.split(' ')[0];
+    if (doing) a.doing.textContent = doing;
+    if (step) { a.n = Math.min(a.total, a.n + 1); a.cnt.textContent = a.n + ' of ' + a.total; a.fill.style.transform = 'scaleX(' + (a.n / a.total).toFixed(3) + ')'; }
+    if (out) a.last.textContent = 'Last: ' + out;
+  }
+  function waitingAll(person) { Object.keys(AG).forEach(function (n) { if (AG[n].st.textContent !== 'done') agent(n, 'waiting on ' + shortName(person)); }); }
   function tilePreview(mid, it) {
     var t = tiles[mid]; if (!t || !it || it.k === 'typing') return;
     var who = it.k === 'cos' ? str(it.agent, 'Chief of staff') : it.k === 'task' ? str(it.owner, 'Chief of staff') : it.who;
     var txt = it.k === 'task' ? 'Task: ' + it.text : it.k === 'decision' ? 'Decision: ' + str(it.tray, it.text) : it.k === 'record' ? it.title : it.text;
     t._pvFace.innerHTML = ''; if (who) t._pvFace.appendChild(faceEl(who, 'is-xs'));
-    t._pv.textContent = (who ? first(who) + ': ' : '') + txt;
+    t._pv.textContent = (who ? shortName(who) + ': ' : '') + txt;
   }
   function tilesFor(i) {
     var active = stops[i].module;
@@ -524,7 +741,7 @@
       t.classList.toggle('is-idle', !reached && m.id !== active);
       t.disabled = !mine.some(function (j) { return j <= maxSeen; });
       t._status.textContent = m.id === active ? 'Open now' : reached ? (later ? 'Back later' : '✓ Done') : 'Next';
-      t._agent.textContent = str(m.agent);
+      t._agent.textContent = str(m.agent) + (m.id === active ? ' · on it' : '');
       t._pvFace.innerHTML = '';
       if (last) tilePreview(m.id, last); else t._pv.textContent = m.next || m.about || '';
     });
@@ -545,6 +762,7 @@
       if (it.k === 'task') r.classList.add('is-done');
       if (it.k === 'decision') { var c = CH[key(stop, x.k)]; if (c == null) c = CH[key(stop, x.k)] = aiIndex(it); answer(r, it, c); }
       setOS(it.os);
+      foldRow(r);
     });
   }
   function answer(r, it, c) {
@@ -557,11 +775,11 @@
   }
   function open(i, dir) {
     i = Math.max(0, Math.min(stops.length - 1, i));
-    var t = ++tok; if (W) { clearTimeout(W.timer); W = null; } stopVoice(); ui.pick = null;
+    var t = ++tok; if (W) { clearTimeout(W.timer); W = null; } stopVoice(); ui.pick = null; clearPop();
+    ui.handoff.classList.remove('is-on');
     si = i; maxSeen = Math.max(maxSeen, i);
     var stop = stops[i];
     preload(i).then(function () { preload(i + 1); preload(i + 2); });
-    /* everything before this stage is settled: OS values, days, choices (the AI pick where the viewer never chose) */
     resetOS();
     for (var j = 0; j < i; j++) {
       var s = stops[j];
@@ -569,28 +787,37 @@
         if (x.it.k === 'decision' && CH[key(s, x.k)] == null) { CH[key(s, x.k)] = aiIndex(x.it); var o = x.it.options[CH[key(s, x.k)]]; DELAY[s.id] = (DELAY[s.id] || 0) + (o.delay || 0); }
       });
       itemsOf(s).forEach(function (x) { setOS(x.it.os); if (x.it.k === 'decision') setOS(x.it.options[CH[key(s, x.k)]].os); });
-      if (s.launch || s.id === 'listing') setOS({ Launch: 'Day ' + dayOf(j) });
+      if (s.id === 'listing' || s.launch) setOS({ Launch: 'Day ' + dayOf(j) });
     }
-    /* a stage replayed from the start forgets its own choices */
     Object.keys(CH).forEach(function (k2) { if (k2.indexOf(stop.id + ':') === 0) delete CH[k2]; }); DELAY[stop.id] = 0;
-    strip(i); tilesFor(i); nowCard(i); checklist(stop); setState('run');
-    var m = modOf(stop.module);
+    strip(i); tilesFor(i); nowCard(i); checklist(stop); agentsFor(stop); setState('run'); lightSource(null);
+    var m = modOf(stop.module), L = look(stop.module), switching = ui.lastMod && ui.lastMod !== stop.module;
+    ui.lastMod = stop.module;
+    ui.stage.style.setProperty('--mod', L.tint);
+    if (switching && !REDUCED) { ui.main.classList.remove('is-switch'); void ui.main.offsetWidth; ui.main.classList.add('is-switch'); setTimeout(function () { ui.main.classList.remove('is-switch'); }, 700); }
+    ui.chanIcon.innerHTML = ''; ui.chanIcon.appendChild(iconEl(stop.module));
+    ui.cvHd.innerHTML = '';
+    var cvt = h('div', 'sx-cv-t'); cvt.appendChild(iconEl(stop.module)); cvt.appendChild(h('b', null, m.name)); cvt.appendChild(h('span', null, L.title)); ui.cvHd.appendChild(cvt);
+    var bds = h('div', 'sx-boards'); L.boards.forEach(function (b) { bds.appendChild(h('span', b === stop.board ? 'is-on' : '', b)); }); ui.cvHd.appendChild(bds);
     ui.chan.textContent = m.name; ui.purpose.textContent = m.about || '';
     ui.who.innerHTML = ''; var pp = h('span', 'sx-people'); owners(m).forEach(function (p) { pp.appendChild(faceEl(p, 'is-sm')); }); ui.who.appendChild(pp);
-    ui.who.appendChild(h('span', 'sx-agent-chip', str(m.agent)));
-    /* the module's thread so far: earlier stages in this module, settled */
     ui.thread.innerHTML = '';
     for (var k = 0; k < i; k++) if (stops[k].module === stop.module) { ui.thread.appendChild(divider(stops[k])).classList.add('is-in'); renderDone(stops[k], itemsOf(stops[k])); }
     scrollTo(null, true);
-    setScene(stop, dir || 1); caption(stop); sfx('stage');
-    if (stop.launch || stop.id === 'listing') setOS({ Launch: 'Day ' + dayOf(i) }, true);
+    setScene(stop, dir || 1); caption(stop); sfx('stage'); tab('canvas');
+    if (stop.id === 'listing' || stop.launch) setOS({ Launch: 'Day ' + dayOf(i) }, true);
     (LOADED[i] || Promise.resolve()).then(function () { return wait(1000, t); }).then(function () {
       var d = divider(stop); ui.thread.appendChild(d); raf2(function () { d.classList.add('is-in'); scrollTo(d); });
-      return wait(350, t);
+      return wait(300, t);
     }).then(function () { return runBeats(stop, t); }).then(function () {
-      setState('done'); agentState('done', false);
-      each(ui.set.querySelectorAll('.sx-ob.is-wait'), function (e) { if (!e.dataset.id || !/^(glass|var)$/.test(e.dataset.id)) {} });
-      if (AUTO) return wait(2400, t).then(function () { next(); });
+      setState('done'); clearPop(); lightSource(null);
+      Object.keys(AG).forEach(function (n) { agent(n, 'done', 'Handed over'); });
+      if (si >= stops.length - 1) return;
+      /* the module's work is done: move on by itself */
+      var nx = stops[si + 1];
+      ui.handoff.textContent = 'Moving to ' + modOf(nx.module).name + ': ' + nx.label + '…';
+      ui.handoff.classList.add('is-on');
+      return wait(AUTO ? 2200 : 2600, t).then(function () { open(si + 1, 1); });
     }).catch(function () {});
   }
   function runBeats(stop, t) {
@@ -606,38 +833,44 @@
   }
   function beat(stop, it, k, t) {
     var mid = stop.module;
-    function add(r) { ui.thread.appendChild(r); raf2(function () { r.classList.add('is-in'); scrollTo(r); }); }
-    function after() { if (it.land) land(it.land); setOS(it.os, true); if (it.line) listingLine(it.line); if (it.land) return wait(900, t); return Promise.resolve(); }
-    var read = Math.min(4400, 1200 + (words(it.text) + (it.media ? 6 : 0) + (it.rows ? 8 : 0)) * 130);
+    function add(r) { fold(); ui.thread.appendChild(r); raf2(function () { r.classList.add('is-in'); scrollTo(r); }); }
+    function after() { if (it.land) land(it.land); setOS(it.os, true); if (it.line) listingLine(it.line); if (it.land) return wait(950, t); return Promise.resolve(); }
+    var read = Math.min(4600, 1300 + (words(it.text) + (it.media ? 8 : 0) + (it.rows ? 8 : 0)) * 130);
+    if (it.via) lightSource(it.via);
     if (it.k === 'msg' || it.k === 'record') {
-      var r = row(it); add(r); sfx('msg'); tilePreview(mid, it);
+      var r = row(it); add(r); sfx('msg'); tilePreview(mid, it); sourcePop(it); nudgeTab('chat');
       var go = r._voice && SOUND ? new Promise(function (res, rej) {
         var ok = playVoice(r._voice.url, r._voice.btn, function () { if (W) W.done(); else res(); });
         if (!ok) return wait(read, t).then(res, rej);
-        wait(30000, t).then(res, rej);      /* resolved early by the clip ending or by Next */
+        wait(30000, t).then(res, rej);
       }) : wait(read, t);
-      return go.then(function () { return wait(350, t); }).then(after);
+      return go.then(function () { return wait(300, t); }).then(function () { clearPop(); return after(); });
     }
     if (it.k === 'cos') {
-      var ag = str(it.agent, 'Chief of staff'), ty = row({ k: 'typing', agent: ag }); add(ty); sfx('typing'); agentState('working…', true);
+      var ag = str(it.agent, 'Chief of staff'), ty = row({ k: 'typing', agent: ag }); add(ty); sfx('typing');
+      agent(ag, 'working', str(it.doing, firstClause(it.text)));
+      if (it.via) sourcePop(it);
       return wait(1100, t).then(function () {
-        ty.parentNode && ty.parentNode.removeChild(ty);
-        var r2 = row(it); add(r2); sfx('msg'); tilePreview(mid, it); agentState('ready', false);
+        if (ty.parentNode) ty.parentNode.removeChild(ty);
+        var r2 = row(it); add(r2); sfx('msg'); tilePreview(mid, it);
+        agent(ag, 'done', null, firstClause(it.text), true);
         return wait(read, t);
-      }).then(after);
+      }).then(function () { clearPop(); return after(); });
     }
     if (it.k === 'task') {
       var r3 = row(it); add(r3); sfx('task'); tilePreview(mid, it);
-      var line = ck(k); if (!line) { ui.check.appendChild(checkLine(it, stop, k)); }
-      ckState(k, 'working'); if (isAgent(it.owner)) agentState('working…', true);
+      if (!ck(k)) ui.check.appendChild(checkLine(it, k));
+      ckState(k, 'working');
+      if (isAgent(it.owner)) agent(it.owner, 'working', it.text);
       return wait(Math.max(1500, read * .7), t).then(function () {
-        r3.classList.add('is-done'); ckState(k, 'done'); agentState('ready', false); sfx('done');
-        return wait(500, t);
+        r3.classList.add('is-done'); ckState(k, 'done'); sfx('done');
+        if (isAgent(it.owner)) agent(it.owner, 'done', null, it.done, true);
+        return wait(450, t);
       }).then(after);
     }
     if (it.k === 'decision') {
-      var r4 = row(it); add(r4); sfx('ask'); tilePreview(mid, it);
-      ckState(k, 'waiting'); setState('decide');
+      var r4 = row(it); add(r4); sfx('ask'); tilePreview(mid, it); nudgeTab('chat');
+      ckState(k, 'waiting'); setState('decide'); waitingAll(it.who);
       return new Promise(function (res, rej) {
         function pick(c) {
           if (t !== tok || !ui.pick) return; ui.pick = null;
@@ -645,12 +878,13 @@
           CH[key(stop, k)] = c;
           var o = answer(r4, it, c); sfx('decision');
           DELAY[stop.id] = (DELAY[stop.id] || 0) + (o.delay || 0);
-          ckState(k, 'done', str(it.tray, it.text) + ': ' + o.label);
+          ckState(k, 'done', str(it.tray, it.text) + ': ' + String(o.label).replace(/^["“]|["”]$/g, ''));
+          Object.keys(AG).forEach(function (n) { if (/^waiting/.test(AG[n].st.textContent)) agent(n, 'ready'); });
           if (o.land) land(o.land, false, o.note);
-          if (o.label && /^"|^“/.test(o.label)) listingLine(o.label.replace(/^["“]|["”]$/g, ''));
-          setOS(o.os, true); strip(si); nowCard(si);
+          if (o.line) listingLine(o.line);
+          setOS(o.os, true); strip(si); nowCard(si); caption(stop);
           setState('run');
-          wait(o.land ? 1100 : 700, t).then(res, rej);
+          wait(o.land ? 1200 : 700, t).then(res, rej);
         }
         ui.pick = pick;
         r4._opts.forEach(function (b, j) { b.disabled = false; b.addEventListener('click', function () { unlock(); pick(j); }); });
@@ -659,7 +893,18 @@
     }
     return Promise.resolve();
   }
-  /* Next: finish the beat, take the AI pick, or open the next stage */
+  /* older items fold to one line (tap to open); the newest two stay whole */
+  function fold() {
+    var rows = ui.thread.querySelectorAll('.sx-row:not(.sx-typing-row)');
+    for (var i = 0; i < rows.length - 1; i++) if (!rows[i].classList.contains('is-mini') && !rows[i].classList.contains('is-open')) foldRow(rows[i]);
+  }
+  function foldRow(r) {
+    if (r.classList.contains('sx-decision') && !r.classList.contains('is-answered')) return;
+    r.classList.add('is-mini');
+    if (!r._foldBound) { r._foldBound = true; r.addEventListener('click', function (e) { if (!r.classList.contains('is-mini')) return; e.stopPropagation(); r.classList.remove('is-mini'); r.classList.add('is-open'); }); }
+  }
+  function firstClause(s) { s = String(s || '').replace(/@(?:[A-Z][a-z]+ agent|Chief of staff|[A-Z][\w]+)\s*/g, '').replace(/^\s*[a-z]/, function (c) { return c.toUpperCase(); }); var m = s.match(/^[^.:;]+/); return (m ? m[0] : s).slice(0, 80); }
+  /* Next: finish the beat, take the AI pick, or go on now */
   function next() {
     if (state === 'decide' && ui.pick) return ui.pick(null);
     if (state === 'run') return skip();
@@ -671,14 +916,14 @@
     }
   }
   function onKey(e) {
-    if (e.target && /input|textarea|select|button/i.test(e.target.tagName) && e.key === ' ') return;
     if (ui.gate) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ui.gate._go(); } return; }
     if (scrollY > innerHeight * .5) return;
-    if (e.key === 'ArrowRight' || e.key === ' ' || (e.key === 'Enter' && !/button/i.test((e.target || {}).tagName || ''))) { e.preventDefault(); unlock(); next(); }
+    var tag = ((e.target || {}).tagName || '').toLowerCase();
+    if (e.key === 'ArrowRight' || (e.key === ' ' && tag !== 'button')) { e.preventDefault(); unlock(); next(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); if (si > 0) open(si - 1, -1); }
   }
 
-  /* ---------- the Enter gate (deep links; the parcel tap is the gate otherwise) ---------- */
+  /* ---------- the Enter gate (deep links; otherwise the parcel tap is the gate) ---------- */
   function gate(start) {
     var g = h('div', 'sx-gate'); ui.gate = g;
     var c = h('div', 'sx-gate-in');
@@ -696,8 +941,7 @@
     cfg = raw || {};
     if (!cfg.story || !arr(cfg.story.chapters).length) return false;
     document.title = str((cfg.page || {}).title, 'Chief of Staff: ' + str((cfg.brand || {}).name));
-    arr(cfg.story.chapters).forEach(function (c) { arr(c.stops).forEach(function (st, n) { var s = typeof st === 'string' ? stageStop(st, n) : st; if (s) stops.push(s); }); });
-    stops.forEach(function (s, i) { if (s.day == null) s.day = null; });
+    arr(cfg.story.chapters).forEach(function (c) { arr(c.stops).forEach(function (st) { var s = typeof st === 'string' ? stageStop(st) : st; if (s) stops.push(s); }); });
     mods = arr(cfg.story.modules).length ? cfg.story.modules : DEFAULT_MODS.filter(function (m) { return stops.some(function (s) { return s.module === m.id; }); });
     var keep = opts && opts.keep && opts.keep.parentNode ? opts.keep : null;
     build(keep);
@@ -709,15 +953,14 @@
     function start() { open(first0, 1); }
     if (opts && opts.from === 'parcel') {
       if (!MUTED) unlock();
-      /* cross over from the parcel only when stage 1 is decoded; a quiet note if that is slow */
       var note = null, slow = setTimeout(function () { if (keep) { note = h('span', 'sx-loading', 'Opening the board…'); keep.appendChild(note); } }, 1000);
       Promise.race([preload(0), new Promise(function (r) { setTimeout(r, 6000); })]).then(function () {
         clearTimeout(slow);
         if (keep) {
           keep.classList.add('is-handing');
-          ui.stage.classList.remove('is-under');
-          setTimeout(function () { if (keep.parentNode) keep.parentNode.removeChild(keep); ui.stage.classList.remove('is-over'); if (opts.retire) opts.retire(); }, 700);
-          ui.stage.classList.add('is-over');
+          ui.stage.classList.remove('is-under'); ui.stage.classList.add('is-over');
+          /* hide the parcel stage rather than drop it: freeing its WebGL scene mid-story caused second-long GC pauses */
+          setTimeout(function () { keep.style.display = 'none'; keep.setAttribute('aria-hidden', 'true'); ui.stage.classList.remove('is-over'); if (opts.retire) opts.retire(); }, 700);
         }
         start();
       });
