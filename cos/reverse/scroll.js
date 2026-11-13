@@ -1478,7 +1478,24 @@
   /* phone: at the door the parcel sits low, on the mat, so the OS panel can float on the wall above it */
   function mobCy(G, idx) { return ORDER[idx] === 'delivered' ? G.bandTop - .62 * G.B : G.cy; }
 
+  /* a config with a `story` block: this engine plays only the opening (the parcel at her door, "Tap the parcel"),
+     then hands the page to story.js (the module board) instead of rewinding */
+  var HANDED = false;
+  function handToStory() {
+    if (HANDED || !window.cosStory) return;
+    HANDED = true; HOVER.on = false; clearInterval(presTimer);
+    removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll);
+    var st = document.getElementById('stage');
+    if (st) st.classList.add('is-handing');
+    setTimeout(function () {
+      var end = document.getElementById('end'); if (end) end.innerHTML = '';
+      scrollTo(0, 0);
+      window.cosStory(cfg, { from: 'parcel' });
+    }, REDUCE_HAND ? 0 : 650);
+  }
+  var REDUCE_HAND = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function render() {
+    if (HANDED) return;
     raf = 0; ANIM = false;
     var vh = VH(), pos = FORCE_POS != null ? FORCE_POS : clamp(scrollY / vh, 0, total), seg = SEG[SEG.length - 1], i;
     for (i = 0; i < SEG.length; i++) { if (pos < SEG[i].at + SEG[i].len) { seg = SEG[i]; break; } }
@@ -1749,7 +1766,7 @@
       if (k < 1) GLIDE = setTimeout(glide, 16); else document.documentElement.style.scrollSnapType = '';
     })();
   }
-  function onScroll() { if (!AUTO.on) { autoRewind(); armSettle(); } if (!raf) raf = requestAnimationFrame(render); }
+  function onScroll() { if (cfg.story) { if (scrollY > 20) handToStory(); return; } if (!AUTO.on) { autoRewind(); armSettle(); } if (!raf) raf = requestAnimationFrame(render); }
 
   /* ---------- the one tap: the parcel hangs over her doormat; tapping it drops it, and the story plays itself ---------- */
   var HOVER = { on: false, t0: 0 };
@@ -1766,7 +1783,7 @@
     })(HOVER.t0);
     stage.addEventListener('pointerdown', dropIt);
     addEventListener('keydown', function onKey(e) { if (HOVER.on && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); dropIt(e); } if (!HOVER.on) removeEventListener('keydown', onKey); });
-    addEventListener('scroll', function onS() { if (HOVER.on && scrollY > 20) { endHover(); INTRO.done = true; INTRO.drop = 1; render(); } removeEventListener('scroll', onS); }, { passive: true });
+    addEventListener('scroll', function onS() { if (HOVER.on && scrollY > 20) { endHover(); INTRO.done = true; INTRO.drop = 1; render(); if (cfg.story) handToStory(); } removeEventListener('scroll', onS); }, { passive: true });
   }
   function endHover() {
     HOVER.on = false; stage.classList.remove('await'); stage.removeEventListener('pointerdown', dropIt);
@@ -1783,11 +1800,12 @@
     }
     INTRO.t0 = performance.now() - INTRO.drop * 1100;
     requestAnimationFrame(introTick);
-    (function after() { if (!INTRO.done) return setTimeout(after, 120); setTimeout(function () { if (scrollY < 20 && !PLAY.on) startPlay(); }, 1500); })();
+    (function after() { if (!INTRO.done) return setTimeout(after, 120); setTimeout(function () { if (cfg.story) return handToStory(); if (scrollY < 20 && !PLAY.on) startPlay(); }, cfg.story ? 2200 : 1500); })();
   }
   function init(raw) {
     /* a config with a `story` block plays as three chapters (story.js); this engine steps aside */
-    if (raw && raw.story && window.cosStory && window.cosStory(raw)) return;
+    /* ?step=N, a reload part-way down, or reduced motion go straight to the board */
+    if (raw && raw.story && window.cosStory && (/[?&]step=\d/.test(location.search) || STILL || scrollY > 10 || /[?&]nointro\b/.test(location.search))) { window.cosStory(raw); return; }
     cfg = raw || {};
     buildStates(cfg.crops);
     mapsFromConfig();
@@ -1834,7 +1852,8 @@
     presTimer = setInterval(function () { if (cur >= 0) { presIdx++; presence(); } }, 2600);
     render();
     window.__render = render;
-    if (!STILL && scrollY < 10 && !/[?&]nointro\b/.test(location.search)) startHover();
+    if (cfg.story && /[?&]autoplay\b/.test(location.search)) { startHover(); setTimeout(function () { dropIt(); }, 1800); }
+    else if (!STILL && scrollY < 10 && !/[?&]nointro\b/.test(location.search)) startHover();
     else if (/[?&]autoplay\b/.test(location.search)) setTimeout(startPlay, 600);
   }
 
