@@ -3128,40 +3128,5 @@
     }
    }
   }
- },
- "story": {
-  "title": "One lip oil, from a 12:52 am voice note to her door.",
-  "line": "How a chief of staff runs Ohra's launch with Aditi and the team. Three chapters, one step at a time.",
-  "chapters": [
-   {
-    "title": "Idea to product",
-    "line": "A voice note at 12:52 am becomes a plan, then tints on the bench.",
-    "stops": [
-     "voice",
-     "standup",
-     "samples"
-    ]
-   },
-   {
-    "title": "Product finalisation",
-    "line": "Pick the tube maker, fix the carton, place the order.",
-    "stops": [
-     "vendor",
-     "packaging",
-     "po"
-    ]
-   },
-   {
-    "title": "The product",
-    "line": "Brick Dust, shot, listed, launched and at her door.",
-    "stops": [
-     "shoot",
-     "listing",
-     "ad",
-     "order",
-     "delivered"
-    ]
-   }
-  ]
  }
 }
