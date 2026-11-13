@@ -325,7 +325,8 @@
       while ((n = walker.nextNode())) list.push(n);
       list.forEach(function (tn) {
         var v = tn.nodeValue, w = v;
-        if (Object.prototype.hasOwnProperty.call(ROLE, v.trim())) w = v.replace(v.trim(), ROLE[v.trim()] === 'Chief of Staff' ? 'Chief of Staff' : ROLE[v.trim()] + ' agent');
+        var m0 = v.match(/^(\s*)([A-Z][a-z]+)(?=$|\s+(is|has|did|picked|caught|sent|on)\b|\s*$)/);
+        if (m0 && Object.prototype.hasOwnProperty.call(ROLE, m0[2])) w = m0[1] + (ROLE[m0[2]] === 'Chief of Staff' ? 'Chief of Staff' : ROLE[m0[2]] + ' agent') + v.slice(m0[0].length);
         w = w.replace(/\b(\w+) cat\b/g, '$1 agent').replace(/\bcats?\b/gi, function (m) { return m[0] === 'C' ? 'Agent' : 'agent'; });
         if (w !== v) tn.nodeValue = w;
       });
