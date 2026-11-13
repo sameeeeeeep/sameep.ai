@@ -120,6 +120,24 @@
   .ct-row input { min-height: 44px; padding: 0; border: 0; background: none; font-size: 16px; }
   .ct-row .btn { min-height: 44px; border-radius: 22px; }
 
+  /* ---------- a module: the tabs stay under the head; the board and records scroll with the page ---------- */
+  .ct-head { gap: 0 10px; padding-bottom: 0; }
+  .ct-head h2 { flex: 1; min-width: 0; }
+  .ct-who { display: none; }
+  .ct-tabs { width: 100%; margin: 0 -16px; padding: 0 16px; gap: 0; border-bottom: 1px solid var(--line); }
+  .ct-tabs a { flex: 1; justify-content: center; height: 44px; font-size: 15px; }
+  .ct-main:not(.is-chat) .ct-body { padding: 14px 16px 24px; }
+  .ct-th > .cs-face, .ct-th > .ct-th-ic { width: 40px; height: 40px; }
+  .ct-th { grid-template-columns: 40px minmax(0, 1fr); gap: 2px 12px; }
+  .ct-th.is-all { margin: 0; border-radius: 0; }
+  .wk-filter { margin: 0 -16px 14px; padding: 0 16px; }
+  .wk-filter button { height: 40px; padding: 0 14px; border-radius: 20px; font-size: 14px; }
+  .wk-row { grid-template-columns: 32px minmax(0, 1fr); gap: 10px; padding: 12px; min-height: 64px; }
+  .wk-row-r { grid-column: 2; display: flex; justify-items: start; align-items: center; gap: 8px; }
+  .wk-moreg > summary { min-height: 44px; display: flex; align-items: center; }
+  .wk-done > summary { min-height: 56px; }
+  .wk-recs-h .cs-as { width: 100%; }
+
   /* ---------- OS: records as stacked cards; a picked record replaces the list ---------- */
   .os2-rule { font-size: 12.5px; margin-bottom: 10px; }
   .os2-tabs { gap: 6px; margin: 0 -16px 12px; padding: 0 16px; }

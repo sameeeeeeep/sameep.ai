@@ -1,7 +1,7 @@
 // mobile.js: the phone shell for the Chief of Staff surfaces. Loads after app.js and only adds things; the desktop
 // shell is untouched (mobile.css shows all of this at 760 px and below, and hides the icon rail there).
 //
-//   The bottom tab bar   Dashboard, Feed (badged with the cards waiting for a tap or a check), Chat, Agents, More
+//   The bottom tab bar   Dashboard, Chat (badged with the cards waiting for a tap or a check), Agents, More
 //   More                 a bottom sheet with every other section
 //   Needs you            (any [data-mb-needs]) a bottom sheet with one decision card at a time; its main button (the recommended option, or
 //                        Check) sits pinned at the bottom of the sheet, in thumb reach. After a tap the next card shows.
@@ -10,9 +10,10 @@
 // Pure pieces (tabsView, needsView, mainAction, waiting) take plain data and return strings, so Node can test them.
 import { html, raw, ICONS } from './ui.js';
 
-export const TABS = [['dash', 'Dashboard'], ['feed', 'Feed'], ['chat', 'Chat'], ['agents', 'Agents']];
+export const TABS = [['dash', 'Dashboard'], ['chat', 'Chat'], ['agents', 'Agents']];
+const BADGED = 'chat'; // where the work lives: each module's To do, and All modules
 // what the More sheet lists (every other section)
-export const MORE = [['os', 'OS'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
+export const MORE = [['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
   ['chats', 'Work'], ['team', 'Members'], ['hiring', 'Hiring'], ['billing', 'Billing']];
 
 // Pure: the cards that need a person (a tap or a check), newest first
@@ -20,10 +21,10 @@ export function waiting(decisions) {
   return Object.values(decisions || {}).filter((d) => d.status === 'open' || d.status === 'to_check').sort((a, b) => b.ts - a.ts);
 }
 
-// Pure: the bottom bar. wid, the section in view, the count waiting (a badge on Feed), and whether More is open
+// Pure: the bottom bar. wid, the section in view, the count waiting (a badge on Chat), and whether More is open
 export function tabsView(wid, section, count, open = false) {
   const inMore = MORE.some(([k]) => k === section);
-  const tab = ([k, label]) => html`<a class="mb-tab" href="#/w/${encodeURIComponent(wid)}/${k}"${raw(k === section && !open ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS[k] || '')}${k === 'feed' && count ? html`<span class="mb-badge mono">${count}</span>` : ''}</span><span class="mb-l">${label}${k === 'feed' && count ? html`<span class="sr"> (${count} need you)</span>` : ''}</span></a>`;
+  const tab = ([k, label]) => html`<a class="mb-tab" href="#/w/${encodeURIComponent(wid)}/${k}"${raw(k === section && !open ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS[k] || '')}${k === BADGED && count ? html`<span class="mb-badge mono">${count}</span>` : ''}</span><span class="mb-l">${label}${k === BADGED && count ? html`<span class="sr"> (${count} need you)</span>` : ''}</span></a>`;
   return html`${TABS.map(tab)}<button class="mb-tab" id="mb-more" type="button" aria-expanded="${String(open)}" aria-controls="mb-sheet"${raw(open || inMore ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS.more || '')}</span><span class="mb-l">More</span></button>`;
 }
 

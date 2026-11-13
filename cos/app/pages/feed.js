@@ -1,13 +1,15 @@
-// feed.js: the Feed, ranked rather than a raw log. Three parts:
-//   Needs you     the decisions waiting for a person, each with who raised it (a cat), one picture, the number that
-//                 matters and the one tap; the full card (js/cos.js decisionCard) opens under Details.
-//   Done for you  the closed decisions, a whole chain (found, decided, checked, done) as one line, batched into a
-//                 digest per day ("3 agents closed 4 things") that opens.
-//   FYI           everything else the agents posted, batched per agent and deduped.
-// group() is pure (Node tests import it); view() renders it; mount() fetches and binds.
+// feed.js: the board a module's chat shows (and the All modules view merges): To do, In progress, Done.
+// Not a route of its own any more: #/w/<wid>/feed redirects to #/w/<wid>/chat/all (js/app.js MOVED), and
+// pages/chat.js renders boardView() for one module or for all of them. The groups come from js/board.js (pure).
+//   To do        each card: who raised it (a cat), a picture, the number that matters, where it came from (the
+//                original line and a link to it in the module's chat), the one tap; the full card under Details
+//   In progress  each record in flight: its maker (a cat for an agent), owner (a face), where it came from, its step
+//   Done         folded: closed cards (the chain as one line) and checked records
 import { html } from '../js/ui.js';
-import { cosApi, live, bindCards, decisionCard, quickAct, quickBtn, ago, clock, loadFaces } from '../js/cos.js';
+import { decisionCard, quickAct, quickBtn, ago, clock, stepper } from '../js/cos.js';
+import { raw } from '../js/ui.js';
 import { cat, catOf, face, productSrc, shot } from '../js/look.js';
+import { board, ALL } from '../js/board.js';
 import { nameOf } from './dash.js';
 
 export const title = 'Feed';
@@ -31,131 +33,107 @@ export function srcOf(src) {
   return { kind: k, label: SRC[k] || k, from: rest.join(':'), text: '' };
 }
 export const srcChip = (src, ts) => { const x = srcOf(src); return x ? html`<span class="fd-src is-${x.kind}"><b>${x.label}</b>${x.from ? html`<span>${x.from}</span>` : ''}${ts ? html`<span class="fd-src-t">${clock(ts)}</span>` : ''}</span>` : ''; };
+// a record with no source line still says where it came from: a sync is data, an agent is the agent's own work
+export const makerSrc = (r) => (r?.maker ? (/sync$/i.test(r.maker) ? { kind: 'connector', from: r.maker.replace(/\s*sync$/i, '') } : { kind: 'agent', from: '' }) : null); // the cat already says which agent
 
-// Pure: posts + decisions -> { needs, done: [{k, items}], fyi: [{actor, posts}] }
-export function group(posts = [], decisions = {}, now = Date.now()) {
-  const byDec = new Map();
-  for (const p of posts) if (p.decision_id != null) { if (!byDec.has(p.decision_id)) byDec.set(p.decision_id, []); byDec.get(p.decision_id).push(p); }
-  const all = Object.values(decisions);
-  const rank = (d) => (d.status === 'to_check' ? 0 : 1);
-  const needs = all.filter((d) => d.status === 'open' || d.status === 'to_check').sort((a, b) => rank(a) - rank(b) || b.ts - a.ts)
-    .map((d) => ({ d, post: (byDec.get(d.id) || []).find((p) => p.actor_kind === 'agent') || null }));
-  const closed = all.filter((d) => d.status === 'done' || d.status === 'sent_back').map((d) => {
-    const chain = (byDec.get(d.id) || []).slice().sort((a, b) => b.ts - a.ts);
-    const did = chain.find((p) => p.actor_kind === 'agent' && p.verb === 'did');
-    const ts = Math.max(d.updated || 0, d.checked_ts || 0, d.decided_ts || 0, ...chain.map((p) => p.ts));
-    return { d, agent: d.agent || chain.find((p) => p.actor_kind === 'agent')?.actor || 'Chief of staff', result: did ? did.text : null, ts };
-  }).sort((a, b) => b.ts - a.ts);
-  const done = [];
-  for (const it of closed) {
-    const k = dayKey(it.ts, now);
-    if (!done.length || done[done.length - 1].k !== k) done.push({ k, items: [] });
-    done[done.length - 1].items.push(it);
-  }
-  // FYI: posts tied to no decision we show, batched by agent, the same line once
-  const known = new Set(all.map((d) => d.id));
-  const seen = new Set();
-  const loose = posts.filter((p) => (p.decision_id == null || !known.has(p.decision_id)) && !seen.has(p.actor + '|' + p.text) && seen.add(p.actor + '|' + p.text)).sort((a, b) => b.ts - a.ts);
-  const fyi = [];
-  for (const p of loose) {
-    const g = fyi.find((x) => x.actor === p.actor);
-    if (g) g.posts.push(p); else fyi.push({ actor: p.actor, agent: p.actor_kind === 'agent', posts: [p] });
-  }
-  return { needs, done, fyi };
-}
+const STEP = { draft: 'Draft', approved: 'Approved, needs a check', held: 'On hold', checked: 'Checked', rejected: 'Rejected' };
 
-// Pure. data = {state, posts, decisions}
-export function view(data, ctx, ui = {}, now = Date.now()) {
-  const { state: s, posts = [], decisions = {} } = data;
+// Pure. b = board(...) from js/board.js; opts = {scope, mods: {slug: name}, now}
+export function boardView(b, data, ctx, opts = {}) {
+  const { state: s } = data;
+  const now = opts.now || Date.now();
+  const scope = opts.scope || ALL;
+  const mods = opts.mods || {};
   const ws = ctx.ws || { name: '', demo: s?.demo };
   const sx = { ...s, wid: ctx.wid };
-  const g = group(posts, decisions, now);
+  const wid = encodeURIComponent(ctx.wid);
   const nm = (n) => nameOf(s, n);
   const pf = (n, z) => (n === 'Chief of staff' ? cat(n, z) : face(ws, n, z)); // a person's face; the chief of staff is a cat
+  const modChip = (m) => (scope === ALL && m ? html`<a class="wk-mod" href="#/w/${wid}/chat/${encodeURIComponent(m)}">#${m}</a>` : '');
+  const recHref = (r, m) => `#/w/${wid}/chat/${encodeURIComponent(scope === ALL ? m : scope)}/records/${encodeURIComponent(r.kind)}/${encodeURIComponent(r.ref)}`;
 
-  const need = ({ d, post }) => {
+  const need = ({ d, post, mod }) => {
     const a = quickAct(d, sx);
     const pic = productSrc(ws, d.fn);
     const rec = d.options.find((o) => o.recommended) || d.options[0];
     const n = d.numbers?.[0];
     const c = catOf(d.agent);
+    const src = d.source || post?.source;
     return html`<article class="fd-need" id="need-${d.id}">
       <div class="fd-need-top">
         <span class="fd-pic${pic ? '' : ' is-cat'}">${pic ? shot(ws, d.fn) : cat(d.agent, 56)}</span>
         <div class="fd-need-b">
-          <p class="fd-who">${pic ? cat(d.agent, 22) : ''}<b>${c.name}</b><span>${c.role}${post ? `, ${ago(post.ts, now)}` : ''}</span></p>
+          <p class="fd-who">${pic ? cat(d.agent, 22) : ''}<b>${c.name}</b><span>${c.role}${post ? `, ${ago(post.ts, now)}` : ''}</span>${modChip(mod)}</p>
           <h3 class="fd-need-t">${d.title}</h3>
-          ${d.source || post?.source ? html`<details class="fd-orig"><summary>${srcChip(d.source || post.source, post?.ts || d.ts)}</summary>
+          ${src ? html`<details class="fd-orig"><summary>${srcChip(src, post?.ts || d.ts)}</summary>
             <blockquote class="fd-quote">${srcOf(d.source)?.text || post?.text || ''}</blockquote>
-            ${d.thread ? html`<a class="fd-open" href="#/w/${encodeURIComponent(ctx.wid)}/chat/${encodeURIComponent(d.thread)}">Open in ${d.thread_name ? `#${d.thread_name.toLowerCase()}` : 'Chat'}</a>` : ''}</details>` : ''}
+            <a class="fd-open" href="#/w/${wid}/chat/${encodeURIComponent(d.thread || mod)}/chat">Open in #${d.thread || mod}</a></details>` : ''}
           ${n ? html`<p class="fd-num"><b>${n.value}</b><span>${n.label}</span></p>` : ''}
         </div>
       </div>
       <div class="fd-act">
         ${d.status === 'to_check'
           ? html`<p class="fd-sug">${pf(nm(d.decided_by), 22)}<span>${nm(d.decided_by)} chose <b>${d.options.find((o) => o.key === d.chosen)?.label || ''}</b></span></p>`
-          : rec ? html`<p class="fd-sug">${pf(nm(d.decider?.name), 22)}<span>${nm(d.decider?.name) || 'Anyone'}${d.kind === 'ask' ? ', asked' : ''}: <b>${rec.label}</b>${d.options.length > 1 ? html` <span class="muted">or ${d.options.length - 1} more</span>` : ''}</span></p>` : ''}
+          : rec ? html`<p class="fd-sug">${pf(nm(d.decider?.name), 22)}<span>${nm(d.decider?.name) || 'Anyone'}: <b>${rec.label}</b>${d.options.length > 1 ? html` <span class="muted">or ${d.options.length - 1} more</span>` : ''}</span></p>` : ''}
         ${a ? quickBtn(a, 'is-primary', a.dec === 'check' ? 'Check' : a.verb) : ''}
       </div>
       <details class="fd-more"><summary>Details</summary>${decisionCard(d, sx)}</details>
     </article>`;
   };
 
-  const closedLine = (it) => html`<li class="fd-done">
-    ${cat(it.agent, 32)}
-    <div><p><b>${catOf(it.agent).name}</b> ${it.result || it.d.title}</p>
-      <p class="fd-done-m">${it.d.decided_by ? html`${pf(nm(it.d.decided_by), 18)}<span>${nm(it.d.decided_by)} chose${it.d.checked_by ? `, ${nm(it.d.checked_by)} checked` : ''}</span>` : ''}${srcChip(it.d.source)}<span class="fd-t">${ago(it.ts, now)}</span></p></div>
-  </li>`;
-  const digest = (grp, i) => {
-    const agents = [...new Set(grp.items.map((x) => x.agent))];
-    return html`<details class="fd-digest" id="dg-${i}"${i === 0 && ui.openFirst ? ' open' : ''}>
-      <summary><span class="fd-stack">${agents.slice(0, 4).map((a) => cat(a, 34))}</span>
-        <span class="fd-dg-t"><b>${agents.length} agent${agents.length === 1 ? '' : 's'} closed ${grp.items.length} thing${grp.items.length === 1 ? '' : 's'}</b><span>${grp.k}</span></span></summary>
-      <ul class="fd-done-l">${grp.items.map(closedLine)}</ul>
-    </details>`;
-  };
-  const fyiItem = (f, i) => {
-    const p = f.posts[0];
-    const one = html`<div class="fd-fyi-h">${f.agent ? cat(f.actor, 32) : face(ws, nm(f.actor), 32)}<div><p><b>${f.agent ? catOf(f.actor).name : nm(f.actor)}</b> ${p.text}</p><p class="fd-done-m">${srcChip(p.source, p.ts)}<span class="fd-t">${ago(p.ts, now)}</span></p></div></div>`;
-    if (f.posts.length === 1) return html`<li class="fd-fyi">${one}</li>`;
-    return html`<li class="fd-fyi" id="fy-${i}"><details><summary>${one}<span class="fd-n">${f.posts.length - 1} more</span></summary>
-      <ul class="fd-fyi-l">${f.posts.slice(1).map((q) => html`<li>${q.text}<span class="fd-t">${ago(q.ts, now)}</span></li>`)}</ul></details></li>`;
+  // a record in flight: maker (cat or the data it synced from), title, owner, source, step
+  const doingRow = ({ r, mod, source }) => {
+    const agent = /agent$|^chief of staff$/i.test(r.maker || '');
+    return html`<li><a class="wk-row" href="${recHref(r, mod)}">
+      <span class="wk-row-v">${agent ? cat(r.maker, 34) : pf(nm(r.owner), 34)}</span>
+      <span class="wk-row-b"><b>${r.title}</b>
+        <span class="wk-row-m">${r.owner ? html`${pf(nm(r.owner), 18)}<span>${nm(r.owner)}</span>` : ''}${srcChip(source || makerSrc(r))}<span class="wk-st is-${r.status}">${STEP[r.status] || r.status}</span></span></span>
+      <span class="wk-row-r">${raw(stepper(r.status))}<span class="mono">${r.ref}</span>${scope === ALL ? html`<span class="wk-mod">#${mod}</span>` : ''}</span>
+    </a></li>`;
   };
 
-  return html`<section class="pg fd">
-    <header class="db-head"><h1>Feed</h1>${s?.demo ? html`<span class="sample-tag">Sample data</span>` : ''}</header>
-    <div class="fd-cols"><div class="fd-col">
-    <h2 class="fd-h">Needs you <span class="fd-c">${g.needs.length}</span></h2>
-    ${g.needs.length ? html`<div class="fd-needs">${g.needs.map(need)}</div>` : html`<p class="fd-calm">Nothing needs you. The agents are on it.</p>`}
-    </div><div class="fd-col">
-    ${g.done.length ? html`<h2 class="fd-h">Done for you</h2><div class="fd-digests">${g.done.map(digest)}</div>` : ''}
-    ${g.fyi.length ? html`<h2 class="fd-h">FYI</h2><ul class="fd-fyis">${g.fyi.map(fyiItem)}</ul>` : ''}
-    </div></div>
-  </section>`;
+  const doneRow = (it) => {
+    if (it.type === 'card') {
+      const d = it.d;
+      return html`<li class="fd-done">
+        ${cat(it.agent, 32)}
+        <div><p><b>${catOf(it.agent).name}</b> ${it.result || d.title}</p>
+          <p class="fd-done-m">${d.decided_by ? html`${pf(nm(d.decided_by), 18)}<span>${nm(d.decided_by)} chose${d.checked_by ? `, ${nm(d.checked_by)} checked` : ''}</span>` : ''}${srcChip(d.source)}<a class="fd-open" href="#/w/${wid}/chat/${encodeURIComponent(d.thread || it.mod)}/chat">#${d.thread || it.mod}</a><span class="fd-t">${ago(it.ts, now)}</span></p></div>
+      </li>`;
+    }
+    const r = it.r;
+    const agent = /agent$|^chief of staff$/i.test(r.maker || '');
+    return html`<li class="fd-done">
+      ${agent ? cat(r.maker, 32) : pf(nm(r.owner), 32)}
+      <div><p><a class="wk-done-a" href="${recHref(r, it.mod)}">${r.title}</a></p>
+        <p class="fd-done-m">${r.checked_by ? html`${pf(nm(r.checked_by), 18)}<span>${nm(r.checked_by)} checked</span>` : ''}${srcChip(it.source || makerSrc(r))}${modChip(it.mod)}<span class="fd-t">${ago(it.ts, now)}</span></p></div>
+    </li>`;
+  };
+
+  const SHOW = 6;
+  const doingList = (list) => html`<ul class="wk-rows">${list.slice(0, SHOW).map(doingRow)}</ul>${list.length > SHOW
+    ? html`<details class="wk-moreg"><summary>${list.length - SHOW} more in progress</summary><ul class="wk-rows">${list.slice(SHOW).map(doingRow)}</ul></details>` : ''}`;
+  // the agents of this module and what each is on now
+  const agentsNow = (opts.agents || []).length ? html`<ul class="wk-now">${opts.agents.map((a) => html`<li>${cat(a.name, 26)}<span><b>${catOf(a.name).name}</b> ${a.now}</span>${a.ts ? html`<span class="fd-t">${ago(a.ts, now)}</span>` : ''}</li>`)}</ul>` : '';
+
+  return html`<div class="wk-board">
+    <section class="wk-g" aria-label="To do">
+      <h3 class="wk-h">To do <span class="fd-c">${b.todo.length}</span></h3>
+      ${b.todo.length ? html`<div class="fd-needs">${b.todo.map(need)}</div>` : html`<p class="fd-calm">Nothing needs you here.</p>`}
+    </section>
+    <section class="wk-g" aria-label="In progress">
+      <h3 class="wk-h">In progress <span class="fd-c">${b.doing.length}</span></h3>
+      ${agentsNow}
+      ${b.doing.length ? doingList(b.doing) : html`<p class="fd-calm">Nothing in flight.</p>`}
+      ${b.done.length ? html`<details class="wk-done"${opts.openDone ? ' open' : ''}><summary><span class="wk-h">Done <span class="fd-c">${b.done.length}</span></span><span class="fd-stack">${[...new Set(b.done.filter((x) => x.type === 'card').map((x) => x.agent))].slice(0, 4).map((a) => cat(a, 26))}</span></summary>
+        <ul class="fd-done-l">${b.done.slice(0, 30).map(doneRow)}</ul></details>` : ''}
+    </section>
+  </div>`;
 }
 
-export async function mount(root, ctx) {
-  let data = null;
-  const load = async () => {
-    const [state, f] = await Promise.all([cosApi(ctx, 'GET', 'state'), cosApi(ctx, 'GET', 'feed')]);
-    data = { state, ...f };
-    await loadFaces(ctx, state.people);
-  };
-  // a fresh copy seeds on its first read; a read that raced it comes back empty, so look again shortly
-  const settle = async () => { for (let i = 0; i < 4 && !(data.posts || []).length && data.state?.presence; i++) { await new Promise((r) => setTimeout(r, 1200)); await load(); } };
-  // keep what the person opened across a live refresh
-  const paint = () => {
-    const open = new Set([...root.querySelectorAll('details[open]')].map((d) => d.closest('[id]')?.id + '|' + d.className));
-    root.innerHTML = String(view(data, ctx, { openFirst: !paint.n }));
-    paint.n = (paint.n || 0) + 1;
-    for (const d of root.querySelectorAll('details')) if (open.has(d.closest('[id]')?.id + '|' + d.className)) d.open = true;
-  };
-  const refresh = async () => { try { await load(); paint(); } catch (e) { ctx.toast(e.message); } };
-  await load(); await settle(); paint();
-  focusCard(root, ctx);
-  const unbind = bindCards(root, ctx, refresh);
-  const stop = live(ctx, refresh);
-  return () => { stop(); unbind(); };
+// convenience for tests and the old callers: the whole board for a scope as html
+export function view(data, ctx, opts = {}) {
+  return boardView(board(data, opts.scope || ALL, opts.fns || {}), data, ctx, opts);
 }
 
 // scroll to a waiting item and outline it briefly (from the Dashboard, or the presenter panel)
@@ -168,11 +146,11 @@ export function flash(root, id) {
   setTimeout(() => box.classList.remove('is-flash'), 2200);
 }
 // the presenter panel (cos.focus = a flow) or the Dashboard (cos.focusDec = a decision id) focuses a card once
-export function focusCard(root, ctx) {
+export function focusCard(root) {
   let flow = null, dec = null;
-  try { flow = sessionStorage.getItem('cos.focus'); sessionStorage.removeItem('cos.focus'); dec = sessionStorage.getItem('cos.focusDec'); sessionStorage.removeItem('cos.focusDec'); } catch { /* */ }
-  if (dec && root.querySelector(`#dec-${CSS.escape(dec)}`)) { setTimeout(() => flash(root, dec), 250); return; }
-  if (!flow) return;
-  const el = root.querySelector(`[data-flow="${CSS.escape(flow)}"]`);
-  if (el) setTimeout(() => flash(root, el.id.replace('dec-', '')), 250);
+  try { flow = sessionStorage.getItem('cos.focus'); dec = sessionStorage.getItem('cos.focusDec'); } catch { /* */ }
+  if (dec && root.querySelector(`#dec-${CSS.escape(dec)}`)) { try { sessionStorage.removeItem('cos.focusDec'); } catch { /* */ } setTimeout(() => flash(root, dec), 250); return true; }
+  const el = flow && root.querySelector(`[data-flow="${CSS.escape(flow)}"]`);
+  if (el) { try { sessionStorage.removeItem('cos.focus'); } catch { /* */ } setTimeout(() => flash(root, el.id.replace('dec-', '')), 250); return true; }
+  return false;
 }

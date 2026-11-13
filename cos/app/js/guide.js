@@ -72,14 +72,14 @@ async function onClick(e) {
       ctx.toast(beat.say);
     } else if (act === 'fire') {
       await ctx.api('POST', `/w/${wid}/cos/events/${b.dataset.key}/fire`, { as: 'founder' });
-      ctx.toast('It happened. The agent is on it: see the Feed.');
+      ctx.toast('It happened. The agent is on it: see Chat.');
       dispatchEvent(new HashChangeEvent('hashchange'));
     } else if (act === 'reset') {
       if (!confirm('Reset the demo? Every card goes back to the start; nothing outside this workspace changes.')) { b.disabled = false; return; }
       await ctx.api('POST', `/w/${wid}/cos/reset`, {});
       setAs(wid, 'cos');
       putBeat(wid, 0);
-      const target = `#/w/${encodeURIComponent(wid)}/feed`;
+      const target = `#/w/${encodeURIComponent(wid)}/chat/all`;
       if (location.hash === target) dispatchEvent(new HashChangeEvent('hashchange')); else location.hash = target;
       ctx.toast('Demo reset. Beat 1 is ready.');
     }

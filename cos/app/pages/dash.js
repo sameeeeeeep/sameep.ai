@@ -99,18 +99,18 @@ export function view(data, ctx, now = Date.now()) {
     const a = quickAct(d, sx);
     const pic = productSrc(ws, d.fn);
     return html`<li class="db-need">
-      <a class="db-need-v" href="${go('feed')}" data-open-dec="${d.id}">${pic ? shot(ws, d.fn) : cat(d.agent, 52)}${pic ? html`<span class="db-need-cat">${cat(d.agent, 24)}</span>` : ''}</a>
-      <a class="db-need-t" href="${go('feed')}" data-open-dec="${d.id}"><b>${d.title}</b><span>${d.status === 'to_check' ? `Check ${nm(d.decided_by)}'s call` : `${nm(d.decider?.name) || 'Anyone'}${d.kind === 'ask' ? ' is asked' : ' decides'}`}</span></a>
+      <a class="db-need-v" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}">${pic ? shot(ws, d.fn) : cat(d.agent, 52)}${pic ? html`<span class="db-need-cat">${cat(d.agent, 24)}</span>` : ''}</a>
+      <a class="db-need-t" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}"><b>${d.title}</b><span>${d.status === 'to_check' ? `Check ${nm(d.decided_by)}'s call` : `${nm(d.decider?.name) || 'Anyone'}${d.kind === 'ask' ? ' is asked' : ' decides'}`}</span></a>
       ${a ? quickBtn(a, 'is-primary', a.dec === 'check' ? 'Check' : a.verb) : ''}
     </li>`;
   };
   const needs = html`<section class="db-t db-needs" aria-label="Needs you">
       <div class="db-needs-h"><p class="db-big">${open.length}</p><p class="db-needs-w">${open.length === 1 ? 'thing needs you' : open.length ? 'things need you' : 'Nothing needs you'}</p>
         ${open.length ? html`<span class="db-stack">${[...new Set(open.map((d) => d.agent))].slice(0, 4).map((n) => cat(n, 30))}</span>` : ''}</div>
-      ${open.length ? html`<ul class="db-need-l">${open.slice(0, 3).map(need)}</ul>${open.length > 3 ? html`<a class="db-more" href="${go('feed')}">See all ${open.length}</a>` : ''}` : html`<p class="db-calm">The agents are on it.</p>`}
+      ${open.length ? html`<ul class="db-need-l">${open.slice(0, 3).map(need)}</ul>${open.length > 3 ? html`<a class="db-more" href="${go('chat/all')}">See all ${open.length}</a>` : ''}` : html`<p class="db-calm">The agents are on it.</p>`}
     </section>`;
 
-  const night = on.n ? html`<a class="db-t db-night" href="${go('feed')}">
+  const night = on.n ? html`<a class="db-t db-night" href="${go('chat/all')}">
       <span class="db-stack is-big">${on.agents.slice(0, 5).map((n) => cat(n, 44))}</span>
       <p class="db-mid"><b>${on.n}</b> things done</p>
       <p class="db-sub">by ${on.agents.length} agent${on.agents.length === 1 ? '' : 's'}, ${on.span}</p>
@@ -133,7 +133,7 @@ export function view(data, ctx, now = Date.now()) {
     </a>`;
   }
 
-  const stock = low.length ? html`<a class="db-t db-stock" href="${go('os')}">
+  const stock = low.length ? html`<a class="db-t db-stock" href="${go('chat/ops/records/stock')}">
       <p class="db-l">Running low</p><p class="db-mid"><b>${low.length}</b> stock lines</p>
       <ul class="db-meters">${low.slice(0, 3).map((x) => html`<li><span class="db-m-n">${x.name}${/dark store|quick/i.test(x.location || '') ? html`<small> dark store</small>` : ''}</span><span class="db-m-b"><i style="width:${Math.min(100, Math.round((x.on_hand / x.reorder_point) * 100))}%"></i></span><span class="db-m-v">${num(x.on_hand)}</span></li>`)}</ul>
     </a>` : '';
@@ -167,7 +167,7 @@ export async function mount(root, ctx) {
   const refresh = async () => { try { await load(); paint(); } catch (e) { ctx.toast(e.message); } };
   await load(); await settle(); paint();
   const unbind = bindCards(root, ctx, refresh);
-  // a tap on a waiting item opens the Feed on that card
+  // a tap on a waiting item opens its module's chat on that card
   root.addEventListener('click', (e) => {
     const j = e.target.closest('[data-open-dec]');
     if (!j) return;

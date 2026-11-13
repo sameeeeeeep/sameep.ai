@@ -164,7 +164,7 @@ export function decisionCard(d, s = {}, opts = {}) {
     </div>` : ''}
     <footer class="cs-card-f">
       ${done.length ? done : who}
-      ${d.record ? html`<a class="cs-rec-chip" href="#/w/${s.wid || ''}/os/${d.record.kind || 'all'}/${encodeURIComponent(d.record.ref)}">${raw(stepper(d.record.status))}<span class="mono">${d.record.ref}</span></a>` : ''}
+      ${d.record ? html`<a class="cs-rec-chip" href="#/w/${s.wid || ''}/chat/${encodeURIComponent(d.thread || 'all')}/records/${d.record.kind || 'all'}/${encodeURIComponent(d.record.ref)}">${raw(stepper(d.record.status))}<span class="mono">${d.record.ref}</span></a>` : ''}
       ${d.source ? html`<span class="cs-from">From ${SOURCE_KIND[d.source.kind] || d.source.kind}: ${d.source.from}</span>` : ''}
     </footer>
   </article>`;

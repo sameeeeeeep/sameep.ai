@@ -1,0 +1,71 @@
+/* work.css: Chat as the home of work (pages/chat.js): the module list with All modules on top, a module's tabs
+   (Tasks, Chat, Records), the board (pages/feed.js boardView: To do, In progress, Done) and the records pane.
+   Shell tokens only; mobile.css carries the phone rules. */
+.ct-pg { max-width: 1440px; }
+.ct-th { grid-template-columns: 36px minmax(0, 1fr); gap: 2px 10px; align-items: center; }
+.ct-th > .cs-face, .ct-th > .ct-th-ic { grid-row: 1 / span 2; width: 36px; height: 36px; }
+.ct-th-ic { display: grid; place-items: center; border-radius: 10px; background: var(--card-2); color: var(--ink-2); }
+.ct-th-ic svg { width: 20px; height: 20px; }
+.ct-th.is-all { margin-bottom: 6px; border-bottom: 1px solid var(--line); border-radius: 10px 10px 0 0; }
+.ct-head { display: grid; gap: 8px; padding-bottom: 0; }
+.ct-head h2 { display: flex; align-items: center; gap: 10px; }
+.ct-head h2 .cs-face { width: 28px; height: 28px; }
+.ct-who { margin-top: 0; }
+.ct-tabs { display: flex; gap: 4px; margin: 2px -6px 0; overflow-x: auto; scrollbar-width: none; }
+.ct-tabs a { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border-bottom: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: 14.5px; font-weight: 500; }
+.ct-tabs a:hover { color: var(--ink); }
+.ct-tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
+.ct-tabs .mono { font-size: 12px; }
+.ct-body { container-type: inline-size; min-width: 0; flex: 1; display: flex; flex-direction: column; }
+.ct-main:not(.is-chat) .ct-body { padding: 16px 18px 22px; }
+
+/* All modules: one chip per module, the count waiting on each */
+.wk-filter { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
+.wk-filter button { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: 17px; background: none; color: var(--ink-2); font: 500 13.5px/1 var(--f-body); cursor: pointer; }
+.wk-filter button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.wk-filter .mono { font-size: 11.5px; }
+
+/* the board: To do, then In progress with Done folded under it; side by side on a wide pane */
+.wk-board { display: grid; gap: 22px; }
+@container (min-width: 820px) { .wk-board { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; } }
+.wk-g { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.wk-h { display: flex; align-items: baseline; gap: 8px; margin: 0; font: 600 18px/1.2 var(--f-head); }
+.wk-mod { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--card-2); color: var(--muted); font: 400 12px/1 var(--f-mono); text-decoration: none; white-space: nowrap; }
+a.wk-mod:hover { color: var(--ink); }
+.fd-who .wk-mod { margin-left: auto; }
+
+.wk-now { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.wk-now li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.wk-now b { color: var(--ink); font-weight: 600; }
+.wk-now li > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* one line each; the agent's chat has the rest */
+
+.wk-rows { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--card); overflow: hidden; }
+.wk-rows li + li { border-top: 1px solid var(--line); }
+.wk-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; color: var(--ink); text-decoration: none; }
+.wk-row:hover { background: var(--card-2); }
+.wk-row-b { display: grid; gap: 5px; min-width: 0; }
+.wk-row-b > b { font-weight: 600; font-size: 14.5px; line-height: 1.35; }
+.wk-row-m { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.wk-row-m .fd-src { min-height: 22px; font-size: 12px; }
+.wk-row-r { display: grid; justify-items: end; gap: 6px; font-size: 11.5px; color: var(--muted); }
+.wk-st { font: 400 12px/1 var(--f-mono); color: var(--muted); }
+.wk-st.is-approved { color: var(--ink-2); }
+.wk-st.is-held { color: var(--warn); }
+.wk-moreg > summary, .wk-done > summary { list-style: none; cursor: pointer; }
+.wk-moreg > summary::-webkit-details-marker, .wk-done > summary::-webkit-details-marker { display: none; }
+.wk-moreg > summary { padding: 8px 2px; font-size: 13.5px; color: var(--muted); }
+.wk-moreg > summary::after { content: ' +'; }
+.wk-moreg[open] > summary { display: none; }
+.wk-done { margin-top: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.wk-done > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 16px; }
+.wk-done > summary::after { content: '+'; margin-left: auto; font: 400 20px/1 var(--f-mono); color: var(--muted); }
+.wk-done[open] > summary::after { content: '-'; }
+.wk-done .fd-stack .lk-av + .lk-av { margin-left: -10px; }
+.wk-done-a { color: var(--ink); text-decoration: none; font-weight: 500; }
+.wk-done-a:hover { text-decoration: underline; }
+.fd-done-m .fd-open { font: 400 12px/1 var(--f-mono); color: var(--muted); }
+
+/* records inside a module */
+.wk-recs-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.wk-recs-h .os2-tabs { flex: 1; min-width: 0; }
+.os2.is-one { grid-template-columns: minmax(0, 1fr); }

@@ -1,5 +1,5 @@
 // app.js: the shell and the router for the brandcos product.
-// Routes are hashes: #/w/<workspace>/<section>/<params...>, e.g. #/w/acme/chats/ops, #/w/acme/os/pos.
+// Routes are hashes: #/w/<workspace>/<section>/<params...>, e.g. #/w/acme/chat/ops, #/w/acme/chat/ops/records/po.
 // A magic link lands with #l=<link token>: the sign-in screen asks the person to tap "Open my workspace",
 // which POSTs it to /auth/link for a session. Opening the link alone (a mail scanner) changes nothing.
 // #s=expired means the link was malformed. #demo opens a fresh sample workspace with no email (POST /demo);
@@ -19,14 +19,13 @@ import { askView, runAsk } from './ask.js';
 import { useWs } from './look.js';
 import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
-// The Dashboard (pages/dash.js) and the Chief of Staff surfaces come first (Feed, Chat, Agents, OS, Hub: pages/feed.js, chat.js, cosos.js, coshub.js,
-// all built on js/cos.js). The rest of the product follows under a divider (`more`).
+// The Dashboard (pages/dash.js) and the Chief of Staff surfaces come first (Chat, Agents, Hub: pages/chat.js,
+// agents.js, coshub.js, all built on js/cos.js). Chat is the home of work: each module's chat holds its board
+// (To do, In progress, Done) and its records, and All modules merges every board. The rest follows under a divider.
 export const NAV = [
   { section: 'dash',    label: 'Dashboard', page: '../pages/dash.js' },
-  { section: 'feed',    label: 'Feed',    page: '../pages/feed.js' },
   { section: 'chat',    label: 'Chat',    page: '../pages/chat.js' },
   { section: 'agents',  label: 'Agents',  page: '../pages/agents.js' },
-  { section: 'os',      label: 'OS',      page: '../pages/cosos.js' },
   { section: 'hub',     label: 'Hub',     page: '../pages/coshub.js' },
   { section: 'today',   label: 'Today',   page: '../pages/today.js', more: true },
   { section: 'standup', label: 'Standup', page: '../pages/standup.js', more: true },
@@ -39,7 +38,7 @@ export const NAV = [
 ];
 export const HOME = 'dash';
 
-// agents running (the world's 19 functions share 16 agents; the shell's pill links to the Feed)
+// agents running (the world's 19 functions share 16 agents; the shell's pill links to Agents)
 export const AGENTS = 16;
 
 // what the ask bar offers on each screen
@@ -59,10 +58,19 @@ export const ASKS = {
   billing: ['When is the next invoice due?', 'What does month 2 cost?'],
 };
 
-// Pure: '#/w/acme/os/pos' -> { wid: 'acme', section: 'os', params: ['pos'] }
+// The Feed and the OS moved into Chat: their old routes land in the new places.
+//   #/w/x/feed            -> #/w/x/chat/all                    (All modules: every module's To do, In progress, Done)
+//   #/w/x/os[/kind[/ref]] -> #/w/x/chat/all/records[/kind[/ref]]
+export const MOVED = {
+  feed: () => ['chat', 'all'],
+  os: (p) => ['chat', 'all', 'records', ...(p[0] && p[1] ? [p[0], p[1]] : p[0] && p[0] !== 'all' ? [p[0]] : [])],
+};
+
+// Pure: '#/w/acme/chat/ops' -> { wid: 'acme', section: 'chat', params: ['ops'] }; a moved section carries `moved`
 export function parseHash(hash) {
   const p = String(hash || '').replace(/^#\/?/, '').split('/').filter(Boolean).map((s) => { try { return decodeURIComponent(s); } catch { return s; } });
   if (p[0] !== 'w' || !p[1]) return { wid: null, section: null, params: [] };
+  if (MOVED[p[2]]) return { wid: p[1], section: null, params: [], moved: MOVED[p[2]](p.slice(3)) };
   return { wid: p[1], section: NAV.some((n) => n.section === p[2]) ? p[2] : null, params: p.slice(3) };
 }
 export const hrefFor = (wid, section, ...params) => '#/' + ['w', wid, section, ...params].map(encodeURIComponent).join('/');
@@ -253,6 +261,7 @@ function boot() {
     }
     const r = parseHash(location.hash);
     const ws = me.workspaces.find((w) => w.id === r.wid);
+    if (ws && r.moved) { location.replace(hrefFor(ws.id, ...r.moved)); return; }
     if (!ws || !r.section) { location.replace(hrefFor(ws ? ws.id : me.workspaces[0].id, HOME)); return; }
     if (cur && cur.id !== ws.id) { ask = null; askRun++; }
     cur = ws;
@@ -275,7 +284,7 @@ function boot() {
     $('sample-pill').textContent = visitor ? 'Demo copy, resets in a day' : 'Sample data';
     $('sample-pill').title = visitor ? 'Your own copy of a sample brand. Numbers and people are made up and nothing is sent anywhere.' : 'Demo mode: sample numbers, nothing is sent anywhere.';
     $('agents-n').textContent = `${AGENTS} agents running`;
-    $('agents-pill').href = hrefFor(ws.id, 'feed');
+    $('agents-pill').href = hrefFor(ws.id, 'agents');
     paintAsk(ws, r.section);
 
     if (cleanup) { try { cleanup(); } catch { /* */ } cleanup = null; }

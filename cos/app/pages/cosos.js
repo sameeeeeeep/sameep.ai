@@ -1,38 +1,44 @@
-// cosos.js: the OS. Every record (tasks, POs, vendor invoices, QC batches, stock, orders) goes draft -> approved ->
+// cosos.js: the records (once the OS page; #/w/<wid>/os redirects into Chat, js/app.js MOVED). Every record (tasks, POs, vendor invoices, QC batches, stock, orders) goes draft -> approved ->
 // checked; the person who approves never checks, and the agent that drafted it never approves. A record that came
 // from a decision carries that card (js/cos.js), and checking either one checks both.
-// Route: #/w/<wid>/os/<kind>/<ref>  (kind: task|po|invoice|qc|stock|order, or all with a ref)
+// Shown inside a module's chat: #/w/<wid>/chat/<module>/records/<kind>/<ref> (kind: all|task|po|invoice|qc|stock|order).
+// The approve, check and reject taps are bound by pages/chat.js (data-rec).
 import { html } from '../js/ui.js';
-import { cosApi, live, bindCards, decisionCard, stepper, rs, ago, head, loadFaces, changed } from '../js/cos.js';
+import { decisionCard, stepper, rs, ago, personaPicker } from '../js/cos.js';
 import { raw } from '../js/ui.js';
 
-export const title = 'OS';
 export const TABS = [['task', 'Tasks'], ['po', 'POs'], ['invoice', 'Invoices'], ['qc', 'QC batches'], ['stock', 'Stock'], ['order', 'Orders']];
 const ST = { draft: 'Draft', approved: 'Approved', checked: 'Checked', held: 'On hold', rejected: 'Rejected' };
 
-// Pure. data = {state, counts, records, decisions, sel: {record, log, decision} | null}; kind = tab
-export function view(data, ctx, kind) {
-  const { state: s, counts = {}, records = [], decisions = {}, sel } = data;
+// Pure: the records pane inside a module (pages/chat.js, the Records tab), or all modules'.
+// data = {state, records, decisions, sel: {record, log, decision} | null}; base = the tab's href ('#/w/x/chat/ops/records')
+// kind = the kind chip in view ('all' or one of TABS); records arrive already filtered to the module
+export function recordsPane(data, ctx, { base, kind = 'all' } = {}) {
+  const { state: s, records = [], decisions = {}, sel } = data;
   const sx = { ...s, wid: ctx.wid };
-  const n = (k) => { const c = counts[k] || {}; return (c.draft || 0) + (c.approved || 0) + (c.held || 0); };
+  const live = (r) => r.status === 'draft' || r.status === 'approved' || r.status === 'held';
+  const kinds = TABS.filter(([k]) => records.some((r) => r.kind === k));
+  const shown = (kind === 'all' ? records : records.filter((r) => r.kind === kind)).slice().sort((a, b) => Number(live(b)) - Number(live(a)));
   const row = (r) => {
     const d = r.decision_id ? decisions[r.decision_id] : null;
     const right = r.kind === 'stock' ? stockLine(r) : [r.amount != null && html`<span class="mono">${rs(r.amount)}</span>`, r.qty != null && r.kind !== 'order' && html`<span class="mono muted">${r.qty.toLocaleString('en-IN')} units</span>`].filter(Boolean);
-    return html`<li><a class="os2-row" href="#/w/${ctx.wid}/os/${r.kind}/${encodeURIComponent(r.ref)}"${raw(sel && sel.record.ref === r.ref ? ' aria-current="true"' : '')}>
+    return html`<li><a class="os2-row" href="${base}/${r.kind}/${encodeURIComponent(r.ref)}"${raw(sel && sel.record.ref === r.ref ? ' aria-current="true"' : '')}>
       <span class="os2-ref">${r.ref}</span>
       <span class="os2-t"><b>${r.title}</b><small>${who(r)}</small></span>
-      <span class="os2-r">${raw(stepper(r.status))}${right}${d && (d.status === 'open' || d.status === 'to_check') ? html`<span class="os2-card">${d.status === 'open' ? 'Card: needs a tap' : 'Card: needs a check'}</span>` : ''}</span>
+      <span class="os2-r">${raw(stepper(r.status))}${right}${d && (d.status === 'open' || d.status === 'to_check') ? html`<span class="os2-card">${d.status === 'open' ? 'Needs a tap' : 'Needs a check'}</span>` : ''}</span>
     </a></li>`;
   };
-  return html`<section class="pg">
-    ${head('OS', '', s, ctx.wid)}
-    <p class="os2-rule">${raw(stepper('approved'))}<span>Draft, approved, checked. The approver never checks; the agent that drafts never approves.</span></p>
-    <nav class="os2-tabs" aria-label="Records">${TABS.map(([k, l]) => html`<a href="#/w/${ctx.wid}/os/${k}"${raw(k === kind ? ' aria-current="page"' : '')}>${l}${n(k) ? html` <span class="mono">${n(k)}</span>` : ''}</a>`)}</nav>
-    <div class="os2">
-      ${records.length ? html`<ul class="os2-list">${records.map(row)}</ul>` : html`<p class="empty">No records here.</p>`}
-      ${sel ? detail(sel, sx, ctx) : html`<aside class="os2-det"><div class="os2-box"><p class="muted">Pick a record to see who made it, who approved it, who checked it, and its card.</p></div></aside>`}
+  const chip = (k, l, n) => html`<a href="${base}${k === 'all' ? '' : '/' + k}"${raw(k === kind ? ' aria-current="page"' : '')}>${l} <span class="mono">${n}</span></a>`;
+  return html`<div class="wk-recs">
+    <div class="wk-recs-h">
+      <nav class="os2-tabs" aria-label="Records">${chip('all', 'All', records.length)}${kinds.map(([k, l]) => chip(k, l, records.filter((r) => r.kind === k).length))}</nav>
+      ${personaPicker(s, ctx.wid)}
     </div>
-  </section>`;
+    <div class="os2${sel ? '' : ' is-one'}">
+      ${shown.length ? html`<ul class="os2-list">${shown.map(row)}</ul>` : html`<p class="empty">No records here yet.</p>`}
+      ${sel ? detail(sel, sx, ctx, base + (kind === 'all' ? '' : '/' + kind)) : ''}
+    </div>
+  </div>`;
 }
 
 function who(r) {
@@ -45,7 +51,7 @@ function stockLine(r) {
   return [html`<span class="mono">${r.qty.toLocaleString('en-IN')}</span>`, cover != null ? html`<span class="mono${cover < 10 ? ' cs-warn' : ' muted'}">${cover} days cover</span>` : d.incoming ? html`<span class="mono muted">${d.incoming.toLocaleString('en-IN')} incoming</span>` : ''];
 }
 
-export function detail(sel, sx, ctx) {
+export function detail(sel, sx, ctx, back = `#/w/${ctx.wid}/chat/all/records`) {
   const r = sel.record, d = sel.decision;
   const step = (k, label, by, ts) => html`<div class="${by || (k === 'draft') ? 'on' : ''}${k === 'approved' && (r.status === 'held' || r.status === 'rejected') ? ' is-held' : ''}"><b>${label}</b>${by || ''}${ts ? html`<br><span class="mono">${ago(ts)}</span>` : ''}</div>`;
   const acts = [
@@ -57,7 +63,7 @@ export function detail(sel, sx, ctx) {
     ? html`<p class="muted">${r.can.who} approved this, so someone else checks it. Switch who is tapping above.</p>` : '';
   return html`<aside class="os2-det">
     <div class="os2-box">
-      <a class="os2-close linkish" href="#/w/${ctx.wid}/os/${r.kind}">Back to the list</a>
+      <a class="os2-close linkish" href="${back}">Back to the list</a>
       <p class="mono muted">${r.ref} · ${ST[r.status] || r.status}</p>
       <h2>${r.title}</h2>
       <div class="os2-flow">${step('draft', 'Draft', r.maker)}${step('approved', r.status === 'held' ? 'On hold' : r.status === 'rejected' ? 'Rejected' : 'Approved', r.approved_by, r.approved_ts)}${step('checked', 'Checked', r.checked_by, r.checked_ts)}</div>
@@ -80,35 +86,3 @@ export function detail(sel, sx, ctx) {
   </aside>`;
 }
 
-export async function mount(root, ctx) {
-  let kind = TABS.some(([k]) => k === ctx.params[0]) ? ctx.params[0] : 'task';
-  const ref = ctx.params[1] || null;
-  let data = null;
-  const load = async () => {
-    const [state, sel] = await Promise.all([cosApi(ctx, 'GET', 'state'), ref ? cosApi(ctx, 'GET', `records/${encodeURIComponent(ref)}`).catch(() => null) : null]);
-    if (sel && ctx.params[0] === 'all') kind = sel.record.kind; // a link from a card that did not know the kind
-    const recs = await cosApi(ctx, 'GET', `records?kind=${kind}`);
-    data = { state, ...recs, sel };
-    await loadFaces(ctx, state.people);
-  };
-  const paint = () => {
-    root.innerHTML = String(view(data, ctx, kind));
-    if (ref && matchMedia('(max-width: 1100px)').matches) root.querySelector('.os2-det')?.scrollIntoView({ block: 'start' });
-  };
-  const refresh = async () => { try { await load(); paint(); } catch (e) { ctx.toast(e.message); } };
-  await load(); paint();
-  const unbind = bindCards(root, ctx, refresh);
-  root.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-rec]');
-    if (!b) return;
-    b.disabled = true;
-    try {
-      await cosApi(ctx, 'POST', `records/${encodeURIComponent(b.dataset.ref)}/${b.dataset.rec}`, {});
-      changed(ctx.wid);
-      ctx.toast(b.dataset.rec === 'check' ? 'Checked. The card shows it everywhere.' : b.dataset.rec === 'approve' ? 'Approved. Someone else checks it next.' : 'Rejected.');
-    } catch (err) { ctx.toast(err.message); }
-    await refresh();
-  });
-  const stop = live(ctx, refresh);
-  return () => { stop(); unbind(); };
-}
