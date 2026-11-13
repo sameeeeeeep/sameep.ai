@@ -214,6 +214,29 @@ function boot() {
   }
   const closeAsk = () => { askRun++; ask = null; if (cur) paintAsk(cur, parseHash(location.hash).section); };
 
+  // A private workspace's own brand (logo, colours) comes from the Worker, members only (GET /w/:wid/brandpack);
+  // every other workspace answers 404 and keeps the Chief of Staff look. Nothing brand-specific is in this file.
+  const packs = new Map();
+  async function paintBrand(ws, mine) {
+    if (!packs.has(ws.id)) {
+      packs.set(ws.id, api('GET', `/w/${encodeURIComponent(ws.id)}/brandpack`).catch(() => null));
+    }
+    const p = await packs.get(ws.id);
+    if (mine !== seq) return;
+    let st = document.getElementById('brand-pack');
+    if (!p) { if (st) st.remove(); return; }
+    if (!st) { st = document.createElement('style'); st.id = 'brand-pack'; document.head.appendChild(st); }
+    st.textContent = String(p.css || '') + ':root[data-theme="light"] .bp-logo.is-dark,:root:not([data-theme="light"]) .bp-logo.is-light{display:none}.bp-logo{height:18px;width:auto;vertical-align:middle;display:inline-block}';
+    const okSrc = (u) => typeof u === 'string' && /^data:image\/(png|webp|svg\+xml);base64,/.test(u);
+    if (p.logo && okSrc(p.logo.light) && okSrc(p.logo.dark)) {
+      const c = $('crumb-ws'); c.textContent = '';
+      for (const k of ['light', 'dark']) {
+        const im = document.createElement('img'); im.className = `bp-logo is-${k}`; im.src = p.logo[k]; im.alt = p.logo.alt || ws.name;
+        c.appendChild(im);
+      }
+    }
+  }
+
   async function route() {
     if (!me) return;
     const mine = ++seq; // a later route() makes this one stale
@@ -228,6 +251,7 @@ function boot() {
     if (!ws || !r.section) { location.replace(hrefFor(ws ? ws.id : me.workspaces[0].id, HOME)); return; }
     if (cur && cur.id !== ws.id) { ask = null; askRun++; }
     cur = ws;
+    paintBrand(ws, mine);
 
     const nav = NAV.find((n) => n.section === r.section);
     $('ws').innerHTML = me.workspaces.map((w) => `<option value="${esc(w.id)}"${w.id === ws.id ? ' selected' : ''}>${esc(w.name)}</option>`).join('');
