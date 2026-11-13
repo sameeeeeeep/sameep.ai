@@ -1,4 +1,4 @@
-/* story.js (v5): the product's journey through the Chief of Staff, idea to doorstep.
+/* story.js (v5): the product's journey through COS, led by its Chief of Staff agent, idea to doorstep.
    Used when the brand config has a `story` block; scroll.js plays the parcel opening and hands over
    (window.cosStory(cfg, {from: 'parcel', keep, retire})); a deep link (?step=N) opens on an Enter gate instead.
 
@@ -43,7 +43,7 @@
   function wait(ms, t) {
     return new Promise(function (res, rej) {
       var w = { done: function () { if (W === w) W = null; clearTimeout(w.timer); t === tok ? res() : rej('stale'); } };
-      w.timer = setTimeout(w.done, REDUCED ? Math.min(ms, 300) : ms); W = w;
+      w.timer = setTimeout(function tick() { if (Date.now() < HOLDT) { w.timer = setTimeout(tick, 400); return; } w.done(); }, REDUCED ? Math.min(ms, 300) : ms); W = w;
     });
   }
   function skip() { if (NOW) stopVoice(); if (W) W.done(); }
@@ -136,7 +136,7 @@
     var s = isCustomer(w) ? 'customer' : isAgency(w) ? 'agency' : first(w).toLowerCase();
     return (FACES[cfg.id] || []).indexOf(s) >= 0 ? 'faces/' + cfg.id + '-' + s + '.webp' : '';
   }
-  function roleOf(who) { var t = arr(cfg.team).filter(function (m) { return m.name === first(who) || m.name === who; })[0]; return t ? t.role : /^GG/.test(str(who)) ? 'Founder’s agent' : ''; }
+  function roleOf(who) { var t = arr(cfg.team).filter(function (m) { return m.name === first(who) || m.name === who; })[0]; return t ? t.role : ''; }
   function agentMark(n) { n = str(n, 'Chief of staff'); return /^chief/i.test(n) ? 'CS' : n.charAt(0).toUpperCase(); }
   function faceEl(who, cls) {
     var w = str(who, '?'), el = h('span', 'sx-face' + (cls ? ' ' + cls : ''));
@@ -144,10 +144,10 @@
     if (isAgent(w)) { el.classList.add('sx-mark'); el.textContent = agentMark(w); return el; }
     var src = faceSrc(w);
     if (src) { var im = h('img'); im.alt = ''; im.decoding = 'async'; im.src = src; el.appendChild(im); }
-    else el.textContent = /^GG/.test(w) ? 'GG' : w.charAt(0);
+    else el.textContent = w.charAt(0);
     return el;
   }
-  function shortName(w) { return /^GG/.test(str(w)) ? 'GG' : isAgent(w) ? str(w) : first(w); }
+  function shortName(w) { return isAgent(w) ? str(w) : first(w); }
   /* text with @mentions picked out */
   function textEl(tag, cls, text) {
     var el = h(tag, cls), re = /@(?:[A-Z][a-z]+ agent|Chief of staff|[A-Z][\w]+)/g, s = String(text || ''), last = 0, m;
@@ -172,7 +172,7 @@
     marketing: { tint: '#9c4466', title: 'Marketing', icon: 'M2.5 9.5V6.5l8-3.5v10l-8-3.5zM10.5 6v4M4.5 9.5l1 4h2l-.8-3.6', boards: ['Calendar', 'Shoot board', 'Creators', 'Ads'] },
     crm: { tint: '#3d58a8', title: 'Customers', icon: 'M8 8a2.8 2.8 0 1 0 0-5.6A2.8 2.8 0 0 0 8 8zM2.5 14c.8-2.8 3-4.2 5.5-4.2s4.7 1.4 5.5 4.2', boards: ['Funnel', 'Delivered', 'Care notes', 'Reviews'] }
   };
-  function look(id) { var m = modOf(id), L = LOOK[id] || {}; return { tint: m.tint || L.tint || '#5b616e', title: m.title || L.title || m.name, icon: m.icon || L.icon || 'M3 3h10v10H3z', boards: m.boards || L.boards || [] }; }
+  function look(id) { var m = modOf(id), L = LOOK[id] || {}; return { tint: '#15171c', title: m.title || L.title || m.name, icon: m.icon || L.icon || 'M3 3h10v10H3z', boards: m.boards || L.boards || [] }; }
   function iconEl(id, cls) { var sp = h('span', 'sx-mi' + (cls ? ' ' + cls : '')); sp.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="' + look(id).icon + '" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'; return sp; }
   var DEFAULT_MODS = [
     { id: 'ideas', name: '#ideas', about: 'Voice notes and DMs become ideas', agent: 'Research agent' },
@@ -217,7 +217,7 @@
 
     var top = h('header', 'sx-top');
     var br = h('div', 'sx-brand'); br.appendChild(h('span', 'sx-logo', str((cfg.brand || {}).name, 'C').replace(/[^a-z]/gi, '').charAt(0).toUpperCase()));
-    var bt = h('span', 'sx-brand-t'); bt.appendChild(h('b', null, str((cfg.brand || {}).name))); bt.appendChild(h('span', null, 'Chief of Staff')); br.appendChild(bt);
+    var bt = h('span', 'sx-brand-t'); bt.appendChild(h('b', 'sx-cos', 'COS')); bt.appendChild(h('span', null, 'Company OS for consumer brands')); br.appendChild(bt);
     top.appendChild(br);
     var team = h('div', 'sx-team');
     var stack = h('span', 'sx-people'); arr(cfg.team).forEach(function (m) { stack.appendChild(faceEl(m.name, 'is-sm')); }); team.appendChild(stack);
@@ -290,6 +290,7 @@
 
     /* sidebar: modules */
     ui.tiles = h('nav', 'sx-tiles'); ui.tiles.setAttribute('aria-label', 'Modules'); main.appendChild(ui.tiles);
+    var osNav = h('ul', 'sx-osnav'); ['Products', 'Modules', 'Tasks', 'Chat', 'Canvas', 'Dashboard'].forEach(function (x) { osNav.appendChild(h('li', x === 'Modules' ? 'is-on' : '', x)); }); ui.tiles.appendChild(osNav);
     mods.forEach(function (m) {
       var t = h('button', 'sx-tile'); t.type = 'button'; t.dataset.mod = m.id; t.style.setProperty('--tint', look(m.id).tint);
       var hd = h('div', 'sx-tile-hd'); var nm0 = h('span', 'sx-tile-n'); nm0.appendChild(iconEl(m.id)); nm0.appendChild(h('b', null, m.name)); hd.appendChild(nm0); t._status = h('span', 'sx-tile-st', ''); hd.appendChild(t._status); t.appendChild(hd);
@@ -329,6 +330,11 @@
 
     /* pane 3: canvas */
     var canvas = h('section', 'sx-pane sx-canvasp'); canvas.dataset.k = 'canvas'; main.appendChild(canvas);
+    ui.sheet = h('section', 'sx-sheet'); ui.sheet.setAttribute('aria-live', 'polite'); stage.appendChild(ui.sheet);
+    /* reading holds the story: a moving pointer over the sheet, or a tap on it (a few seconds each), never a resting cursor */
+    ui.sheet.addEventListener('pointermove', function () { HOLDT = Date.now() + 1500; }, { passive: true });
+    ui.sheet.addEventListener('pointerdown', function () { HOLDT = Date.now() + 6000; });
+    ui.sheet.addEventListener('pointerleave', function () { HOLDT = 0; });
     ui.cvHd = h('div', 'sx-cv-hd'); canvas.appendChild(ui.cvHd);
     ui.scene = h('div', 'sx-scene'); canvas.appendChild(ui.scene);
     ui.handoff = h('div', 'sx-handoff'); ui.scene.appendChild(ui.handoff);
@@ -379,6 +385,7 @@
 
   /* phones: which pane is showing */
   function tab(k, byUser) {
+    if (k === 'canvas') k = 'chat';   /* the artifact now sits in the thread (board) or the sheet (scenes) */
     ui.main.dataset.tab = k;
     each(ui.tabs.children, function (b) { var on = b.dataset.k === k; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); if (on) b.classList.remove('has-new'); });
     if (byUser) ui.userTab = Date.now();
@@ -454,12 +461,52 @@
   }
 
   /* ---------- canvas objects ---------- */
+  /* a document, in full: email, PO, WhatsApp, DMs, orders, a sheet. White paper, real type, no tints */
+  function docEl(d) {
+    var k = d.kind, el = h('div', 'sx-docv is-' + k);
+    function rows(list, cls) { var t = h('table', cls || ''); arr(list).forEach(function (r) { var tr = h('tr'); arr(r).forEach(function (c, i) { tr.appendChild(h(i ? 'td' : 'th', null, c)); }); t.appendChild(tr); }); return t; }
+    if (k === 'email') {
+      var hd = h('div', 'sx-dv-hd'); hd.appendChild(h('b', 'sx-dv-t', str(d.subject)));
+      [['From', d.from], ['To', d.to], ['Date', d.date]].forEach(function (r) { if (r[1]) { var l = h('p', 'sx-dv-m'); l.appendChild(h('span', null, r[0])); l.appendChild(document.createTextNode(r[1])); hd.appendChild(l); } });
+      el.appendChild(hd);
+      var bd = h('div', 'sx-dv-bd'); arr(d.body).forEach(function (p) { bd.appendChild(h('p', null, p)); }); el.appendChild(bd);
+      if (arr(d.attach).length) { var at = h('div', 'sx-dv-att'); d.attach.forEach(function (f) { at.appendChild(h('span', null, f)); }); el.appendChild(at); }
+    } else if (k === 'po') {
+      var ph = h('div', 'sx-dv-hd'); ph.appendChild(h('b', 'sx-dv-t', 'Purchase order ' + str(d.number)));
+      [['Vendor', d.vendor], ['Date', d.date]].forEach(function (r) { if (r[1]) { var l = h('p', 'sx-dv-m'); l.appendChild(h('span', null, r[0])); l.appendChild(document.createTextNode(r[1])); ph.appendChild(l); } });
+      el.appendChild(ph);
+      var tb = h('table', 'sx-dv-tbl'); var th = h('tr'); ['Item', 'Qty', 'Rate', 'Amount'].forEach(function (c) { th.appendChild(h('th', null, c)); }); tb.appendChild(th);
+      arr(d.lines).forEach(function (r) { var tr = h('tr'); arr(r).forEach(function (c) { tr.appendChild(h('td', null, c)); }); tb.appendChild(tr); });
+      arr(d.totals).forEach(function (r) { var tr = h('tr', 'is-tot'); tr.appendChild(h('td', null, r[0])); tr.appendChild(h('td')); tr.appendChild(h('td')); tr.appendChild(h('td', null, r[1])); tb.appendChild(tr); });
+      el.appendChild(tb);
+      if (arr(d.terms).length) { var ul = h('ul', 'sx-dv-terms'); d.terms.forEach(function (x) { ul.appendChild(h('li', null, x)); }); el.appendChild(ul); }
+    } else if (k === 'whatsapp' || k === 'dms') {
+      var wh = h('div', 'sx-dv-hd'); var g = h('div', 'sx-dv-ch'); g.appendChild(srcMark(k === 'dms' ? 'dm' : 'whatsapp')); g.appendChild(h('b', 'sx-dv-t', str(d.group || d.title, d.channel))); wh.appendChild(g); el.appendChild(wh);
+      var ms = h('div', 'sx-dv-msgs');
+      arr(d.msgs).forEach(function (m) { var r = h('div', 'sx-dv-msg'); var top = h('p', 'sx-dv-who'); top.appendChild(h('b', null, m.who)); top.appendChild(h('span', 'sx-dv-time', m.time || '')); r.appendChild(top); r.appendChild(h('p', null, m.text)); ms.appendChild(r); });
+      el.appendChild(ms);
+    } else if (k === 'orders') {
+      var oh = h('div', 'sx-dv-hd'); oh.appendChild(h('b', 'sx-dv-t', str(d.title))); el.appendChild(oh);
+      var ot = h('table', 'sx-dv-tbl'); var oth = h('tr'); arr(d.cols).forEach(function (c) { oth.appendChild(h('th', null, c)); }); ot.appendChild(oth);
+      arr(d.rows).forEach(function (r) { var tr = h('tr'); arr(r).forEach(function (c) { tr.appendChild(h('td', null, c)); }); ot.appendChild(tr); });
+      el.appendChild(ot);
+    } else {
+      var sh = h('div', 'sx-dv-hd'); sh.appendChild(h('b', 'sx-dv-t', str(d.title))); if (d.sub) sh.appendChild(h('p', 'sx-dv-m', d.sub)); el.appendChild(sh);
+      el.appendChild(rows(d.rows, 'sx-dv-kv'));
+    }
+    return el;
+  }
   function objEl(o) {
     var el = h('div', 'sx-ob'); el.dataset.id = o.id || '';
     if (o.slot) { el.style.gridArea = o.slot; el.dataset.slot = o.slot; } else { el.style.left = (o.x != null ? o.x : 50) + '%'; el.style.top = (o.y != null ? o.y : 55) + '%'; }
     el.style.setProperty('--w', (o.w || 50) + '%'); el.style.setProperty('--r', (o.rot || 0) + 'deg'); el.style.zIndex = o.z || 1;
     var body, card = true;
-    if (o.doc || o.idea) {
+    if (o.media) {
+      body = h('figure', 'sx-fig'); var fim = h('img'); fim.alt = ''; fim.decoding = 'async'; fim.src = asset(o.media.src); body.appendChild(fim);
+      if (o.media.caption) body.appendChild(h('figcaption', null, o.media.caption));
+    } else if (o.doc && o.doc.kind) {
+      body = docEl(o.doc);
+    } else if (o.doc || o.idea) {
       var d = o.doc || o.idea;
       body = h('div', 'sx-paper' + (o.idea ? ' is-idea' : ''));
       if (o.idea) body.appendChild(h('span', 'sx-paper-k', str(o.idea.kind, 'Idea')));
@@ -577,6 +624,7 @@
   function land(id, quiet, note) {
     var set = ui.set; if (!set || !id) return;
     if (Array.isArray(id)) { id.forEach(function (x, n) { if (quiet) land(x, true); else setTimeout(function () { land(x); }, n * 240); }); return; }
+    if (!quiet) art(id);
     var e = set.querySelector('.sx-ob[data-id="' + id + '"]'); if (!e) return;
     if (note) { e._stamp.textContent = note; e.classList.add('has-stamp'); }
     /* a draft listing on the stage goes live in place */
@@ -823,6 +871,79 @@
     r.classList.add('is-answered');
     return o;
   }
+  /* ---------- v8: scenes first. The old engine's 3D scenes are the screen; the board lends one or two cards at a time,
+     and takes over fully at a few moments (board stops, the hubs). SCN = the scene engine (scroll.js), when present. ---------- */
+  var SCN = null, MODE = '', HOLDT = 0;
+  var SCENE_OF = { ideas: ['voice'], concept: ['standup', 'samples'], vendors: ['vendor'], pack: ['packaging', 'po'], inbound: ['courier'],
+    warehouse: ['packed'], listing: ['listing'], marketing: ['ad'], buy: ['order', 'packed'], crm: ['support', 'delivered'] };
+  var BOARD_AT = { vendors: 1, buy: 1 };
+  function scenesOf(stop) { var L = Array.isArray(stop.scenes) ? stop.scenes : (SCENE_OF[stop.id] || []); return SCN ? L.filter(function (id) { return SCN.has(id); }) : L; }
+  function sceneMode(stop) { return scenesOf(stop).length ? 'scene' : 'canvas'; }
+  function sceneTo(stop, n) {
+    if (!SCN) return;
+    var L = scenesOf(stop).filter(function (id) { return SCN.has(id); });
+    if (L.length) SCN.go(L[Math.min(n, L.length - 1)]);
+  }
+  function setMode(m) {
+    if (!SCN || m === MODE) return;
+    var was = MODE; MODE = m;
+    var de = document.documentElement, keep = ui.keep;
+    de.classList.toggle('sx-scenes', true);
+    de.classList.toggle('sx-boardmode', m === 'board');
+    de.classList.toggle('sx-canvasmode', m === 'canvas');
+    ui.stage.classList.toggle('is-scene', m !== 'board');
+    ui.stage.classList.toggle('is-canvas', m === 'canvas');
+    if (keep) keep.classList.remove('is-handing');
+    SCN.live(m === 'scene');
+    if (m === 'board') sheetClear();
+    if (was && !REDUCED) { ui.stage.classList.remove('is-morph-in', 'is-morph-out'); void ui.stage.offsetWidth; ui.stage.classList.add(m === 'board' ? 'is-morph-in' : 'is-morph-out'); }
+    if (m === 'board') { tab('chat'); }
+    keepers();
+  }
+  /* the canvas sheet: one artifact at a time, in full, like a document canvas. Hovering it holds the story */
+  function objOf(id) { var st = stops[si]; return arr(((st || {}).scene || {}).objs).filter(function (o) { return o.id === id; })[0] || null; }
+  function artNode(o) { var e = objEl(o); e.removeAttribute('style'); e.className = 'sx-ob is-on is-art'; countUp(e, true); return e; }
+  function art(id) {
+    var o = objOf(id); if (!o) return;
+    if (SCN && MODE !== 'board') return sheetShow(artNode(o));
+    if (!ui.thread) return;
+    var r = h('div', 'sx-row sx-art'); r.appendChild(artNode(o)); ui.thread.appendChild(r); raf2(function () { r.classList.add('is-in'); });
+  }
+  function sheetShow(node) {
+    if (!ui.sheet) return;
+    ui.sheet.innerHTML = ''; ui.sheet.appendChild(node); ui.sheet.classList.add('is-on');
+    ui.sheet.classList.remove('is-fresh'); void ui.sheet.offsetWidth; ui.sheet.classList.add('is-fresh');
+  }
+  function sheetClear() { if (ui.sheet) { ui.sheet.classList.remove('is-on'); ui.sheet.innerHTML = ''; } }
+  function sheetIntro(stop) {
+    var first = arr((stop.scene || {}).objs).filter(function (o) { return o.at !== 'cue'; })[0];
+    if (first) return sheetShow(artNode(first));
+    var c = h('div', 'sx-sheet-t'); c.appendChild(h('b', null, str(stop.title))); c.appendChild(h('span', null, modOf(stop.module).name + ' · Day ' + dayOf(si))); sheetShow(c);
+  }
+  /* in a scene only the newest one or two messages of this stop and its live task card show, as floating cards */
+  function keepers() {
+    if (!ui.thread) return;
+    var rows = [], kids = ui.thread.children, want = [];
+    for (var i = kids.length - 1; i >= 0; i--) { var c = kids[i]; if (c.classList.contains('sx-div')) break; rows.push(c); }
+    /* a bare "assigned @x @y" line is plumbing, not a moment: scenes skip it */
+    var rowsK = rows.filter(function (c) { return !c.classList.contains('is-mini') && !(c.querySelector('.sx-at') && c.textContent.replace(/@\w+( agent)?/g, '').replace(/\s+/g, ' ').length < 40); }).slice(0, 2);
+    var tcs = ui.check ? ui.check.children : [], pick = null;
+    each(tcs, function (c) { if (!pick && c.classList.contains('is-waiting')) pick = c; });
+    if (!pick) each(tcs, function (c) { if (!pick && c.classList.contains('is-working')) pick = c; });
+    if (!pick) for (var j = tcs.length - 1; j >= 0; j--) if (tcs[j].classList.contains('is-done')) { pick = tcs[j]; break; }
+    /* one or two elements at a time: the newest message, plus the live task card unless a task row already shows */
+    var hasTask = rowsK.some(function (c) { return c.classList.contains('sx-task') || c.classList.contains('sx-decision'); });
+    want = rowsK.length ? rowsK.slice(0, 1) : (pick ? [pick] : []);
+    /* only touch a class when it changes: the observer watches classes too */
+    [kids, tcs].forEach(function (list) { each(list, function (c) { var on = want.indexOf(c) >= 0; if (c.classList.contains('is-keep') !== on) c.classList.toggle('is-keep', on); }); });
+  }
+  function watchKeepers() {
+    if (!window.MutationObserver) return;
+    var busy = false, mo = new MutationObserver(function () { if (!MODE || MODE === 'board' || busy) return; busy = true; requestAnimationFrame(function () { busy = false; keepers(); }); });
+    mo.observe(ui.thread, { childList: true, subtree: true, characterData: true });
+    var ul = ui.check;
+    if (ul) mo.observe(ul, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
   function open(i, dir) {
     i = Math.max(0, Math.min(stops.length - 1, i));
     var t = ++tok; if (W) { clearTimeout(W.timer); W = null; } stopVoice(); ui.pick = null; clearPop();
@@ -855,14 +976,18 @@
     for (var k = 0; k < i; k++) if (stops[k].module === stop.module) { ui.thread.appendChild(divider(stops[k])).classList.add('is-in'); renderDone(stops[k], itemsOf(stops[k])); }
     scrollTo(null, true);
     setScene(stop, dir || 1); caption(stop); sfx('stage'); tab('canvas');
+    sheetClear();
+    if (SCN) { setMode(sceneMode(stop)); sceneTo(stop, 0); if (MODE === 'canvas') sheetIntro(stop); }
     if (stop.id === 'listing' || stop.launch) setOS({ Launch: 'Day ' + dayOf(i) }, true);
-    (LOADED[i] || Promise.resolve()).then(function () { return wait(1000, t); }).then(function () {
+    (LOADED[i] || Promise.resolve()).then(function () { return wait(SCN && BOARD_AT[stop.id] ? 2200 : 1000, t); }).then(function () {
+      if (SCN && BOARD_AT[stop.id]) setMode('board');
       var d = divider(stop); ui.thread.appendChild(d); raf2(function () { d.classList.add('is-in'); scrollTo(d); });
       return wait(300, t);
     }).then(function () { return runBeats(stop, t); }).then(function () {
+      if (SCN && BOARD_AT[stop.id]) { setMode(sceneMode(stop)); sceneTo(stop, 9); }
       setState('done'); clearPop(); lightSource(null);
       Object.keys(AG).forEach(function (n) { agent(n, 'done', 'Handed over'); });
-      if (si >= stops.length - 1) { if (AUTO && cfg.story.setup) return wait(2400, t).then(function () { next(); }); return; }
+      if (si >= stops.length - 1) { if ((AUTO || SCN) && cfg.story.setup) return wait(2400, t).then(function () { next(); }); return; }
       /* the module's work is done: move on by itself */
       var nx = stops[si + 1];
       ui.handoff.textContent = 'Moving to ' + modOf(nx.module).name + ': ' + nx.label + '…';
@@ -876,6 +1001,7 @@
       (function step() {
         if (t !== tok) return reject('stale');
         var its = itemsOf(stop); if (k >= its.length) return resolve();
+        if (SCN && MODE === 'scene' && scenesOf(stop).length > 1 && k === Math.ceil(its.length / 2)) sceneTo(stop, 1);
         var x = its[k++];
         beat(stop, x.it, x.k, t).then(step, reject);
       })();
@@ -960,7 +1086,7 @@
     if (state === 'done') {
       if (si < stops.length - 1) return open(si + 1, 1);
       setAuto(false);
-      if (cfg.story.setup && !ui.hubEl) return hub('end', function () { proposal(); });
+      if (cfg.story.setup && !ui.hubEl) { setMode('board'); return hub('end', function () { proposal(); }); }
       toTeam();
     }
   }
@@ -998,7 +1124,7 @@
       stepTo(0);
       var c = h('div', 'sx-su-ws');
       var br = h('div', 'sx-su-brand'); br.appendChild(h('span', 'sx-logo is-big', str((cfg.brand || {}).name, 'C').replace(/[^a-z]/gi, '').charAt(0).toUpperCase()));
-      var bt = h('div'); bt.appendChild(h('h1', null, 'Setting up ' + str((cfg.brand || {}).name) + '’s Chief of Staff')); bt.appendChild(h('p', null, [str((cfg.brand || {}).category), str((cfg.brand || {}).city)].filter(Boolean).join(' · '))); br.appendChild(bt); c.appendChild(br);
+      var bt = h('div'); bt.appendChild(h('h1', null, 'Setting up COS for ' + str((cfg.brand || {}).name))); bt.appendChild(h('p', null, [str((cfg.brand || {}).category), str((cfg.brand || {}).city)].filter(Boolean).join(' · '))); br.appendChild(bt); c.appendChild(br);
       var inv = h('div', 'sx-su-inv'); inv.appendChild(h('b', null, 'Inviting ' + arr(cfg.team).length + ' people'));
       var grid = h('div', 'sx-su-team'); arr(cfg.team).forEach(function (m, i) { var p = h('div', 'sx-su-p'); p.style.transitionDelay = (120 + i * 140) * speed + 'ms'; p.appendChild(faceEl(m.name, 'is-big')); p.appendChild(h('b', null, m.name)); p.appendChild(h('span', null, m.role)); grid.appendChild(p); });
       inv.appendChild(grid); c.appendChild(inv); body.appendChild(c);
@@ -1053,8 +1179,229 @@
     var e = document.getElementById('end'); if (e) e.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
     setTimeout(function () { each(document.querySelectorAll('#end .fin-team > li'), function (li, n) { setTimeout(function () { li.classList.add('is-up'); }, 200 + n * 170); }); }, 500);
   }
+  /* the offer (cfg.offer): what COS will run, pricing with the original struck through, the timeline, running costs,
+     the self-host option, then "I'm interested" with the choice and a prefilled email. One sheet, calm, no tints */
+  function offerPage() {
+    var O = cfg.offer, brand = str((cfg.brand || {}).name), T = str(O.tax, '++');
+    var ov = h('div', 'sx-prop sx-offer'); ui.prop = ov;
+    function close(x) { x.classList.add('is-out'); setTimeout(function () { if (x.parentNode) x.parentNode.removeChild(x); }, 450); }
+    var top = h('div', 'sx-prop-top');
+    var back = h('button', 'sx-hub-link', 'Back to the hub'); back.type = 'button'; back.addEventListener('click', function () { close(ov); });
+    top.appendChild(back); top.appendChild(h('span', 'sx-su-k', 'COS for ' + brand)); ov.appendChild(top);
+    var w = h('div', 'sx-prop-in'); ov.appendChild(w);
+    function tax(on) { return on ? h('span', 'sx-tax', T) : document.createTextNode(''); }
+    w.appendChild(h('h1', null, str(O.title)));
+    if (O.lead) w.appendChild(h('p', 'sx-prop-lead', O.lead));
+    /* 1. scope */
+    var S = O.scope || {}, g = h('div', 'sx-offer-scope');
+    var mb = h('section'); mb.appendChild(h('h3', null, 'Modules'));
+    mods.forEach(function (m) { var r = h('div', 'sx-of-row'); r.appendChild(iconEl(m.id)); var tx = h('div'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('span', null, m.about || '')); r.appendChild(tx); mb.appendChild(r); });
+    g.appendChild(mb);
+    var col = h('section');
+    col.appendChild(h('h3', null, 'Agents'));
+    var al = h('p', 'sx-of-list'); arr(S.agents).forEach(function (a, i) { if (i) al.appendChild(document.createTextNode(' · ')); al.appendChild(a === S.lead_agent ? h('b', null, a + ' (leads)') : document.createTextNode(a)); }); col.appendChild(al);
+    col.appendChild(h('h3', null, 'Inputs'));
+    col.appendChild(h('p', 'sx-of-list', arr(S.inputs).join(' · ')));
+    col.appendChild(h('h3', null, 'People'));
+    var pp = h('div', 'sx-of-people'); arr(cfg.team).forEach(function (m) { var r = h('span'); r.appendChild(faceEl(m.name, 'is-sm')); var tx = h('span'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('em', null, m.role)); r.appendChild(tx); pp.appendChild(r); });
+    col.appendChild(pp); if (S.people_note) col.appendChild(h('p', 'sx-of-note', S.people_note));
+    g.appendChild(col); w.appendChild(g);
+    /* 2. pricing: full prices first; the visitor applies the friends & family discount themselves */
+    var C = O.calc || null, ST = ui.offerState = { ff: false, blocks: 0, self: false, date: null };
+    function money(n) { return '$' + Number(n).toLocaleString('en-US'); }
+    var ph = h('h2'); ph.appendChild(document.createTextNode('Pricing')); var tagEl = O.tag ? h('span', 'sx-of-tag', O.tag) : null; if (tagEl) { tagEl.hidden = !!C; ph.appendChild(tagEl); } w.appendChild(ph);
+    var tb = h('div', 'sx-of-prices'), cells = {};
+    arr(O.prices).forEach(function (p, i) {
+      var r = h('div', 'sx-of-price'); var l = h('div'); l.appendChild(h('b', null, p.item)); if (p.note) l.appendChild(h('span', null, p.note)); r.appendChild(l);
+      var v = h('div', 'sx-of-val'); var pl = h('p', 'sx-of-pl');
+      var was = h('s', null, p.was || ''), now = h('b', null, C && p.was ? p.was : p.now);
+      if (!C && p.was) pl.appendChild(was); else if (C && p.was) { was.hidden = true; pl.appendChild(was); }
+      pl.appendChild(now); pl.appendChild(tax(p.tax)); v.appendChild(pl); if (p.unit) v.appendChild(h('span', null, p.unit)); r.appendChild(v);
+      if (C && !p.was && /complimentary/.test(str(p.unit))) { r.classList.add('is-ff-only'); r.hidden = true; }
+      cells[i] = { row: r, was: was, now: now, p: p };
+      tb.appendChild(r);
+    });
+    w.appendChild(tb);
+    if (C) {
+      var ffWrap = h('div', 'sx-of-ff');
+      var ffBtn = h('button', 'sx-of-ffbtn', 'Apply friends & family discount'); ffBtn.type = 'button';
+      var save = h('p', 'sx-of-save'); save.hidden = true;
+      save.appendChild(document.createTextNode('You save ' + money(C.setup_full - C.setup_ff) + ' on setup + ' + money(C.monthly_full - C.monthly_ff) + '/month ')); save.appendChild(tax(true));
+      ffBtn.addEventListener('click', function () {
+        if (ST.ff) return; ST.ff = true; sfx('done');
+        Object.keys(cells).forEach(function (k) {
+          var c = cells[k];
+          if (c.p.was) { c.was.hidden = false; c.was.classList.add('is-strike'); c.now.textContent = c.p.now; c.now.classList.remove('is-new'); void c.now.offsetWidth; c.now.classList.add('is-new'); }
+          if (c.row.classList.contains('is-ff-only')) { c.row.hidden = false; c.row.classList.add('is-new'); }
+        });
+        if (tagEl) tagEl.hidden = false;
+        ffBtn.hidden = true; save.hidden = false; save.classList.add('is-new'); plan();
+      });
+      ffWrap.appendChild(ffBtn); ffWrap.appendChild(save); w.appendChild(ffWrap);
+    }
+    if (O.price_note) w.appendChild(h('p', 'sx-of-note', O.price_note));
+    /* your plan: hosting, custom development credit in 2-week blocks, and a running total */
+    var planBox = null, plan = function () {};
+    if (C) {
+      w.appendChild(h('h2', null, 'Your plan'));
+      planBox = h('div', 'sx-of-plan');
+      var host = h('div', 'sx-of-seg'); host.setAttribute('role', 'group'); host.setAttribute('aria-label', 'Hosting');
+      [['Managed by us', false], ['Host it ourselves', true]].forEach(function (o) { var b = h('button', o[1] ? '' : 'is-on', o[0]); b.type = 'button'; b.setAttribute('aria-pressed', o[1] ? 'false' : 'true'); b.addEventListener('click', function () { ST.self = o[1]; plan(); }); host.appendChild(b); });
+      var hr = h('div', 'sx-of-prow'); hr.appendChild(h('b', null, 'Hosting')); hr.appendChild(host); planBox.appendChild(hr);
+      var step = h('div', 'sx-of-step'); var minus = h('button', null, '–'); minus.type = 'button'; minus.setAttribute('aria-label', 'Fewer days');
+      var days = h('b', 'sx-of-days'); var plus = h('button', null, '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'More days');
+      minus.addEventListener('click', function () { if (ST.blocks > 0) { ST.blocks--; plan(); } }); plus.addEventListener('click', function () { if (ST.blocks < C.max_blocks) { ST.blocks++; plan(); } });
+      step.appendChild(minus); step.appendChild(days); step.appendChild(plus);
+      var cr = h('div', 'sx-of-prow'); var crl = h('div'); crl.appendChild(h('b', null, 'Custom development credit')); var crm = h('span', 'sx-of-meta'); crl.appendChild(crm); cr.appendChild(crl); cr.appendChild(step); planBox.appendChild(cr);
+      var tot = h('div', 'sx-of-total'); var tl = h('span', null, 'Setup + credit'); var tv = h('b'); var tsub = h('p', 'sx-of-meta'); tot.appendChild(tl); var tvw = h('p', 'sx-of-pl'); tvw.appendChild(tv); tvw.appendChild(tax(true)); tot.appendChild(tvw); tot.appendChild(tsub); planBox.appendChild(tot);
+      w.appendChild(planBox);
+      plan = function () {
+        each(host.children, function (b, n) { var on = (n === 1) === ST.self; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+        minus.disabled = ST.blocks <= 0; plus.disabled = ST.blocks >= C.max_blocks;
+        days.textContent = (ST.blocks * C.block_days) + ' days';
+        crm.textContent = ST.blocks + (ST.blocks === 1 ? ' block' : ' blocks') + ' · ' + (ST.blocks * C.block_hours) + ' hours · ' + money(ST.blocks * C.block_price) + ' ++ · training included';
+        var setup = ST.ff ? C.setup_ff : C.setup_full, credit = ST.blocks * C.block_price, total = setup + credit + (ST.self ? C.handover : 0);
+        tl.textContent = ST.self ? 'Setup + credit + handover' : 'Setup + credit';
+        tv.textContent = money(total);
+        var mo = ST.ff ? C.monthly_ff : C.monthly_full;
+        tsub.textContent = ST.self ? 'Handover and training ' + money(C.handover) + ' ++ included. No monthly plan: no standard updates.'
+          : 'Then ' + money(mo) + ' a month ++' + (ST.ff ? ', after ' + C.support_months + ' months of complimentary support.' : ', from go-live.');
+        ST.total = total; ST.monthly = ST.self ? 0 : mo;
+      };
+      plan();
+    }
+    /* 3. timeline */
+    w.appendChild(h('h2', null, 'Timeline'));
+    var ro = h('ol', 'sx-roll'); arr(O.timeline).forEach(function (r) { var li = h('li'); li.appendChild(h('b', null, r.when)); li.appendChild(h('span', null, r.what)); ro.appendChild(li); }); w.appendChild(ro);
+    /* 4. running costs */
+    var R = O.running || {};
+    if (R.rows) {
+      w.appendChild(h('h2', null, str(R.title, 'Running costs'))); if (R.note) w.appendChild(h('p', 'sx-of-note', R.note));
+      var rt = h('div', 'sx-of-prices is-run');
+      R.rows.forEach(function (x) { var r = h('div', 'sx-of-price'); r.appendChild(h('b', null, x[0])); var v = h('div', 'sx-of-val'); v.appendChild(h('b', 'is-n', x[1])); r.appendChild(v); rt.appendChild(r); });
+      if (R.total) { var t = h('div', 'sx-of-price is-tot'); t.appendChild(h('b', null, R.total[0])); var tv = h('div', 'sx-of-val'); tv.appendChild(h('b', 'is-n', R.total[1])); if (R.unit) tv.appendChild(h('span', null, R.unit)); t.appendChild(tv); rt.appendChild(t); }
+      w.appendChild(rt);
+    }
+    /* 5. self-host */
+    var SH = O.selfhost;
+    if (SH) {
+      w.appendChild(h('h2', null, SH.title));
+      var sp = h('div', 'sx-of-prices'); var r5 = h('div', 'sx-of-price'); var l5 = h('div'); l5.appendChild(h('b', null, 'Handover and training')); arr(SH.points).forEach(function (x) { l5.appendChild(h('span', null, x)); }); r5.appendChild(l5);
+      var v5 = h('div', 'sx-of-val'); var pl5 = h('p', 'sx-of-pl'); pl5.appendChild(h('b', null, SH.price)); pl5.appendChild(tax(SH.tax)); v5.appendChild(pl5); if (SH.unit) v5.appendChild(h('span', null, SH.unit)); r5.appendChild(v5); sp.appendChild(r5); w.appendChild(sp);
+    }
+    /* the call to action */
+    var I = O.interested || {};
+    var band = h('section', 'sx-of-cta');
+    var go = h('button', 'sx-su-next is-cta', str(I.cta, 'I’m interested')); go.type = 'button'; go.addEventListener('click', function () { interested(); });
+    band.appendChild(go);
+    var tmb = h('button', 'sx-hub-link', 'See the team'); tmb.type = 'button'; tmb.addEventListener('click', function () { close(ov); if (ui.hubEl && ui.hubEl.parentNode) ui.hubEl.parentNode.removeChild(ui.hubEl); ui.hubEl = 'seen'; toTeam(); }); band.appendChild(tmb);
+    var appA = h('a', 'sx-hub-link', 'See it as the app'); appA.href = str(((cfg.end || {}).links || {}).demo, '../app/'); band.appendChild(appA);
+    w.appendChild(band);
+    if (O.tax_note) w.appendChild(h('p', 'sx-of-foot', O.tax_note));
+    ui.stage.appendChild(ov); raf2(function () { ov.classList.add('is-on'); });
+
+    /* I'm interested: plan, a start date (closed days greyed out), the timeline it gives, then a prefilled email */
+    function interested() {
+      var iv = h('div', 'sx-prop sx-offer is-int'); var it = h('div', 'sx-prop-top');
+      var bk = h('button', 'sx-hub-link', 'Back to the proposal'); bk.type = 'button'; bk.addEventListener('click', function () { close(iv); }); it.appendChild(bk); iv.appendChild(it);
+      var x = h('div', 'sx-prop-in sx-of-int'); iv.appendChild(x);
+      x.appendChild(h('h1', null, str(I.heading)));
+      x.appendChild(h('h3', null, 'Pick one'));
+      var opts = h('div', 'sx-of-opts');
+      arr(I.options).forEach(function (o) {
+        var b = h('button', 'sx-of-opt'); b.type = 'button'; b._self = o.id === 'self';
+        b.appendChild(h('b', null, o.label)); var d = h('span', 'sx-of-od'); b.appendChild(d); b._d = d;
+        b.addEventListener('click', function () { ST.self = b._self; plan(); refresh(); });
+        opts.appendChild(b);
+      });
+      x.appendChild(opts);
+      /* calendar */
+      x.appendChild(h('h3', null, 'When do you want to begin?'));
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var BO = arr((C || {}).blackout).map(function (r) { return [iso(r[0]), iso(r[1])]; }), CLOSED = arr((C || {}).closed_weekdays || [0]);
+      function iso(sx) { var q = String(sx).split('-'); return new Date(+q[0], +q[1] - 1, +q[2]); }
+      function shut(d) { return CLOSED.indexOf(d.getDay()) >= 0 || BO.some(function (r) { return d >= r[0] && d <= r[1]; }); }
+      function avail(d) { d = new Date(d); while (shut(d)) d.setDate(d.getDate() + 1); return d; }
+      function add(d, n) { d = new Date(d); d.setDate(d.getDate() + n); return d; }
+      function addM(d, n) { d = new Date(d); d.setMonth(d.getMonth() + n); return d; }
+      var DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      var MF = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      function fmt(d) { return DN[d.getDay()] + ', ' + d.getDate() + ' ' + MN[d.getMonth()] + ' ' + d.getFullYear(); }
+      var cal = h('div', 'sx-cal'), view = new Date(today.getFullYear(), today.getMonth(), 1);
+      function drawCal() {
+        cal.innerHTML = '';
+        var hd = h('div', 'sx-cal-hd'); var pv = h('button', null, '‹'); pv.type = 'button'; pv.setAttribute('aria-label', 'Previous month');
+        var nx = h('button', null, '›'); nx.type = 'button'; nx.setAttribute('aria-label', 'Next month');
+        pv.disabled = view <= new Date(today.getFullYear(), today.getMonth(), 1);
+        pv.addEventListener('click', function () { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); drawCal(); });
+        nx.addEventListener('click', function () { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); drawCal(); });
+        hd.appendChild(pv); hd.appendChild(h('b', null, MF[view.getMonth()] + ' ' + view.getFullYear())); hd.appendChild(nx); cal.appendChild(hd);
+        var g = h('div', 'sx-cal-g'); ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach(function (l) { g.appendChild(h('span', 'sx-cal-w', l)); });
+        var first = (view.getDay() + 6) % 7; for (var i = 0; i < first; i++) g.appendChild(h('span'));
+        var n = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+        for (var dd = 1; dd <= n; dd++) (function (d) {
+          var b = h('button', 'sx-cal-d', String(d.getDate())); b.type = 'button';
+          var off = d < today || shut(d); b.disabled = off; if (off) b.classList.add('is-off');
+          if (ST.date && +d === +ST.date) b.classList.add('is-on');
+          b.setAttribute('aria-label', fmt(d) + (off ? ', not available' : ''));
+          b.addEventListener('click', function () { ST.date = d; drawCal(); refresh(); });
+          g.appendChild(b);
+        })(new Date(view.getFullYear(), view.getMonth(), dd));
+        cal.appendChild(g);
+      }
+      drawCal(); x.appendChild(cal);
+      x.appendChild(h('p', 'sx-of-note', 'Sundays and 29 Nov to 8 Dec 2026 are closed.'));
+      /* the timeline the date gives */
+      x.appendChild(h('h3', null, 'Your timeline'));
+      var tlEl = h('ol', 'sx-of-tl'); x.appendChild(tlEl);
+      var acts = h('div', 'sx-of-cta');
+      var send = h('a', 'sx-su-next is-cta', str(I.send, 'Send')); send.target = '_blank'; send.rel = 'noopener'; acts.appendChild(send);
+      var wa = null; if (I.whatsapp) { wa = h('a', 'sx-hub-link', 'Or WhatsApp'); wa.target = '_blank'; wa.rel = 'noopener'; acts.appendChild(wa); }
+      var hint = h('span', 'sx-of-note', 'Pick a start date to send'); acts.appendChild(hint);
+      x.appendChild(acts);
+      if (O.tax_note) x.appendChild(h('p', 'sx-of-foot', O.tax_note));
+      function steps() {
+        if (!ST.date || !C) return [];
+        var k = ST.date, live = avail(add(k, C.setup_days)), out = [];
+        out.push(['Kickoff', fmt(k)]);
+        out.push(['Setup and custom development', fmt(k) + ' to ' + fmt(live) + ' (' + C.setup_days + ' days)']);
+        out.push(['Team training', fmt(avail(add(live, -6))) + ' and ' + fmt(avail(add(live, -3)))]);
+        out.push(['Go-live', fmt(live)]);
+        if (ST.self) out.push(['Handover and training', 'Go-live week, ' + fmt(live) + ' to ' + fmt(avail(add(live, 6)))]);
+        else {
+          if (ST.ff) out.push(['Complimentary support', fmt(live) + ' to ' + fmt(avail(addM(live, C.support_months)))]);
+          out.push(['First monthly bill (' + money(ST.monthly) + ' ++)', fmt(avail(addM(live, ST.ff ? C.support_months : 1)))]);
+        }
+        var start = avail(add(live, 1));
+        for (var i = 0; i < ST.blocks; i++) { var end = avail(add(start, C.block_days - 1)); out.push(['Custom development, block ' + (i + 1), fmt(start) + ' to ' + fmt(end)]); start = avail(add(end, 1)); }
+        return out;
+      }
+      function refresh() {
+        each(opts.children, function (b) { var on = b._self === ST.self; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          var setup = ST.ff ? C.setup_ff : C.setup_full, cr = ST.blocks ? ' + ' + money(ST.blocks * C.block_price) + ' credit' : '';
+          b._d.textContent = b._self ? money(setup) + ' setup' + cr + ' + ' + money(C.handover) + ' handover and training ++' : money(setup) + ' setup' + cr + (ST.ff ? ', ' + C.support_months + ' months free, then ' : ', then ') + money(ST.ff ? C.monthly_ff : C.monthly_full) + ' a month ++'; });
+        var S2 = steps(); tlEl.innerHTML = '';
+        if (!S2.length) tlEl.appendChild(h('li', 'is-empty', 'Pick a start date to see your go-live, training and billing dates.'));
+        S2.forEach(function (r) { var li = h('li'); li.appendChild(h('b', null, r[0])); li.appendChild(h('span', null, r[1])); tlEl.appendChild(li); });
+        var dateTxt = ST.date ? fmt(ST.date) : 'TBC', planTxt = ST.self ? 'Host it ourselves' : 'Managed by us';
+        var sub = str(I.subject).replace('{date}', dateTxt).replace('{choice}', planTxt);
+        var lines = ['Hi Sameep,', '', 'We’d like to go ahead with COS for ' + brand + '.', '',
+          'Plan: ' + planTxt + (ST.ff ? ' (friends & family)' : ''), 'Custom development credit: ' + ST.blocks + ' blocks (' + (ST.blocks * C.block_days) + ' days, ' + (ST.blocks * C.block_hours) + ' hours)',
+          'Total now: ' + money(ST.total) + ' ++' + (ST.self ? '' : ', then ' + money(ST.monthly) + ' a month ++'), 'Start: ' + dateTxt, ''];
+        if (S2.length) { lines.push('Timeline:'); S2.forEach(function (r) { lines.push('- ' + r[0] + ': ' + r[1]); }); lines.push(''); }
+        lines.push('Thanks,');
+        send.href = 'mailto:' + str(I.email, 'hello@sameep.ai') + '?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(lines.join('\n'));
+        send.classList.toggle('is-wait', !ST.date); hint.hidden = !!ST.date;
+        if (wa) wa.href = 'https://wa.me/' + String(I.whatsapp).replace(/\D/g, '') + '?text=' + encodeURIComponent(sub);
+      }
+      send.addEventListener('click', function (e) { if (!ST.date) { e.preventDefault(); cal.classList.remove('is-nudge'); void cal.offsetWidth; cal.classList.add('is-nudge'); } });
+      refresh();
+      ui.stage.appendChild(iv); raf2(function () { iv.classList.add('is-on'); });
+    }
+  }
   /* the proposal: what we'd run, the plans, the rollout, and one call to action */
   function proposal() {
+    if (cfg.offer) return offerPage();
     var SC = cfg.scope || {}, PR = cfg.pricing || {}, brand = str((cfg.brand || {}).name);
     var ov = h('div', 'sx-prop'); ui.prop = ov;
     var top = h('div', 'sx-prop-top');
@@ -1097,12 +1444,13 @@
     var ro = h('ol', 'sx-roll'); arr(SC.rollout).forEach(function (r) { var li = h('li'); li.appendChild(h('b', null, r.when)); li.appendChild(h('span', null, r.what)); ro.appendChild(li); }); in1.appendChild(ro);
     /* one call to action */
     var talk = ((cfg.end || {}).links || {}).talk || 'mailto:hello@sameep.ai';
-    var href = /^mailto:/i.test(talk) ? talk.replace(/subject=[^&]*/i, 'subject=' + encodeURIComponent('Chief of Staff for ' + brand + ': let\u2019s start')) : talk;
+    var href = /^mailto:/i.test(talk) ? talk.replace(/subject=[^&]*/i, 'subject=' + encodeURIComponent('COS for ' + brand + ': let\u2019s start')) : talk;
     var band = h('section', 'sx-prop-cta');
     var bt = h('div'); bt.appendChild(h('b', null, 'Ready when you are.')); bt.appendChild(h('span', null, 'Week 1 starts with a kick-off and your tools connected.')); band.appendChild(bt);
     var a = h('a', 'sx-su-next is-cta', 'Let\u2019s start'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; band.appendChild(a);
     var tmb = h('button', 'sx-hub-link', 'See the team'); tmb.type = 'button'; tmb.addEventListener('click', function () { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 450); if (ui.hubEl && ui.hubEl.parentNode) ui.hubEl.parentNode.removeChild(ui.hubEl); ui.hubEl = 'seen'; toTeam(); });
     band.appendChild(tmb);
+    var appA = h('a', 'sx-hub-link', 'See it as the app'); appA.href = str(((cfg.end || {}).links || {}).demo, '../app/'); band.appendChild(appA);
     in1.appendChild(band);
     ui.stage.appendChild(ov); raf2(function () { ov.classList.add('is-on'); });
   }
@@ -1110,7 +1458,7 @@
   function hub(when, go) {
     var S = cfg.story.setup || {}, end = when === 'end';
     var ov = h('div', 'sx-hub' + (end ? ' is-end' : '')); if (end) ui.hubEl = ov;
-    var hd = h('div', 'sx-hub-hd'); var ht = h('div'); ht.appendChild(h('span', 'sx-su-k', end ? 'Back at the hub · week one' : 'Your hub is ready')); ht.appendChild(h('h1', null, str((cfg.brand || {}).name) + ' · Chief of Staff')); hd.appendChild(ht);
+    var hd = h('div', 'sx-hub-hd'); var ht = h('div'); ht.appendChild(h('h1', null, (end ? 'Week one: ' : '') + str((cfg.brand || {}).name) + ' · COS')); hd.appendChild(ht);
     var acts = h('div', 'sx-hub-acts');
     var go1 = end ? h('button', 'sx-su-next is-cta', 'See the scope and pricing') : h('span', 'sx-hub-go', 'Opening the ' + str((cfg.story.product || {}).name, 'product').split(' ')[0] + ' story\u2026'); if (end) go1.type = 'button';
     if (end) { var tm = h('button', 'sx-hub-link', 'See the team'); tm.type = 'button'; tm.addEventListener('click', function () { unlock(); ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); ui.hubEl = 'seen'; toTeam(); }); acts.appendChild(tm); }
@@ -1153,12 +1501,20 @@
   window.cosStory = function (raw, opts) {
     cfg = raw || {};
     if (!cfg.story || !arr(cfg.story.chapters).length) return false;
-    document.title = str((cfg.page || {}).title, 'Chief of Staff: ' + str((cfg.brand || {}).name));
+    document.title = str((cfg.page || {}).title, 'COS for ' + str((cfg.brand || {}).name)) + ' · Company OS for consumer brands';
     arr(cfg.story.chapters).forEach(function (c) { arr(c.stops).forEach(function (st) { var s = typeof st === 'string' ? stageStop(st) : st; if (s) stops.push(s); }); });
     mods = arr(cfg.story.modules).length ? cfg.story.modules : DEFAULT_MODS.filter(function (m) { return stops.some(function (s) { return s.module === m.id; }); });
     var keep = opts && opts.keep && opts.keep.parentNode ? opts.keep : null;
     build(keep);
     addEventListener('keydown', onKey);
+    /* scrolling drives it too: a deliberate wheel step moves one beat (or back one stop), never a scroll of the page */
+    var wheelAt = 0;
+    addEventListener('wheel', function (e) {
+      if (!SCN || ui.setup || document.querySelector('.sx-prop.is-on') || Math.abs(e.deltaY) < 24) return;
+      if (e.target.closest && e.target.closest('.sx-sheet, .sx-thread, .sx-tasksp, .sx-tiles, .sx-hub')) return;
+      var now = Date.now(); if (now - wheelAt < 1200) return; wheelAt = now;
+      unlock(); if (e.deltaY > 0) next(); else if (si > 0) open(si - 1, -1);
+    }, { passive: true });
     preload(0); preload(1);
     var s0 = /[?&]step=(\d+)/.exec(location.search), first0 = s0 ? Math.max(0, Math.min(stops.length - 1, +s0[1] - 1)) : 0;
     maxSeen = first0;
@@ -1169,7 +1525,9 @@
       var note = null, slow = setTimeout(function () { if (keep) { note = h('span', 'sx-loading', 'Opening the board…'); keep.appendChild(note); } }, 1000);
       Promise.race([preload(0), new Promise(function (r) { setTimeout(r, 6000); })]).then(function () {
         clearTimeout(slow);
-        if (keep) {
+        if (keep && opts.scenes && !/[?&]noscenes\b/.test(location.search)) { SCN = opts.scenes(); ui.keep = keep; watchKeepers(); }
+        if (keep && SCN) { keep.classList.add('is-handing'); ui.stage.classList.remove('is-under'); ui.stage.classList.add('is-over'); }
+        else if (keep) {
           keep.classList.add('is-handing');
           ui.stage.classList.remove('is-under'); ui.stage.classList.add('is-over');
           /* hide the parcel stage rather than drop it: freeing its WebGL scene mid-story caused second-long GC pauses */

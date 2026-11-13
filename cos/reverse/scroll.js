@@ -217,8 +217,8 @@
     /* no headline: the opening is the parcel and her phone */
 
     var top = h('header', 'top');
-    top.appendChild(h('p', 'top-name', 'Chief of Staff'));
-    top.appendChild(h('p', 'top-for', str((cfg.page || {}).title, 'for brands and agencies').replace(/^Chief of Staff\s*/i, '')));
+    top.appendChild(h('p', 'top-name', 'COS'));
+    top.appendChild(h('p', 'top-for', str((cfg.page || {}).title, 'Company OS for consumer brands').replace(/^(COS|Chief of Staff)\s*/i, '')));
     var dl = h('a', 'top-demo', 'Try the demo'); dl.href = '/cos/app/#demo?brand=' + brandId; top.appendChild(dl);
     stage.appendChild(top); ui.top = top;
     /* phone: the caption sheet (solid page colour, full width) and a probe that reads the safe-area insets */
@@ -691,7 +691,7 @@
       c.appendChild(authorRow(faceEl(b.who), personName(b.who), 'voice note'));
       c.appendChild(body());
     } else if (kind === 'dm') {
-      var db = h('p', 'k-bar'); db.appendChild(h('span', 'k-ch', 'Direct message')); db.appendChild(h('span', 'k-app', 'Chief of Staff')); c.appendChild(db);
+      var db = h('p', 'k-bar'); db.appendChild(h('span', 'k-ch', 'Direct message')); db.appendChild(h('span', 'k-app', 'COS')); c.appendChild(db);
       var qa = h('div', 'k-dm k-dm-q'); qa.appendChild(faceEl(b.who)); qa.appendChild(h('p', 'b-q', b.text)); c.appendChild(qa);
       var an = h('div', 'k-dm k-dm-a'); an.appendChild(markEl(sid)); an.appendChild(h('p', 'b-a', b.answer)); c.appendChild(an);
     } else if (kind === 'agent') {
@@ -982,7 +982,7 @@
     return out.filter(Boolean);
   }
   function beatVoice(it) {
-    if (!SOUND || MUTED) return;
+    if (!SOUND || MUTED || SCENES) return;   /* scenes under the story: story.js owns the voice */
     var q = clipsFor(it); if (!q.length) return;
     if (NOW_AUDIO) { NOW_AUDIO.pause(); NOW_AUDIO = null; }
     VOICE_T0 = performance.now();
@@ -1480,7 +1480,24 @@
 
   /* a config with a `story` block: this engine plays only the opening (the parcel at her door, "Tap the parcel"),
      then hands the page to story.js (the module board) instead of rewinding */
-  var HANDED = false, RETIRED = false;
+  var HANDED = false, RETIRED = false, SCENES = false;
+  /* scenes under the story (v8): story.js drives this engine stage to stage; it stays the full-bleed scene behind the
+     cards. go(id) eases the camera to that stage's hold; a slow tick keeps its timed phone messages landing. */
+  var SCN = { raf: 0, tick: 0 };
+  function sceneGo(id, ms) {
+    var i = ORDER.indexOf(id); if (i < 0 || HOLD[i] == null) return false;
+    var from = FORCE_POS != null ? FORCE_POS : clamp(scrollY / VH(), 0, total), to = HOLD[i] + SETTLE;
+    var D = REDUCE_HAND ? 0 : (ms || Math.min(2800, 1100 + Math.abs(to - from) * 260)), t0 = performance.now();
+    cancelAnimationFrame(SCN.raf);
+    (function f(now) {
+      var k = D ? Math.min(1, (now - t0) / D) : 1, e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      FORCE_POS = from + (to - from) * e; render();
+      if (k < 1) SCN.raf = requestAnimationFrame(f);
+    })(t0);
+    return true;
+  }
+  function sceneLive(on) { clearInterval(SCN.tick); if (on) SCN.tick = setInterval(function () { if (!document.hidden) render(); }, 250); }
+  window.__scenes = { go: sceneGo, live: sceneLive, has: function (id) { var i = ORDER.indexOf(id); return i >= 0 && HOLD[i] != null; } };
   function handToStory() {
     if (HANDED || !window.cosStory) return;
     HANDED = true; HOVER.on = false; clearInterval(presTimer);
@@ -1488,7 +1505,7 @@
     scrollTo(0, 0);
     /* the board is built underneath while the parcel keeps playing; story.js crosses over once stage 1 is decoded,
        then retires this stage (so there is never a blank frame) */
-    window.cosStory(cfg, { from: 'parcel', keep: document.getElementById('stage'), retire: function () { RETIRED = true; } });
+    window.cosStory(cfg, { from: 'parcel', keep: document.getElementById('stage'), retire: function () { RETIRED = true; }, scenes: function () { SCENES = true; HOVER.on = false; return window.__scenes; } });
   }
   var REDUCE_HAND = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function render() {
@@ -1800,6 +1817,7 @@
     (function after() { if (!INTRO.done) return setTimeout(after, 120); setTimeout(function () { if (cfg.story) return handToStory(); if (scrollY < 20 && !PLAY.on) startPlay(); }, cfg.story ? 2200 : 1500); })();
   }
   function init(raw) {
+    if (raw && raw.story) document.documentElement.classList.add('has-story');   /* the story's own UI replaces the old dark app panel */
     /* a config with a `story` block plays as three chapters (story.js); this engine steps aside */
     /* ?step=N, a reload part-way down, or reduced motion go straight to the board */
     if (raw && raw.story && window.cosStory && (/[?&]step=\d/.test(location.search) || STILL || scrollY > 10 || /[?&]nointro\b/.test(location.search))) { window.cosStory(raw); return; }
@@ -1815,7 +1833,7 @@
         cards[id] = { state: 'pending', choice: rec };
       }
     });
-    document.title = 'Chief of Staff: ' + str((cfg.brand || {}).name, 'one order');
+    document.title = 'COS for ' + str((cfg.brand || {}).name, 'consumer brands') + ' · Company OS for consumer brands';
     total = buildSegments();
     document.getElementById('track').style.height = ((total + 1) * 100) + 'vh';
     var g0 = h('i', 'groove'); g0.style.top = '0'; document.getElementById('track').appendChild(g0);   /* the opening shot */
