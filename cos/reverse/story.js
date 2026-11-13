@@ -165,11 +165,13 @@
 
   /* ---------- the page ---------- */
   function svg(d) { return '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="' + d + '" fill="currentColor"/></svg>'; }
-  function build() {
+  function build(keep) {
     document.documentElement.classList.add('is-story');
     var track = document.getElementById('track');
-    track.innerHTML = ''; track.className = 'sx-track'; track.style.height = '';
-    var stage = h('div', 'sx-stage'); ui.stage = stage; track.appendChild(stage);
+    if (!keep) track.innerHTML = '';
+    track.className = 'sx-track'; track.style.height = '';
+    var stage = h('div', 'sx-stage'); ui.stage = stage;
+    if (keep) { stage.classList.add('is-under'); track.insertBefore(stage, track.firstChild); } else track.appendChild(stage);
 
     var top = h('header', 'sx-top');
     var br = h('div', 'sx-brand'); br.appendChild(h('span', 'sx-logo', str((cfg.brand || {}).name, 'C').replace(/[^a-z]/gi, '').charAt(0).toUpperCase()));
@@ -697,17 +699,32 @@
     arr(cfg.story.chapters).forEach(function (c) { arr(c.stops).forEach(function (st, n) { var s = typeof st === 'string' ? stageStop(st, n) : st; if (s) stops.push(s); }); });
     stops.forEach(function (s, i) { if (s.day == null) s.day = null; });
     mods = arr(cfg.story.modules).length ? cfg.story.modules : DEFAULT_MODS.filter(function (m) { return stops.some(function (s) { return s.module === m.id; }); });
-    build();
+    var keep = opts && opts.keep && opts.keep.parentNode ? opts.keep : null;
+    build(keep);
     addEventListener('keydown', onKey);
     preload(0); preload(1);
     var s0 = /[?&]step=(\d+)/.exec(location.search), first0 = s0 ? Math.max(0, Math.min(stops.length - 1, +s0[1] - 1)) : 0;
     maxSeen = first0;
     setAuto(AUTO);
     function start() { open(first0, 1); }
-    if (opts && opts.from === 'parcel') { if (!MUTED) unlock(); start(); }
+    if (opts && opts.from === 'parcel') {
+      if (!MUTED) unlock();
+      /* cross over from the parcel only when stage 1 is decoded; a quiet note if that is slow */
+      var note = null, slow = setTimeout(function () { if (keep) { note = h('span', 'sx-loading', 'Opening the board…'); keep.appendChild(note); } }, 1000);
+      Promise.race([preload(0), new Promise(function (r) { setTimeout(r, 6000); })]).then(function () {
+        clearTimeout(slow);
+        if (keep) {
+          keep.classList.add('is-handing');
+          ui.stage.classList.remove('is-under');
+          setTimeout(function () { if (keep.parentNode) keep.parentNode.removeChild(keep); ui.stage.classList.remove('is-over'); if (opts.retire) opts.retire(); }, 700);
+          ui.stage.classList.add('is-over');
+        }
+        start();
+      });
+    }
     else if (AUTO && MUTED) start();
     else gate(start);
-    ui.stage.classList.add('is-arrive'); raf2(function () { ui.stage.classList.remove('is-arrive'); });
+    if (!keep) { ui.stage.classList.add('is-arrive'); raf2(function () { ui.stage.classList.remove('is-arrive'); }); }
     window.__story = { open: open, next: next, stops: stops, get si() { return si; }, get state() { return state; }, choose: function (c) { if (ui.pick) ui.pick(c); } };
     return true;
   };

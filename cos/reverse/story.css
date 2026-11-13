@@ -278,3 +278,8 @@
 @media (prefers-reduced-motion: reduce) {
   .sx-set, .sx-ob, .sx-row, .sx-cap-in, .sx-stage, .sx-gate { transition: none !important; animation: none !important; }
 }
+/* the parcel → board crossover: the board waits underneath, then fades in over the parcel */
+.sx-stage.is-under { position: absolute; left: 0; right: 0; top: 0; z-index: 0; opacity: 0; pointer-events: none; }
+.sx-stage.is-over { position: absolute; left: 0; right: 0; top: 0; z-index: 3; opacity: 1; }
+#track > #stage { z-index: 1; }
+.sx-loading { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 20; font: 400 13px/1 var(--f-mono); color: #fff; background: rgba(21, 23, 28, .72); padding: 10px 14px; border-radius: 999px; }

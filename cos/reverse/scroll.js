@@ -1480,22 +1480,19 @@
 
   /* a config with a `story` block: this engine plays only the opening (the parcel at her door, "Tap the parcel"),
      then hands the page to story.js (the module board) instead of rewinding */
-  var HANDED = false;
+  var HANDED = false, RETIRED = false;
   function handToStory() {
     if (HANDED || !window.cosStory) return;
     HANDED = true; HOVER.on = false; clearInterval(presTimer);
     removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll);
-    var st = document.getElementById('stage');
-    if (st) st.classList.add('is-handing');
-    setTimeout(function () {
-      var end = document.getElementById('end'); if (end) end.innerHTML = '';
-      scrollTo(0, 0);
-      window.cosStory(cfg, { from: 'parcel' });
-    }, REDUCE_HAND ? 0 : 650);
+    scrollTo(0, 0);
+    /* the board is built underneath while the parcel keeps playing; story.js crosses over once stage 1 is decoded,
+       then retires this stage (so there is never a blank frame) */
+    window.cosStory(cfg, { from: 'parcel', keep: document.getElementById('stage'), retire: function () { RETIRED = true; } });
   }
   var REDUCE_HAND = matchMedia('(prefers-reduced-motion: reduce)').matches;
   function render() {
-    if (HANDED) return;
+    if (RETIRED) return;
     raf = 0; ANIM = false;
     var vh = VH(), pos = FORCE_POS != null ? FORCE_POS : clamp(scrollY / vh, 0, total), seg = SEG[SEG.length - 1], i;
     for (i = 0; i < SEG.length; i++) { if (pos < SEG[i].at + SEG[i].len) { seg = SEG[i]; break; } }
