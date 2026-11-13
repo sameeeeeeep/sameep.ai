@@ -81,11 +81,15 @@ if (typeof document !== 'undefined') boot();
 function boot() {
   const $ = (id) => document.getElementById(id);
   apiBase(); // resolve (and on localhost remember) ?api= before the hash or search changes
-  let me = null, cleanup = null, linkExpired = false, linkToken = null, wantDemo = false, seq = 0, cur = null, ask = null;
+  let me = null, cleanup = null, linkExpired = false, linkToken = null, wantDemo = false, wantPin = false, seq = 0, cur = null, ask = null;
 
   const m = location.hash.match(/^#([sl])=([a-z0-9]+)$/i);
   if (m) {
     if (m[1] === 'l' && /^[a-f0-9]{48}$/.test(m[2])) linkToken = m[2]; else linkExpired = true;
+    history.replaceState(null, '', location.pathname + location.search);
+  } else if (/^#pin$/i.test(location.hash)) {
+    // #pin: a private workspace behind a PIN. The Worker checks the PIN (POST /auth/pin) and answers with a session.
+    wantPin = true;
     history.replaceState(null, '', location.pathname + location.search);
   } else if (DEMO_HASH.test(location.hash)) {
     wantDemo = demoBrand(location.hash) || true;
@@ -115,6 +119,31 @@ function boot() {
     }
   }
 
+  function showPin() {
+    $('shell').hidden = true; $('signin').hidden = false;
+    $('signin').innerHTML = String(html`<div class="si"><a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span>Chief of Staff</a>
+      <h1>Enter the PIN</h1>
+      <form id="pin-form" class="si-form" novalidate>
+        <label class="field"><span>PIN</span><input id="pin-in" name="pin" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]*" maxlength="12" required autofocus></label>
+        <button class="btn is-primary" type="submit" id="pin-go">Open</button>
+        <p class="err" role="alert" id="pin-err" hidden></p>
+      </form></div>`);
+    $('pin-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const err = $('pin-err'), go = $('pin-go');
+      err.hidden = true; go.disabled = true; go.textContent = 'Checking';
+      try {
+        const r = await api('POST', '/auth/pin', { pin: $('pin-in').value });
+        token.set(r.token);
+        history.replaceState(null, '', location.pathname + location.search + hrefFor(r.workspace, HOME));
+        start();
+      } catch (x) {
+        err.textContent = x.message || 'That PIN is not right.'; err.hidden = false;
+        go.disabled = false; go.textContent = 'Open'; $('pin-in').select();
+      }
+    };
+  }
+
   async function showSignin() {
     if (cleanup) { try { cleanup(); } catch { /* */ } cleanup = null; }
     me = null;
@@ -128,6 +157,7 @@ function boot() {
   async function loadMe() { me = await api('GET', '/me'); return me; }
 
   async function start() {
+    if (wantPin) { wantPin = false; return showPin(); }
     if (wantDemo) {
       const brand = typeof wantDemo === 'string' ? wantDemo : null;
       wantDemo = false;
