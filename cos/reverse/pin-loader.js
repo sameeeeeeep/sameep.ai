@@ -303,7 +303,43 @@
       });
     });
   }
+  /* agents are plain named roles with a neutral monogram in a private show (no mascots): the engine's agent
+     marks and names are rewritten as they render */
+  var ROLE = { Minutes: 'Meetings', Scout: 'Hiring', Patch: 'Research', Haggle: 'Purchasing', Sprint: 'Projects', Quill: 'Content',
+    Polish: 'Website', Mango: 'Ads', Crate: 'Warehouse', Ink: 'Support', Boss: 'Chief of Staff' };
+  function neutralAgents() {
+    var st2 = document.createElement('style');
+    st2.textContent = '.cat img{display:none!important}.cat{background:#1d1c1a!important;color:#f3f1ec;font:600 12px/1 "Bricolage Grotesque",system-ui,sans-serif}.cat::after{content:attr(data-m)}';
+    document.head.appendChild(st2);
+    function fix(root) {
+      if (!root.querySelectorAll) return;
+      var cats = root.classList && root.classList.contains('cat') ? [root] : [];
+      Array.prototype.push.apply(cats, root.querySelectorAll('.cat'));
+      cats.forEach(function (c) {
+        if (c.getAttribute('data-m')) return;
+        var row = c.parentNode, name = row && row.querySelector && row.querySelector('b');
+        var t = name ? name.textContent : '';
+        c.setAttribute('data-m', t === 'Chief of Staff' || !t ? 'C' : t.charAt(0));
+      });
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), n, list = [];
+      while ((n = walker.nextNode())) list.push(n);
+      list.forEach(function (tn) {
+        var v = tn.nodeValue, w = v;
+        if (Object.prototype.hasOwnProperty.call(ROLE, v.trim())) w = v.replace(v.trim(), ROLE[v.trim()] === 'Chief of Staff' ? 'Chief of Staff' : ROLE[v.trim()] + ' agent');
+        w = w.replace(/\b(\w+) cat\b/g, '$1 agent').replace(/\bcats?\b/gi, function (m) { return m[0] === 'C' ? 'Agent' : 'agent'; });
+        if (w !== v) tn.nodeValue = w;
+      });
+      cats.forEach(function (c) {
+        var b2 = c.parentNode && c.parentNode.querySelector && c.parentNode.querySelector('b');
+        if (b2) c.setAttribute('data-m', b2.textContent === 'Chief of Staff' ? 'C' : b2.textContent.charAt(0));
+      });
+    }
+    new MutationObserver(function (ms) { ms.forEach(function (m) { Array.prototype.forEach.call(m.addedNodes, function (x) { if (x.nodeType === 1) fix(x); }); }); })
+      .observe(document.body, { childList: true, subtree: true });
+    fix(document.body);
+  }
   function open(cfg) {
+    neutralAgents();
     clearInterval(faceTimer); clearInterval(clockTimer);
     if (lock) { lock.classList.add('is-out'); setTimeout(function () { lock.remove(); }, 600); }
     scrollTo(0, 0);
