@@ -94,22 +94,40 @@
     '.pl-alt{padding:6px 14px;min-height:32px;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font:500 14px "Bricolage Grotesque",system-ui,sans-serif;cursor:pointer}',
     '.pl-alt:hover,.pl-alt:focus-visible{background:rgba(255,255,255,.26);outline:none}',
     '@media (prefers-reduced-motion:reduce){.pl-face,.pl-face.is-on i{animation:none;transform:none}.pl{transition:none}}',
-    /* v2: floating bubbles on a light page, the sign-in in a card in the middle */
-    '.pl{grid-template-rows:1fr;place-items:center;padding:16px;background:#f4f3ef;color:#15171c}',
-    '.pl-b{position:absolute;left:0;top:0;will-change:transform}',
-    '.pl-b i{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#e7e3db;box-shadow:0 10px 26px -12px rgba(21,23,28,.35),0 0 0 3px rgba(255,255,255,.9);opacity:calc(.55 + var(--z,1) * .45);transform:scale(0);transition:transform .8s cubic-bezier(.2,1.5,.4,1)}',
-    '.pl-b.is-on i{transform:scale(1);animation:pl-bob var(--bd,5s) ease-in-out var(--bl,0s) infinite}',
-    '.pl-b img{width:100%;height:100%;object-fit:cover;display:block}',
-    '.pl-card{align-self:center;width:min(380px,100%);padding:26px 24px 20px;border-radius:24px;background:rgba(255,255,255,.92);box-shadow:0 1px 0 rgba(21,23,28,.06),0 30px 60px -30px rgba(21,23,28,.35),0 0 0 1px rgba(21,23,28,.06)}',
-    '.pl .pl-ask{font-size:20px;letter-spacing:-.01em}',
-    '.pl .pl-in{background:#f4f3ef;box-shadow:inset 0 0 0 1px #d3d3cc;color:#15171c}',
-    '.pl .pl-in::placeholder{color:#8b8f99}',
-    '.pl .pl-in:focus{box-shadow:inset 0 0 0 1.5px #15171c}',
-    '.pl .pl-go{background:#15171c;color:#fff}',
-    '.pl .pl-alt{background:transparent;color:#3a3f4a;text-decoration:underline;text-underline-offset:3px}',
-    '.pl .pl-alt:hover,.pl .pl-alt:focus-visible{background:#ece9e2}',
-    '.pl .pl-load-b{background:#e3e3de}.pl .pl-load-b i{background:#15171c}',
-    '@media (prefers-reduced-motion:reduce){.pl-b.is-on i{animation:none}}',
+    /* v3: the sameep.ai lobby (css/app.css .lock): dark blurred room, clock, faces in loose rows, name box */
+    '.pl-lobby{grid-template-rows:auto 1fr auto;place-items:initial;justify-items:center;gap:8px;padding:clamp(24px,6vh,64px) 16px clamp(20px,4vh,36px);color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.35);background:radial-gradient(40vmax 30vmax at 18% 22%,rgba(64,96,104,.55),transparent 70%),radial-gradient(36vmax 28vmax at 82% 70%,rgba(52,70,92,.6),transparent 70%),radial-gradient(30vmax 24vmax at 60% 12%,rgba(40,66,72,.5),transparent 70%),radial-gradient(28vmax 22vmax at 12% 86%,rgba(60,80,70,.45),transparent 70%),#142027}',
+    '.pl-lobby .pl-top{gap:6px;justify-items:center}',
+    '.pl-online{display:inline-flex;align-items:center;gap:7px;margin-top:4px!important;padding:4px 11px;border-radius:999px;background:rgba(255,255,255,.16);font-weight:600;font-size:13px;text-shadow:none}',
+    '.pl-online::before{content:"";width:8px;height:8px;border-radius:50%;background:#5df07a;box-shadow:0 0 8px #5df07a;animation:pl-pulse 1.6s ease-in-out infinite}',
+    '@keyframes pl-pulse{50%{opacity:.35}}',
+    '.pl-lobby .pl-field{position:absolute;inset:0;z-index:1;pointer-events:none}',
+    '.pl-user{position:absolute;left:0;top:0;width:calc(var(--bub,50px) * 2.3);display:grid;justify-items:center;gap:6px;padding:0;border:0;background:none;color:#fff;font-family:inherit;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}',
+    '.pl-user[hidden]{display:none}',
+    '.pl-user>*{transition:scale .25s ease,opacity .3s,box-shadow .25s}',
+    '.pl-av{width:calc(var(--bub,50px) * 1.41);height:calc(var(--bub,50px) * 1.41);border-radius:50%;overflow:hidden;display:grid;place-items:center;background:rgba(255,255,255,.22);box-shadow:0 4px 16px rgba(0,0,0,.3),0 0 0 2px rgba(255,255,255,.4);transform:scale(0)}',
+    '.pl-av img{width:100%;height:100%;object-fit:cover;display:block}',
+    '.pl-av.is-ini{background:linear-gradient(150deg,hsl(var(--hue) 28% 60%),hsl(calc(var(--hue) + 30) 24% 44%))}',
+    '.pl-glyph{font:500 calc(var(--bub,50px) * .5)/1 "Bricolage Grotesque",system-ui,sans-serif;color:#fff}',
+    '.pl-user.is-in .pl-av{animation:pl-pop .75s cubic-bezier(.2,1.6,.4,1) both,pl-bob var(--d,5s) ease-in-out .75s infinite;transform:none}',
+    '.pl-name{font-weight:600;font-size:13.5px;line-height:1.2;text-align:center;text-shadow:0 1px 6px rgba(0,0,0,.45);opacity:0;transition:opacity .4s .3s}',
+    '.pl-user.is-in .pl-name{opacity:1}',
+    '.pl-user:hover .pl-av,.pl-user:focus-visible .pl-av{scale:1.08;box-shadow:0 6px 22px rgba(0,0,0,.35),0 0 0 3px #fff}',
+    '.pl-user:focus-visible{outline:none}',
+    '.pl-user.is-picked .pl-av{animation-play-state:paused;box-shadow:0 0 0 4px #3ddc84,0 0 28px rgba(61,220,132,.75);scale:1.12}',
+    '.pl-user.is-picked .pl-name{color:#3ddc84}',
+    '.pl-field.has-pick .pl-user:not(.is-picked)>*{opacity:.25}',
+    '.pl-lobby .pl-bottom{grid-row:3;align-self:end;width:min(360px,100%);gap:8px}',
+    '.pl-lobby .pl-ask{font-weight:600;font-size:20px;line-height:1.2;text-align:center}',
+    '.pl-lobby .pl-form{position:relative;display:block}',
+    '.pl-lobby .pl-in{width:100%;height:44px;padding:0 48px;border-radius:999px;background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);color:#fff;text-align:center;font-size:16px}',
+    '.pl-lobby .pl-in::placeholder{color:rgba(255,255,255,.78)}',
+    '.pl-lobby .pl-in:focus{box-shadow:inset 0 0 0 1.5px #fff}',
+    '.pl-lobby .pl-go{position:absolute;right:3px;top:3px;width:38px;height:38px;padding:0;border-radius:50%;background:rgba(255,255,255,.9);color:#123;font:700 17px/1 system-ui,sans-serif}',
+    '.pl-lobby .pl-msg{min-height:1.3em;font-size:13px;opacity:.85}',
+    '.pl-lobby .pl-alt{min-height:36px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-size:13px;text-decoration:none}',
+    '.pl-lobby .pl-alt:hover,.pl-lobby .pl-alt:focus-visible{background:rgba(255,255,255,.26);box-shadow:inset 0 0 0 1.5px #fff}',
+    '@media (max-width:500px){.pl-name{font-size:12px;max-width:calc(var(--bub,40px) * 2.2)}}',
+    '@media (prefers-reduced-motion:reduce){.pl-user.is-in .pl-av{animation:none}.pl-online::before{animation:none}.pl-user.is-picked .pl-av{scale:none}}',
     /* scope + pricing, on the page's light paper */
     '.pl-load-t{display:block}.pl-load-b{display:block;width:min(240px,70vw);height:3px;margin:10px auto 0;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden}.pl-load-b i{display:block;height:100%;background:#fff;transform-origin:0 50%;transform:scaleX(0);transition:transform .3s ease}',
     '#scope{background:#f3f1ec;color:#1d1c1a;font-family:"Bricolage Grotesque",system-ui,sans-serif;padding:96px 16px 120px}',
@@ -160,70 +178,88 @@
   var lock, msg, bottom, faceTimer = 0, clockTimer = 0;
   var base = (document.currentScript && document.currentScript.src) ? document.currentScript.src.replace(/[^/]*$/, '') : './';
 
+  /* the lobby, as on the sameep.ai lock screen: a dark blurred room, the big clock, everyone as a round face
+     in loose rows (each bobbing on its own beat), "Find your face" at the bottom. Tap your face: it goes green
+     and the PIN box opens. Any face works, so someone not on the team still gets in with the PIN.
+     Faces only (gate/f1..f5); each is labelled by role, never by name. */
+  var PEOPLE = [
+    { f: 1, role: 'Founder' }, { f: 2, role: 'Chief of Staff' }, { f: 3, role: 'Founder’s office' },
+    { f: 4, role: 'Content and social' }, { f: 5, role: 'Product analyst' }, { ini: 'H', role: 'Influencer marketing', hue: 330 }
+  ];
+  var field, top, users = [], picked = null, R = 50;
   function buildLock() {
-    lock = h('div', 'pl'); lock.setAttribute('role', 'dialog'); lock.setAttribute('aria-label', 'Sign in');
-    /* light and airy: faces float as bubbles; the sign-in card sits in the middle */
-    var field = h('div', 'pl-field');
-    bottom = h('div', 'pl-bottom pl-card');
+    lock = h('div', 'pl pl-lobby'); lock.setAttribute('role', 'dialog'); lock.setAttribute('aria-label', 'Sign in');
+    top = h('div', 'pl-top');
+    var time = h('p', 'pl-time'), date = h('p', 'pl-date'), pill = h('p', 'pl-online', PEOPLE.length + ' people in the workspace');
+    function tick() { var d = new Date(); time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, ''); date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' }); }
+    tick(); clockTimer = setInterval(tick, 15000);
+    top.appendChild(time); top.appendChild(date); top.appendChild(pill);
+    field = h('div', 'pl-field'); field.setAttribute('role', 'listbox'); field.setAttribute('aria-label', 'The team');
+    bottom = h('div', 'pl-bottom');
     msg = h('p', 'pl-msg'); msg.setAttribute('role', 'status'); msg.setAttribute('aria-live', 'polite');
-    lock.appendChild(field); lock.appendChild(bottom);
+    lock.appendChild(top); lock.appendChild(field); lock.appendChild(bottom);
     document.body.appendChild(lock);
-    faces(field);
-    askPin();
+    PEOPLE.forEach(function (m, i) {
+      var u = h('button', 'pl-user'); u.type = 'button'; u.setAttribute('role', 'option'); u.setAttribute('aria-label', m.role);
+      var fc = h('span', 'pl-av');
+      if (m.f) { var im = h('img'); im.alt = ''; im.decoding = 'async'; im.width = im.height = 120; im.src = base + 'gate/f' + m.f + '.webp'; fc.appendChild(im); }
+      else { fc.classList.add('is-ini'); fc.style.setProperty('--hue', m.hue); fc.appendChild(h('span', 'pl-glyph', m.ini)); }
+      u.appendChild(fc); u.appendChild(h('span', 'pl-name', m.role));
+      u.style.setProperty('--d', (4.2 + ((i * 7) % 30) / 10) + 's'); u.style.setProperty('--dl', (-((i * 13) % 50) / 10) + 's');
+      u.addEventListener('click', function () { choose(u); });
+      field.appendChild(u); users.push(u);
+      (function (e, d) { setTimeout(function () { e.classList.add('is-in'); }, d); })(u, 150 + i * 110);
+    });
+    askFace();
+    place();
+    addEventListener('resize', place);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
   }
-
-  /* the faces float as soft bubbles: slow drift, a gentle bob, soft bumps off each other, the edges and the card,
-     and a little parallax with the pointer (near ones move more). Faces only: gate/f1..f5. */
-  var stopBubbles = function () {};
-  function faces(field) {
-    var N = 5, phone = innerWidth < 600, n = phone ? 9 : 14, W = innerWidth, H = innerHeight, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var B = [], mx = 0, my = 0, raf = 0, last = performance.now();
-    for (var i = 0; i < n; i++) {
-      var r = (phone ? 26 : 34) + ((i * 37) % 7) * (phone ? 6 : 9), z = r / (phone ? 62 : 88);
-      var el = h('span', 'pl-b'), w = h('i'), im = h('img'); im.alt = ''; im.decoding = 'async';
-      im.src = base + 'gate/f' + ((i % N) + 1) + '.webp';
-      el.style.width = el.style.height = (2 * r) + 'px'; el.style.setProperty('--z', z.toFixed(2)); el.style.setProperty('--bd', (4 + (i % 4) * .8) + 's'); el.style.setProperty('--bl', -(i * .9) + 's');
-      w.appendChild(im); el.appendChild(w); field.appendChild(el);
-      var ang = i * 2.399, sp = (phone ? 10 : 14) + (i % 5) * 3;
-      B.push({ el: el, r: r, z: z, x: W * (.08 + .84 * ((i * .618) % 1)), y: H * (.1 + .8 * ((i * .382 + .17) % 1)), vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp });
-      (function (e, d) { setTimeout(function () { e.classList.add('is-on'); }, d); })(el, 120 + i * 90);
-    }
-    function onMove(e) { mx = (e.clientX / W - .5); my = (e.clientY / H - .5); }
-    addEventListener('pointermove', onMove, { passive: true });
-    function onResize() { W = innerWidth; H = innerHeight; }
-    addEventListener('resize', onResize);
-    function card() { var c = bottom && bottom.getBoundingClientRect(); return c ? { x: c.left + c.width / 2, y: c.top + c.height / 2, w: c.width / 2 + 18, hh: c.height / 2 + 18 } : null; }
-    function step(now) {
-      var dt = Math.min(.05, (now - last) / 1000); last = now;
-      var C = card();
-      B.forEach(function (b) {
-        b.x += b.vx * dt; b.y += b.vy * dt;
-        if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); } if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
-        if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy); } if (b.y > H - b.r) { b.y = H - b.r; b.vy = -Math.abs(b.vy); }
-        if (C) {   /* the card is a soft wall: push out and turn away */
-          var dx = b.x - C.x, dy = b.y - C.y, ox = C.w + b.r - Math.abs(dx), oy = C.hh + b.r - Math.abs(dy);
-          if (ox > 0 && oy > 0) { if (ox < oy) { b.x += (dx < 0 ? -ox : ox); b.vx = (dx < 0 ? -1 : 1) * Math.abs(b.vx); } else { b.y += (dy < 0 ? -oy : oy); b.vy = (dy < 0 ? -1 : 1) * Math.abs(b.vy); } }
-        }
-      });
-      for (var i = 0; i < B.length; i++) for (var j = i + 1; j < B.length; j++) {   /* gentle bumps */
-        var a = B[i], c = B[j], dx = c.x - a.x, dy = c.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 1, m = a.r + c.r + 6;
-        if (d < m) {
-          var nx = dx / d, ny = dy / d, push = (m - d) / 2;
-          a.x -= nx * push; a.y -= ny * push; c.x += nx * push; c.y += ny * push;
-          var rv = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
-          if (rv < 0) { a.vx += rv * nx * .9; a.vy += rv * ny * .9; c.vx -= rv * nx * .9; c.vy -= rv * ny * .9; }
-        }
+  /* the lobby's grid (era.js): a staggered grid over the screen minus the clock and the name box, each slot
+     nudged a little off true, sorted middle-out; one face per slot */
+  function place() {
+    if (!field || !lock.isConnected) return;
+    var F = field.getBoundingClientRect(), W = F.width, H = F.height, narrow = W < 500, PAD = 12, FOOT = 1.55;
+    R = narrow ? 42 : 60;
+    field.style.setProperty('--bub', R + 'px');
+    var zones = [top, bottom].map(function (z) { var r = z.getBoundingClientRect(); return { l: r.left - F.left - PAD, t: r.top - F.top - PAD, r: r.right - F.left + PAD, b: r.bottom - F.top + PAD }; });
+    /* a small team: rows of three, centred in the clear band between the clock and the name box,
+       each face nudged a little off true and every other row offset half a step, as the lobby does */
+    var per = narrow ? 2 : 3, rows = Math.ceil(users.length / per), sx = R * (narrow ? 2.9 : 2.9), sy = R * (1 + FOOT) + (narrow ? 18 : 30);
+    var band0 = zones[0].b + R, band1 = zones[1].t - R * FOOT, cy = (band0 + band1) / 2;
+    sy = Math.min(sy, rows > 1 ? (band1 - band0) / (rows - 1) : sy);
+    var cells = [];
+    for (var r = 0; r < rows; r++) {
+      var n = Math.min(per, users.length - r * per), y = cy + (r - (rows - 1) / 2) * sy, off = (r % 2 ? 1 : -1) * sx * .18;
+      for (var c = 0; c < n; c++) {
+        var k = r * 31 + c * 17;
+        cells.push({ x: W / 2 + (c - (n - 1) / 2) * sx + off + ((k % 7) - 3) * R * .06, y: y + ((k % 5) - 2) * R * .1 });
       }
-      B.forEach(function (b) {
-        var px = -mx * 26 * b.z, py = -my * 18 * b.z;
-        b.el.style.transform = 'translate3d(' + (b.x - b.r + px).toFixed(1) + 'px,' + (b.y - b.r + py).toFixed(1) + 'px,0)';
-      });
-      raf = requestAnimationFrame(step);
     }
-    if (still) { B.forEach(function (b) { b.el.style.transform = 'translate3d(' + (b.x - b.r) + 'px,' + (b.y - b.r) + 'px,0)'; }); }
-    else raf = requestAnimationFrame(step);
-    stopBubbles = function () { cancelAnimationFrame(raf); removeEventListener('pointermove', onMove); removeEventListener('resize', onResize); };
+    users.forEach(function (u, i) {
+      var cell = cells[i];
+      u.hidden = !cell;
+      if (cell) u.style.transform = 'translate3d(' + (cell.x - R * 1.15).toFixed(1) + 'px,' + (cell.y - R).toFixed(1) + 'px,0)';
+    });
   }
+  function choose(u) {
+    users.forEach(function (x) { x.classList.toggle('is-picked', x === u); x.setAttribute('aria-selected', x === u ? 'true' : 'false'); });
+    field.classList.add('has-pick');
+    if (!picked) { picked = u; askPin(); } else { picked = u; var i = bottom.querySelector('input'); if (i) i.focus({ preventScroll: true }); }
+  }
+  /* first screen: the ask, and the PIN box already there for anyone who knows it */
+  function askFace() {
+    var i = inp('password', 'Or type the PIN', { inputmode: 'numeric', pattern: '[0-9]*', maxlength: '12', 'aria-label': 'PIN' });
+    show('Find your face', pinForm(i), altBtn('Email me a code', askEmail), true);
+  }
+  function pinForm(i) {
+    return form(i, '→', function () {
+      msg.textContent = 'Checking…';
+      return api('POST', '/auth/pin', { pin: i.value }).then(function (r) { signedIn(r.token, r.workspace); })
+        .catch(function (x) { i.value = ''; throw x; });
+    });
+  }
+  var stopBubbles = function () { clearInterval(clockTimer); removeEventListener('resize', place); };
 
   function form(input, label, onSubmit) {
     var f = h('form', 'pl-form'); f.noValidate = true;
@@ -242,20 +278,17 @@
     Object.keys(extra || {}).forEach(function (k) { i.setAttribute(k, extra[k]); });
     return i;
   }
-  function show(ask, f, alt) {
+  function show(ask, f, alt, soft) {
     bottom.replaceChildren(h('p', 'pl-ask', ask), f, msg);
     if (alt) bottom.appendChild(alt);
+    if (soft && !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     setTimeout(function () { var i = f.querySelector('input'); if (i) i.focus({ preventScroll: true }); }, 60);
   }
   function altBtn(text, fn) { var b = h('button', 'pl-alt', text); b.type = 'button'; b.addEventListener('click', function () { msg.textContent = ''; fn(); }); return b; }
 
   function askPin() {
     var i = inp('password', 'PIN', { inputmode: 'numeric', pattern: '[0-9]*', maxlength: '12', 'aria-label': 'PIN' });
-    show('Enter the PIN', form(i, 'Open', function () {
-      msg.textContent = 'Checking…';
-      return api('POST', '/auth/pin', { pin: i.value }).then(function (r) { signedIn(r.token, r.workspace); })
-        .catch(function (x) { i.value = ''; throw x; });
-    }), altBtn('Email me a code', askEmail));
+    show('Enter the PIN', pinForm(i), altBtn('Email me a code', askEmail));
   }
   var email = '', nonce = null;
   function askEmail() {
