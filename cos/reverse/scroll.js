@@ -1786,6 +1786,8 @@
     (function after() { if (!INTRO.done) return setTimeout(after, 120); setTimeout(function () { if (scrollY < 20 && !PLAY.on) startPlay(); }, 1500); })();
   }
   function init(raw) {
+    /* a config with a `story` block plays as three chapters (story.js); this engine steps aside */
+    if (raw && raw.story && window.cosStory && window.cosStory(raw)) return;
     cfg = raw || {};
     buildStates(cfg.crops);
     mapsFromConfig();

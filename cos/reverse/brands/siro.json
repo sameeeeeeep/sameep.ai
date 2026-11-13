@@ -1010,7 +1010,7 @@
      "text": "3 cuts live from the shoot",
      "desc": "A fridge door · B the fizz pour · C beans",
      "via": "email",
-     "where": "3 cuts, final exports"
+     "where": "3 cuts, final exports (Leela)"
     },
     {
      "t": "auto",
@@ -1827,7 +1827,8 @@
        0.8,
        0.8
       ]
-     }
+     },
+     "who": "Meera"
     },
     {
      "t": "auto",

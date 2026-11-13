@@ -41,14 +41,17 @@
     return '../app/' + (email ? '?email=' + encodeURIComponent(email) : '') + '#/w/' + encodeURIComponent(ws) + '/today';
   }
 
-  var BRAND_ID = '';
-  /* the person's illustrated face (faces/<brand>-<name>.webp); their initial if there is none */
+  var BRAND_ID = '', CFG_FACES = null;
+  /* the person's illustrated face: the config's own (cfg.faces, keyed by name or first name) first, else
+     faces/<brand>-<name>.webp; their initial if there is none */
   function avatar(m, cls) {
     var ini = str(m.initial, str(m.name, '?').charAt(0)).slice(0, 2).toUpperCase(), el = h('span', cls, ini);
-    if (!BRAND_ID || !str(m.name)) return el;
+    var name = str(m.name), first = name.toLowerCase().split(/\s+/)[0];
+    var own = CFG_FACES && (str(CFG_FACES[name]) || str(CFG_FACES[name.split(/\s+/)[0]]) || str(CFG_FACES[first]));
+    if (!own && (!BRAND_ID || !name)) return el;
     var im = document.createElement('img'); im.alt = ''; im.decoding = 'async';
     im.onload = function () { el.textContent = ''; el.appendChild(im); el.classList.add('has-face'); };
-    im.src = 'faces/' + BRAND_ID + '-' + str(m.name).toLowerCase().split(/\s+/)[0] + '.webp';
+    im.src = own || 'faces/' + BRAND_ID + '-' + first + '.webp';
     return el;
   }
   function card(m, i, brand, end, demo) {
@@ -185,6 +188,7 @@
     // the demo continues the show: a well-formed brand id rides along (../app/#demo?brand=<id>)
     var id = /^[a-z0-9][a-z0-9-]{1,23}$/.test(str(c.id)) ? str(c.id) : '';
     BRAND_ID = id;
+    CFG_FACES = c.faces && typeof c.faces === 'object' ? c.faces : null;
     var demo = safeHref(str(links.demo)) || '/cos/app/#demo' + (id ? '?brand=' + id : '');
     var calm = still();
 
