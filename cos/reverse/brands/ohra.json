@@ -3130,36 +3130,1758 @@
   }
  },
  "story": {
-  "title": "One lip oil, from a 12:52 am voice note to her door.",
-  "line": "How a chief of staff runs Ohra's launch with Aditi and the team. Every module, the team and its agents, in one flow.",
+  "title": "One lip oil tint, from a 12:52 am voice note to her door.",
+  "line": "Every module, the team and its agents, in one flow.",
+  "product": {
+   "name": "Brick Dust lip oil tint",
+   "img": "hero"
+  },
+  "os_keys": [
+   "Idea",
+   "Demand",
+   "Format",
+   "Vendor",
+   "Carton",
+   "Units",
+   "Stock",
+   "Launch",
+   "Channels",
+   "Ads",
+   "Orders",
+   "Rating"
+  ],
+  "products": [
+   {
+    "name": "Brick Dust lip oil tint",
+    "cat": "Lips",
+    "img": "hero",
+    "follow": true
+   },
+   {
+    "name": "Clay lip liner",
+    "cat": "Lips",
+    "color": "#9b5a45",
+    "status": "Live · restock moving",
+    "pct": 0.85,
+    "module": "warehouse",
+    "owner": "Arjun",
+    "now": "Dock 1 restock today, 1,200 units.",
+    "next": "Nykaa top-up on Friday"
+   },
+   {
+    "name": "Second shade, darker",
+    "cat": "Lips",
+    "color": "#6b2f22",
+    "status": "Idea #42",
+    "pct": 0.06,
+    "module": "ideas",
+    "owner": "Aditi",
+    "now": "Asked for in 31 reviews in week one.",
+    "next": "concept in #npd"
+   }
+  ],
+  "modules": [
+   {
+    "id": "ideas",
+    "name": "#ideas",
+    "owners": [
+     "Aditi"
+    ],
+    "agent": "Research agent",
+    "about": "Voice notes and DMs become ideas"
+   },
+   {
+    "id": "npd",
+    "name": "#npd",
+    "owners": [
+     "Aditi",
+     "Tanvi"
+    ],
+    "agent": "Vendor agent",
+    "about": "Concepts, ratios, vendors, packaging",
+    "next": "Next: a concept from idea #41"
+   },
+   {
+    "id": "logistics",
+    "name": "#logistics",
+    "owners": [
+     "Arjun"
+    ],
+    "agent": "Ops agent",
+    "about": "Inbound and outbound",
+    "next": "Next: SG-2207 from Firozabad"
+   },
+   {
+    "id": "warehouse",
+    "name": "#warehouse",
+    "owners": [
+     "Arjun"
+    ],
+    "agent": "Ops agent",
+    "about": "Receiving, QC, dispatch",
+    "next": "Next: dock 2 at Okhla held"
+   },
+   {
+    "id": "listing",
+    "name": "#listing",
+    "owners": [
+     "Naina"
+    ],
+    "agent": "Website agent",
+    "about": "Site and 4 marketplaces",
+    "next": "Next: site, Nykaa, Amazon, Myntra, Purplle"
+   },
+   {
+    "id": "marketing",
+    "name": "#marketing",
+    "owners": [
+     "Naina",
+     "Kavya"
+    ],
+    "agent": "Ads agent",
+    "about": "Shoots, creators, ads",
+    "next": "Next: Saturday shoot, 3 ad cuts"
+   },
+   {
+    "id": "crm",
+    "name": "#crm",
+    "owners": [
+     "Naina"
+    ],
+    "agent": "Support agent",
+    "about": "Delivered, care notes, repeat",
+    "next": "Next: care notes and day-30 nudges"
+   }
+  ],
   "chapters": [
    {
     "title": "Idea to product",
-    "line": "A voice note at 12:52 am becomes a plan, then tints on the bench.",
     "stops": [
-     "voice",
-     "standup",
-     "samples"
+     {
+      "id": "ideas",
+      "module": "ideas",
+      "label": "Idea",
+      "day": 1,
+      "when": "12:52 am",
+      "board": "Inbox",
+      "title": "Aditi's 12:52 am voice note becomes idea #41.",
+      "scene": {
+       "layout": "quad",
+       "objs": [
+        {
+         "id": "inbox",
+         "list": {
+          "title": "Inbox · last night",
+          "rows": [
+           {
+            "who": "Aditi",
+            "name": "Aditi · voice note",
+            "note": "12:52 am · 0:22",
+            "value": "new",
+            "tone": "acc"
+           },
+           {
+            "via": "dm",
+            "name": "\"a lip oil, not a lipstick\"",
+            "note": "Instagram DM · 11:40 pm",
+            "value": "4th today"
+           },
+           {
+            "via": "dm",
+            "name": "\"oil but with real colour?\"",
+            "note": "Instagram DM · 10:05 pm"
+           },
+           {
+            "via": "dm",
+            "name": "\"balms are too sheer for me\"",
+            "note": "Instagram DM · 8:30 pm"
+           }
+          ]
+         },
+         "slot": "hero"
+        },
+        {
+         "id": "search",
+         "slot": "a",
+         "at": "cue",
+         "counter": {
+          "label": "searches a month for lip oil",
+          "to": 1240,
+          "sub": "lipstick searches down 18%"
+         }
+        },
+        {
+         "id": "split",
+         "slot": "b",
+         "at": "cue",
+         "chart": {
+          "type": "spark",
+          "values": [
+           410,
+           520,
+           610,
+           760,
+           900,
+           1050,
+           1240
+          ],
+          "big": "3x",
+          "label": "lip oil searches, 12 months"
+         }
+        },
+        {
+         "id": "idea",
+         "slot": "c",
+         "at": "cue",
+         "rot": 2,
+         "idea": {
+          "kind": "Idea #41 · from Aditi",
+          "title": "A lip oil with real colour",
+          "rows": [
+           [
+            "Why",
+            "1,240 searches a month"
+           ],
+           [
+            "Want",
+            "Colour of a lipstick, feel of an oil"
+           ],
+           [
+            "Price",
+            "₹899"
+           ],
+           [
+            "Size",
+            "4 ml"
+           ]
+          ]
+         }
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "msg",
+        "who": "Aditi",
+        "text": "Okay... can't sleep. Fourth girl in our DMs today asking for a lip oil. Not lipstick. My cousin's nineteen and she hasn't bought a bullet in a year, it's all balms and oils now. But they still want colour, right? Like, real colour that doesn't feel like lipstick. Check if it's just my DMs or if it's actually happening.",
+        "via": "app",
+        "voice": "voice-note",
+        "where": "Voice note",
+        "len": "0:22"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Research agent check if this is just Aditi's DMs. @Naina pull search trends for the standup.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "task",
+        "text": "Read 6 months of DMs and search trends",
+        "owner": "Research agent",
+        "done": "64 DMs · 1,240 searches a month",
+        "land": "search"
+       },
+       {
+        "k": "cos",
+        "agent": "Research agent",
+        "text": "Not just your DMs. Lip oil searches are up 3x in a year; lipstick is down 18%.",
+        "desc": "Google Trends, Instagram",
+        "land": "split",
+        "via": "dm",
+        "os": {
+         "Demand": "1,240 searches/mo"
+        }
+       },
+       {
+        "k": "msg",
+        "who": "Naina",
+        "text": "oil searches 3x in a year. but sheer ones get '1 star, no colour'",
+        "via": "meeting",
+        "voice": "standup-2",
+        "where": "10 am standup",
+        "at": "10:04"
+       },
+       {
+        "k": "decision",
+        "who": "Aditi",
+        "text": "Save it as idea #41 and open it in #npd?",
+        "options": [
+         {
+          "label": "Open in #npd",
+          "ai": true,
+          "land": "idea",
+          "reason": "Demand is real and growing; nobody makes a coloured oil under ₹1,000.",
+          "os": {
+           "Idea": "#41 · score 79"
+          }
+         },
+         {
+          "label": "Park it",
+          "land": "idea",
+          "note": "Parked",
+          "delay": 2,
+          "os": {
+           "Idea": "#41 · reopened day 3"
+          },
+          "then": [
+           {
+            "k": "cos",
+            "agent": "Research agent",
+            "text": "Parked. I'll bring it back if the DMs cross 100."
+           },
+           {
+            "k": "cos",
+            "agent": "Chief of staff",
+            "text": "Day 3: 112 DMs. @Aditi idea #41 is back, opening it in #npd.",
+            "desc": "Instagram DMs"
+           }
+          ]
+         }
+        ],
+        "tray": "Idea #41 to #npd"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "Idea #41 is open in #npd. @Aditi you own it. @Arjun @Tanvi your comments by Friday.",
+        "desc": "Announcement"
+       }
+      ]
+     },
+     {
+      "id": "concept",
+      "module": "npd",
+      "label": "Concept",
+      "day": 3,
+      "when": "Concept",
+      "board": "Concept board",
+      "title": "Her note says oil. The standup says colour too. The answer is both.",
+      "scene": {
+       "layout": "quad",
+       "objs": [
+        {
+         "id": "concept",
+         "slot": "hero",
+         "rot": -1,
+         "doc": {
+          "title": "Concept: Brick Dust lip oil tint",
+          "sub": "v1 · #npd",
+          "rows": [
+           [
+            "What",
+            "Liquid lipstick colour, oil feel"
+           ],
+           [
+            "Pack",
+            "Tube + wand"
+           ],
+           [
+            "Size",
+            "4 ml"
+           ],
+           [
+            "Price",
+            "₹899"
+           ]
+          ]
+         }
+        },
+        {
+         "id": "ratios",
+         "slot": "a",
+         "at": "cue",
+         "swipes": [
+          {
+           "color": "#c7764f",
+           "name": "80:20"
+          },
+          {
+           "color": "#b5603f",
+           "name": "70:30"
+          },
+          {
+           "color": "#a4533a",
+           "name": "60:40"
+          },
+          {
+           "color": "#8e4630",
+           "name": "50:50"
+          },
+          {
+           "color": "#7a3b2a",
+           "name": "40:60"
+          }
+         ],
+         "title": "5 tint : oil ratios"
+        },
+        {
+         "id": "heat",
+         "slot": "b",
+         "at": "cue",
+         "chart": {
+          "type": "bars",
+          "title": "Van test · 45°C · split per 20",
+          "values": [
+           0,
+           9,
+           1,
+           1,
+           2
+          ],
+          "labels": [
+           "80:20",
+           "70:30",
+           "60:40",
+           "50:50",
+           "40:60"
+          ],
+          "unit": "limit is 1 in 20",
+          "hi": 1
+         }
+        },
+        {
+         "id": "tube",
+         "src": "hero",
+         "slot": "c",
+         "at": "cue",
+         "label": "Ratio 3 · 60:40"
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "Concept v1 is up. @Arjun @Tanvi comments, please.",
+        "desc": "Opened from idea #41"
+       },
+       {
+        "k": "msg",
+        "who": "Arjun",
+        "text": "bhai oil leaks in a june van. 45° inside. needs a proper tube",
+        "via": "meeting",
+        "voice": "standup-3",
+        "where": "10 am standup"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Tanvi heat and wear on all 5 ratios. @Research agent hold Arjun's van spec: 45°C.",
+        "desc": "Assigned",
+        "land": "ratios"
+       },
+       {
+        "k": "task",
+        "text": "Heat test all 5 ratios at 45°C",
+        "owner": "Tanvi",
+        "done": "Ratio 2 splits: 9 of 20",
+        "land": "heat"
+       },
+       {
+        "k": "msg",
+        "who": "Arjun",
+        "text": "told you. delhi june",
+        "via": "whatsapp",
+        "where": "Warehouse group"
+       },
+       {
+        "k": "decision",
+        "who": "Aditi",
+        "text": "Which ratio goes forward?",
+        "options": [
+         {
+          "label": "60:40",
+          "ai": true,
+          "swatch": "#a4533a",
+          "cost": "₹31 a unit",
+          "days": 0,
+          "bar": 19,
+          "barLabel": "19 of 20 held",
+          "reason": "Holds at 45°C and reads as real colour.",
+          "land": "tube",
+          "os": {
+           "Format": "Tint 60:40, tube + wand"
+          }
+         },
+         {
+          "label": "70:30",
+          "swatch": "#b5603f",
+          "cost": "₹29 a unit",
+          "days": 6,
+          "bar": 11,
+          "barLabel": "11 of 20 held",
+          "delay": 6,
+          "land": "tube",
+          "os": {
+           "Format": "Tint 60:40 (after a re-run)"
+          },
+          "then": [
+           {
+            "k": "cos",
+            "agent": "Research agent",
+            "text": "70:30 split again in the van. Sent back to Kesar Labs; going with 60:40.",
+            "desc": "Heat log"
+           }
+          ]
+         }
+        ],
+        "tray": "Ratio"
+       },
+       {
+        "k": "task",
+        "text": "Spec sheet v1 from the pick",
+        "owner": "Spec agent",
+        "done": "Tint 60:40, 4 ml, tube + wand"
+       }
+      ]
+     }
     ]
    },
    {
-    "title": "Product finalisation",
-    "line": "Pick the tube maker, fix the carton, place the order.",
+    "title": "Finalisation",
     "stops": [
-     "vendor",
-     "packaging",
-     "po"
+     {
+      "id": "vendors",
+      "module": "npd",
+      "label": "Vendors",
+      "day": 40,
+      "when": "Vendors",
+      "board": "Vendors",
+      "title": "The cheapest tube lands three weeks late. Sethi's lands on time.",
+      "scene": {
+       "layout": "hero2",
+       "objs": [
+        {
+         "id": "quotes",
+         "slot": "hero",
+         "at": "cue",
+         "quotes": [
+          {
+           "name": "Nova",
+           "price": "₹34",
+           "note": "Guangzhou · 7 weeks by sea",
+           "color": "#c9c3b8"
+          },
+          {
+           "name": "Sethi Glass",
+           "price": "₹38",
+           "note": "frosted glass + wand · on time",
+           "img": "variants3",
+           "pick": true
+          },
+          {
+           "name": "Rana",
+           "price": "₹41",
+           "note": "plain tube · 2 weeks late",
+           "color": "#b9b5ad"
+          }
+         ]
+        },
+        {
+         "id": "sethi",
+         "slot": "a",
+         "at": "cue",
+         "swatch": {
+          "color": "#c9a24a",
+          "name": "Sethi Glass",
+          "sub": "frosted glass + wand · ₹38"
+         }
+        },
+        {
+         "id": "nova",
+         "slot": "a",
+         "at": "cue",
+         "swatch": {
+          "color": "#c9c3b8",
+          "name": "Nova",
+          "sub": "plastic tube · ₹34 · 3 wks late"
+         }
+        },
+        {
+         "id": "cost",
+         "slot": "b",
+         "at": "cue",
+         "chart": {
+          "type": "bars",
+          "title": "Landed cost a unit",
+          "values": [
+           38,
+           34,
+           41
+          ],
+          "labels": [
+           "Sethi",
+           "Nova",
+           "Rana"
+          ],
+          "unit": "₹, with freight",
+          "hi": 0
+         }
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Vendor agent quotes for the tube and wand from all three. @Aditi pick when they're in.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "cos",
+        "agent": "Vendor agent",
+        "text": "3 quotes in. Nova is cheaper but lands 3 weeks after launch.",
+        "desc": "Email, 3 quotes",
+        "land": "quotes",
+        "via": "email"
+       },
+       {
+        "k": "task",
+        "text": "Landed cost with freight and duty",
+        "owner": "Vendor agent",
+        "done": "Sethi ₹38 · Nova ₹34 · Rana ₹41",
+        "land": "cost"
+       },
+       {
+        "k": "decision",
+        "who": "Aditi",
+        "text": "Tube and wand maker?",
+        "options": [
+         {
+          "label": "Sethi Glass",
+          "ai": true,
+          "swatch": "#c9a24a",
+          "cost": "₹38 a unit",
+          "days": 0,
+          "bar": 100,
+          "barLabel": "on time",
+          "reason": "The only one landing before launch, wand included.",
+          "land": "sethi",
+          "os": {
+           "Vendor": "Sethi Glass, ₹38"
+          }
+         },
+         {
+          "label": "Nova",
+          "swatch": "#c9c3b8",
+          "cost": "₹34 a unit",
+          "days": 21,
+          "bar": 30,
+          "barLabel": "7 weeks by sea",
+          "land": "nova",
+          "delay": 21,
+          "os": {
+           "Vendor": "Nova, ₹34"
+          },
+          "then": [
+           {
+            "k": "cos",
+            "agent": "Ops agent",
+            "text": "Nova lands 3 weeks after launch. Launch moves 21 days; the shoot and ads move with it."
+           }
+          ]
+         }
+        ],
+        "tray": "Tube maker"
+       }
+      ]
+     },
+     {
+      "id": "pack",
+      "module": "npd",
+      "label": "Packaging & PO",
+      "day": 70,
+      "when": "Packaging",
+      "board": "Label",
+      "title": "Carton v3 is missing a line the law needs. Caught before 5,000 print.",
+      "scene": {
+       "layout": "hero2",
+       "objs": [
+        {
+         "id": "rules",
+         "slot": "hero",
+         "at": "cue",
+         "checklist": {
+          "title": "Carton proof · 14 label rules",
+          "rows": [
+           [
+            "Brand and shade",
+            true
+           ],
+           [
+            "Ingredients",
+            true
+           ],
+           [
+            "MRP and batch",
+            true
+           ],
+           [
+            "Manufacturer",
+            true
+           ],
+           [
+            "Net quantity",
+            false
+           ]
+          ]
+         }
+        },
+        {
+         "id": "carton",
+         "src": "box_flat",
+         "slot": "a",
+         "at": "cue"
+        },
+        {
+         "id": "po",
+         "slot": "b",
+         "at": "cue",
+         "stat": [
+          [
+           "5,000",
+           "units"
+          ],
+          [
+           "₹1.9L",
+           "at ₹38"
+          ],
+          [
+           "45 days",
+           "to pay"
+          ],
+          [
+           "Dock 2",
+           "Okhla"
+          ]
+         ]
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "msg",
+        "who": "Studio Pell",
+        "text": "carton v3 attached. ok to print?",
+        "via": "email",
+        "voice": "packaging-agency",
+        "where": "Re: carton v3 proof"
+       },
+       {
+        "k": "task",
+        "text": "Check v3 against 14 label rules",
+        "owner": "Design agent",
+        "done": "Missing: net quantity",
+        "land": "rules"
+       },
+       {
+        "k": "msg",
+        "who": "Tanvi",
+        "text": "v3 missing net qty. pls add \"Net 4 ml\" under the name",
+        "via": "whatsapp",
+        "where": "Quality"
+       },
+       {
+        "k": "task",
+        "text": "Proof v4 from Studio Pell",
+        "owner": "Design agent",
+        "done": "14 of 14. 5,000 cartons cleared",
+        "land": "carton",
+        "os": {
+         "Carton": "v4, 14/14"
+        }
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Vendor agent draft PO-0142 on Sethi's 45 days. @Arjun dock 2 is yours for the landing.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "decision",
+        "who": "Aditi",
+        "text": "PO-0142 · 5,000 units · 45 days. Approve?",
+        "options": [
+         {
+          "label": "Approve",
+          "ai": true,
+          "cost": "₹1.9L",
+          "days": 0,
+          "bar": 100,
+          "barLabel": "slot held",
+          "reason": "Sethi's slot is held this week only.",
+          "land": "po",
+          "os": {
+           "Units": "5,000 · ₹1.9L"
+          }
+         },
+         {
+          "label": "Hold for price",
+          "cost": "₹1.85L",
+          "days": 5,
+          "bar": 60,
+          "barLabel": "slot moves",
+          "land": "po",
+          "delay": 5,
+          "os": {
+           "Units": "5,000 · ₹1.85L"
+          },
+          "then": [
+           {
+            "k": "cos",
+            "agent": "Vendor agent",
+            "text": "Held. Sethi came back at ₹37 but the slot moved: the dock slips 5 days."
+           }
+          ]
+         }
+        ],
+        "tray": "PO-0142"
+       }
+      ]
+     }
     ]
    },
    {
     "title": "The product",
-    "line": "Brick Dust, shot, listed, launched and at her door.",
     "stops": [
-     "shoot",
-     "listing",
-     "ad",
-     "order",
-     "delivered"
+     {
+      "id": "inbound",
+      "module": "logistics",
+      "label": "Inbound",
+      "day": 150,
+      "when": "Inbound",
+      "board": "Shipments",
+      "title": "5,000 tubes on a truck from Firozabad to Okhla.",
+      "scene": {
+       "layout": "hero2",
+       "objs": [
+        {
+         "id": "route",
+         "slot": "hero",
+         "route": {
+          "from": "Sethi, Firozabad",
+          "to": "Dock 2, Okhla",
+          "eta": "ETA 4 pm"
+         }
+        },
+        {
+         "id": "trk",
+         "slot": "a",
+         "at": "cue",
+         "tracker": {
+          "title": "SG-2207 · 50 cartons",
+          "steps": [
+           {
+            "label": "Picked up, Firozabad",
+            "at": "7:00 am",
+            "done": true
+           },
+           {
+            "label": "Yamuna Expressway",
+            "at": "10:30 am",
+            "done": true
+           },
+           {
+            "label": "Badarpur, slow traffic",
+            "at": "2:10 pm",
+            "now": true
+           },
+           {
+            "label": "Dock 2",
+            "at": "4 pm"
+           }
+          ]
+         }
+        },
+        {
+         "id": "stack",
+         "slot": "b",
+         "at": "cue",
+         "stack": {
+          "to": 50,
+          "label": "cartons signed for · 5,000 units",
+          "boxes": 18
+         }
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "task",
+        "text": "Track SG-2207 from Firozabad",
+        "owner": "Ops agent",
+        "done": "Left 7:00 am",
+        "land": "trk"
+       },
+       {
+        "k": "cos",
+        "agent": "Ops agent",
+        "text": "Slow at Badarpur. ETA 4 pm, so dock 2 moves to 4.",
+        "desc": "Live from the transporter"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Arjun dock 2 at 4 pm, not 2. Two people on unloading.",
+        "desc": "Announcement"
+       },
+       {
+        "k": "msg",
+        "who": "Arjun",
+        "text": "done, dock 2 at 4",
+        "via": "whatsapp",
+        "where": "Warehouse group"
+       },
+       {
+        "k": "task",
+        "text": "Unload and sign for 50 cartons",
+        "owner": "Arjun",
+        "done": "Arrived 3:52 pm. 50 of 50",
+        "land": "stack",
+        "os": {
+         "Stock": "5,000 at Okhla"
+        }
+       }
+      ]
+     },
+     {
+      "id": "warehouse",
+      "module": "warehouse",
+      "label": "Warehouse",
+      "day": 160,
+      "when": "Warehouse",
+      "board": "QC",
+      "title": "Counted, weighed against the kit, and ready for dispatch.",
+      "scene": {
+       "layout": "quad",
+       "objs": [
+        {
+         "id": "qc",
+         "slot": "hero",
+         "counter": {
+          "label": "units passed QC",
+          "to": 4992,
+          "sub": "8 wands re-seated"
+         }
+        },
+        {
+         "id": "dock",
+         "list": {
+          "title": "Dock schedule · today",
+          "rows": [
+           {
+            "color": "#66622f",
+            "name": "Dock 1 · liner restock",
+            "value": "10:00",
+            "tone": "ok"
+           },
+           {
+            "color": "#66622f",
+            "name": "Dock 2 · Brick Dust, 50 cartons",
+            "value": "4:00",
+            "tone": "acc"
+           },
+           {
+            "color": "#d3d3cc",
+            "name": "Dock 3 · returns",
+            "value": "6:00"
+           }
+          ]
+         },
+         "slot": "a"
+        },
+        {
+         "id": "unit",
+         "src": "qc",
+         "slot": "b",
+         "at": "cue",
+         "label": "QC · weight vs kit"
+        },
+        {
+         "id": "kit",
+         "src": "kit_flatlay",
+         "slot": "c",
+         "at": "cue",
+         "label": "Pick-pack kit"
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "task",
+        "text": "Count and QC all 5,000",
+        "owner": "Ops agent",
+        "done": "4,992 pass. 8 wands re-seated",
+        "land": "unit",
+        "os": {
+         "Stock": "4,992 ready"
+        }
+       },
+       {
+        "k": "msg",
+        "who": "Arjun",
+        "text": "86 in the Okhla batch today. tint ones first",
+        "via": "meeting",
+        "where": "9:30 huddle"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Arjun kits are tube, carton, care card. @Ops agent weigh every box against the kit.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "task",
+        "text": "Kit: tube, carton, care card",
+        "owner": "Arjun",
+        "done": "Ready for dispatch",
+        "land": "kit"
+       }
+      ]
+     },
+     {
+      "id": "listing",
+      "module": "listing",
+      "label": "Listing",
+      "day": 165,
+      "when": "Listing",
+      "board": "Channels",
+      "title": "Live on the site, Nykaa, Amazon, Myntra and Purplle.",
+      "scene": {
+       "layout": "row5",
+       "objs": [
+        {
+         "id": "l1",
+         "slot": "l1",
+         "listing": {
+          "channel": "ohra.in",
+          "via": "shopify",
+          "note": "",
+          "status": "Draft"
+         }
+        },
+        {
+         "id": "l2",
+         "slot": "l2",
+         "listing": {
+          "channel": "Nykaa",
+          "via": "nykaa",
+          "note": "",
+          "status": "Draft"
+         }
+        },
+        {
+         "id": "l3",
+         "slot": "l3",
+         "listing": {
+          "channel": "Amazon",
+          "via": "amazon",
+          "note": "Prime",
+          "status": "Draft"
+         }
+        },
+        {
+         "id": "l4",
+         "slot": "l4",
+         "listing": {
+          "channel": "Myntra",
+          "via": "myntra",
+          "note": "",
+          "status": "Draft"
+         }
+        },
+        {
+         "id": "l5",
+         "slot": "l5",
+         "listing": {
+          "channel": "Purplle",
+          "via": "purplle",
+          "note": "",
+          "status": "Draft"
+         }
+        },
+        {
+         "id": "parity",
+         "list": {
+          "title": "Price parity",
+          "rows": [
+           {
+            "via": "shopify",
+            "name": "Site",
+            "value": "₹899",
+            "tone": "ok"
+           },
+           {
+            "via": "nykaa",
+            "name": "Nykaa",
+            "value": "₹899",
+            "tone": "ok"
+           },
+           {
+            "via": "amazon",
+            "name": "Amazon",
+            "value": "₹899",
+            "tone": "ok"
+           }
+          ]
+         },
+         "slot": "a"
+        },
+        {
+         "id": "pdp",
+         "slot": "b",
+         "stat": [
+          [
+           "1",
+           "shade live"
+          ],
+          [
+           "₹899",
+           "everywhere"
+          ]
+         ]
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Website agent one listing, five places. @Naina the hero line is your call.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "task",
+        "text": "Listing copy for all 5",
+        "owner": "Website agent",
+        "done": "5 drafts, one voice"
+       },
+       {
+        "k": "msg",
+        "who": "Studio Pell",
+        "text": "new hero line is live: glossy colour, every day",
+        "via": "email",
+        "voice": "listing-agency",
+        "where": "Re: product page"
+       },
+       {
+        "k": "cos",
+        "agent": "Website agent",
+        "text": "29 of 41 reviews say \"never sticky\". Pell's line doesn't say it.",
+        "desc": "Reviews check"
+       },
+       {
+        "k": "decision",
+        "who": "Naina",
+        "text": "Which hero line goes live on all 5?",
+        "options": [
+         {
+          "label": "\"Real colour, never sticky\"",
+          "ai": true,
+          "bar": 29,
+          "barLabel": "29 of 41 reviews",
+          "reason": "The reviewers' own words.",
+          "line": "Real colour, never sticky",
+          "os": {
+           "Channels": "5 live · review line"
+          }
+         },
+         {
+          "label": "\"Glossy colour, every day\"",
+          "bar": 4,
+          "barLabel": "agency line",
+          "line": "Glossy colour, every day",
+          "os": {
+           "Channels": "5 live · switched day 2"
+          },
+          "then": [
+           {
+            "k": "cos",
+            "agent": "Website agent",
+            "text": "Live with Pell's line. Day 2: add-to-cart is 11% lower than the review line on A/B. Switching.",
+            "line": "Real colour, never sticky"
+           }
+          ]
+         }
+        ],
+        "tray": "Hero line"
+       },
+       {
+        "k": "task",
+        "text": "Go live on all 5",
+        "owner": "Website agent",
+        "done": "Live everywhere",
+        "land": [
+         "l1",
+         "l2",
+         "l3",
+         "l4",
+         "l5"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "marketing",
+      "module": "marketing",
+      "label": "Marketing",
+      "day": 166,
+      "when": "Launch week",
+      "board": "Ads",
+      "title": "The ring light turns the gloss into glare. Then one ad cut wins.",
+      "scene": {
+       "layout": "quad",
+       "objs": [
+        {
+         "id": "cal",
+         "slot": "hero",
+         "calendar": {
+          "title": "Launch week",
+          "days": [
+           [
+            "Mon",
+            [
+             "Teaser"
+            ]
+           ],
+           [
+            "Tue",
+            [
+             "Shoot"
+            ]
+           ],
+           [
+            "Wed",
+            [
+             "Creators"
+            ]
+           ],
+           [
+            "Thu",
+            [
+             "Launch",
+             "Ads"
+            ]
+           ],
+           [
+            "Fri",
+            [
+             "Swipes"
+            ]
+           ],
+           [
+            "Sat",
+            [
+             "Reviews"
+            ]
+           ],
+           [
+            "Sun",
+            [
+             "Recap"
+            ]
+           ]
+          ]
+         }
+        },
+        {
+         "id": "shots",
+         "list": {
+          "title": "Shoot board",
+          "rows": [
+           {
+            "who": "Kavya",
+            "name": "Test shot · ring light",
+            "note": "gloss reads as glare",
+            "value": "redo",
+            "tone": "warn"
+           },
+           {
+            "color": "#a4533a",
+            "name": "North-light studio · Sat 9:30",
+            "note": "10-shot list",
+            "value": "42 photos",
+            "tone": "ok"
+           }
+          ]
+         },
+         "slot": "a",
+         "at": "cue"
+        },
+        {
+         "id": "ads",
+         "list": {
+          "title": "Ad cuts · overnight",
+          "rows": [
+           {
+            "color": "#9c4466",
+            "name": "Cut B · sunlit swipe",
+            "value": "ROAS 2.8",
+            "tone": "ok"
+           },
+           {
+            "color": "#c98aa3",
+            "name": "Cut A · tube + wand",
+            "value": "ROAS 1.6"
+           },
+           {
+            "color": "#d3d3cc",
+            "name": "Cut C · close-ups",
+            "value": "paused 0.9",
+            "tone": "warn"
+           }
+          ]
+         },
+         "slot": "b",
+         "at": "cue"
+        },
+        {
+         "id": "roas",
+         "slot": "c",
+         "at": "cue",
+         "chart": {
+          "type": "spark",
+          "values": [
+           1.1,
+           1.5,
+           1.9,
+           2.3,
+           2.5,
+           2.7,
+           2.8
+          ],
+          "big": "2.8",
+          "label": "cut B ROAS, 7 days"
+         }
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "msg",
+        "who": "Kavya",
+        "text": "test shot attached. bhai the gloss is just white glare",
+        "via": "whatsapp",
+        "where": "Content"
+       },
+       {
+        "k": "cos",
+        "agent": "Content agent",
+        "text": "It's the ring light, not the formula. North-light studio held for Saturday.",
+        "land": "shots"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Ads agent three cuts tonight; pause anything under 1. @Naina ROAS is yours in the morning.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "task",
+        "text": "Watch all 3 cuts overnight",
+        "owner": "Ads agent",
+        "done": "1:30 am: cut C at 0.9, paused",
+        "land": "ads"
+       },
+       {
+        "k": "msg",
+        "who": "Aditi",
+        "text": "is the tint launch paying for itself?",
+        "via": "app",
+        "voice": "ad-q",
+        "where": "#marketing"
+       },
+       {
+        "k": "cos",
+        "agent": "Ads agent",
+        "text": "Yes. ₹2.10 back per ₹1 over 7 days.",
+        "land": "roas",
+        "via": "ads"
+       },
+       {
+        "k": "decision",
+        "who": "Naina",
+        "text": "Scale cut B for 14 days, ₹1,100 a day from C?",
+        "options": [
+         {
+          "label": "Scale B",
+          "ai": true,
+          "img": "hero",
+          "cost": "+₹1,100/day",
+          "days": 0,
+          "bar": 2.8,
+          "barLabel": "ROAS 2.8",
+          "reason": "7 days at 2.8; C is paused at 0.9.",
+          "os": {
+           "Ads": "Cut B scaled · ROAS 2.8"
+          }
+         },
+         {
+          "label": "Hold",
+          "img": "hero_boxed",
+          "cost": "₹1,500/day",
+          "days": 3,
+          "bar": 1.6,
+          "barLabel": "blended 1.6",
+          "os": {
+           "Ads": "Cut B scaled day 3"
+          },
+          "then": [
+           {
+            "k": "cos",
+            "agent": "Ads agent",
+            "text": "Held B three days; still 2.8. Scaling now."
+           }
+          ]
+         }
+        ],
+        "tray": "Scale cut B"
+       }
+      ]
+     },
+     {
+      "id": "buy",
+      "module": "logistics",
+      "label": "Launch orders",
+      "day": 167,
+      "when": "Launch day",
+      "board": "Shipments",
+      "title": "86 orders in the first hour, every box out on the morning pickup.",
+      "scene": {
+       "layout": "quad",
+       "objs": [
+        {
+         "id": "orders",
+         "slot": "hero",
+         "counter": {
+          "label": "orders in the first hour",
+          "to": 86,
+          "sub": "₹77,314 · AOV ₹899"
+         }
+        },
+        {
+         "id": "chan",
+         "slot": "a",
+         "at": "cue",
+         "chart": {
+          "type": "channels",
+          "title": "By channel",
+          "items": [
+           [
+            "shopify",
+            44,
+            "site"
+           ],
+           [
+            "nykaa",
+            21,
+            ""
+           ],
+           [
+            "amazon",
+            14,
+            ""
+           ],
+           [
+            "shopify",
+            7,
+            "others"
+           ]
+          ]
+         }
+        },
+        {
+         "id": "cities",
+         "slot": "b",
+         "at": "cue",
+         "chart": {
+          "type": "donut",
+          "title": "Where they're from",
+          "center": "86",
+          "parts": [
+           [
+            "Delhi NCR",
+            38,
+            "#2d6a86"
+           ],
+           [
+            "Mumbai",
+            21,
+            "#5f93ab"
+           ],
+           [
+            "Bengaluru",
+            14,
+            "#9cc0d0"
+           ],
+           [
+            "Other",
+            13,
+            "#d3d3cc"
+           ]
+          ]
+         }
+        },
+        {
+         "id": "out",
+         "slot": "c",
+         "at": "cue",
+         "chart": {
+          "type": "funnel",
+          "title": "Next morning",
+          "steps": [
+           [
+            "ordered",
+            86
+           ],
+           [
+            "packed",
+            86
+           ],
+           [
+            "picked up",
+            85
+           ],
+           [
+            "out for delivery",
+            84
+           ]
+          ]
+         }
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "cos",
+        "agent": "Ops agent",
+        "text": "Launch hour: 86 orders, ₹77,314, average ₹899.",
+        "desc": "Shopify, live",
+        "land": "chan",
+        "via": "shopify",
+        "os": {
+         "Orders": "86 in hour one"
+        }
+       },
+       {
+        "k": "cos",
+        "agent": "Ops agent",
+        "text": "Delhi NCR 38, Mumbai 21, Bengaluru 14.",
+        "land": "cities"
+       },
+       {
+        "k": "cos",
+        "agent": "Support agent",
+        "text": "One pincode didn't match Saket (110071). Fixed to 110017 on WhatsApp.",
+        "desc": "Support line",
+        "via": "whatsapp"
+       },
+       {
+        "k": "msg",
+        "who": "Arjun",
+        "text": "all 86 packed for the morning batch. who picks up?",
+        "via": "whatsapp",
+        "where": "Warehouse group"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "@Ops agent book Delhivery: 2.1% failed in Delhi vs 4.8 and 6.3. @Arjun pickup 11:20.",
+        "desc": "Assigned"
+       },
+       {
+        "k": "task",
+        "text": "Book Delhivery and send tracking",
+        "owner": "Ops agent",
+        "done": "85 picked up 11:20 am. Tracking sent in Hindi",
+        "land": "out"
+       }
+      ]
+     },
+     {
+      "id": "crm",
+      "module": "crm",
+      "label": "Loop closed",
+      "day": 169,
+      "when": "Week one",
+      "board": "Delivered",
+      "title": "Delivered, cared for, and the next shade already asked for.",
+      "scene": {
+       "layout": "quad",
+       "objs": [
+        {
+         "id": "pins",
+         "slot": "hero",
+         "at": "cue",
+         "pins": {
+          "title": "Delivered · week one",
+          "points": [
+           [
+            44,
+            30,
+            "Delhi",
+            1.7
+           ],
+           [
+            30,
+            62,
+            "Mumbai",
+            1.3
+           ],
+           [
+            44,
+            80,
+            "Bengaluru",
+            1.1
+           ],
+           [
+            70,
+            50,
+            "Kolkata",
+            0.8
+           ],
+           [
+            52,
+            40,
+            "",
+            0.7
+           ],
+           [
+            36,
+            44,
+            "",
+            0.7
+           ]
+          ],
+          "note": "84 of 86 in 2 days"
+         }
+        },
+        {
+         "id": "care",
+         "list": {
+          "title": "Care notes",
+          "rows": [
+           {
+            "via": "whatsapp",
+            "name": "Shake it, keep it out of the sun",
+            "note": "sent 7:10 pm",
+            "value": "84",
+            "tone": "ok"
+           },
+           {
+            "via": "whatsapp",
+            "name": "Day 30 · clay liner nudge",
+            "note": "scheduled",
+            "value": "86"
+           }
+          ]
+         },
+         "slot": "a",
+         "at": "cue"
+        },
+        {
+         "id": "week",
+         "slot": "b",
+         "at": "cue",
+         "stat": [
+          [
+           "233",
+           "orders, week one"
+          ],
+          [
+           "₹2.3L",
+           "revenue"
+          ],
+          [
+           "4.6",
+           "rating, 41 reviews"
+          ],
+          [
+           "+3.7%",
+           "day on day"
+          ]
+         ]
+        },
+        {
+         "id": "trend",
+         "slot": "c",
+         "at": "cue",
+         "chart": {
+          "type": "spark",
+          "values": [
+           86,
+           121,
+           150,
+           174,
+           196,
+           214,
+           233
+          ],
+          "big": "233",
+          "label": "orders, day by day"
+         }
+        }
+       ]
+      },
+      "thread": [
+       {
+        "k": "task",
+        "text": "Care notes to every delivered order",
+        "owner": "Support agent",
+        "done": "84 sent: shake it, keep it out of the sun",
+        "land": [
+         "pins",
+         "care"
+        ]
+       },
+       {
+        "k": "msg",
+        "who": "Customer, Saket",
+        "text": "hi where's my order? OH-20418",
+        "via": "whatsapp",
+        "voice": "support-q",
+        "where": "Support line"
+       },
+       {
+        "k": "cos",
+        "agent": "Support agent",
+        "text": "Packed 9:52 am, on the 11:20 pickup. Tracking is in your WhatsApp.",
+        "desc": "Answered in 40 sec"
+       },
+       {
+        "k": "msg",
+        "who": "Naina",
+        "text": "sales today?",
+        "via": "app",
+        "voice": "delivered-q",
+        "where": "#crm"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "Week one: 233 orders, ₹2,31,187, 4.6 stars. Up 3.7% today.",
+        "desc": "Shopify, today",
+        "land": "week",
+        "os": {
+         "Orders": "233 · ₹2.3L",
+         "Rating": "4.6"
+        }
+       },
+       {
+        "k": "cos",
+        "agent": "Support agent",
+        "text": "Orders still climbing: 233 by day 7.",
+        "land": "trend"
+       },
+       {
+        "k": "cos",
+        "agent": "Chief of staff",
+        "text": "Thank you @Arjun @Tanvi @Naina @Kavya. @Research agent open idea #42: a second shade, darker.",
+        "desc": "Announcement"
+       }
+      ]
+     }
     ]
    }
   ]

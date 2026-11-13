@@ -103,7 +103,7 @@
     dm: ['Instagram', 'IG', '#c13584'], whatsapp: ['WhatsApp', 'W', '#1f9d55'], email: ['Gmail', 'M', '#c5221f'],
     meeting: ['Meet', 'Me', '#0f7b6c'], call: ['Call', 'C', '#5b616e'], shopify: ['Shopify', 'S', '#5e8e3e'],
     zepto: ['Zepto', 'Z', '#5a2a82'], blinkit: ['Blinkit', 'B', '#b78a00'], nykaa: ['Nykaa', 'N', '#d6116b'],
-    amazon: ['Amazon', 'A', '#232f3e'], delhivery: ['Delhivery', 'D', '#b3261e'], ads: ['Meta Ads', 'Ad', '#2f5bd3'], app: ['Chief of Staff', 'CS', '#15171c']
+    amazon: ['Amazon', 'A', '#232f3e'], myntra: ['Myntra', 'My', '#a8325e'], purplle: ['Purplle', 'P', '#5f3a8f'], delhivery: ['Delhivery', 'D', '#b3261e'], ads: ['Meta Ads', 'Ad', '#2f5bd3'], app: ['Chief of Staff', 'CS', '#15171c']
   };
   var SRC_ROW = ['dm', 'meeting', 'whatsapp', 'email', 'shopify', 'ads', 'delhivery'];
   function srcMark(v, cls) {
@@ -239,6 +239,34 @@
     top.appendChild(ctl);
     stage.appendChild(top);
 
+    /* products: category chips and a card per product with where it is now; the story follows the selected one */
+    var P = arr(cfg.story.products);
+    if (P.length) {
+      var pr = h('section', 'sx-prods'); pr.setAttribute('aria-label', 'Products');
+      var cats = ['All']; P.forEach(function (p) { if (p.cat && cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+      var chips = h('div', 'sx-cats'); ui.cats = chips;
+      cats.forEach(function (c) {
+        var n = c === 'All' ? P.length : P.filter(function (p) { return p.cat === c; }).length;
+        var b = h('button', 'sx-cat' + (c === 'All' ? ' is-on' : '')); b.type = 'button'; b.appendChild(h('span', null, c)); b.appendChild(h('em', null, String(n)));
+        b.addEventListener('click', function () { each(chips.children, function (x) { x.classList.toggle('is-on', x === b); }); each(ui.prods.children, function (card) { card.hidden = !(c === 'All' || card.dataset.cat === c); }); });
+        chips.appendChild(b);
+      });
+      pr.appendChild(chips);
+      ui.prods = h('div', 'sx-pcards');
+      P.forEach(function (p, i) {
+        var c = h('button', 'sx-pc' + (p.follow ? ' is-on' : '')); c.type = 'button'; c.dataset.cat = p.cat || '';
+        if (p.img) { var im = h('img'); im.alt = ''; im.src = asset(p.img); c.appendChild(im); } else { var sw = h('i', 'sx-pc-sw'); sw.style.background = p.color || '#d3d3cc'; c.appendChild(sw); }
+        var tx = h('span', 'sx-pc-tx'); tx.appendChild(h('b', null, p.name)); c._st = h('span', null, p.status || ''); tx.appendChild(c._st);
+        var bar = h('span', 'sx-pc-bar'); c._bar = h('i'); c._bar.style.transform = 'scaleX(' + (p.pct || 0) + ')'; bar.appendChild(c._bar); tx.appendChild(bar);
+        c.appendChild(tx);
+        if (p.follow) ui.follow = c;
+        c.addEventListener('click', function (e) { e.stopPropagation(); productPop(p, c); });
+        ui.prods.appendChild(c);
+      });
+      pr.appendChild(ui.prods);
+      stage.appendChild(pr);
+      document.addEventListener('click', function () { if (ui.ppop) { ui.ppop.remove(); ui.ppop = null; } });
+    }
     ui.strip = h('nav', 'sx-strip'); ui.strip.setAttribute('aria-label', 'Stages');
     stops.forEach(function (s, i) {
       var b = h('button', 'sx-st'); b.type = 'button'; b.dataset.i = i;
@@ -296,10 +324,8 @@
     var nt = h('div'); ui.nowLabel = h('b', null, ''); ui.nowLine = h('span', null, ''); nt.appendChild(ui.nowLabel); nt.appendChild(ui.nowLine); nb.appendChild(nt); now.appendChild(nb);
     ui.nowBtn = h('button', 'sx-now-btn'); ui.nowBtn.type = 'button'; ui.nowBtn.addEventListener('click', function () { unlock(); next(); }); now.appendChild(ui.nowBtn);
     tasks.appendChild(now);
-    var tk = h('section', 'sx-box sx-check'); ui.checkH = h('b', 'sx-side-h', 'Tasks and decisions'); tk.appendChild(ui.checkH);
+    var tk = h('section', 'sx-box sx-check'); ui.checkH = h('b', 'sx-side-h', 'Tasks'); tk.appendChild(ui.checkH);
     ui.check = h('ul', 'sx-check-ul'); tk.appendChild(ui.check); tasks.appendChild(tk);
-    var ag = h('section', 'sx-box sx-agents'); ag.appendChild(h('b', 'sx-side-h', 'Agents at work'));
-    ui.agents = h('ul', 'sx-ag-ul'); ag.appendChild(ui.agents); tasks.appendChild(ag);
 
     /* pane 3: canvas */
     var canvas = h('section', 'sx-pane sx-canvasp'); canvas.dataset.k = 'canvas'; main.appendChild(canvas);
@@ -315,6 +341,32 @@
     var endEl = document.getElementById('end');
     if (window.renderEnding && endEl) { endEl.innerHTML = ''; window.renderEnding(cfg, endEl); }
     tab('canvas');
+  }
+  /* a product's status, where things are moving for it */
+  function productPop(p, card) {
+    if (ui.ppop) { ui.ppop.remove(); ui.ppop = null; }
+    var pop = h('div', 'sx-ppop'); pop.addEventListener('click', function (e) { e.stopPropagation(); });
+    var hd = h('div', 'sx-ppop-hd'); hd.appendChild(h('b', null, p.name)); hd.appendChild(h('span', null, p.cat || '')); pop.appendChild(hd);
+    if (p.follow && si >= 0) {
+      var s = stops[si], m = modOf(s.module);
+      pop.appendChild(h('p', null, 'Stage ' + (si + 1) + ' of ' + stops.length + ' · ' + s.label + ' in ' + m.name + (dayOf(si) != null ? ' · Day ' + dayOf(si) : '')));
+      pop.appendChild(h('span', 'sx-ppop-n', s.title));
+      var nx = stops[si + 1]; if (nx) pop.appendChild(h('span', 'sx-ppop-x', 'Next: ' + nx.label + ' in ' + modOf(nx.module).name));
+      pop.appendChild(h('span', 'sx-ppop-f', 'The story on this page follows this product.'));
+    } else {
+      pop.appendChild(h('p', null, p.status || ''));
+      if (p.now) pop.appendChild(h('span', 'sx-ppop-n', p.now));
+      if (p.module) { var mm = h('div', 'sx-ppop-m'); mm.appendChild(iconEl(p.module)); mm.appendChild(h('span', null, modOf(p.module).name + (p.owner ? ' · ' + p.owner : ''))); mm.style.setProperty('--tint', look(p.module).tint); pop.appendChild(mm); }
+      if (p.next) pop.appendChild(h('span', 'sx-ppop-x', 'Next: ' + p.next));
+    }
+    var r = card.getBoundingClientRect(), sr = ui.stage.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(sr.width - 300, r.left - sr.left)) + 'px'; pop.style.top = (r.bottom - sr.top + 6) + 'px';
+    ui.stage.appendChild(pop); ui.ppop = pop;
+  }
+  function followStatus(i) {
+    var c = ui.follow; if (!c) return;
+    var s = stops[i]; c._st.textContent = s.label + ' · ' + modOf(s.module).name + (dayOf(i) != null ? ' · Day ' + dayOf(i) : '');
+    c._bar.style.transform = 'scaleX(' + ((i + 1) / stops.length).toFixed(3) + ')';
   }
   function owners(m) { return (Array.isArray(m.owners) ? m.owners : m.owner ? [m.owner] : []).slice(0, 3); }
   function modOf(id) { return mods.filter(function (m) { return m.id === id; })[0] || { id: id, name: '#' + id }; }
@@ -545,7 +597,7 @@
     var p = h('div', 'sx-pop sx-pop-' + v), s = SRC[v];
     var hd = h('div', 'sx-pop-hd'); hd.appendChild(srcMark(v)); if (it.where) hd.appendChild(h('span', null, it.where)); p.appendChild(hd);
     var who = it.k === 'cos' ? str(it.desc, s[0]) : str(it.who);
-    if (v === 'email') { var em = h('div', 'sx-pop-mail'); em.appendChild(h('span', null, 'From: ' + who)); em.appendChild(h('b', null, str(it.where, 'Subject'))); em.appendChild(h('p', null, it.text)); p.appendChild(em); }
+    if (v === 'email') { var em = h('div', 'sx-pop-mail'); em.appendChild(h('span', null, 'From: ' + who)); em.appendChild(h('b', null, str(it.where, str(it.desc, 'Quotes')))); em.appendChild(h('p', null, it.text)); p.appendChild(em); }
     else if (v === 'meeting') { var tr = h('div', 'sx-pop-tr'); tr.appendChild(h('span', null, str(it.at, '11:02') + '  ' + shortName(who))); tr.appendChild(h('p', null, it.text)); p.appendChild(tr); }
     else if (v === 'shopify') { var od = h('div', 'sx-pop-order'); od.appendChild(h('b', null, str(it.title, it.text))); p.appendChild(od); }
     else { var bb = h('div', 'sx-pop-bub'); bb.appendChild(faceEl(who, 'is-xs')); var t = h('div'); t.appendChild(h('b', null, shortName(who))); t.appendChild(h('p', null, it.text)); bb.appendChild(t); p.appendChild(bb); }
@@ -681,49 +733,47 @@
     AUTO = on; ui.play.textContent = on ? 'Pause' : 'Play demo'; ui.play.classList.toggle('is-on', on);
     if (on && state === 'decide' && ui.pick) setTimeout(function () { if (AUTO && state === 'decide' && ui.pick) ui.pick(null); }, 1600);
   }
+  /* the Tasks pane: one card per task or decision, with its owner (an agent or a person) and its state:
+     queued · working (an agent, with progress) · done (its result) · your call (the options, selectable here too) */
   function checklist(stop) {
     ui.check.innerHTML = '';
     arr(stop.thread).forEach(function (it, k) { if (it.k === 'task' || it.k === 'decision') ui.check.appendChild(checkLine(it, k)); });
   }
   function checkLine(it, k) {
-    var li = h('li', 'sx-ck'); li.dataset.k = k;
-    li.appendChild(h('span', 'sx-ck-box'));
-    li.appendChild(textEl('span', 'sx-ck-t', it.k === 'task' ? it.text : str(it.tray, it.text)));
-    var own = it.k === 'decision' ? it.who : it.owner || 'Chief of staff';
-    var o = h('span', 'sx-ck-o'); o.appendChild(faceEl(own, 'is-xs')); o.appendChild(h('span', null, (it.k === 'decision' ? 'Decision · ' : '') + shortName(own))); li.appendChild(o);
+    var dec = it.k === 'decision', own = dec ? it.who : it.owner || 'Chief of staff';
+    var li = h('li', 'sx-tc is-queued' + (dec ? ' is-dec' : '') + (isAgent(own) ? ' is-agent' : '')); li.dataset.k = k;
+    var hd = h('div', 'sx-tc-hd'); hd.appendChild(faceEl(own, 'is-xs'));
+    hd.appendChild(h('span', 'sx-tc-who', shortName(own) + (dec ? ' decides' : '')));
+    li._pill = h('span', 'sx-tc-pill', 'Queued'); hd.appendChild(li._pill); li.appendChild(hd);
+    li._t = textEl('p', 'sx-tc-t', dec ? str(it.tray, it.text) : it.text); li.appendChild(li._t);
+    if (!dec && isAgent(own)) { var bar = h('span', 'sx-tc-bar'); bar.appendChild(h('i')); li.appendChild(bar); }
+    if (dec) {
+      var ops = h('div', 'sx-tc-ops'); li._opts = [];
+      arr(it.options).forEach(function (o, j) {
+        var b = h('button', 'sx-tc-op' + (o.ai ? ' is-ai' : '')); b.type = 'button'; b.disabled = true;
+        b.appendChild(h('span', null, String(o.label).replace(/^["“]|["”]$/g, ''))); if (o.ai) b.appendChild(h('em', null, 'AI pick'));
+        b.addEventListener('click', function () { unlock(); if (ui.pick) ui.pick(j); });
+        ops.appendChild(b); li._opts.push(b);
+      });
+      li.appendChild(ops);
+    }
+    li._d = h('span', 'sx-tc-d', ''); li.appendChild(li._d);
     return li;
   }
-  function ck(k) { return ui.check.querySelector('.sx-ck[data-k="' + k + '"]'); }
-  function ckState(k, st, text) { var li = ck(k); if (!li) return; li.className = 'sx-ck is-' + st; if (text) li.querySelector('.sx-ck-t').textContent = text; }
-  /* agents at work: derived from the stage's beats */
-  function agentsFor(stop) {
-    AG = {}; ui.agents.innerHTML = '';
-    var m = modOf(stop.module), boss = owners(m)[0] || (cfg.brand || {}).founder;
-    var names = [];
-    (function walk(l) { arr(l).forEach(function (it) { var n = agentOfItem(it); if (n && names.indexOf(n) < 0) names.push(n); arr(it.options).forEach(function (o) { walk(o.then); }); }); })(stop.thread);
-    if (m.agent && names.indexOf(m.agent) < 0) names.push(m.agent);
-    names.forEach(function (n) {
-      var total = 0; arr(stop.thread).forEach(function (it) { if (agentOfItem(it) === n) total++; });
-      var rep = (stop.agents && stop.agents[n] && stop.agents[n].reports) || (/^chief/i.test(n) ? (cfg.brand || {}).founder || boss : 'Chief of staff');
-      var li = h('li', 'sx-ag'); li.appendChild(faceEl(n, 'is-sm'));
-      var b = h('div', 'sx-ag-b');
-      var t1 = h('div', 'sx-ag-t'); t1.appendChild(h('b', null, n)); var stt = h('span', 'sx-ag-st', 'ready'); t1.appendChild(stt); b.appendChild(t1);
-      var doing = h('span', 'sx-ag-do', 'Waiting for its next task'); b.appendChild(doing);
-      var pr = h('div', 'sx-ag-pr'); var bar = h('span', 'sx-ag-bar'); var fill = h('i'); bar.appendChild(fill); pr.appendChild(bar); var cnt = h('span', null, '0 of ' + Math.max(1, total)); pr.appendChild(cnt); b.appendChild(pr);
-      var last = h('span', 'sx-ag-last', ''); b.appendChild(last);
-      b.appendChild(h('span', 'sx-ag-rep', 'Reports to ' + shortName(rep)));
-      li.appendChild(b); ui.agents.appendChild(li);
-      AG[n] = { li: li, st: stt, doing: doing, fill: fill, cnt: cnt, last: last, n: 0, total: Math.max(1, total) };
-    });
+  function ck(k) { return ui.check.querySelector('.sx-tc[data-k="' + k + '"]'); }
+  var PILL = { queued: 'Queued', working: 'Working', waiting: 'Your call', done: 'Done' };
+  function ckState(k, st, detail, chosen) {
+    var li = ck(k); if (!li) return;
+    li.classList.remove('is-queued', 'is-working', 'is-waiting', 'is-done'); li.classList.add('is-' + st);
+    li._pill.textContent = PILL[st] || st;
+    if (detail) li._d.textContent = detail;
+    if (li._opts) li._opts.forEach(function (b, j) { b.disabled = st !== 'waiting'; if (chosen != null) { b.classList.toggle('is-chosen', j === chosen); b.classList.toggle('is-not', j !== chosen); } });
+    if (st === 'working' || st === 'waiting') { var y = li.offsetTop - ui.check.parentNode.offsetTop - 40; ui.check.parentNode.scrollTo({ top: Math.max(0, y), behavior: REDUCED ? 'auto' : 'smooth' }); }
   }
-  function agent(n, status, doing, out, step) {
-    var a = AG[n]; if (!a) return;
-    a.st.textContent = status; a.li.className = 'sx-ag is-' + status.split(' ')[0];
-    if (doing) a.doing.textContent = doing;
-    if (step) { a.n = Math.min(a.total, a.n + 1); a.cnt.textContent = a.n + ' of ' + a.total; a.fill.style.transform = 'scaleX(' + (a.n / a.total).toFixed(3) + ')'; }
-    if (out) a.last.textContent = 'Last: ' + out;
-  }
-  function waitingAll(person) { Object.keys(AG).forEach(function (n) { if (AG[n].st.textContent !== 'done') agent(n, 'waiting on ' + shortName(person)); }); }
+  /* agents now live on their task cards */
+  function agentsFor() { AG = {}; }
+  function agent() {}
+  function waitingAll() {}
   function tilePreview(mid, it) {
     var t = tiles[mid]; if (!t || !it || it.k === 'typing') return;
     var who = it.k === 'cos' ? str(it.agent, 'Chief of staff') : it.k === 'task' ? str(it.owner, 'Chief of staff') : it.who;
@@ -790,7 +840,7 @@
       if (s.id === 'listing' || s.launch) setOS({ Launch: 'Day ' + dayOf(j) });
     }
     Object.keys(CH).forEach(function (k2) { if (k2.indexOf(stop.id + ':') === 0) delete CH[k2]; }); DELAY[stop.id] = 0;
-    strip(i); tilesFor(i); nowCard(i); checklist(stop); agentsFor(stop); setState('run'); lightSource(null);
+    strip(i); tilesFor(i); nowCard(i); checklist(stop); agentsFor(stop); followStatus(i); setState('run'); lightSource(null);
     var m = modOf(stop.module), L = look(stop.module), switching = ui.lastMod && ui.lastMod !== stop.module;
     ui.lastMod = stop.module;
     ui.stage.style.setProperty('--mod', L.tint);
@@ -860,17 +910,16 @@
     if (it.k === 'task') {
       var r3 = row(it); add(r3); sfx('task'); tilePreview(mid, it);
       if (!ck(k)) ui.check.appendChild(checkLine(it, k));
-      ckState(k, 'working');
-      if (isAgent(it.owner)) agent(it.owner, 'working', it.text);
+      ckState(k, 'working', isAgent(it.owner) ? 'On it now' : 'With ' + shortName(it.owner || 'the team'));
       return wait(Math.max(1500, read * .7), t).then(function () {
-        r3.classList.add('is-done'); ckState(k, 'done'); sfx('done');
+        r3.classList.add('is-done'); ckState(k, 'done', it.done); sfx('done');
         if (isAgent(it.owner)) agent(it.owner, 'done', null, it.done, true);
         return wait(450, t);
       }).then(after);
     }
     if (it.k === 'decision') {
       var r4 = row(it); add(r4); sfx('ask'); tilePreview(mid, it); nudgeTab('chat');
-      ckState(k, 'waiting'); setState('decide'); waitingAll(it.who);
+      ckState(k, 'waiting', 'Pending on ' + shortName(it.who) + ': pick here or in the chat'); setState('decide');
       return new Promise(function (res, rej) {
         function pick(c) {
           if (t !== tok || !ui.pick) return; ui.pick = null;
@@ -878,7 +927,7 @@
           CH[key(stop, k)] = c;
           var o = answer(r4, it, c); sfx('decision');
           DELAY[stop.id] = (DELAY[stop.id] || 0) + (o.delay || 0);
-          ckState(k, 'done', str(it.tray, it.text) + ': ' + String(o.label).replace(/^["“]|["”]$/g, ''));
+          ckState(k, 'done', '✓ ' + shortName(it.who) + ' chose “' + String(o.label).replace(/^["“]|["”]$/g, '') + '”', c);
           Object.keys(AG).forEach(function (n) { if (/^waiting/.test(AG[n].st.textContent)) agent(n, 'ready'); });
           if (o.land) land(o.land, false, o.note);
           if (o.line) listingLine(o.line);
@@ -911,16 +960,113 @@
     if (state === 'done') {
       if (si < stops.length - 1) return open(si + 1, 1);
       setAuto(false);
+      if (cfg.story.setup && !ui.hubEl) return hub('end', function () { ui.hubEl = 'seen'; next(); });
       var e = document.getElementById('end'); if (e) e.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
       setTimeout(function () { each(document.querySelectorAll('#end .fin-team > li'), function (li, n) { setTimeout(function () { li.classList.add('is-up'); }, 200 + n * 170); }); }, 500);
     }
   }
   function onKey(e) {
     if (ui.gate) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ui.gate._go(); } return; }
+    if (ui.setup || (ui.hubEl && ui.hubEl !== 'seen' && ui.hubEl.parentNode)) return;
     if (scrollY > innerHeight * .5) return;
     var tag = ((e.target || {}).tagName || '').toLowerCase();
     if (e.key === 'ArrowRight' || (e.key === ' ' && tag !== 'button')) { e.preventDefault(); unlock(); next(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); if (si > 0) open(si - 1, -1); }
+  }
+
+
+  /* ---------- setup (private workspaces): workspace → connectors → agents → building the hub → the Hub ---------- */
+  function setupFlow(done) {
+    var S = cfg.story.setup, ov = h('div', 'sx-setup'); ui.setup = ov; ui.stage.appendChild(ov);
+    var steps = ['Workspace', 'Connectors', 'Agents', 'Hub'];
+    var top = h('div', 'sx-su-top'); var dots = h('ol', 'sx-su-steps'); steps.forEach(function (x) { dots.appendChild(h('li', null, x)); }); top.appendChild(dots); ov.appendChild(top);
+    var body = h('div', 'sx-su-body'); ov.appendChild(body);
+    var foot = h('div', 'sx-su-foot'); var nb = h('button', 'sx-su-next'); nb.type = 'button'; foot.appendChild(nb); ov.appendChild(foot);
+    var at = -1, t0 = ++tok;
+    function stepTo(i) {
+      at = i; each(dots.children, function (li, j) { li.className = j < i ? 'is-done' : j === i ? 'is-on' : ''; });
+      body.innerHTML = ''; nb.disabled = true; nb.onclick = null;
+      [workspace, connectors, agents, building][i]();
+    }
+    function ready(label, fn) { nb.textContent = label; nb.disabled = false; nb.onclick = function () { unlock(); fn(); }; if (AUTO) setTimeout(function () { if (!nb.disabled && nb.onclick) nb.onclick(); }, 1400); }
+    function workspace() {
+      var c = h('div', 'sx-su-ws');
+      c.appendChild(h('span', 'sx-su-k', 'Setting up'));
+      var br = h('div', 'sx-su-brand'); br.appendChild(h('span', 'sx-logo is-big', str((cfg.brand || {}).name, 'C').replace(/[^a-z]/gi, '').charAt(0).toUpperCase()));
+      var bt = h('div'); bt.appendChild(h('h1', null, str((cfg.brand || {}).name) + '’s Chief of Staff')); bt.appendChild(h('p', null, [str((cfg.brand || {}).category), str((cfg.brand || {}).city)].filter(Boolean).join(' · '))); br.appendChild(bt); c.appendChild(br);
+      var inv = h('div', 'sx-su-inv'); inv.appendChild(h('b', null, 'Inviting ' + arr(cfg.team).length + ' people'));
+      var grid = h('div', 'sx-su-team'); arr(cfg.team).forEach(function (m, i) { var p = h('div', 'sx-su-p'); p.style.transitionDelay = (300 + i * 220) + 'ms'; p.appendChild(faceEl(m.name, 'is-big')); p.appendChild(h('b', null, m.name)); p.appendChild(h('span', null, m.role)); grid.appendChild(p); });
+      inv.appendChild(grid); var sent = h('span', 'sx-su-ok', ''); inv.appendChild(sent); c.appendChild(inv); body.appendChild(c);
+      raf2(function () { grid.classList.add('is-on'); });
+      setTimeout(function () { sfx('done'); sent.textContent = '✓ Invites sent. Everyone gets their own login.'; ready('Next: connect your tools', function () { stepTo(1); }); }, 600 + arr(cfg.team).length * 220);
+    }
+    function connectors() {
+      var c = h('div', 'sx-su-cn');
+      var hd = h('div', 'sx-su-hd'); hd.appendChild(h('h2', null, 'Connect where the work already happens')); var all = h('button', 'sx-su-all', 'Connect all'); all.type = 'button'; hd.appendChild(all); c.appendChild(hd);
+      var grid = h('div', 'sx-su-grid'), left = arr(S.connectors).length;
+      arr(S.connectors).forEach(function (x) {
+        var t = h('button', 'sx-cn'); t.type = 'button';
+        var g = SRC[x[0]] || SRC.app; var gl = h('i', 'sx-cn-g', g[1]); gl.style.background = g[2]; t.appendChild(gl);
+        var tx = h('span', 'sx-cn-tx'); tx.appendChild(h('b', null, x[1] || g[0])); var st = h('span', null, 'Connect'); tx.appendChild(st); t.appendChild(tx);
+        var ic = h('span', 'sx-cn-ic'); t.appendChild(ic);
+        t._go = function () {
+          if (t.dataset.s) return; t.dataset.s = '1'; t.classList.add('is-busy'); st.textContent = 'Connecting…'; sfx('tick');
+          setTimeout(function () { st.textContent = x[2]; }, 700);
+          setTimeout(function () { t.classList.remove('is-busy'); t.classList.add('is-ok'); st.textContent = x[3]; sfx('done'); if (--left === 0) ready('Next: switch on the agents', function () { stepTo(2); }); }, 1500);
+        };
+        t.addEventListener('click', function () { unlock(); t._go(); });
+        grid.appendChild(t);
+      });
+      all.addEventListener('click', function () { unlock(); all.disabled = true; each(grid.children, function (t, i) { setTimeout(t._go, i * 260); }); });
+      c.appendChild(grid); body.appendChild(c);
+      nb.textContent = 'Connect your tools to continue';
+      if (AUTO) setTimeout(function () { all.click(); }, 700);
+    }
+    function agents() {
+      var c = h('div', 'sx-su-ag'); c.appendChild(h('h2', null, 'Switching on your agents'));
+      var list = h('div', 'sx-su-agl');
+      arr(S.agents).forEach(function (a, i) {
+        var r = h('div', 'sx-sa'); r.appendChild(faceEl(a[0], 'is-sm'));
+        var tx = h('div'); tx.appendChild(h('b', null, a[0])); tx.appendChild(h('span', null, a[1])); r.appendChild(tx);
+        var sw = h('span', 'sx-sw-t'); sw.appendChild(h('i')); r.appendChild(sw);
+        list.appendChild(r);
+        setTimeout(function () { r.classList.add('is-on'); sfx('task'); }, 350 + i * 320);
+      });
+      c.appendChild(list); body.appendChild(c);
+      setTimeout(function () { ready('Build my hub', function () { stepTo(3); }); }, 450 + arr(S.agents).length * 320);
+    }
+    function building() {
+      var c = h('div', 'sx-su-load'); c.appendChild(h('span', 'sx-spin'));
+      c.appendChild(h('h2', null, 'Building your hub…'));
+      var ul = h('ul'); arr(S.building).forEach(function (x, i) { var li = h('li', null, x); li.style.transitionDelay = (i * 600) + 'ms'; ul.appendChild(li); }); c.appendChild(ul); body.appendChild(c);
+      raf2(function () { ul.classList.add('is-on'); });
+      nb.textContent = 'Building…';
+      setTimeout(function () { sfx('stage'); hub('start', function () { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); ui.setup = null; }, 500); done(); }); }, 600 * arr(S.building).length + 700);
+    }
+    stepTo(0);
+  }
+  /* the Hub: modules, sources, agents, products and today's numbers. At the start, and again at the end, updated. */
+  function hub(when, go) {
+    var S = cfg.story.setup || {}, end = when === 'end';
+    var ov = h('div', 'sx-hub' + (end ? ' is-end' : '')); if (end) ui.hubEl = ov;
+    var hd = h('div', 'sx-hub-hd'); var ht = h('div'); ht.appendChild(h('span', 'sx-su-k', end ? 'Back at the hub · week one' : 'Your hub is ready')); ht.appendChild(h('h1', null, str((cfg.brand || {}).name) + ' · Chief of Staff')); hd.appendChild(ht);
+    var go1 = h('button', 'sx-su-next', end ? 'See the team' : 'Start: the ' + str((cfg.story.product || {}).name, 'product').split(' ')[0] + ' story'); go1.type = 'button'; hd.appendChild(go1); ov.appendChild(hd);
+    var nums = h('div', 'sx-hub-nums'); arr(end ? S.numbers_end : S.numbers_start).forEach(function (n) { var c = h('div'); c.appendChild(h('b', null, n[0])); c.appendChild(h('span', null, n[1])); nums.appendChild(c); }); ov.appendChild(nums);
+    var g = h('div', 'sx-hub-g');
+    var mb = h('section', 'sx-hub-box'); mb.appendChild(h('b', 'sx-side-h', 'Modules'));
+    var ml = h('div', 'sx-hub-mods'); mods.forEach(function (m) { var r = h('div', 'sx-hub-m'); r.style.setProperty('--tint', look(m.id).tint); r.appendChild(iconEl(m.id)); var tx = h('div'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('span', null, (end && m.done_line) || m.about || '')); r.appendChild(tx); var pp = h('span', 'sx-people'); owners(m).forEach(function (p) { pp.appendChild(faceEl(p, 'is-xs')); }); r.appendChild(pp); ml.appendChild(r); }); mb.appendChild(ml); g.appendChild(mb);
+    var side = h('div', 'sx-hub-side');
+    var sb = h('section', 'sx-hub-box'); sb.appendChild(h('b', 'sx-side-h', 'Connected'));
+    var sl = h('div', 'sx-hub-src'); arr(S.connectors).forEach(function (x) { var m = srcMark(x[0]); m.appendChild(h('em', null, x[3].replace(/^✓\s*/, ''))); sl.appendChild(m); }); sb.appendChild(sl); side.appendChild(sb);
+    var ab = h('section', 'sx-hub-box'); ab.appendChild(h('b', 'sx-side-h', arr(S.agents).length + ' agents on'));
+    var al = h('div', 'sx-hub-ag'); arr(S.agents).forEach(function (a) { var c = h('span'); c.appendChild(faceEl(a[0], 'is-xs')); c.appendChild(h('span', null, a[0])); al.appendChild(c); }); ab.appendChild(al); side.appendChild(ab);
+    var pb = h('section', 'sx-hub-box'); pb.appendChild(h('b', 'sx-side-h', 'Products'));
+    arr(cfg.story.products).forEach(function (p) { var r = h('div', 'sx-hub-p'); if (p.img) { var im = h('img'); im.alt = ''; im.src = asset(p.img); r.appendChild(im); } else { var sw = h('i'); sw.style.background = p.color; r.appendChild(sw); } var tx = h('div'); tx.appendChild(h('b', null, p.name)); tx.appendChild(h('span', null, p.follow ? (end ? str(S.follow_end, 'Live') : str(S.follow_start, 'Idea in the inbox')) : p.status)); r.appendChild(tx); pb.appendChild(r); });
+    side.appendChild(pb);
+    g.appendChild(side); ov.appendChild(g);
+    ui.stage.appendChild(ov); raf2(function () { ov.classList.add('is-on'); });
+    go1.addEventListener('click', function () { unlock(); if (end) { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); } else { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); } go(); });
+    if (AUTO && !end) setTimeout(function () { go1.click(); }, 2600);
   }
 
   /* ---------- the Enter gate (deep links; otherwise the parcel tap is the gate) ---------- */
@@ -965,6 +1111,7 @@
         start();
       });
     }
+    else if (cfg.story.setup && !s0) setupFlow(start);
     else if (AUTO && MUTED) start();
     else gate(start);
     if (!keep) { ui.stage.classList.add('is-arrive'); raf2(function () { ui.stage.classList.remove('is-arrive'); }); }
