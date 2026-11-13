@@ -128,7 +128,7 @@ export function decisionCard(d, s = {}, opts = {}) {
       btn = html`<button class="btn is-small${o.recommended ? ' is-primary' : ''}" type="button" data-dec="decide" data-id="${d.id}" data-v="${d.version}" data-opt="${o.key}"${tapAs ? html` data-as="${tapAs.role}"` : ''}>${label}${who}</button>`;
     }
     return html`<li class="cs-opt${o.recommended ? ' is-rec' : ''}${isChosen ? ' is-chosen' : ''}${d.chosen && !isChosen ? ' is-not' : ''}">
-      <div class="cs-opt-t"><b>${o.label}</b>${o.recommended ? html`<span class="cs-rec">Recommended</span>` : ''}${isChosen ? html`<span class="cs-rec is-chosen">Chosen</span>` : ''}</div>
+      <div class="cs-opt-t"><b>${o.label}</b>${o.recommended ? html`<span class="cs-rec">AI pick</span>` : ''}${isChosen ? html`<span class="cs-rec is-chosen">Chosen</span>` : ''}</div>
       ${o.detail ? html`<p class="cs-opt-d">${o.detail}</p>` : ''}
       ${meta.length ? html`<p class="cs-opt-m">${meta}</p>` : ''}
       ${btn}

@@ -73,6 +73,7 @@ export const ICONS = {
   more: I('<circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/>'),
   feed: I('<path d="M4 6h16M4 12h10M4 18h13"/><circle cx="19" cy="12" r="1.5"/>'),
   products: I('<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/>'),
+  home: I('<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M9 4v16M15 4v16"/>'),
   tasks: I('<circle cx="6" cy="7" r="2"/><path d="M11 7h9M11 12h9M11 17h9"/><circle cx="6" cy="12" r="2"/><circle cx="6" cy="17" r="2"/>'),
   canvas: I('<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="m3.5 16 5-5 4 4 3-3 5 5"/><circle cx="15.5" cy="9" r="1.5"/>'),
   chat: I('<path d="M20 12a7.5 7.5 0 0 1-11 6.6L4 20l1-4.3A7.5 7.5 0 1 1 20 12z"/>'),

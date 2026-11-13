@@ -200,7 +200,7 @@ function dcOption(c, o, ui) {
   const pre = c.my_pre && c.my_pre.option_id === o.id && c.my_vote == null;
   const closed = c.status !== 'open';
   const names = o.voters.map((v) => v.name).filter(Boolean);
-  const inner = html`<span class="dc-opt-l">${o.label}${o.recommended ? html`<span class="dc-rec mono">Recommended</span>` : ''}${o.won ? html`<span class="dc-won mono">Decided</span>` : ''}</span>
+  const inner = html`<span class="dc-opt-l">${o.label}${o.recommended ? html`<span class="dc-rec">AI pick</span>` : ''}${o.won ? html`<span class="dc-won mono">Decided</span>` : ''}</span>
     <span class="dc-n mono" aria-label="${o.count} ${o.count === 1 ? 'vote' : 'votes'}">${o.count}</span>
     ${o.detail ? html`<span class="dc-opt-d">${o.detail}</span>` : ''}
     ${o.author_kind === 'person' ? html`<span class="dc-opt-by">Suggested by ${o.author_name}</span>` : ''}

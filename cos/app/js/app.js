@@ -24,6 +24,7 @@ import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 // #crm, each opening its tasks), then Tasks (one list across every module), Chat, Canvas and the Dashboard. The Chief of
 // staff is the lead agent inside it (Agents, and every thread). The rest sits under More.
 export const NAV = [
+  { section: 'home',     label: 'Workspace', page: '../pages/home.js' },
   { section: 'products', label: 'Products', page: '../pages/products.js' },
   { section: 'tasks',    label: 'Tasks',    page: '../pages/tasks.js' },
   { section: 'chat',     label: 'Chat',     page: '../pages/chat.js' },
@@ -62,7 +63,7 @@ export function sideNav(wid, r, prods = [], icons = {}) {
     ${top.map(item).join('')}
     <details class="rn-more"${inMore ? ' open' : ''}><summary>More</summary>${more.map(item).join('')}</details>`;
 }
-export const HOME = 'dash';
+export const HOME = 'home'; // the one-view workspace (pages/home.js) is where everyone lands
 const MOD_ICONS = Object.fromEntries(Object.entries(MODS).map(([k, m]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${m.icon}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
 
 // agents running (the world's 19 functions share 16 agents; the shell's pill links to Agents)
@@ -74,6 +75,7 @@ export const ASKS = {
   agents: ['What did the agents do today?', 'Who still needs to sign in?'],
   feed: ['How are sales today?', 'What is waiting for a tap?', 'When is the launch?'],
   chat: ['How are sales today?', 'What is the stock cover?'],
+  home: [],
   products: ['Where is the launch?', 'What is waiting for a tap?', 'What is the stock cover?'],
   tasks: ['What is waiting for a tap?', 'What is overdue?', 'What did the agents do today?'],
   canvas: ['Which vendor invoices are open?', 'What is the stock cover?'],

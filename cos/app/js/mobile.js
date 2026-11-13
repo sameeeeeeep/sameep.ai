@@ -10,10 +10,10 @@
 // Pure pieces (tabsView, needsView, mainAction, waiting) take plain data and return strings, so Node can test them.
 import { html, raw, ICONS } from './ui.js';
 
-export const TABS = [['dash', 'Dashboard'], ['tasks', 'Tasks'], ['chat', 'Chat']];
+export const TABS = [['home', 'COS'], ['tasks', 'Tasks'], ['chat', 'Chat']];
 const BADGED = 'chat'; // where the work lives: each module's To do, and All modules
 // what the More sheet lists (every other section)
-export const MORE = [['products', 'Products'], ['canvas', 'Canvas'], ['agents', 'Agents'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
+export const MORE = [['dash', 'Dashboard'], ['products', 'Products'], ['canvas', 'Canvas'], ['agents', 'Agents'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
   ['chats', 'Work'], ['team', 'Members'], ['hiring', 'Hiring'], ['billing', 'Billing']];
 
 // Pure: the cards that need a person (a tap or a check), newest first

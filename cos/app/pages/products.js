@@ -97,17 +97,7 @@ export function view(data, ctx, ui = {}) {
       </span>
     </a>`)}</nav>`;
 
-  // ---- the strip: numbered circles on one line, the line filled up to the current stage
-  const fill = (p.stage / (STAGES.length - 1)) * 90;
-  const strip = html`<nav class="pj-strip" aria-label="${p.name}, the journey"><ol style="--fill:${fill.toFixed(1)}%">${STAGES.map((x, i) => {
-    const k = i < p.stage ? 'is-done' : i === p.stage ? 'is-now' : 'is-next';
-    const d = p.days[i];
-    return html`<li class="pj-st ${k}${i === sel ? ' is-sel' : ''}"><a href="${stageHref(i)}"${raw(i === p.stage ? ' aria-current="step"' : '')}>
-      <span class="pj-dot">${i < p.stage ? CHECK : i === p.stage ? pic(p, data, 'is-dot') : html`<span>${i + 1}</span>`}</span>
-      <span class="pj-st-l">${x.label}</span>
-      <span class="pj-st-m">#${x.mod}${d != null && i <= p.stage + 1 ? `, day ${d}` : ''}</span>
-    </a></li>`;
-  })}</ol></nav>`;
+  const strip = stripView(p, data, sel, stageHref);
 
   // ---- modules: plain rows
   const mods = html`<nav class="pj-mods" aria-label="Modules">${modules(p).map((m) => html`<a class="pj-mod${STAGES[sel].mod === m.mod ? ' is-on' : ''}" href="${stageHref(m.go)}"${raw(STAGES[sel].mod === m.mod ? ' aria-current="true"' : '')}>
@@ -133,25 +123,8 @@ export function view(data, ctx, ui = {}) {
     </ul>
   </section>`;
 
-  // ---- Now (dark) and the record
-  const nowCard = html`<section class="pj-now" aria-label="Now">
-    <p class="pj-now-h"><span>Now · Day ${n.day}</span><span>Stage ${n.n} of 10</span></p>
-    <div class="pj-now-p">${pic(p, data, 'is-tall')}<div><p class="pj-now-n">${p.name}</p><p class="pj-now-s">${n.stage.label}</p><p class="pj-now-g">${n.stage.goal}</p></div></div>
-    ${n.people.length || n.agents.length ? html`<ul class="pj-now-who">
-      ${n.people.map((x) => html`<li>${face(ws, x, 30)}<span><b>${x}</b><span>${roleOf(x)}</span></span></li>`)}
-      ${n.agents.map((a) => html`<li>${mark(a.name, 30)}<span><b>${agentOf(a.name).name}</b><span>${a.doing}</span></span></li>`)}
-    </ul>` : ''}
-    ${n.next ? html`<a class="pj-now-next" href="${stageHref(n.n)}">Next: ${n.next.label} in #${n.next.mod}</a>`
-      : html`<a class="pj-now-next" href="${href(ctx.wid, { thread: MODS.ideas.thread })}">Next: the next idea in #ideas</a>`}
-  </section>`;
-  const os = html`<section class="pj-os" aria-labelledby="pj-os-h">
-    <h2 id="pj-os-h">OS · ${p.name}</h2>
-    <dl>${p.record.map((r) => {
-      const v = shown(p, r), h = v != null ? href(ctx.wid, r.link) : null;
-      const cell = html`<dt>${r.k}</dt><dd>${v != null ? v : (r.soon && r.at === p.stage ? r.soon : '—')}</dd>`;
-      return h ? html`<a class="pj-os-r" href="${h}">${cell}</a>` : html`<div class="pj-os-r is-empty">${cell}</div>`;
-    })}</dl>
-  </section>`;
+  const nowCard = nowView(p, data, ctx, stageHref);
+  const os = osView(p, ctx);
 
   return html`<section class="pg pj">
     <header class="pj-head"><h1 class="pg-h">Products</h1>${ws.demo ? html`<span class="sample-tag">Sample data</span>` : ''}</header>
@@ -164,6 +137,51 @@ export function view(data, ctx, ui = {}) {
     </div>
   </section>`;
 }
+
+
+// ---- shared pieces (the Products view and the one-view workspace, pages/home.js)
+// the strip: numbered circles on one line, the line filled up to the current stage. stageHref(i) -> where a stage goes
+export function stripView(p, data, sel, stageHref) {
+  const fill = (p.stage / (STAGES.length - 1)) * 90;
+  return html`<nav class="pj-strip" aria-label="${p.name}, the journey"><ol style="--fill:${fill.toFixed(1)}%">${STAGES.map((x, i) => {
+    const k = i < p.stage ? 'is-done' : i === p.stage ? 'is-now' : 'is-next';
+    const d = p.days[i];
+    return html`<li class="pj-st ${k}${i === sel ? ' is-sel' : ''}"><a href="${stageHref(i)}"${raw(i === p.stage ? ' aria-current="step"' : '')}>
+      <span class="pj-dot">${i < p.stage ? CHECK : i === p.stage ? pic(p, data, 'is-dot') : html`<span>${i + 1}</span>`}</span>
+      <span class="pj-st-l">${x.label}</span>
+      <span class="pj-st-m">#${x.mod}${d != null && i <= p.stage + 1 ? `, day ${d}` : ''}</span>
+    </a></li>`;
+  })}</ol></nav>`;
+}
+// the dark Now card: the current stage, its goal, its people and agents, and what comes next
+export function nowView(p, data, ctx, stageHref) {
+  const ws = ctx.ws || {};
+  const n = now(p, data.presence);
+  const roles = Object.fromEntries(Object.values(data.state?.people || {}).map((x) => [x.name, x.title]));
+  const roleOf = (name) => (data.roles || {})[name] || roles[name] || '';
+  return html`<section class="pj-now" aria-label="Now">
+    <p class="pj-now-h"><span>Now · Day ${n.day}</span><span>Stage ${n.n} of 10</span></p>
+    <div class="pj-now-p">${pic(p, data, 'is-tall')}<div><p class="pj-now-n">${p.name}</p><p class="pj-now-s">${n.stage.label}</p><p class="pj-now-g">${n.stage.goal}</p></div></div>
+    ${n.people.length || n.agents.length ? html`<ul class="pj-now-who">
+      ${n.people.map((x) => html`<li>${face(ws, x, 30)}<span><b>${x}</b><span>${roleOf(x)}</span></span></li>`)}
+      ${n.agents.map((a) => html`<li>${mark(a.name, 30)}<span><b>${agentOf(a.name).name}</b><span>${a.doing}</span></span></li>`)}
+    </ul>` : ''}
+    ${n.next ? html`<a class="pj-now-next" href="${stageHref(n.n)}">Next: ${n.next.label} in #${n.next.mod}</a>`
+      : html`<a class="pj-now-next" href="${href(ctx.wid, { thread: MODS.ideas.thread })}">Next: the next idea in #ideas</a>`}
+  </section>`;
+}
+// OS · this product: the record, a dash until a value is real, each value linked to where it came from
+export function osView(p, ctx) {
+  return html`<section class="pj-os" aria-label="OS, ${p.name}">
+    <h2>OS · ${p.name}</h2>
+    <dl>${p.record.map((r) => {
+      const v = shown(p, r), h = v != null ? href(ctx.wid, r.link) : null;
+      const cell = html`<dt>${r.k}</dt><dd>${v != null ? v : (r.soon && r.at === p.stage ? r.soon : '—')}</dd>`;
+      return h ? html`<a class="pj-os-r" href="${h}">${cell}</a>` : html`<div class="pj-os-r is-empty">${cell}</div>`;
+    })}</dl>
+  </section>`;
+}
+export { pic, row as checkRow, CHECK };
 
 // public sample brands' shots are static files; a private brand's are members-only assets, fetched with the session
 // once per visit (kept by workspace and product)
