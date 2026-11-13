@@ -1,5 +1,5 @@
 /* app.css: the brandcos product shell. A dark command centre: icon rail, breadcrumb + tabs, the page, and an
-   ask bar along the bottom. Two type families (Inter, Spline Sans Mono for numbers and small labels). One
+   ask bar along the bottom. Two type families (Bricolage Grotesque, Spline Sans Mono for numbers and small labels). One
    accent (lime) only on what you press and where you are. Page modules style themselves in pages/<name>.css
    and may use every class below. Tokens keep the names the page modules already use. */
 :root {
@@ -19,7 +19,7 @@
   --ok-line: rgba(140, 207, 138, .5); --warn-line: rgba(240, 163, 90, .45); --bad-line: rgba(238, 124, 108, .5);
   --agent-ink: #d6d8d0;
   --shadow: rgba(0, 0, 0, .5);
-  --f-head: 'Inter', system-ui, sans-serif; --f-body: 'Inter', system-ui, sans-serif;
+  --f-head: 'Bricolage Grotesque', system-ui, sans-serif; --f-body: 'Bricolage Grotesque', system-ui, sans-serif;
   --f-mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
   --radius: 14px; --rail-w: 64px; --top-h: 56px;
 }

@@ -282,3 +282,28 @@ export function head(title, sub, s, wid, extra = '') {
     <div class="cs-top-r">${extra}${personaPicker(s, wid)}</div>
   </div>`;
 }
+
+// ---------------------------------------------------------------- one tap, outside the full card
+// The one button a compact row carries: the recommended option (else the first), or Check. In a demo workspace a
+// persona who cannot tap it taps as the person who can, the same rule the full card uses. null when no one here can.
+export function quickAct(d, s = {}) {
+  if (!d) return null;
+  const tapper = (role) => (s.tappers || []).find((t) => t.role === role);
+  if (d.status === 'to_check') {
+    const as = d.can?.check ? null : (s.demo !== false ? pickChecker(d, s) : null);
+    if (!d.can?.check && !as) return null;
+    return { dec: 'check', id: d.id, v: d.version, as: as?.role || null, label: 'Check', who: as ? short(as) : '' };
+  }
+  if (d.status !== 'open') return null;
+  const o = d.options.find((x) => x.recommended) || d.options[0];
+  if (!o) return null;
+  const as = d.can?.decide ? null : (s.demo !== false ? tapper(d.decider?.role || 'founder') : null);
+  if (!d.can?.decide && !as) return null;
+  const verb = d.kind === 'approve' ? 'Approve' : d.kind === 'ask' ? 'Answer' : 'Pick';
+  return { dec: 'decide', id: d.id, v: d.version, opt: o.key, as: as?.role || null, verb, label: o.label, who: as ? short(as) : '' };
+}
+// the button for quickAct(); same data-dec attributes as the card's own, so bindCards handles it
+export function quickBtn(a, cls = 'is-primary', text = null) {
+  if (!a) return '';
+  return html`<button class="btn is-small ${cls}" type="button" data-dec="${a.dec}" data-id="${a.id}" data-v="${a.v}"${a.opt ? html` data-opt="${a.opt}"` : ''}${a.as ? html` data-as="${a.as}"` : ''}>${text || (a.dec === 'check' ? 'Check' : a.verb)}</button>`;
+}

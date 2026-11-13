@@ -7,7 +7,7 @@
   --k-line: var(--line, rgba(236,235,228,.085)); --k-line2: var(--line-2, rgba(236,235,228,.16));
   --k-ink: var(--ink, #ecebe4); --k-mut: var(--muted, #8b8a82); --k-dim: var(--faint, #5f5e58);
   --k-acc: var(--acc, #c8f04a); --k-acc-fg: var(--acc-fg, #c8f04a); --k-acc-edge: var(--acc-edge, #c8f04a); --k-acc-ink: var(--acc-ink, #121409); --k-warn: var(--warn, #f0a35a);
-  --k-mono: 'Spline Sans Mono', ui-monospace, monospace; --k-body: 'Inter', system-ui, sans-serif;
+  --k-mono: 'Spline Sans Mono', ui-monospace, monospace; --k-body: 'Bricolage Grotesque', system-ui, sans-serif;
   font-family: var(--k-body); color: var(--k-ink); background: var(--k-bg);
   /* fills the space between the top bar and the shell's ask bar; each column scrolls on its own */
   display: flex; flex-direction: column; height: calc(100vh - var(--top-h, 56px) - 124px); min-height: 560px;

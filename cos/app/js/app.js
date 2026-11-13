@@ -18,11 +18,13 @@ import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
 import { askView, runAsk } from './ask.js';
 import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
-// The four Chief of Staff surfaces come first (Feed, Chat, OS, Hub: pages/feed.js, chat.js, cosos.js, coshub.js,
+// The Dashboard (pages/dash.js) and the Chief of Staff surfaces come first (Feed, Chat, Agents, OS, Hub: pages/feed.js, chat.js, cosos.js, coshub.js,
 // all built on js/cos.js). The rest of the product follows under a divider (`more`).
 export const NAV = [
+  { section: 'dash',    label: 'Dashboard', page: '../pages/dash.js' },
   { section: 'feed',    label: 'Feed',    page: '../pages/feed.js' },
   { section: 'chat',    label: 'Chat',    page: '../pages/chat.js' },
+  { section: 'agents',  label: 'Agents',  page: '../pages/agents.js' },
   { section: 'os',      label: 'OS',      page: '../pages/cosos.js' },
   { section: 'hub',     label: 'Hub',     page: '../pages/coshub.js' },
   { section: 'today',   label: 'Today',   page: '../pages/today.js', more: true },
@@ -34,13 +36,15 @@ export const NAV = [
   { section: 'hiring',  label: 'Hiring',  page: '../pages/hiring.js', more: true },
   { section: 'billing', label: 'Billing', page: '../pages/billing.js', more: true },
 ];
-export const HOME = 'feed';
+export const HOME = 'dash';
 
 // agents running (the world's 19 functions share 16 agents; the shell's pill links to the Feed)
 export const AGENTS = 16;
 
 // what the ask bar offers on each screen
 export const ASKS = {
+  dash: ['How are sales today?', 'What is waiting for a tap?', 'When is the launch?'],
+  agents: ['What did the agents do today?', 'Who still needs to sign in?'],
   feed: ['How are sales today?', 'What is waiting for a tap?', 'When is the launch?'],
   chat: ['How are sales today?', 'What is the stock cover?'],
   today: ['What needs me today?', 'What stocks out this week?', 'How did ads do yesterday?'],

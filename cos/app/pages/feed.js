@@ -105,8 +105,9 @@ export function flash(root, id) {
 }
 // ?flow=<key> in the session (set by the presenter panel) focuses that flow's card once
 export function focusCard(root, ctx) {
-  let flow = null;
-  try { flow = sessionStorage.getItem('cos.focus'); sessionStorage.removeItem('cos.focus'); } catch { /* */ }
+  let flow = null, dec = null;
+  try { flow = sessionStorage.getItem('cos.focus'); sessionStorage.removeItem('cos.focus'); dec = sessionStorage.getItem('cos.focusDec'); sessionStorage.removeItem('cos.focusDec'); } catch { /* */ }
+  if (dec && root.querySelector(`#dec-${CSS.escape(dec)}`)) { setTimeout(() => flash(root, dec), 250); return; }
   if (!flow) return;
   const el = root.querySelector(`[data-flow="${CSS.escape(flow)}"]`);
   if (el) setTimeout(() => flash(root, el.id.replace('dec-', '')), 250);

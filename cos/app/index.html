@@ -13,7 +13,7 @@
 (function () { var t = null; try { t = localStorage.getItem('bc-theme'); } catch (e) {}
   if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', t); })();</script>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Spline+Sans+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="./app.css">
 <!-- one stylesheet per page module; each module owns only its own file -->
 <link rel="stylesheet" href="./pages/signin.css">
@@ -28,6 +28,7 @@
 <link rel="stylesheet" href="./pages/company.css">
 <link rel="stylesheet" href="./js/steps.css">
 <link rel="stylesheet" href="./pages/cos.css">
+<link rel="stylesheet" href="./pages/dash.css">
 <link rel="stylesheet" href="./mobile.css"><!-- the phone shell (js/mobile.js); loads last so it wins at 760 px and below -->
 </head>
 <body>

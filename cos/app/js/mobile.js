@@ -1,26 +1,36 @@
 // mobile.js: the phone shell for the Chief of Staff surfaces. Loads after app.js and only adds things; the desktop
 // shell is untouched (mobile.css shows all of this at 760 px and below, and hides the icon rail there).
 //
-//   The bottom tab bar   Feed, Chat, OS, Hub, and Needs you with a count of the cards waiting for a tap or a check
-//   Needs you            a bottom sheet with one decision card at a time; its main button (the recommended option, or
+//   The bottom tab bar   Dashboard, Feed (badged with the cards waiting for a tap or a check), Chat, Agents, More
+//   More                 a bottom sheet with every other section
+//   Needs you            (any [data-mb-needs]) a bottom sheet with one decision card at a time; its main button (the recommended option, or
 //                        Check) sits pinned at the bottom of the sheet, in thumb reach. After a tap the next card shows.
 //   The account button   in the top bar, opening the existing account menu (the rail that held it is hidden on a phone)
 //
 // Pure pieces (tabsView, needsView, mainAction, waiting) take plain data and return strings, so Node can test them.
 import { html, raw, ICONS } from './ui.js';
 
-export const TABS = [['feed', 'Feed'], ['chat', 'Chat'], ['os', 'OS'], ['hub', 'Hub']];
-const NEEDS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13.5 6.5 5h11L20 13.5V18a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18z"/><path d="M4 13.5h4.5l1 2h5l1-2H20"/></svg>';
+export const TABS = [['dash', 'Dashboard'], ['feed', 'Feed'], ['chat', 'Chat'], ['agents', 'Agents']];
+// what the More sheet lists (every other section)
+export const MORE = [['os', 'OS'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
+  ['chats', 'Work'], ['team', 'Members'], ['hiring', 'Hiring'], ['billing', 'Billing']];
 
 // Pure: the cards that need a person (a tap or a check), newest first
 export function waiting(decisions) {
   return Object.values(decisions || {}).filter((d) => d.status === 'open' || d.status === 'to_check').sort((a, b) => b.ts - a.ts);
 }
 
-// Pure: the bottom bar. wid, the section in view, the count waiting, and whether the sheet is open
+// Pure: the bottom bar. wid, the section in view, the count waiting (a badge on Feed), and whether More is open
 export function tabsView(wid, section, count, open = false) {
-  const tab = ([k, label]) => html`<a class="mb-tab" href="#/w/${encodeURIComponent(wid)}/${k}"${raw(k === section && !open ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS[k] || '')}</span><span class="mb-l">${label}</span></a>`;
-  return html`${TABS.map(tab)}<button class="mb-tab" id="mb-needs" type="button" aria-expanded="${String(open)}" aria-controls="mb-sheet"${raw(open ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(NEEDS_ICON)}${count ? html`<span class="mb-badge mono">${count}</span>` : ''}</span><span class="mb-l">Needs you${count ? html`<span class="sr"> (${count})</span>` : ''}</span></button>`;
+  const inMore = MORE.some(([k]) => k === section);
+  const tab = ([k, label]) => html`<a class="mb-tab" href="#/w/${encodeURIComponent(wid)}/${k}"${raw(k === section && !open ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS[k] || '')}${k === 'feed' && count ? html`<span class="mb-badge mono">${count}</span>` : ''}</span><span class="mb-l">${label}${k === 'feed' && count ? html`<span class="sr"> (${count} need you)</span>` : ''}</span></a>`;
+  return html`${TABS.map(tab)}<button class="mb-tab" id="mb-more" type="button" aria-expanded="${String(open)}" aria-controls="mb-sheet"${raw(open || inMore ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS.more || '')}</span><span class="mb-l">More</span></button>`;
+}
+
+// Pure: the More sheet, one big tile per section
+export function moreView(wid, section) {
+  return html`<header class="mb-sh-h"><h2>More</h2><button class="mb-x" type="button" data-mb="close">Close</button></header>
+    <div class="mb-sh-b"><ul class="mb-more">${MORE.map(([k, l]) => html`<li><a href="#/w/${encodeURIComponent(wid)}/${k}"${raw(k === section ? ' aria-current="page"' : '')}><span class="mb-ic">${raw(ICONS[k] || '')}</span><span>${l}</span></a></li>`)}</ul></div>`;
 }
 
 // Pure: the card's main button, from the decision itself: the recommended option (else the first), or Check.
@@ -73,7 +83,7 @@ function boot() {
   sheet.innerHTML = '<div class="mb-sheet" id="mb-sheet" role="dialog" aria-modal="true" aria-label="Needs you"><div id="mb-sh-in"></div><div class="mb-sh-f" id="mb-sh-f"></div></div>';
   document.body.appendChild(sheet);
 
-  let wid = null, section = null, data = null, curId = null, open = false, stop = null, unbind = null;
+  let wid = null, section = null, data = null, curId = null, open = false, mode = 'more', stop = null, unbind = null;
   const cos = () => import('./cos.js');
   const api = (...a) => import('./api.js').then((m) => m.api(...a));
   const toast = (msg) => { const t = $('toast'); if (!t) return; t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 3400); };
@@ -95,6 +105,14 @@ function boot() {
 
   async function paintSheet() {
     if (!open) return;
+    if (mode === 'more') {
+      $('mb-sh-in').innerHTML = String(moreView(wid, section));
+      $('mb-sh-f').innerHTML = '';
+      sheet.querySelector('.mb-sheet').classList.remove('has-go');
+      sheet.querySelector('.mb-sheet').setAttribute('aria-label', 'More');
+      return;
+    }
+    sheet.querySelector('.mb-sheet').setAttribute('aria-label', 'Needs you');
     const m = await cos();
     const list = data ? waiting(data.decisions) : [];
     if (!list.some((d) => String(d.id) === String(curId))) curId = list[0]?.id ?? null;
@@ -125,7 +143,7 @@ function boot() {
       $('mb-sh-in').innerHTML = '<p class="mb-empty">Loading</p>';
       await refresh();
       sheet.querySelector('.mb-x')?.focus();
-    } else $('mb-needs')?.focus();
+    } else $('mb-more')?.focus();
   }
 
   async function follow() {
@@ -144,9 +162,12 @@ function boot() {
       }
     }
     if (open) setOpen(false); else paintBar();
+    mode = 'more';
   }
 
-  bar.addEventListener('click', (e) => { if (e.target.closest('#mb-needs')) { e.preventDefault(); setOpen(!open); } });
+  bar.addEventListener('click', (e) => { if (e.target.closest('#mb-more')) { e.preventDefault(); mode = 'more'; setOpen(!open); } });
+  // anything marked data-mb-needs (on a phone) opens Needs you, one card at a time
+  document.addEventListener('click', (e) => { const n = e.target.closest('[data-mb-needs]'); if (n && phone.matches) { e.preventDefault(); mode = 'needs'; setOpen(true); } });
   sheet.addEventListener('click', (e) => {
     if (e.target === sheet || e.target.closest('[data-mb="close"]')) { setOpen(false); return; }
     const pick = e.target.closest('[data-mb="pick"]');
