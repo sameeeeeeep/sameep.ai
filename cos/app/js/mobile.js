@@ -13,7 +13,7 @@ import { html, raw, ICONS } from './ui.js';
 export const TABS = [['dash', 'Dashboard'], ['chat', 'Chat'], ['agents', 'Agents']];
 const BADGED = 'chat'; // where the work lives: each module's To do, and All modules
 // what the More sheet lists (every other section)
-export const MORE = [['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
+export const MORE = [['products', 'Products'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
   ['chats', 'Work'], ['team', 'Members'], ['hiring', 'Hiring'], ['billing', 'Billing']];
 
 // Pure: the cards that need a person (a tap or a check), newest first

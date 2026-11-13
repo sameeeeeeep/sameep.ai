@@ -16,7 +16,7 @@
 import { api, apiBase, token, ApiError } from './api.js';
 import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
 import { askView, runAsk } from './ask.js';
-import { useWs } from './look.js';
+import { useWs, setPackFaces, faceSrc } from './look.js';
 import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
 // The Dashboard (pages/dash.js) and the Chief of Staff surfaces come first (Chat, Agents, Hub: pages/chat.js,
@@ -25,6 +25,7 @@ import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 export const NAV = [
   { section: 'dash',    label: 'Dashboard', page: '../pages/dash.js' },
   { section: 'chat',    label: 'Chat',    page: '../pages/chat.js' },
+  { section: 'products', label: 'Products', page: '../pages/products.js' },
   { section: 'agents',  label: 'Agents',  page: '../pages/agents.js' },
   { section: 'hub',     label: 'Hub',     page: '../pages/coshub.js' },
   { section: 'today',   label: 'Today',   page: '../pages/today.js', more: true },
@@ -47,6 +48,7 @@ export const ASKS = {
   agents: ['What did the agents do today?', 'Who still needs to sign in?'],
   feed: ['How are sales today?', 'What is waiting for a tap?', 'When is the launch?'],
   chat: ['How are sales today?', 'What is the stock cover?'],
+  products: ['Where is the launch?', 'What is waiting for a tap?', 'What is the stock cover?'],
   today: ['What needs me today?', 'What stocks out this week?', 'How did ads do yesterday?'],
   chats: ['What is everyone working on?', 'What is waiting for a tap?'],
   hub: ['How are sales today?', 'How is RTO?', 'What is the cash runway?'],
@@ -229,12 +231,30 @@ function boot() {
 
   // A private workspace's own brand (logo, colours) comes from the Worker, members only (GET /w/:wid/brandpack);
   // every other workspace answers 404 and keeps the Chief of Staff look. Nothing brand-specific is in this file.
-  const packs = new Map();
+  // Its pack may also name the team's faces (and pages read its product journey: ctx.pack()); the faces are fetched
+  // with the session from the members-only landing assets into object URLs before the page paints (js/look.js).
+  const packs = new Map(), packFaces = new Map();
+  const packOf = (ws) => {
+    if (!packs.has(ws.id)) packs.set(ws.id, api('GET', `/w/${encodeURIComponent(ws.id)}/brandpack`).catch(() => null));
+    return packs.get(ws.id);
+  };
+  const facesOf = (ws) => {
+    if (!packFaces.has(ws.id)) packFaces.set(ws.id, packOf(ws).then(async (p) => {
+      const team = Array.isArray(p?.team) ? p.team.filter((t) => t && t.name && /^faces\/[a-z0-9-]+\.webp$/.test(String(t.face || ''))) : [];
+      if (!team.length) return;
+      const m = new Map();
+      await Promise.all(team.map(async (t) => {
+        try {
+          const r = await fetch(`${apiBase()}/w/${encodeURIComponent(ws.id)}/landing/asset/${t.face}`, { headers: { authorization: `Bearer ${token.get()}` } });
+          if (r.ok) m.set(String(t.name).trim().split(/\s+/)[0].toLowerCase(), URL.createObjectURL(await r.blob()));
+        } catch { /* initials */ }
+      }));
+      setPackFaces(ws.id, m);
+    }));
+    return packFaces.get(ws.id);
+  };
   async function paintBrand(ws, mine) {
-    if (!packs.has(ws.id)) {
-      packs.set(ws.id, api('GET', `/w/${encodeURIComponent(ws.id)}/brandpack`).catch(() => null));
-    }
-    const p = await packs.get(ws.id);
+    const p = await packOf(ws);
     if (mine !== seq) return;
     let st = document.getElementById('brand-pack');
     if (!p) { if (st) st.remove(); return; }
@@ -299,7 +319,15 @@ function boot() {
       go: (section, ...params) => { location.hash = hrefFor(ws.id, section, ...params); },
       refreshMe: async () => { await loadMe(); route(); },
       ask: (q) => sendAsk(q),
+      pack: () => packOf(ws),
     };
+    // a private brand's faces before the first paint (capped, so a slow asset never holds the page)
+    await Promise.race([facesOf(ws), new Promise((r) => setTimeout(r, 2500))]);
+    if (mine !== seq) return;
+    { // the account button: the person's face when the brand has one, else their initials
+      const src = faceSrc(ws, me.user.name), el = $('me-init');
+      el.textContent = ''; if (src) { const im = document.createElement('img'); im.src = src; im.alt = ''; im.className = 'me-face'; el.appendChild(im); } else el.textContent = initials(me.user.name, me.user.email);
+    }
     try {
       const mod = await import(nav.page);
       if (mine !== seq) return; // moved on while loading

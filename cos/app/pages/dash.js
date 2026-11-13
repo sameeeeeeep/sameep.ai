@@ -5,7 +5,9 @@
 // be missing; its tiles then step aside.
 import { html, raw, inr, num } from '../js/ui.js';
 import { cosApi, live, bindCards, quickAct, quickBtn, ago } from '../js/cos.js';
-import { mark, agentOf, face, shot, productSrc } from '../js/look.js';
+import { mark, agentOf, face, shot, productSrc, brandOf } from '../js/look.js';
+import { STAGES, build } from '../js/journey.js';
+import { pictures } from './products.js';
 
 export const title = 'Dashboard';
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -136,6 +138,13 @@ export function view(data, ctx, now = Date.now()) {
       <ul class="db-meters">${low.slice(0, 3).map((x) => html`<li><span class="db-m-n">${x.name}${/dark store|quick/i.test(x.location || '') ? html`<small> dark store</small>` : ''}</span><span class="db-m-b"><i style="width:${Math.min(100, Math.round((x.on_hand / x.reorder_point) * 100))}%"></i></span><span class="db-m-v">${num(x.on_hand)}</span></li>`)}</ul>
     </a>` : '';
 
+  // every product on its road: where it is and how far along (pages/products.js has the whole journey)
+  const prods = data.products || [];
+  const prodsT = prods.length ? html`<a class="db-t db-prods" href="${go('products')}">
+      <p class="db-l">Products</p>
+      <ul>${prods.map((p) => html`<li>${data.pics?.[p.id] ? html`<img class="pj-pic" src="${data.pics[p.id]}" alt="" loading="lazy">` : html`<span class="pj-pic is-swatch" style="--sw:${p.color}" aria-hidden="true"></span>`}<span><b>${p.name}</b><small><span class="mono">${p.stage + 1}/10</span> ${STAGES[p.stage].label} · ${p.status}</small><span class="pj-track"><i style="width:${Math.round(p.pct * 100)}%"></i></span></span></li>`)}</ul>
+    </a>` : '';
+
   const team = people.length ? html`<a class="db-t db-team" href="${go('agents')}">
       <p class="db-l">Team</p>
       <ul class="db-faces">${people.slice(0, 6).map((p) => { const n = waitFor(p.name); return html`<li>${face(ws, p.name, 48)}${n ? html`<span class="db-badge">${n}</span>` : ''}<span class="db-fn">${p.name.split(' ')[0]}</span></li>`; })}</ul>
@@ -144,7 +153,7 @@ export function view(data, ctx, now = Date.now()) {
   return html`<section class="pg db">
     <header class="db-head"><h1>${greeting(new Date(now).getHours())}${first ? `, ${first}` : ''}</h1>${s?.demo ? html`<span class="sample-tag">Sample data</span>` : ''}</header>
     <div class="db-grid">
-      ${money1}${orders}${aovT}${needs}${night}${launch}${stock}${team}
+      ${money1}${orders}${aovT}${needs}${prodsT}${night}${launch}${stock}${team}
     </div>
   </section>`;
 }
@@ -158,6 +167,14 @@ export async function mount(root, ctx) {
       ctx.api('GET', `${base}/today`).catch(() => null), ctx.api('GET', `${base}/os/inventory`).catch(() => null),
     ]);
     data = { state, feed, today, inv };
+    // the products tile: the private brand's own journey (its pack), else a sample brand's, from its records
+    try {
+      const [recs, pk] = await Promise.all([cosApi(ctx, 'GET', 'records'), ctx.pack ? ctx.pack().catch(() => null) : null]);
+      const pack = pk && pk.journey ? pk.journey : null;
+      const brand = brandOf(ctx.ws) || (ctx.ws?.demo ? 'ohra' : null);
+      data.products = build({ brand: pack ? null : brand, pack, records: recs.records || [], people: state.people, plan: state.plan, today: state.today });
+      data.pics = await pictures(ctx, data.products, pack);
+    } catch { data.products = []; }
   };
   // a fresh copy seeds on its first read; a read that raced it comes back empty, so look again shortly
   const settle = async () => { for (let i = 0; i < 4 && !(data.feed?.posts || []).length && data.state?.presence; i++) { await new Promise((r) => setTimeout(r, 1200)); await load(); } };

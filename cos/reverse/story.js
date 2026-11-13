@@ -862,7 +862,7 @@
     }).then(function () { return runBeats(stop, t); }).then(function () {
       setState('done'); clearPop(); lightSource(null);
       Object.keys(AG).forEach(function (n) { agent(n, 'done', 'Handed over'); });
-      if (si >= stops.length - 1) return;
+      if (si >= stops.length - 1) { if (AUTO && cfg.story.setup) return wait(2400, t).then(function () { next(); }); return; }
       /* the module's work is done: move on by itself */
       var nx = stops[si + 1];
       ui.handoff.textContent = 'Moving to ' + modOf(nx.module).name + ': ' + nx.label + '…';
@@ -960,9 +960,8 @@
     if (state === 'done') {
       if (si < stops.length - 1) return open(si + 1, 1);
       setAuto(false);
-      if (cfg.story.setup && !ui.hubEl) return hub('end', function () { ui.hubEl = 'seen'; next(); });
-      var e = document.getElementById('end'); if (e) e.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
-      setTimeout(function () { each(document.querySelectorAll('#end .fin-team > li'), function (li, n) { setTimeout(function () { li.classList.add('is-up'); }, 200 + n * 170); }); }, 500);
+      if (cfg.story.setup && !ui.hubEl) return hub('end', function () { proposal(); });
+      toTeam();
     }
   }
   function onKey(e) {
@@ -1045,12 +1044,72 @@
     }
     stepTo(0);
   }
+  function toTeam() {
+    var e = document.getElementById('end'); if (e) e.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+    setTimeout(function () { each(document.querySelectorAll('#end .fin-team > li'), function (li, n) { setTimeout(function () { li.classList.add('is-up'); }, 200 + n * 170); }); }, 500);
+  }
+  /* the proposal: what we'd run, the plans, the rollout, and one call to action */
+  function proposal() {
+    var SC = cfg.scope || {}, PR = cfg.pricing || {}, brand = str((cfg.brand || {}).name);
+    var ov = h('div', 'sx-prop'); ui.prop = ov;
+    var top = h('div', 'sx-prop-top');
+    var back = h('button', 'sx-hub-link', 'Back to the hub'); back.type = 'button';
+    back.addEventListener('click', function () { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 450); });
+    top.appendChild(back); top.appendChild(h('span', 'sx-su-k', 'Proposal for ' + brand)); ov.appendChild(top);
+    var in1 = h('div', 'sx-prop-in'); ov.appendChild(in1);
+    in1.appendChild(h('h1', null, str(SC.title, 'What it would run for ' + brand)));
+    if (SC.lead) in1.appendChild(h('p', 'sx-prop-lead', SC.lead));
+    /* 1. what we'll run */
+    in1.appendChild(h('h2', null, 'What we\u2019ll run'));
+    var g = h('div', 'sx-prop-g');
+    var mb = h('section', 'sx-prop-box'); mb.appendChild(h('b', 'sx-side-h', mods.length + ' modules'));
+    mods.forEach(function (m) { var r = h('div', 'sx-prop-mod'); r.style.setProperty('--tint', look(m.id).tint); r.appendChild(iconEl(m.id)); var tx = h('div'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('span', null, m.about || '')); r.appendChild(tx); var pp = h('span', 'sx-people'); owners(m).forEach(function (p) { pp.appendChild(faceEl(p, 'is-xs')); }); r.appendChild(pp); mb.appendChild(r); });
+    g.appendChild(mb);
+    var col = h('div', 'sx-prop-col');
+    var ib = h('section', 'sx-prop-box'); ib.appendChild(h('b', 'sx-side-h', 'Inputs it picks work up from'));
+    var IN = { whatsapp: 'whatsapp', email: 'email', meetings: 'meeting' };
+    arr(SC.inputs).forEach(function (x) { var r = h('div', 'sx-prop-in-r'); r.appendChild(srcMark(IN[String(x.name).toLowerCase()] || 'app', 'is-g')); var tx = h('div'); tx.appendChild(h('b', null, x.name)); tx.appendChild(h('span', null, x.text)); r.appendChild(tx); ib.appendChild(r); });
+    if (arr(SC.integrations).length) { var ch = h('div', 'sx-prop-chips'); SC.integrations.forEach(function (n) { ch.appendChild(h('span', null, n)); }); ib.appendChild(ch); }
+    col.appendChild(ib);
+    var ab = h('section', 'sx-prop-box'); ab.appendChild(h('b', 'sx-side-h', 'Agents and people'));
+    var al = h('div', 'sx-hub-ag'); arr((cfg.story.setup || {}).agents).forEach(function (a) { var c = h('span'); c.appendChild(faceEl(a[0], 'is-xs')); c.appendChild(h('span', null, a[0])); al.appendChild(c); }); ab.appendChild(al);
+    var tl = h('div', 'sx-hub-team'); arr(cfg.team).forEach(function (m) { var r = h('span'); r.appendChild(faceEl(m.name, 'is-sm')); var tx = h('span'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('em', null, m.role)); r.appendChild(tx); tl.appendChild(r); }); ab.appendChild(tl);
+    col.appendChild(ab); g.appendChild(col); in1.appendChild(g);
+    /* 2. the plans */
+    in1.appendChild(h('h2', null, str(PR.title, 'Pricing')));
+    var pl = h('div', 'sx-plans');
+    arr(PR.plans).forEach(function (p) {
+      var c = h('section', 'sx-plan' + (p.id === PR.suggested ? ' is-sug' : ''));
+      var hd = h('div', 'sx-plan-hd'); hd.appendChild(h('b', null, p.name)); if (p.id === PR.suggested) hd.appendChild(h('em', null, 'Suggested')); c.appendChild(hd);
+      c.appendChild(h('span', 'sx-plan-p', p.start)); c.appendChild(h('span', 'sx-plan-t', p.then || ''));
+      var ul = h('ul'); arr(p.items).forEach(function (x) { ul.appendChild(h('li', null, x)); }); c.appendChild(ul);
+      pl.appendChild(c);
+    });
+    in1.appendChild(pl);
+    if (PR.note) in1.appendChild(h('p', 'sx-prop-note', PR.note));
+    /* 3. rollout */
+    in1.appendChild(h('h2', null, 'Rollout'));
+    var ro = h('ol', 'sx-roll'); arr(SC.rollout).forEach(function (r) { var li = h('li'); li.appendChild(h('b', null, r.when)); li.appendChild(h('span', null, r.what)); ro.appendChild(li); }); in1.appendChild(ro);
+    /* one call to action */
+    var talk = ((cfg.end || {}).links || {}).talk || 'mailto:hello@sameep.ai';
+    var href = /^mailto:/i.test(talk) ? talk.replace(/subject=[^&]*/i, 'subject=' + encodeURIComponent('Chief of Staff for ' + brand + ': let\u2019s start')) : talk;
+    var band = h('section', 'sx-prop-cta');
+    var bt = h('div'); bt.appendChild(h('b', null, 'Ready when you are.')); bt.appendChild(h('span', null, 'Week 1 starts with a kick-off and your tools connected.')); band.appendChild(bt);
+    var a = h('a', 'sx-su-next is-cta', 'Let\u2019s start'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; band.appendChild(a);
+    var tmb = h('button', 'sx-hub-link', 'See the team'); tmb.type = 'button'; tmb.addEventListener('click', function () { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 450); if (ui.hubEl && ui.hubEl.parentNode) ui.hubEl.parentNode.removeChild(ui.hubEl); ui.hubEl = 'seen'; toTeam(); });
+    band.appendChild(tmb);
+    in1.appendChild(band);
+    ui.stage.appendChild(ov); raf2(function () { ov.classList.add('is-on'); });
+  }
   /* the Hub: modules, sources, agents, products and today's numbers. At the start, and again at the end, updated. */
   function hub(when, go) {
     var S = cfg.story.setup || {}, end = when === 'end';
     var ov = h('div', 'sx-hub' + (end ? ' is-end' : '')); if (end) ui.hubEl = ov;
     var hd = h('div', 'sx-hub-hd'); var ht = h('div'); ht.appendChild(h('span', 'sx-su-k', end ? 'Back at the hub · week one' : 'Your hub is ready')); ht.appendChild(h('h1', null, str((cfg.brand || {}).name) + ' · Chief of Staff')); hd.appendChild(ht);
-    var go1 = h('button', 'sx-su-next', end ? 'See the team' : 'Start: the ' + str((cfg.story.product || {}).name, 'product').split(' ')[0] + ' story'); go1.type = 'button'; hd.appendChild(go1); ov.appendChild(hd);
+    var acts = h('div', 'sx-hub-acts');
+    var go1 = h('button', 'sx-su-next' + (end ? ' is-cta' : ''), end ? 'See the scope and pricing' : 'Start: the ' + str((cfg.story.product || {}).name, 'product').split(' ')[0] + ' story'); go1.type = 'button';
+    if (end) { var tm = h('button', 'sx-hub-link', 'See the team'); tm.type = 'button'; tm.addEventListener('click', function () { unlock(); ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); ui.hubEl = 'seen'; toTeam(); }); acts.appendChild(tm); }
+    acts.appendChild(go1); hd.appendChild(acts); ov.appendChild(hd);
     var nums = h('div', 'sx-hub-nums'); arr(end ? S.numbers_end : S.numbers_start).forEach(function (n) { var c = h('div'); c.appendChild(h('b', null, n[0])); c.appendChild(h('span', null, n[1])); nums.appendChild(c); }); ov.appendChild(nums);
     var g = h('div', 'sx-hub-g');
     var mb = h('section', 'sx-hub-box'); mb.appendChild(h('b', 'sx-side-h', 'Modules'));
@@ -1060,12 +1119,14 @@
     var sl = h('div', 'sx-hub-src'); arr(S.connectors).forEach(function (x) { var m = srcMark(x[0]); m.appendChild(h('em', null, x[3].replace(/^\u2713\s*/, ''))); sl.appendChild(m); }); sb.appendChild(sl); side.appendChild(sb);
     var ab = h('section', 'sx-hub-box'); ab.appendChild(h('b', 'sx-side-h', arr(S.agents).length + ' agents on'));
     var al = h('div', 'sx-hub-ag'); arr(S.agents).forEach(function (a) { var c = h('span'); c.appendChild(faceEl(a[0], 'is-xs')); c.appendChild(h('span', null, a[0])); al.appendChild(c); }); ab.appendChild(al); side.appendChild(ab);
+    if (end) { var tb = h('section', 'sx-hub-box'); tb.appendChild(h('b', 'sx-side-h', 'The team, each with a login'));
+      var tl = h('div', 'sx-hub-team'); arr(cfg.team).forEach(function (m) { var r = h('span'); r.appendChild(faceEl(m.name, 'is-sm')); var tx = h('span'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('em', null, m.role)); r.appendChild(tx); tl.appendChild(r); }); tb.appendChild(tl); side.appendChild(tb); }
     var pb = h('section', 'sx-hub-box'); pb.appendChild(h('b', 'sx-side-h', 'Products'));
     arr(cfg.story.products).forEach(function (p) { var r = h('div', 'sx-hub-p'); if (p.img) { var im = h('img'); im.alt = ''; im.src = asset(p.img); r.appendChild(im); } else { var sw = h('i'); sw.style.background = p.color; r.appendChild(sw); } var tx = h('div'); tx.appendChild(h('b', null, p.name)); tx.appendChild(h('span', null, p.follow ? (end ? str(S.follow_end, 'Live') : str(S.follow_start, 'Idea in the inbox')) : p.status)); r.appendChild(tx); pb.appendChild(r); });
     side.appendChild(pb);
     g.appendChild(side); ov.appendChild(g);
     ui.stage.appendChild(ov); raf2(function () { ov.classList.add('is-on'); });
-    go1.addEventListener('click', function () { unlock(); if (end) { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); } else { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); } go(); });
+    go1.addEventListener('click', function () { unlock(); if (end) { /* the hub stays under the proposal: Back returns to it */ } else { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); } go(); });
     if (AUTO && !end) setTimeout(function () { go1.click(); }, 2600);
   }
 

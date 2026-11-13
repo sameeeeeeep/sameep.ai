@@ -19,6 +19,8 @@
   --ok-line: rgba(140, 207, 138, .5); --warn-line: rgba(240, 163, 90, .45); --bad-line: rgba(238, 124, 108, .5);
   --agent-ink: #d6d8d0;
   --shadow: rgba(0, 0, 0, .5);
+  /* the dark Now card (pages/products.css): dark on both themes */
+  --now-bg: #171812; --now-ink: #f1f0ea; --now-mut: #a9a89f; --now-line: rgba(236, 235, 228, .14); --now-btn: #f1f0ea; --now-btn-ink: #15160f; --now-btn-hover: #ffffff;
   --f-head: 'Bricolage Grotesque', system-ui, sans-serif; --f-body: 'Bricolage Grotesque', system-ui, sans-serif;
   --f-mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
   --radius: 14px; --rail-w: 64px; --top-h: 56px;
@@ -40,6 +42,7 @@
   --ok-line: rgba(42, 115, 53, .45); --warn-line: rgba(163, 84, 15, .45); --bad-line: rgba(178, 58, 42, .45);
   --agent-ink: #2b2a25;
   --shadow: rgba(46, 40, 24, .16);
+  --now-bg: #1b1a16; --now-line: #1b1a16;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; }

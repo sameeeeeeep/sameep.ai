@@ -29,7 +29,14 @@ export const brandOf = (ws) => { const n = String(ws?.name || '').trim().toLower
 const FACES = new Set(['ohra-aditi', 'ohra-agency', 'ohra-arjun', 'ohra-customer', 'ohra-kavya', 'ohra-naina', 'ohra-tanvi', 'ohra-vikram',
   'ondri-agency', 'ondri-customer', 'ondri-ira', 'ondri-kavya', 'ondri-meher', 'ondri-rohan', 'ondri-tara', 'ondri-zoya',
   'siro-agency', 'siro-customer', 'siro-farhan', 'siro-leela', 'siro-meera', 'siro-nikhil', 'siro-pooja', 'siro-varun']);
+// A private workspace's own faces: its brand pack (GET /w/:wid/brandpack, members only) names them and they are
+// fetched with the session into object URLs (setPackFaces), so no face of a real team is ever a public file.
+const packFaces = new Map(); // wid -> Map(first name lowercased -> object URL)
+export const setPackFaces = (wid, m) => { packFaces.set(wid, m); };
+const firstOf = (name) => String(name || '').trim().split(/\s+/)[0].toLowerCase();
 export function faceSrc(ws, name) {
+  const own = ws?.id && packFaces.get(ws.id);
+  if (own && own.has(firstOf(name))) return own.get(firstOf(name));
   const b = brandOf(ws);
   const first = String(name || '').trim().split(/\s+/)[0].toLowerCase();
   return b && FACES.has(`${b}-${first}`) ? `${A}/faces/${b}-${first}.webp` : null;

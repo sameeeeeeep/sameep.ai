@@ -12,9 +12,9 @@
 .db-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 6px 0 18px; }
 .db-head h1 { font: 600 34px/1.1 var(--f-head); letter-spacing: -.02em; }
 .db-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-areas: "money money needs needs" "orders aov needs needs" "night night launch launch" "stock stock team team"; }
+  grid-template-areas: "money money needs needs" "orders aov needs needs" "prods prods prods prods" "night night launch launch" "stock stock team team"; }
 .db-money { grid-area: money; } .db-needs { grid-area: needs; } .db-night { grid-area: night; } .db-launch { grid-area: launch; }
-.db-stock { grid-area: stock; } .db-team { grid-area: team; }
+.db-stock { grid-area: stock; } .db-team { grid-area: team; } .db-prods { grid-area: prods; }
 .db-small:nth-of-type(2) { grid-area: orders; } .db-small:nth-of-type(3) { grid-area: aov; }
 .db-t { position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); color: var(--ink); text-decoration: none; overflow: hidden; }
 a.db-t:hover { border-color: var(--line-2); }
@@ -98,7 +98,7 @@ a.db-t:hover { border-color: var(--line-2); }
 
 @media (max-width: 1000px) {
   .db-grid { grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: "money money" "orders aov" "needs needs" "night night" "launch launch" "stock stock" "team team"; }
+    grid-template-areas: "money money" "orders aov" "needs needs" "prods prods" "night night" "launch launch" "stock stock" "team team"; }
 }
 @media (max-width: 760px) {
   .db-head { margin: 4px 0 14px; }

@@ -8,6 +8,7 @@
 // view() is pure; mount() fetches and binds.
 import { html, raw, sampleTag, day } from '../js/ui.js';
 import { apiBase, token } from '../js/api.js';
+import { faceSrc, curWs } from '../js/look.js';
 
 export const title = 'Company';
 
@@ -28,7 +29,8 @@ const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 // a face: the avatar once loaded, else initials. p = {name, initials, avatar, placeholder}
 export function face(p, av = {}, size = '') {
   if (!p) return '';
-  const src = p.avatar && av[p.avatar];
+  // the loaded avatar, else the brand's illustrated face (a sample brand's, or a private brand's from its pack)
+  const src = (p.avatar && av[p.avatar]) || faceSrc(curWs(), p.name);
   return html`<span class="co-face${size ? ' is-' + size : ''}${p.placeholder ? ' is-open' : ''}" title="${p.name}">${
     src ? html`<img src="${src}" alt="">` : html`<span aria-hidden="true">${p.initials}</span>`}</span>`;
 }
