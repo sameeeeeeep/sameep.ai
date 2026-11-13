@@ -976,73 +976,78 @@
 
   /* ---------- setup (private workspaces): workspace → connectors → agents → building the hub → the Hub ---------- */
   function setupFlow(done) {
-    var S = cfg.story.setup, ov = h('div', 'sx-setup'); ui.setup = ov; ui.stage.appendChild(ov);
+    /* one automatic loading sequence, no buttons: workspace → connectors → agents → building the hub → the Hub.
+       About 10 s; a tap anywhere speeds it up. */
+    var S = cfg.story.setup, ov = h('div', 'sx-setup is-auto'); ui.setup = ov; ui.stage.appendChild(ov);
     var steps = ['Workspace', 'Connectors', 'Agents', 'Hub'];
     var top = h('div', 'sx-su-top'); var dots = h('ol', 'sx-su-steps'); steps.forEach(function (x) { dots.appendChild(h('li', null, x)); }); top.appendChild(dots); ov.appendChild(top);
+    var bar = h('div', 'sx-su-bar'); var fill = h('i'); bar.appendChild(fill); ov.appendChild(bar);
     var body = h('div', 'sx-su-body'); ov.appendChild(body);
-    var foot = h('div', 'sx-su-foot'); var nb = h('button', 'sx-su-next'); nb.type = 'button'; foot.appendChild(nb); ov.appendChild(foot);
-    var at = -1, t0 = ++tok;
-    function stepTo(i) {
-      at = i; each(dots.children, function (li, j) { li.className = j < i ? 'is-done' : j === i ? 'is-on' : ''; });
-      body.innerHTML = ''; nb.disabled = true; nb.onclick = null;
-      [workspace, connectors, agents, building][i]();
+    var hint = h('span', 'sx-su-hint', 'Setting things up · tap to speed up'); ov.appendChild(hint);
+    var speed = 1, total = 0, elapsed = 0, timers = [];
+    ov.addEventListener('click', function () { unlock(); speed = .3; hint.textContent = 'Speeding up…'; });
+    function later(ms, fn) { var t = setTimeout(fn, ms * speed); timers.push(t); return ms * speed; }
+    function chain(list) {   /* [[ms, fn], ...] run one after another, each delay scaled by the current speed */
+      var i = 0; (function go() { if (i >= list.length) return; var it = list[i++]; later(it[0], function () { it[1](); go(); }); })();
     }
-    function ready(label, fn) { nb.textContent = label; nb.disabled = false; nb.onclick = function () { unlock(); fn(); }; if (AUTO) setTimeout(function () { if (!nb.disabled && nb.onclick) nb.onclick(); }, 1400); }
+    var plan = [1800, 1000 + arr(S.connectors).length * 230 + 900, 500 + arr(S.agents).length * 150 + 300, arr(S.building).length * 380 + 500];
+    total = plan.reduce(function (a, b) { return a + b; }, 0);
+    function progress(phase, part) { var base = plan.slice(0, phase).reduce(function (a, b) { return a + b; }, 0); fill.style.transform = 'scaleX(' + Math.min(1, (base + plan[phase] * part) / total).toFixed(3) + ')'; }
+    function stepTo(i) { each(dots.children, function (li, j) { li.className = j < i ? 'is-done' : j === i ? 'is-on' : ''; }); body.innerHTML = ''; progress(i, 0); }
     function workspace() {
+      stepTo(0);
       var c = h('div', 'sx-su-ws');
-      c.appendChild(h('span', 'sx-su-k', 'Setting up'));
       var br = h('div', 'sx-su-brand'); br.appendChild(h('span', 'sx-logo is-big', str((cfg.brand || {}).name, 'C').replace(/[^a-z]/gi, '').charAt(0).toUpperCase()));
-      var bt = h('div'); bt.appendChild(h('h1', null, str((cfg.brand || {}).name) + '’s Chief of Staff')); bt.appendChild(h('p', null, [str((cfg.brand || {}).category), str((cfg.brand || {}).city)].filter(Boolean).join(' · '))); br.appendChild(bt); c.appendChild(br);
+      var bt = h('div'); bt.appendChild(h('h1', null, 'Setting up ' + str((cfg.brand || {}).name) + '’s Chief of Staff')); bt.appendChild(h('p', null, [str((cfg.brand || {}).category), str((cfg.brand || {}).city)].filter(Boolean).join(' · '))); br.appendChild(bt); c.appendChild(br);
       var inv = h('div', 'sx-su-inv'); inv.appendChild(h('b', null, 'Inviting ' + arr(cfg.team).length + ' people'));
-      var grid = h('div', 'sx-su-team'); arr(cfg.team).forEach(function (m, i) { var p = h('div', 'sx-su-p'); p.style.transitionDelay = (300 + i * 220) + 'ms'; p.appendChild(faceEl(m.name, 'is-big')); p.appendChild(h('b', null, m.name)); p.appendChild(h('span', null, m.role)); grid.appendChild(p); });
-      inv.appendChild(grid); var sent = h('span', 'sx-su-ok', ''); inv.appendChild(sent); c.appendChild(inv); body.appendChild(c);
+      var grid = h('div', 'sx-su-team'); arr(cfg.team).forEach(function (m, i) { var p = h('div', 'sx-su-p'); p.style.transitionDelay = (120 + i * 140) * speed + 'ms'; p.appendChild(faceEl(m.name, 'is-big')); p.appendChild(h('b', null, m.name)); p.appendChild(h('span', null, m.role)); grid.appendChild(p); });
+      inv.appendChild(grid); c.appendChild(inv); body.appendChild(c);
       raf2(function () { grid.classList.add('is-on'); });
-      setTimeout(function () { sfx('done'); sent.textContent = 'Invites sent. Everyone gets their own login.'; ready('Next: connect your tools', function () { stepTo(1); }); }, 600 + arr(cfg.team).length * 220);
+      later(1200, function () { sfx('done'); progress(0, 1); });
+      later(1800, connectors);
     }
     function connectors() {
-      var c = h('div', 'sx-su-cn');
-      var hd = h('div', 'sx-su-hd'); hd.appendChild(h('h2', null, 'Connect where the work already happens')); var all = h('button', 'sx-su-all', 'Connect all'); all.type = 'button'; hd.appendChild(all); c.appendChild(hd);
-      var grid = h('div', 'sx-su-grid'), left = arr(S.connectors).length;
-      arr(S.connectors).forEach(function (x) {
-        var t = h('button', 'sx-cn'); t.type = 'button';
+      stepTo(1);
+      var c = h('div', 'sx-su-cn'); c.appendChild(h('h2', null, 'Connecting where the work already happens'));
+      var grid = h('div', 'sx-su-grid'), list = arr(S.connectors), left = list.length;
+      list.forEach(function (x, i) {
+        var t = h('div', 'sx-cn');
         var g = SRC[x[0]] || SRC.app; var gl = h('i', 'sx-cn-g', g[1]); gl.style.background = g[2]; t.appendChild(gl);
-        var tx = h('span', 'sx-cn-tx'); tx.appendChild(h('b', null, x[1] || g[0])); var st = h('span', null, 'Connect'); tx.appendChild(st); t.appendChild(tx);
-        var ic = h('span', 'sx-cn-ic'); t.appendChild(ic);
-        t._go = function () {
-          if (t.dataset.s) return; t.dataset.s = '1'; t.classList.add('is-busy'); st.textContent = 'Connecting…'; sfx('tick');
-          setTimeout(function () { st.textContent = x[2]; }, 700);
-          setTimeout(function () { t.classList.remove('is-busy'); t.classList.add('is-ok'); st.textContent = x[3]; sfx('done'); if (--left === 0) ready('Next: switch on the agents', function () { stepTo(2); }); }, 1500);
-        };
-        t.addEventListener('click', function () { unlock(); t._go(); });
-        grid.appendChild(t);
+        var tx = h('span', 'sx-cn-tx'); tx.appendChild(h('b', null, x[1] || g[0])); var st = h('span', null, 'Waiting'); tx.appendChild(st); t.appendChild(tx);
+        t.appendChild(h('span', 'sx-cn-ic')); grid.appendChild(t);
+        later(500 + i * 230, function () { t.classList.add('is-busy'); st.textContent = 'Connecting…'; sfx('tick');
+          later(420, function () { st.textContent = x[2]; });
+          later(900, function () { t.classList.remove('is-busy'); t.classList.add('is-ok'); st.textContent = String(x[3]).replace(/^\u2713\s*/, ''); sfx('task'); progress(1, 1 - (--left) / list.length);
+            if (left === 0) later(450, agents); });
+        });
       });
-      all.addEventListener('click', function () { unlock(); all.disabled = true; each(grid.children, function (t, i) { setTimeout(t._go, i * 260); }); });
       c.appendChild(grid); body.appendChild(c);
-      nb.textContent = 'Connect your tools to continue';
-      if (AUTO) setTimeout(function () { all.click(); }, 700);
     }
     function agents() {
+      stepTo(2);
       var c = h('div', 'sx-su-ag'); c.appendChild(h('h2', null, 'Switching on your agents'));
-      var list = h('div', 'sx-su-agl');
-      arr(S.agents).forEach(function (a, i) {
+      var list = h('div', 'sx-su-agl'), A = arr(S.agents);
+      A.forEach(function (a, i) {
         var r = h('div', 'sx-sa'); r.appendChild(faceEl(a[0], 'is-sm'));
         var tx = h('div'); tx.appendChild(h('b', null, a[0])); tx.appendChild(h('span', null, a[1])); r.appendChild(tx);
-        var sw = h('span', 'sx-sw-t'); sw.appendChild(h('i')); r.appendChild(sw);
-        list.appendChild(r);
-        setTimeout(function () { r.classList.add('is-on'); sfx('task'); }, 350 + i * 320);
+        var sw = h('span', 'sx-sw-t'); sw.appendChild(h('i')); r.appendChild(sw); list.appendChild(r);
+        later(400 + i * 150, function () { r.classList.add('is-on'); sfx('tick'); progress(2, (i + 1) / A.length); if (i === A.length - 1) later(500, building); });
       });
       c.appendChild(list); body.appendChild(c);
-      setTimeout(function () { ready('Build my hub', function () { stepTo(3); }); }, 450 + arr(S.agents).length * 320);
     }
     function building() {
-      var c = h('div', 'sx-su-load'); c.appendChild(h('span', 'sx-spin'));
-      c.appendChild(h('h2', null, 'Building your hub…'));
-      var ul = h('ul'); arr(S.building).forEach(function (x, i) { var li = h('li', null, x); li.style.transitionDelay = (i * 600) + 'ms'; ul.appendChild(li); }); c.appendChild(ul); body.appendChild(c);
-      raf2(function () { ul.classList.add('is-on'); });
-      nb.textContent = 'Building…';
-      setTimeout(function () { sfx('stage'); hub('start', function () { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); ui.setup = null; }, 500); done(); }); }, 600 * arr(S.building).length + 700);
+      stepTo(3);
+      var c = h('div', 'sx-su-load'); c.appendChild(h('span', 'sx-spin')); c.appendChild(h('h2', null, 'Building your hub…'));
+      var ul = h('ul'); c.appendChild(ul); body.appendChild(c);
+      var L = arr(S.building);
+      L.forEach(function (x, i) { later(i * 380, function () { var li = h('li', null, x); ul.appendChild(li); raf2(function () { li.classList.add('is-on'); }); progress(3, (i + 1) / L.length); }); });
+      later(L.length * 380 + 500, function () {
+        sfx('stage'); fill.style.transform = 'scaleX(1)';
+        hub('start', function () { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); ui.setup = null; }, 500); done(); });
+        ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500);
+      });
     }
-    stepTo(0);
+    workspace();
   }
   function toTeam() {
     var e = document.getElementById('end'); if (e) e.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });

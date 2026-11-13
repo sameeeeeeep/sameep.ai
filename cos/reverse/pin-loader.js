@@ -94,6 +94,22 @@
     '.pl-alt{padding:6px 14px;min-height:32px;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font:500 14px "Bricolage Grotesque",system-ui,sans-serif;cursor:pointer}',
     '.pl-alt:hover,.pl-alt:focus-visible{background:rgba(255,255,255,.26);outline:none}',
     '@media (prefers-reduced-motion:reduce){.pl-face,.pl-face.is-on i{animation:none;transform:none}.pl{transition:none}}',
+    /* v2: floating bubbles on a light page, the sign-in in a card in the middle */
+    '.pl{grid-template-rows:1fr;place-items:center;padding:16px;background:#f4f3ef;color:#15171c}',
+    '.pl-b{position:absolute;left:0;top:0;will-change:transform}',
+    '.pl-b i{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#e7e3db;box-shadow:0 10px 26px -12px rgba(21,23,28,.35),0 0 0 3px rgba(255,255,255,.9);opacity:calc(.55 + var(--z,1) * .45);transform:scale(0);transition:transform .8s cubic-bezier(.2,1.5,.4,1)}',
+    '.pl-b.is-on i{transform:scale(1);animation:pl-bob var(--bd,5s) ease-in-out var(--bl,0s) infinite}',
+    '.pl-b img{width:100%;height:100%;object-fit:cover;display:block}',
+    '.pl-card{align-self:center;width:min(380px,100%);padding:26px 24px 20px;border-radius:24px;background:rgba(255,255,255,.92);box-shadow:0 1px 0 rgba(21,23,28,.06),0 30px 60px -30px rgba(21,23,28,.35),0 0 0 1px rgba(21,23,28,.06)}',
+    '.pl .pl-ask{font-size:20px;letter-spacing:-.01em}',
+    '.pl .pl-in{background:#f4f3ef;box-shadow:inset 0 0 0 1px #d3d3cc;color:#15171c}',
+    '.pl .pl-in::placeholder{color:#8b8f99}',
+    '.pl .pl-in:focus{box-shadow:inset 0 0 0 1.5px #15171c}',
+    '.pl .pl-go{background:#15171c;color:#fff}',
+    '.pl .pl-alt{background:transparent;color:#3a3f4a;text-decoration:underline;text-underline-offset:3px}',
+    '.pl .pl-alt:hover,.pl .pl-alt:focus-visible{background:#ece9e2}',
+    '.pl .pl-load-b{background:#e3e3de}.pl .pl-load-b i{background:#15171c}',
+    '@media (prefers-reduced-motion:reduce){.pl-b.is-on i{animation:none}}',
     /* scope + pricing, on the page's light paper */
     '.pl-load-t{display:block}.pl-load-b{display:block;width:min(240px,70vw);height:3px;margin:10px auto 0;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden}.pl-load-b i{display:block;height:100%;background:#fff;transform-origin:0 50%;transform:scaleX(0);transition:transform .3s ease}',
     '#scope{background:#f3f1ec;color:#1d1c1a;font-family:"Bricolage Grotesque",system-ui,sans-serif;padding:96px 16px 120px}',
@@ -146,49 +162,67 @@
 
   function buildLock() {
     lock = h('div', 'pl'); lock.setAttribute('role', 'dialog'); lock.setAttribute('aria-label', 'Sign in');
-    var top = h('div', 'pl-top'), time = h('p', 'pl-time'), date = h('p', 'pl-date');
-    top.appendChild(time); top.appendChild(date);
-    function tick() {
-      var d = new Date();
-      time.textContent = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M$/i, '');
-      date.textContent = d.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' });
-    }
-    tick(); clockTimer = setInterval(tick, 10000);
+    /* light and airy: faces float as bubbles; the sign-in card sits in the middle */
     var field = h('div', 'pl-field');
-    bottom = h('div', 'pl-bottom');
+    bottom = h('div', 'pl-bottom pl-card');
     msg = h('p', 'pl-msg'); msg.setAttribute('role', 'status'); msg.setAttribute('aria-live', 'polite');
-    lock.appendChild(top); lock.appendChild(h('div')); lock.appendChild(bottom); lock.appendChild(field);
+    lock.appendChild(field); lock.appendChild(bottom);
     document.body.appendChild(lock);
     faces(field);
     askPin();
   }
 
-  /* faces take turns around the edges, clear of the clock and the form */
+  /* the faces float as soft bubbles: slow drift, a gentle bob, soft bumps off each other, the edges and the card,
+     and a little parallax with the pointer (near ones move more). Faces only: gate/f1..f5. */
+  var stopBubbles = function () {};
   function faces(field) {
-    /* spots keep clear of the clock (top) and the sign-in (bottom middle); size = depth (near ones bigger) */
-    var N = 5, phone = innerWidth < 600;   /* gate/f1..f5: faces only, no names anywhere */
-    var spots = phone
-      ? [[.16, .33, 72], [.84, .31, 64], [.5, .42, 84], [.14, .55, 60], [.86, .56, 76], [.32, .66, 56], [.7, .67, 66]]
-      : [[.12, .32, 80], [.88, .3, 74], [.26, .56, 96], [.74, .55, 90], [.09, .76, 68], [.91, .77, 72], [.5, .5, 104]];
-    var els = spots.map(function (p, i) {
-      var f = h('span', 'pl-face'), w = h('i'), im = h('img'); im.alt = ''; im.decoding = 'async';
+    var N = 5, phone = innerWidth < 600, n = phone ? 9 : 14, W = innerWidth, H = innerHeight, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var B = [], mx = 0, my = 0, raf = 0, last = performance.now();
+    for (var i = 0; i < n; i++) {
+      var r = (phone ? 26 : 34) + ((i * 37) % 7) * (phone ? 6 : 9), z = r / (phone ? 62 : 88);
+      var el = h('span', 'pl-b'), w = h('i'), im = h('img'); im.alt = ''; im.decoding = 'async';
       im.src = base + 'gate/f' + ((i % N) + 1) + '.webp';
-      f.style.left = (p[0] * 100) + '%'; f.style.top = (p[1] * 100) + '%';
-      f.style.setProperty('--s', p[2] + 'px'); f.style.setProperty('--o', p[2] < 64 ? '.8' : '1');
-      f.style.setProperty('--d', (4 + (i % 3) * .7) + 's'); f.style.setProperty('--dd', (13 + (i * 7) % 9) + 's');
-      f.style.setProperty('--dl', -(i * 2.3) + 's');
-      f.style.setProperty('--dx', ((i % 2 ? 1 : -1) * (10 + (i * 5) % 16)) + 'px'); f.style.setProperty('--dy', ((i % 3 ? -1 : 1) * (8 + (i * 3) % 12)) + 'px');
-      w.appendChild(im); f.appendChild(w); field.appendChild(f);
-      setTimeout(function () { f.classList.add('is-on'); }, 250 + i * 160);
-      return f;
-    });
-    /* one face at a time leaves and a new one pops in, the way the lobby takes turns */
-    var next = spots.length;
-    faceTimer = setInterval(function () {
-      var f = els[Math.floor(Math.random() * els.length)];
-      f.classList.remove('is-on'); f.classList.add('is-off');
-      setTimeout(function () { f.querySelector('img').src = base + 'gate/f' + ((next++ % N) + 1) + '.webp'; f.classList.remove('is-off'); f.classList.add('is-on'); }, 800);
-    }, 2400);
+      el.style.width = el.style.height = (2 * r) + 'px'; el.style.setProperty('--z', z.toFixed(2)); el.style.setProperty('--bd', (4 + (i % 4) * .8) + 's'); el.style.setProperty('--bl', -(i * .9) + 's');
+      w.appendChild(im); el.appendChild(w); field.appendChild(el);
+      var ang = i * 2.399, sp = (phone ? 10 : 14) + (i % 5) * 3;
+      B.push({ el: el, r: r, z: z, x: W * (.08 + .84 * ((i * .618) % 1)), y: H * (.1 + .8 * ((i * .382 + .17) % 1)), vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp });
+      (function (e, d) { setTimeout(function () { e.classList.add('is-on'); }, d); })(el, 120 + i * 90);
+    }
+    function onMove(e) { mx = (e.clientX / W - .5); my = (e.clientY / H - .5); }
+    addEventListener('pointermove', onMove, { passive: true });
+    function onResize() { W = innerWidth; H = innerHeight; }
+    addEventListener('resize', onResize);
+    function card() { var c = bottom && bottom.getBoundingClientRect(); return c ? { x: c.left + c.width / 2, y: c.top + c.height / 2, w: c.width / 2 + 18, hh: c.height / 2 + 18 } : null; }
+    function step(now) {
+      var dt = Math.min(.05, (now - last) / 1000); last = now;
+      var C = card();
+      B.forEach(function (b) {
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.x < b.r) { b.x = b.r; b.vx = Math.abs(b.vx); } if (b.x > W - b.r) { b.x = W - b.r; b.vx = -Math.abs(b.vx); }
+        if (b.y < b.r) { b.y = b.r; b.vy = Math.abs(b.vy); } if (b.y > H - b.r) { b.y = H - b.r; b.vy = -Math.abs(b.vy); }
+        if (C) {   /* the card is a soft wall: push out and turn away */
+          var dx = b.x - C.x, dy = b.y - C.y, ox = C.w + b.r - Math.abs(dx), oy = C.hh + b.r - Math.abs(dy);
+          if (ox > 0 && oy > 0) { if (ox < oy) { b.x += (dx < 0 ? -ox : ox); b.vx = (dx < 0 ? -1 : 1) * Math.abs(b.vx); } else { b.y += (dy < 0 ? -oy : oy); b.vy = (dy < 0 ? -1 : 1) * Math.abs(b.vy); } }
+        }
+      });
+      for (var i = 0; i < B.length; i++) for (var j = i + 1; j < B.length; j++) {   /* gentle bumps */
+        var a = B[i], c = B[j], dx = c.x - a.x, dy = c.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 1, m = a.r + c.r + 6;
+        if (d < m) {
+          var nx = dx / d, ny = dy / d, push = (m - d) / 2;
+          a.x -= nx * push; a.y -= ny * push; c.x += nx * push; c.y += ny * push;
+          var rv = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
+          if (rv < 0) { a.vx += rv * nx * .9; a.vy += rv * ny * .9; c.vx -= rv * nx * .9; c.vy -= rv * ny * .9; }
+        }
+      }
+      B.forEach(function (b) {
+        var px = -mx * 26 * b.z, py = -my * 18 * b.z;
+        b.el.style.transform = 'translate3d(' + (b.x - b.r + px).toFixed(1) + 'px,' + (b.y - b.r + py).toFixed(1) + 'px,0)';
+      });
+      raf = requestAnimationFrame(step);
+    }
+    if (still) { B.forEach(function (b) { b.el.style.transform = 'translate3d(' + (b.x - b.r) + 'px,' + (b.y - b.r) + 'px,0)'; }); }
+    else raf = requestAnimationFrame(step);
+    stopBubbles = function () { cancelAnimationFrame(raf); removeEventListener('pointermove', onMove); removeEventListener('resize', onResize); };
   }
 
   function form(input, label, onSubmit) {
@@ -355,7 +389,7 @@
   }
   function open(cfg) {
     neutralAgents();
-    clearInterval(faceTimer); clearInterval(clockTimer);
+    clearInterval(faceTimer); clearInterval(clockTimer); stopBubbles();
     if (lock) { lock.classList.add('is-out'); setTimeout(function () { lock.remove(); }, 600); }
     scrollTo(0, 0);
     release(cfg);

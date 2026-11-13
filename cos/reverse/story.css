@@ -665,3 +665,14 @@
 }
 .sx-prop-in-r .sx-src > span { display: none; }
 .sx-prop-top { background: var(--bd); box-shadow: 0 1px 0 var(--rule); }
+
+/* ---------- v6.2: the setup is a loader (no buttons) ---------- */
+.sx-setup.is-auto { cursor: progress; }
+.sx-su-bar { flex: none; width: min(520px, 80%); height: 4px; margin: 14px auto 0; border-radius: 2px; background: var(--rule); overflow: hidden; }
+.sx-su-bar i { display: block; height: 100%; background: var(--acc); transform-origin: 0 50%; transform: scaleX(0); transition: transform .5s var(--ease); }
+.sx-su-hint { flex: none; align-self: center; font: 400 12px/1 var(--f-mono); color: var(--muted); padding: 8px 0 2px; }
+.sx-setup.is-auto .sx-su-body { animation: sx-up .5s var(--ease) both; }
+.sx-setup.is-auto .sx-cn { cursor: default; }
+.sx-cn:not(.is-busy):not(.is-ok) { opacity: .55; }
+.sx-su-load li.is-on { opacity: 1; transform: none; }
+.sx-su-brand h1 { font-size: clamp(24px, 3vw, 40px); }
