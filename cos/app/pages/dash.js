@@ -27,6 +27,7 @@ export function nameOf(s, n) {
   if (!n) return '';
   const p = (s?.people || {})[n];
   if (p) return p.name;
+  if (n === 'cos') return 'Chief of staff';
   return /^[a-z_]+$/.test(n) ? n.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase()) : n;
 }
 
