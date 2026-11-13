@@ -1802,7 +1802,7 @@
   function init(raw) {
     /* a config with a `story` block plays as three chapters (story.js); this engine steps aside */
     /* ?step=N, a reload part-way down, or reduced motion go straight to the board */
-    if (raw && raw.story && window.cosStory && (raw.story.setup || /[?&]step=\d/.test(location.search) || STILL || scrollY > 10 || /[?&]nointro\b/.test(location.search))) { window.cosStory(raw); return; }
+    if (raw && raw.story && window.cosStory && (/[?&]step=\d/.test(location.search) || STILL || scrollY > 10 || /[?&]nointro\b/.test(location.search))) { window.cosStory(raw); return; }
     cfg = raw || {};
     buildStates(cfg.crops);
     mapsFromConfig();

@@ -15,11 +15,10 @@
 /* faces */
 .cs-face { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid var(--line-2); background: var(--card-2); color: var(--ink-2); font: 500 11.5px/1 var(--f-mono); }
 .cs-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.cs-face.is-agent { border-radius: 9px; background: var(--raise); }
-.cs-face.is-agent svg { width: 17px; height: 17px; }
+.cs-face.is-agent { border-radius: 50%; background: var(--agent-bg); color: var(--agent-fg); border: 0; }
+.cs-face.is-agent svg { width: 46%; height: 46%; }
 .cs-face.is-sm { width: 24px; height: 24px; font-size: 9.5px; }
-.cs-face.is-sm.is-agent { border-radius: 7px; }
-.cs-face.is-sm svg { width: 14px; height: 14px; }
+.cs-face.is-sm:not(.is-agent) svg { width: 14px; height: 14px; }
 
 /* presence: running / managing / monitoring */
 .cs-pres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }

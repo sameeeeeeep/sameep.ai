@@ -984,8 +984,8 @@
     var bar = h('div', 'sx-su-bar'); var fill = h('i'); bar.appendChild(fill); ov.appendChild(bar);
     var body = h('div', 'sx-su-body'); ov.appendChild(body);
     var hint = h('span', 'sx-su-hint', 'Setting things up · tap to speed up'); ov.appendChild(hint);
-    var speed = 1, total = 0, elapsed = 0, timers = [];
-    ov.addEventListener('click', function () { unlock(); speed = .3; hint.textContent = 'Speeding up…'; });
+    var speed = .62, total = 0, elapsed = 0, timers = [];   /* the hand-off after the parcel: about 7 s, hub included */
+    ov.addEventListener('click', function () { unlock(); speed = .2; hint.textContent = 'Speeding up…'; });
     function later(ms, fn) { var t = setTimeout(fn, ms * speed); timers.push(t); return ms * speed; }
     function chain(list) {   /* [[ms, fn], ...] run one after another, each delay scaled by the current speed */
       var i = 0; (function go() { if (i >= list.length) return; var it = list[i++]; later(it[0], function () { it[1](); go(); }); })();
@@ -1112,7 +1112,7 @@
     var ov = h('div', 'sx-hub' + (end ? ' is-end' : '')); if (end) ui.hubEl = ov;
     var hd = h('div', 'sx-hub-hd'); var ht = h('div'); ht.appendChild(h('span', 'sx-su-k', end ? 'Back at the hub · week one' : 'Your hub is ready')); ht.appendChild(h('h1', null, str((cfg.brand || {}).name) + ' · Chief of Staff')); hd.appendChild(ht);
     var acts = h('div', 'sx-hub-acts');
-    var go1 = h('button', 'sx-su-next' + (end ? ' is-cta' : ''), end ? 'See the scope and pricing' : 'Start: the ' + str((cfg.story.product || {}).name, 'product').split(' ')[0] + ' story'); go1.type = 'button';
+    var go1 = end ? h('button', 'sx-su-next is-cta', 'See the scope and pricing') : h('span', 'sx-hub-go', 'Opening the ' + str((cfg.story.product || {}).name, 'product').split(' ')[0] + ' story\u2026'); if (end) go1.type = 'button';
     if (end) { var tm = h('button', 'sx-hub-link', 'See the team'); tm.type = 'button'; tm.addEventListener('click', function () { unlock(); ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); ui.hubEl = 'seen'; toTeam(); }); acts.appendChild(tm); }
     acts.appendChild(go1); hd.appendChild(acts); ov.appendChild(hd);
     var nums = h('div', 'sx-hub-nums'); arr(end ? S.numbers_end : S.numbers_start).forEach(function (n) { var c = h('div'); c.appendChild(h('b', null, n[0])); c.appendChild(h('span', null, n[1])); nums.appendChild(c); }); ov.appendChild(nums);
@@ -1132,7 +1132,8 @@
     g.appendChild(side); ov.appendChild(g);
     ui.stage.appendChild(ov); raf2(function () { ov.classList.add('is-on'); });
     go1.addEventListener('click', function () { unlock(); if (end) { /* the hub stays under the proposal: Back returns to it */ } else { ov.classList.add('is-out'); setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 500); } go(); });
-    if (AUTO && !end) setTimeout(function () { go1.click(); }, 2600);
+    /* the start hub is the loader's last frame: it shows for a moment, then the story opens on its own */
+    if (!end) setTimeout(function () { go1.click(); }, REDUCED ? 600 : 1500);
   }
 
   /* ---------- the Enter gate (deep links; otherwise the parcel tap is the gate) ---------- */
@@ -1174,7 +1175,8 @@
           /* hide the parcel stage rather than drop it: freeing its WebGL scene mid-story caused second-long GC pauses */
           setTimeout(function () { keep.style.display = 'none'; keep.setAttribute('aria-hidden', 'true'); ui.stage.classList.remove('is-over'); if (opts.retire) opts.retire(); }, 700);
         }
-        start();
+        /* parcel → the setup loader as the hand-off → the hub flashes in → the story, no clicks */
+        if (cfg.story.setup && !s0) setupFlow(start); else start();
       });
     }
     else if (cfg.story.setup && !s0) setupFlow(start);

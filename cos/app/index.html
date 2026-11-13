@@ -8,10 +8,10 @@
 <meta name="description" content="Your brand's chief of staff: every module's chat, tasks and records, the dashboard and the hub in one place.">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#0b0c0a">
-<script>/* theme before first paint: the saved pick, else the system (js/theme.js keeps the same rule) */
+<meta name="theme-color" content="#f4f3ef">
+<script>/* theme before first paint: light, unless the person picked dark (js/theme.js keeps the same rule) */
 (function () { var t = null; try { t = localStorage.getItem('bc-theme'); } catch (e) {}
-  if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  if (t !== 'dark') t = 'light';
   document.documentElement.setAttribute('data-theme', t); })();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Spline+Sans+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="./app.css">

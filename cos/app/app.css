@@ -7,17 +7,17 @@
   --bg: #0b0c0a; --rail: #0e0f0d; --card: #131411; --card-2: #191a17; --raise: #1f201c;
   --line: rgba(236, 235, 228, .085); --line-2: rgba(236, 235, 228, .16);
   --ink: #ecebe4; --ink-2: #c9c8c0; --muted: #8b8a82; --faint: #5f5e58;
-  --acc: #c8f04a; --acc-ink: #121409; --acc-soft: rgba(236, 235, 228, .05);
-  --ok: #8ccf8a; --warn: #f0a35a; --bad: #ee7c6c; --dark: #050605;
+  --acc: #2f5bd3; --acc-ink: #ffffff; --acc-soft: rgba(143, 168, 238, .1);
+  --ok: #8ccf8a; --warn: #f0a35a; --bad: #ee7c6c; --dark: #050605; --ok-fill: #2e9d57;
   /* derived tokens, so page modules never hard-code a colour that only works on one theme */
-  --acc-fg: #c8f04a;          /* the accent as a line or text colour (outlines, the current day) */
-  --acc-edge: #c8f04a;        /* border of a lime button */
-  --acc-hover: #d6f770;       /* a lime button under the pointer */
-  --acc-glow: rgba(200, 240, 74, .15);
+  --acc-fg: #8fa8ee;          /* the accent as a line or text colour (outlines, the current stage, links) */
+  --acc-edge: #2f5bd3;        /* border of a primary button */
+  --acc-hover: #2a51bd;       /* a primary button under the pointer */
+  --acc-glow: rgba(47, 91, 211, .25);
   --nav-on-bg: var(--raise); --nav-on-fg: var(--acc); /* the rail icon for where you are */
   --wash: rgba(236, 235, 228, .03); --wash-2: rgba(236, 235, 228, .09); --tint: rgba(236, 235, 228, .02);
   --ok-line: rgba(140, 207, 138, .5); --warn-line: rgba(240, 163, 90, .45); --bad-line: rgba(238, 124, 108, .5);
-  --agent-ink: #d6d8d0;
+  --agent-ink: #d6d8d0; --agent-bg: #2b2e36; --agent-fg: #ffffff;
   --shadow: rgba(0, 0, 0, .5);
   /* the dark Now card (pages/products.css): dark on both themes */
   --now-bg: #171812; --now-ink: #f1f0ea; --now-mut: #a9a89f; --now-line: rgba(236, 235, 228, .14); --now-btn: #f1f0ea; --now-btn-ink: #15160f; --now-btn-hover: #ffffff;
@@ -25,24 +25,24 @@
   --f-mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
   --radius: 14px; --rail-w: 64px; --top-h: 56px;
 }
-/* Light: the same command centre on warm paper. Ink text, hairlines in ink, and lime only on what you press
-   (primary buttons, the rail icon for where you are). js/theme.js sets data-theme before first paint, from the
-   saved choice or prefers-color-scheme. Every text token here clears 4.5:1 on --bg, --card and --card-2. */
+/* Light, the default: a warm paper ground, white cards with one hairline, ink text, and one accent (blue) only for
+   the primary button, the current stage, links and focus. js/theme.js sets data-theme before first paint (light unless
+   the person picked dark). Every text token here clears 4.5:1 on --bg, --card and --card-2. */
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f5f3ec; --rail: #eeebe2; --card: #fcfbf7; --card-2: #f0eee6; --raise: #e6e3d8;
-  --line: rgba(27, 26, 22, .1); --line-2: rgba(27, 26, 22, .19);
-  --ink: #1b1a16; --ink-2: #3b3a34; --muted: #66655d; --faint: #7f7d74;
-  --acc: #c8f04a; --acc-ink: #121409; --acc-soft: rgba(27, 26, 22, .05);
-  --ok: #2a7335; --warn: #a3540f; --bad: #b23a2a; --dark: #1b1a16;
-  --acc-fg: #4a6400; --acc-edge: #a6cc2c; --acc-hover: #bde43a;
-  --acc-glow: rgba(124, 160, 20, .18);
-  --nav-on-bg: var(--acc); --nav-on-fg: var(--acc-ink);
-  --wash: rgba(27, 26, 22, .035); --wash-2: rgba(27, 26, 22, .09); --tint: rgba(27, 26, 22, .025);
-  --ok-line: rgba(42, 115, 53, .45); --warn-line: rgba(163, 84, 15, .45); --bad-line: rgba(178, 58, 42, .45);
-  --agent-ink: #2b2a25;
-  --shadow: rgba(46, 40, 24, .16);
-  --now-bg: #1b1a16; --now-line: #1b1a16;
+  --bg: #f4f3ef; --rail: #f4f3ef; --card: #ffffff; --card-2: #ffffff; --raise: #ecece7;
+  --line: #e3e3de; --line-2: #cfcfc8;
+  --ink: #15171c; --ink-2: #3a3f4a; --muted: #5b616e; --faint: #8e939c;
+  --acc: #2f5bd3; --acc-ink: #ffffff; --acc-soft: #eef2fc;
+  --ok: #1e6b3a; --warn: #8a3a05; --bad: #b23a2a; --dark: #15171c; --ok-fill: #2e9d57;
+  --acc-fg: #2f5bd3; --acc-edge: #2f5bd3; --acc-hover: #2a51bd;
+  --acc-glow: rgba(47, 91, 211, .25);
+  --nav-on-bg: #ffffff; --nav-on-fg: #15171c;
+  --wash: #f4f3ef; --wash-2: #ecece7; --tint: #f7f6f2;
+  --ok-line: #cfcfc8; --warn-line: #cfcfc8; --bad-line: #cfcfc8;
+  --agent-ink: #15171c; --agent-bg: #15171c; --agent-fg: #ffffff;
+  --shadow: rgba(21, 23, 28, .08);
+  --now-bg: #15171c; --now-ink: #ffffff; --now-mut: #a9b4cc; --now-line: #2b2e36; --now-btn: #ffffff; --now-btn-ink: #15171c; --now-btn-hover: #f4f3ef;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -272,3 +272,8 @@ a.kpi:hover { border-color: var(--line-2); }
 .ask-src.is-unv { border-style: dashed; color: var(--muted); }
 .ask-gap { margin-top: 12px; font-size: 13px; color: var(--muted); }
 .ask-off { margin: -4px 0 10px; font-size: 13px; color: var(--ink-2); }
+
+/* the one agent glyph (js/look.js mark, js/cos.js face): a small star in a dark circle */
+.lk-av.is-agent, .cs-face.is-agent { background: var(--agent-bg); color: var(--agent-fg); border: 0; border-radius: 50%; }
+.lk-av.is-agent svg { width: 46%; height: 46%; }
+.cs-face.is-agent svg { width: 46%; height: 46%; }

@@ -676,3 +676,5 @@
 .sx-cn:not(.is-busy):not(.is-ok) { opacity: .55; }
 .sx-su-load li.is-on { opacity: 1; transform: none; }
 .sx-su-brand h1 { font-size: clamp(24px, 3vw, 40px); }
+/* v6.3: the start hub is the loader's last frame, no button */
+.sx-hub-go { font-size: 14px; font-weight: 500; color: #6b6f78; }
