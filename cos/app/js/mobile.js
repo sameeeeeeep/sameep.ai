@@ -1,4 +1,4 @@
-// mobile.js: the phone shell for the Chief of Staff surfaces. Loads after app.js and only adds things; the desktop
+// mobile.js: the phone shell for COS. Loads after app.js and only adds things; the desktop
 // shell is untouched (mobile.css shows all of this at 760 px and below, and hides the icon rail there).
 //
 //   The bottom tab bar   Dashboard, Chat (badged with the cards waiting for a tap or a check), Agents, More
@@ -10,10 +10,10 @@
 // Pure pieces (tabsView, needsView, mainAction, waiting) take plain data and return strings, so Node can test them.
 import { html, raw, ICONS } from './ui.js';
 
-export const TABS = [['dash', 'Dashboard'], ['chat', 'Chat'], ['agents', 'Agents']];
+export const TABS = [['dash', 'Dashboard'], ['tasks', 'Tasks'], ['chat', 'Chat']];
 const BADGED = 'chat'; // where the work lives: each module's To do, and All modules
 // what the More sheet lists (every other section)
-export const MORE = [['products', 'Products'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
+export const MORE = [['products', 'Products'], ['canvas', 'Canvas'], ['agents', 'Agents'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],
   ['chats', 'Work'], ['team', 'Members'], ['hiring', 'Hiring'], ['billing', 'Billing']];
 
 // Pure: the cards that need a person (a tap or a check), newest first

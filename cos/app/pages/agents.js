@@ -13,7 +13,9 @@ export function view(data, ctx, ui = {}) {
   const tab = ui.tab || 'agents';
   const open = Object.values(feed.decisions || {}).filter((d) => d.status === 'open' || d.status === 'to_check');
   const waitFor = (name) => open.filter((d) => (d.status === 'open' ? d.decider?.name : d.checker?.name) === name).length;
-  const agents = s?.presence?.running?.agents || [];
+  // the Chief of staff is COS's lead agent: it runs the room, assigns, chases and relays what people said. It leads.
+  const lead = (a) => /^chief of staff$/i.test(a.name);
+  const agents = (s?.presence?.running?.agents || []).slice().sort((a, b) => (lead(b) ? 1 : 0) - (lead(a) ? 1 : 0));
   const people = Object.values(s?.people || {});
   const tabs = html`<div class="ag-tabs" role="group" aria-label="Show">
     <button type="button" data-ag="agents" aria-pressed="${tab === 'agents'}">Agents <span class="mono">${agents.length}</span></button>
@@ -22,7 +24,7 @@ export function view(data, ctx, ui = {}) {
   const modFor = (name) => (data.threads || []).find((t) => t.agent === name)?.slug || (data.threads || []).find((t) => (t.fns || []).some((f) => f.agent === name))?.slug || null;
   const agentList = html`<ul class="ag-grid">${agents.map((a) => { const c = agentOf(a.name); const m = modFor(a.name); return html`<li class="ag-c">
     ${mark(a.name, 44)}
-    <p class="ag-n"><b>${c.name}</b></p>
+    <p class="ag-n"><b>${c.name}</b>${lead(a) ? html`<span>Lead agent. Runs the room and relays what people said.</span>` : ''}</p>
     <p class="ag-now">${a.now}</p>
     ${a.ts ? html`<p class="ag-t">${ago(a.ts)}</p>` : ''}
     ${m ? html`<a class="ag-go" href="#/w/${encodeURIComponent(ctx.wid)}/chat/${encodeURIComponent(m)}">Open #${m}</a>` : ''}

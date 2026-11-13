@@ -189,21 +189,25 @@ async function fetchPics(ctx, products, pack) {
   return out;
 }
 
+// Every product's journey for a workspace: its state, records and (for a private brand) its pack. Shared by Products,
+// Tasks, Canvas, the Dashboard tile and the sidebar's product list. ctx needs { wid, ws, api, pack? }.
+export async function loadJourney(ctx) {
+  const [state, recs, pk] = await Promise.all([
+    cosApi(ctx, 'GET', 'state'), cosApi(ctx, 'GET', 'records').catch(() => ({ records: [] })),
+    ctx.pack ? ctx.pack().catch(() => null) : null,
+  ]);
+  const pack = pk && pk.journey ? pk.journey : null;
+  const brand = brandOf(ctx.ws) || (ctx.ws?.demo ? 'ohra' : null);
+  const products = build({ brand: pack ? null : brand, pack, records: recs.records || [], people: state.people, plan: state.plan, presence: state.presence, today: state.today });
+  const roles = Object.fromEntries((pk?.team || []).map((t) => [t.name, t.role]));
+  // what each agent is doing right now comes from the demo engine's presence, which tells the sample brands' story;
+  // a private brand's own lines say it themselves
+  return { products, state, records: recs.records || [], pack, pics: await pictures(ctx, products, pack), roles, presence: pack ? null : state.presence };
+}
+
 export async function mount(root, ctx) {
   let data = null;
-  const load = async () => {
-    const [state, recs, pk] = await Promise.all([
-      cosApi(ctx, 'GET', 'state'), cosApi(ctx, 'GET', 'records').catch(() => ({ records: [] })),
-      ctx.pack ? ctx.pack().catch(() => null) : null,
-    ]);
-    const pack = pk && pk.journey ? pk.journey : null;
-    const brand = brandOf(ctx.ws) || (ctx.ws?.demo ? 'ohra' : null);
-    const products = build({ brand: pack ? null : brand, pack, records: recs.records || [], people: state.people, plan: state.plan, presence: state.presence, today: state.today });
-    const roles = Object.fromEntries((pk?.team || []).map((t) => [t.name, t.role]));
-    // what each agent is doing right now comes from the demo engine's presence, which tells the sample brands' story;
-    // a private brand's own lines say it themselves
-    data = { products, state, pics: await pictures(ctx, products, pack), roles, presence: pack ? null : state.presence };
-  };
+  const load = async () => { data = await loadJourney(ctx); };
   const paint = () => {
     const strip = root.querySelector('.pj-strip'), keep = strip ? strip.scrollLeft : null;
     root.innerHTML = String(view(data, ctx, route(ctx.params)));

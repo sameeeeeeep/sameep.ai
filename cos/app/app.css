@@ -22,7 +22,7 @@
   --now-bg: #171812; --now-ink: #f1f0ea; --now-mut: #a9a89f; --now-line: rgba(236, 235, 228, .14); --now-btn: #f1f0ea; --now-btn-ink: #15160f; --now-btn-hover: #ffffff;
   --f-head: 'Bricolage Grotesque', system-ui, sans-serif; --f-body: 'Bricolage Grotesque', system-ui, sans-serif;
   --f-mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
-  --radius: 14px; --rail-w: 64px; --top-h: 56px;
+  --radius: 14px; --rail-w: 232px; --top-h: 56px;
 }
 /* Light, the default: a warm paper ground, white cards with one hairline, ink text, and one accent (blue) only for
    the primary button, the current stage, links and focus. js/theme.js sets data-theme before first paint (light unless
@@ -55,24 +55,38 @@ button { font: inherit; color: inherit; }
 
 /* ---------- shell ---------- */
 .shell { display: grid; grid-template-columns: var(--rail-w) minmax(0, 1fr); min-height: 100vh; }
-.rail { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0; border-right: 1px solid var(--line); background: var(--rail); z-index: 5; }
-.rail-logo { display: grid; place-items: center; width: 38px; height: 38px; margin-bottom: 14px; border-radius: 10px; background: var(--ink); color: var(--bg); font: 600 18px/1 var(--f-body); text-decoration: none; letter-spacing: -.02em; }
-.rail-nav { display: grid; gap: 4px; }
-.rail-nav a { position: relative; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 11px; color: var(--muted); text-decoration: none; }
-.rail-nav a:hover { color: var(--ink); background: var(--card-2); }
-.rail-nav a[aria-current="page"] { color: var(--nav-on-fg); background: var(--nav-on-bg); }
-.rail-nav svg { width: 20px; height: 20px; }
-.rail-sep { display: block; width: 24px; height: 1px; margin: 6px auto; background: var(--line-2); }
-.rail-nav a.is-more { width: 36px; height: 36px; margin: 0 auto; }
-.rail-nav a.is-more svg { width: 17px; height: 17px; }
-.me-more { display: none; }
-.rail-tip { position: absolute; left: 52px; top: 50%; transform: translateY(-50%); padding: 4px 9px; border-radius: 7px; background: var(--raise); border: 1px solid var(--line-2); color: var(--ink); font-size: 12.5px; white-space: nowrap; pointer-events: none; opacity: 0; }
-.rail-nav a:hover .rail-tip, .rail-nav a:focus-visible .rail-tip { opacity: 1; }
-.rail-foot { margin-top: auto; position: relative; }
+/* the sidebar: the OS at a glance. The COS wordmark, Products (each listed), Modules, then Tasks, Chat, Canvas and the
+   Dashboard, with More folded at the bottom. Plain rows, one hairline, the accent only on where you are. */
+.rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; padding: 16px 12px 12px; border-right: 1px solid var(--line); background: var(--rail); scrollbar-width: thin; }
+.rail-brand { display: flex; flex-direction: column; gap: 2px; padding: 2px 8px 14px; color: var(--ink); text-decoration: none; }
+.rail-brand b { font: 600 22px/1 var(--f-head); letter-spacing: -.02em; }
+.rail-brand span { font-size: 13px; line-height: 1.35; color: var(--muted); }
+.rail-nav { display: flex; flex-direction: column; gap: 1px; }
+.rail-nav a { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 0 8px; border-radius: 8px; color: var(--ink-2); text-decoration: none; font-size: 14px; }
+.rail-nav a:hover { background: var(--card); color: var(--ink); }
+.rail-nav a[aria-current="page"] { background: var(--card); color: var(--ink); font-weight: 600; box-shadow: inset 0 0 0 1px var(--line); }
+.rail-nav svg { width: 18px; height: 18px; flex: none; }
+.rn-h { display: block; margin: 12px 0 2px; padding: 0 8px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
+a.rn-h { min-height: 28px; display: flex; align-items: center; }
+.rn-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+.rn-list span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rn-sw { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--sw); }
+.rn-ic { flex: none; display: inline-grid; place-items: center; width: 18px; color: var(--muted); }
+.rn-ic svg { width: 16px; height: 16px; }
+.rn-sep { display: block; height: 1px; margin: 10px 8px; background: var(--line); }
+.rn-more { margin-top: 6px; }
+.rn-more > summary { list-style: none; cursor: pointer; min-height: 34px; display: flex; align-items: center; padding: 0 8px; border-radius: 8px; font-size: 14px; color: var(--muted); }
+.rn-more > summary::-webkit-details-marker { display: none; }
+.rn-more > summary::after { content: '+'; margin-left: auto; }
+.rn-more[open] > summary::after { content: '-'; }
+.rn-more > summary:hover { color: var(--ink); }
+.rail-foot { margin-top: auto; padding: 12px 8px 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; position: relative; }
+.rail-maker { font-size: 13px; color: var(--faint); text-decoration: none; }
+.rail-maker:hover { color: var(--ink-2); }
 .avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--card-2); color: var(--ink-2); font: 500 12.5px/1 var(--f-mono); cursor: pointer; }
 .avatar:hover { border-color: var(--ink-2); }
 
-.me-menu { position: fixed; left: 72px; bottom: 14px; width: 270px; padding: 14px; border: 1px solid var(--line-2); border-radius: 14px; background: var(--card-2); box-shadow: 0 18px 50px var(--shadow); z-index: 30; display: grid; gap: 10px; }
+.me-menu { position: fixed; left: calc(var(--rail-w) + 8px); bottom: 14px; width: 270px; padding: 14px; border: 1px solid var(--line-2); border-radius: 14px; background: var(--card-2); box-shadow: 0 18px 50px var(--shadow); z-index: 30; display: grid; gap: 10px; }
 .me-menu .me-name { font-weight: 600; }
 .me-menu .me-mail { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
 .me-menu .me-role { font: 400 12px/1.4 var(--f-body); color: var(--muted); }

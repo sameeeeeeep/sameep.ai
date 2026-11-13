@@ -15,19 +15,22 @@
 // ctx = { wid, ws: {id, name, demo, role}, role, me: {user, workspaces}, params, api, go, toast, refreshMe }
 import { api, apiBase, token, ApiError } from './api.js';
 import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
+import { MODS } from './journey.js';
 import { askView, runAsk } from './ask.js';
 import { useWs, setPackFaces, faceSrc } from './look.js';
 import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
-// The Dashboard (pages/dash.js) and the Chief of Staff surfaces come first (Chat, Agents, Hub: pages/chat.js,
-// agents.js, coshub.js, all built on js/cos.js). Chat is the home of work: each module's chat holds its board
-// (To do, In progress, Done) and its records, and All modules merges every board. The rest follows under a divider.
+// COS, a company OS for consumer brands. The sidebar shows the OS: Products (each product listed), Modules (#ideas ...
+// #crm, each opening its tasks), then Tasks (one list across every module), Chat, Canvas and the Dashboard. The Chief of
+// staff is the lead agent inside it (Agents, and every thread). The rest sits under More.
 export const NAV = [
-  { section: 'dash',    label: 'Dashboard', page: '../pages/dash.js' },
-  { section: 'chat',    label: 'Chat',    page: '../pages/chat.js' },
   { section: 'products', label: 'Products', page: '../pages/products.js' },
-  { section: 'agents',  label: 'Agents',  page: '../pages/agents.js' },
-  { section: 'hub',     label: 'Hub',     page: '../pages/coshub.js' },
+  { section: 'tasks',    label: 'Tasks',    page: '../pages/tasks.js' },
+  { section: 'chat',     label: 'Chat',     page: '../pages/chat.js' },
+  { section: 'canvas',   label: 'Canvas',   page: '../pages/canvas.js' },
+  { section: 'dash',     label: 'Dashboard', page: '../pages/dash.js' },
+  { section: 'agents',  label: 'Agents',  page: '../pages/agents.js', more: true },
+  { section: 'hub',     label: 'Hub',     page: '../pages/coshub.js', more: true },
   { section: 'today',   label: 'Today',   page: '../pages/today.js', more: true },
   { section: 'standup', label: 'Standup', page: '../pages/standup.js', more: true },
   { section: 'company', label: 'Company', page: '../pages/company.js', more: true },
@@ -37,7 +40,30 @@ export const NAV = [
   { section: 'hiring',  label: 'Hiring',  page: '../pages/hiring.js', more: true },
   { section: 'billing', label: 'Billing', page: '../pages/billing.js', more: true },
 ];
+export const PRODUCT = 'COS';
+export const TAGLINE = 'Company OS for consumer brands';
+export const MODULES = ['ideas', 'npd', 'logistics', 'warehouse', 'listing', 'marketing', 'crm'];
+
+// Pure: the sidebar. r = the route, prods = [{id, name, color}] (empty while they load), icons = { module: svg }
+export function sideNav(wid, r, prods = [], icons = {}) {
+  const h = (...p) => hrefFor(wid, ...p);
+  const cur = (on) => (on ? ' aria-current="page"' : '');
+  // a module's tasks light the module, not Tasks itself
+  const on = (n) => n.section === r.section && !(n.section === 'tasks' && r.params[0]);
+  const item = (n) => `<a class="rn-i" href="${h(n.section)}"${cur(on(n))}>${ICONS[n.section] || ''}<span>${esc(n.label)}</span></a>`;
+  const top = NAV.filter((n) => !n.more && n.section !== 'products');
+  const more = NAV.filter((n) => n.more);
+  const inMore = more.some((n) => n.section === r.section);
+  return `<a class="rn-h" href="${h('products')}"${cur(r.section === 'products' && !r.params[0])}>Products</a>
+    <ul class="rn-list">${prods.map((p) => `<li><a href="${h('products', p.id)}"${cur(r.section === 'products' && r.params[0] === p.id)}><i class="rn-sw" style="--sw:${esc(p.color)}" aria-hidden="true"></i><span>${esc(p.name)}</span></a></li>`).join('')}</ul>
+    <p class="rn-h">Modules</p>
+    <ul class="rn-list">${MODULES.map((m) => `<li><a href="${h('tasks', m)}"${cur(r.section === 'tasks' && r.params[0] === m)}><span class="rn-ic">${icons[m] || ''}</span><span>#${m}</span></a></li>`).join('')}</ul>
+    <span class="rn-sep" aria-hidden="true"></span>
+    ${top.map(item).join('')}
+    <details class="rn-more"${inMore ? ' open' : ''}><summary>More</summary>${more.map(item).join('')}</details>`;
+}
 export const HOME = 'dash';
+const MOD_ICONS = Object.fromEntries(Object.entries(MODS).map(([k, m]) => [k, `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${m.icon}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`]));
 
 // agents running (the world's 19 functions share 16 agents; the shell's pill links to Agents)
 export const AGENTS = 16;
@@ -49,6 +75,8 @@ export const ASKS = {
   feed: ['How are sales today?', 'What is waiting for a tap?', 'When is the launch?'],
   chat: ['How are sales today?', 'What is the stock cover?'],
   products: ['Where is the launch?', 'What is waiting for a tap?', 'What is the stock cover?'],
+  tasks: ['What is waiting for a tap?', 'What is overdue?', 'What did the agents do today?'],
+  canvas: ['Which vendor invoices are open?', 'What is the stock cover?'],
   today: ['What needs me today?', 'What stocks out this week?', 'How did ads do yesterday?'],
   chats: ['What is everyone working on?', 'What is waiting for a tap?'],
   hub: ['How are sales today?', 'How is RTO?', 'What is the cash runway?'],
@@ -136,7 +164,7 @@ function boot() {
 
   function showPin() {
     $('shell').hidden = true; $('signin').hidden = false;
-    $('signin').innerHTML = String(html`<div class="si"><a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span>Chief of Staff</a>
+    $('signin').innerHTML = String(html`<div class="si"><a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span><span>COS<small>Company OS for consumer brands</small></span></a>
       <h1>Enter the PIN</h1>
       <form id="pin-form" class="si-form" novalidate>
         <label class="field"><span>PIN</span><input id="pin-in" name="pin" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]*" maxlength="12" required autofocus></label>
@@ -230,7 +258,7 @@ function boot() {
   const closeAsk = () => { askRun++; ask = null; if (cur) paintAsk(cur, parseHash(location.hash).section); };
 
   // A private workspace's own brand (logo, colours) comes from the Worker, members only (GET /w/:wid/brandpack);
-  // every other workspace answers 404 and keeps the Chief of Staff look. Nothing brand-specific is in this file.
+  // every other workspace answers 404 and keeps the COS look. Nothing brand-specific is in this file.
   // Its pack may also name the team's faces (and pages read its product journey: ctx.pack()); the faces are fetched
   // with the session from the members-only landing assets into object URLs before the page paints (js/look.js).
   const packs = new Map(), packFaces = new Map();
@@ -252,6 +280,15 @@ function boot() {
       setPackFaces(ws.id, m);
     }));
     return packFaces.get(ws.id);
+  };
+  const prodCache = new Map();
+  const productsOf = (ws) => {
+    const c = prodCache.get(ws.id);
+    if (c && Date.now() - c.at < 60e3) return c.p;
+    const p = import('../pages/products.js').then((m) => m.loadJourney({ wid: ws.id, ws, api, pack: () => packOf(ws) }))
+      .then((j) => { const list = j.products.map((x) => ({ id: x.id, name: x.name, color: x.color })); prodCache.set(ws.id, { at: Date.now(), p, list }); return list; });
+    prodCache.set(ws.id, { at: Date.now(), p, list: c?.list || [] });
+    return p;
   };
   async function paintBrand(ws, mine) {
     const p = await packOf(ws);
@@ -277,7 +314,7 @@ function boot() {
     const mine = ++seq; // a later route() makes this one stale
     if (!me.workspaces.length) {
       $('nav').innerHTML = ''; $('ws').innerHTML = ''; $('banner').innerHTML = '';
-      $('crumb-ws').textContent = 'Chief of Staff'; $('crumb-sec').textContent = 'No workspace';
+      $('crumb-ws').textContent = PRODUCT; $('crumb-sec').textContent = 'No workspace';
       $('page').innerHTML = String(html`<section class="pg"><h1 class="pg-h">No workspace yet</h1><p class="pg-sub">This email is signed in but not part of a workspace. Ask your admin to add you.</p></section>`);
       return;
     }
@@ -294,10 +331,12 @@ function boot() {
     $('ws').innerHTML = me.workspaces.map((w) => `<option value="${esc(w.id)}"${w.id === ws.id ? ' selected' : ''}>${esc(w.name)}</option>`).join('');
     $('ws-pick').hidden = me.workspaces.length < 2;
     $('role').textContent = ROLE_NAMES[ws.role] || ws.role;
-    const link = (n) => `<a href="${hrefFor(ws.id, n.section)}" aria-label="${esc(n.label)}"${n.more ? ' class="is-more"' : ''}${n.section === r.section ? ' aria-current="page"' : ''}>${ICONS[n.section] || ''}<span class="rail-tip" aria-hidden="true">${esc(n.label)}</span></a>`;
-    $('nav').innerHTML = NAV.filter((n) => !n.more).map(link).join('') + '<span class="rail-sep" aria-hidden="true"></span>' + NAV.filter((n) => n.more).map(link).join('');
+    const paintNav = (prods) => { $('nav').innerHTML = sideNav(ws.id, r, prods, MOD_ICONS); };
+    paintNav(prodCache.get(ws.id)?.list || []);
+    productsOf(ws).then((list) => { if (mine === seq) paintNav(list); }).catch(() => { /* the list stays empty */ });
     // on a phone the bottom bar holds the four surfaces; the rest are in the account menu
     $('me-more').innerHTML = NAV.filter((n) => n.more).map((n) => `<a href="${hrefFor(ws.id, n.section)}">${esc(n.label)}</a>`).join('');
+    $('brand-home').href = hrefFor(ws.id, HOME);
     $('crumb-ws').textContent = ws.name;
     $('crumb-sec').textContent = nav.label;
     document.body.dataset.section = r.section; // Chat has its own composer, so the shell's ask bar steps aside there
@@ -315,7 +354,7 @@ function boot() {
     const old = $('page'), root = old.cloneNode(false);
     old.replaceWith(root);
     root.innerHTML = '<p class="loading">Loading</p>';
-    document.title = `${nav.label} · ${ws.name} · Chief of Staff`;
+    document.title = `${nav.label} · ${ws.name} · ${PRODUCT}`;
     const ctx = {
       wid: ws.id, ws, role: ws.role, me, params: r.params, api, toast,
       go: (section, ...params) => { location.hash = hrefFor(ws.id, section, ...params); },
