@@ -70,10 +70,15 @@
     '.pl-time{font-weight:600;font-size:clamp(64px,13vw,140px);line-height:1;letter-spacing:-.045em;font-variant-numeric:tabular-nums}',
     '.pl-date{font-weight:600;font-size:clamp(15px,2vw,20px);opacity:.9}',
     '.pl-field{position:absolute;inset:0;z-index:1;pointer-events:none}',
-    '.pl-face{position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.18);box-shadow:0 4px 16px rgba(0,0,0,.3),0 0 0 2px rgba(255,255,255,.55);opacity:0;transform:scale(.4);transition:opacity .7s,transform .7s cubic-bezier(.2,1.4,.4,1)}',
-    '.pl-face.is-on{opacity:1;transform:scale(1)}',
-    '.pl-face img{width:100%;height:100%;object-fit:cover;display:block;animation:pl-bob var(--d,5s) ease-in-out infinite}',
-    '@keyframes pl-bob{50%{transform:translateY(-6px)}}',
+    /* the sameep.ai lock screen's lobby: round faces that drift, bob and take turns popping in */
+    '.pl-face{position:absolute;width:var(--s,76px);height:var(--s,76px);margin:calc(var(--s,76px) / -2) 0 0 calc(var(--s,76px) / -2);animation:pl-drift var(--dd,16s) ease-in-out var(--dl,0s) infinite alternate;opacity:var(--o,1)}',
+    '.pl-face i{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.22);box-shadow:0 4px 16px rgba(0,0,0,.3),0 0 0 2px rgba(255,255,255,.4);transform:scale(0);transition:transform .7s ease}',
+    '.pl-face.is-on i{animation:pl-pop .75s cubic-bezier(.2,1.6,.4,1) both,pl-bob var(--d,5s) ease-in-out .75s infinite}',
+    '.pl-face.is-off i{transform:scale(.3);opacity:0;transition:transform .7s ease,opacity .7s ease}',
+    '.pl-face img{width:100%;height:100%;object-fit:cover;display:block}',
+    '@keyframes pl-bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}',
+    '@keyframes pl-pop{0%{transform:scale(0) rotate(-24deg)}70%{transform:scale(1.18) rotate(4deg)}100%{transform:scale(1) rotate(0)}}',
+    '@keyframes pl-drift{0%{translate:0 0}50%{translate:var(--dx,18px) var(--dy,-12px)}100%{translate:calc(var(--dx,18px) * -.6) calc(var(--dy,-12px) * -.8)}}',
     '.pl-bottom{position:relative;z-index:2;display:grid;justify-items:center;gap:10px;width:min(340px,100%);align-self:end}',
     '.pl-ask{font-weight:600;font-size:17px}',
     '.pl-form{display:flex;gap:8px;width:100%}',
@@ -86,7 +91,7 @@
     '.pl-msg{min-height:1.4em;font-weight:500;font-size:14px;text-align:center;opacity:.92}',
     '.pl-alt{padding:6px 14px;min-height:32px;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font:500 14px "Bricolage Grotesque",system-ui,sans-serif;cursor:pointer}',
     '.pl-alt:hover,.pl-alt:focus-visible{background:rgba(255,255,255,.26);outline:none}',
-    '@media (prefers-reduced-motion:reduce){.pl-face img{animation:none}.pl,.pl-face{transition:none}}',
+    '@media (prefers-reduced-motion:reduce){.pl-face,.pl-face.is-on i{animation:none;transform:none}.pl{transition:none}}',
     /* scope + pricing, on the page's light paper */
     '#scope{background:#f3f1ec;color:#1d1c1a;font-family:"Bricolage Grotesque",system-ui,sans-serif;padding:96px 16px 120px}',
     '#scope .sc{max-width:1040px;margin:0 auto}',
@@ -157,23 +162,30 @@
 
   /* faces take turns around the edges, clear of the clock and the form */
   function faces(field) {
-    var N = 9, spots = [[.12, .3], [.88, .28], [.2, .62], [.82, .64], [.08, .82], [.92, .84], [.32, .44], [.68, .46], [.5, .62]];
-    if (innerWidth < 600) spots = [[.15, .34], [.85, .34], [.12, .56], [.88, .56], [.3, .46], [.7, .46]];
+    /* spots keep clear of the clock (top) and the sign-in (bottom middle); size = depth (near ones bigger) */
+    var N = 9, phone = innerWidth < 600;
+    var spots = phone
+      ? [[.16, .33, 72], [.84, .31, 64], [.5, .42, 84], [.14, .55, 60], [.86, .56, 76], [.32, .66, 56], [.7, .67, 66]]
+      : [[.1, .3, 76], [.9, .27, 68], [.24, .5, 92], [.78, .48, 84], [.08, .74, 64], [.92, .76, 72], [.38, .34, 58], [.62, .33, 62], [.3, .74, 70], [.7, .74, 66], [.5, .52, 100]];
     var els = spots.map(function (p, i) {
-      var f = h('span', 'pl-face'), im = h('img'); im.alt = ''; im.decoding = 'async';
+      var f = h('span', 'pl-face'), w = h('i'), im = h('img'); im.alt = ''; im.decoding = 'async';
       im.src = base + 'gate/f' + ((i % N) + 1) + '.webp';
-      im.style.setProperty('--d', (4 + (i % 3)) + 's');
       f.style.left = (p[0] * 100) + '%'; f.style.top = (p[1] * 100) + '%';
-      f.appendChild(im); field.appendChild(f);
-      setTimeout(function () { f.classList.add('is-on'); }, 200 + i * 140);
+      f.style.setProperty('--s', p[2] + 'px'); f.style.setProperty('--o', p[2] < 64 ? '.8' : '1');
+      f.style.setProperty('--d', (4 + (i % 3) * .7) + 's'); f.style.setProperty('--dd', (13 + (i * 7) % 9) + 's');
+      f.style.setProperty('--dl', -(i * 2.3) + 's');
+      f.style.setProperty('--dx', ((i % 2 ? 1 : -1) * (10 + (i * 5) % 16)) + 'px'); f.style.setProperty('--dy', ((i % 3 ? -1 : 1) * (8 + (i * 3) % 12)) + 'px');
+      w.appendChild(im); f.appendChild(w); field.appendChild(f);
+      setTimeout(function () { f.classList.add('is-on'); }, 250 + i * 160);
       return f;
     });
+    /* one face at a time leaves and a new one pops in, the way the lobby takes turns */
     var next = spots.length;
     faceTimer = setInterval(function () {
       var f = els[Math.floor(Math.random() * els.length)];
-      f.classList.remove('is-on');
-      setTimeout(function () { f.firstChild.src = base + 'gate/f' + ((next++ % N) + 1) + '.webp'; f.classList.add('is-on'); }, 800);
-    }, 2600);
+      f.classList.remove('is-on'); f.classList.add('is-off');
+      setTimeout(function () { f.querySelector('img').src = base + 'gate/f' + ((next++ % N) + 1) + '.webp'; f.classList.remove('is-off'); f.classList.add('is-on'); }, 800);
+    }, 2400);
   }
 
   function form(input, label, onSubmit) {
