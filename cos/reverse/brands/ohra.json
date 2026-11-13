@@ -2,9 +2,9 @@
  "id": "ohra",
  "brand": {
   "name": "Ohra",
-  "category": "lipstick",
+  "category": "lip colour",
   "city": "Delhi",
-  "product": "Brick Dust matte bullet lipstick",
+  "product": "Brick Dust lip oil tint",
   "founder": "Aditi"
  },
  "palette": {
@@ -20,7 +20,7 @@
   "accent": "#c8664a"
  },
  "intro": {
-  "line": "One Brick Dust lipstick, delivered in Saket at 6:08 pm.",
+  "line": "One Brick Dust lip oil tint, delivered in Saket at 6:08 pm.",
   "sub": "Seven months of work behind it. People tapped 8 times, 32 seconds in all. Scroll back."
  },
  "assets": {
@@ -43,7 +43,7 @@
    "when": "Today, 7:10 pm",
    "mode": "dusk",
    "object": "hero_boxed",
-   "line": "Delivered at 6:08 pm. At 7:10 pm, sent her a care note: keep it off the windowsill, and try Clay liner.",
+   "line": "Delivered at 6:08 pm. At 7:10 pm, sent her a care note: give it a shake, keep it out of a hot car, and try Clay liner with it.",
    "tap": null,
    "tags": [
     {
@@ -68,7 +68,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "7:10 pm",
-      "text": "Care note out to OH-20418 in Saket: keep the bullet off the windowsill in this heat, and Clay liner goes with it."
+      "text": "Care note out to OH-20418 in Saket: shake it before you swipe, keep it out of a hot car, and Clay liner goes with it."
      },
      {
       "who": "Naina",
@@ -136,7 +136,7 @@
    },
    "presence": {
     "running": [
-     "Care note sent: keep it off the windowsill"
+     "Care note sent: shake it, keep it out of the sun"
     ],
     "managing": [
      "Nobody needed for this one"
@@ -144,7 +144,7 @@
     "monitoring": [
      "Care-note opens, hourly",
      "Clay liner adds from care notes, daily",
-     "New Brick Dust reviews, hourly"
+     "New Brick Dust tint reviews, hourly"
     ]
    },
    "flow": [
@@ -161,14 +161,17 @@
        0.9,
        1.0
       ]
-     }
+     },
+     "via": "email",
+     "where": "Delhivery: OH-20418 delivered"
     },
     {
      "t": "auto",
      "s": "chat",
-     "text": "Care note sent: keep it off the windowsill",
+     "text": "Care note sent: shake it, keep it out of the sun",
      "ch": "support",
-     "desc": "Clay liner nudge on day 30"
+     "desc": "Clay liner nudge on day 30",
+     "caught": "From Delhivery's delivered email"
     },
     {
      "t": "q",
@@ -188,7 +191,7 @@
     {
      "t": "done",
      "s": "feed",
-     "text": "One lipstick: voice note to doorstep",
+     "text": "One lip oil tint: voice note to doorstep",
      "desc": "7 months · 8 taps · 32 sec"
     }
    ],
@@ -308,12 +311,16 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "OH-20418 packed · 110017"
+     "text": "OH-20418 packed, 118 g. 110017, who picks up?",
+     "via": "whatsapp",
+     "where": "Ohra warehouse",
+     "who": "Arjun"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Comparing 3 couriers in 110017, last 90 days"
+     "text": "Comparing 3 couriers in 110017, last 90 days",
+     "caught": "From Arjun in the warehouse group"
     },
     {
      "t": "auto",
@@ -360,12 +367,12 @@
    "mode": "dusk",
    "object": "phone",
    "line": "She asked where her order was at 10:05 am. Answered from the 9:52 am warehouse scan in 40 seconds: packed, on the 11:20 am pickup.",
-   "ask": "will brick dust look too brown on me? warm medium skin",
-   "answer": "On warm, medium skin it reads as a deep red with some brick in it, not brown. Our three testers with your tone all said red. Dab it on for softer.",
+   "ask": "is it sticky like a gloss? i hate gloss",
+   "answer": "No. It's 60% tint, 40% oil, so it sinks in like an oil and leaves real colour. Testers gave it 4.5 for comfort.",
    "tap": null,
    "tags": [
     {
-     "text": "Answered in 3 min",
+     "text": "Answered in 40 sec",
      "at": [
       0.611,
       0.613
@@ -405,19 +412,19 @@
       ],
       [
        "Question",
-       "Too brown on warm, medium skin"
+       "Where's my order?"
       ],
       [
        "Answered from",
-       "Wear test, 3 testers with her tone"
+       "Arjun's 9:52 am scan"
       ],
       [
        "First reply",
-       "3 min"
+       "40 sec"
       ],
       [
        "Outcome",
-       "Ordered at 11:42 pm"
+       "Tracking queued for 11:20 am"
       ]
      ]
     },
@@ -430,14 +437,14 @@
        "fetched": "11:40 pm"
       },
       {
-       "label": "Shade questions this week",
+       "label": "Where's-my-order chats this week",
        "value": "64",
        "source": "Website chat",
        "fetched": "11:40 pm"
       },
       {
-       "label": "Shade chats that end in an order",
-       "value": "27%",
+       "label": "Answered without a person",
+       "value": "94%",
        "source": "Shopify and website chat",
        "fetched": "11:40 pm"
       }
@@ -464,12 +471,15 @@
      "text": "hi where's my order? OH-20418",
      "who": "Customer, Saket",
      "answer": "Packed 9:52 am. Leaves on the 11:20 pickup.",
-     "ch": "support"
+     "ch": "support",
+     "via": "whatsapp",
+     "where": "Customer, Saket (DM)"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Read off Arjun's 9:52 scan"
+     "text": "Read off Arjun's 9:52 scan",
+     "caught": "From her WhatsApp to the support line"
     },
     {
      "t": "auto",
@@ -501,7 +511,7 @@
    "when": "2 days before, 9:50 am",
    "mode": "top",
    "object": "parcel_top",
-   "line": "Packed OH-20418 first in Okhla's morning batch at 118 g, saw six days of Brick Dust left at this pace, and drafted repeat PO-0151 on Sethi's terms under Aditi's standing approval.",
+   "line": "Packed OH-20418 first in Okhla's morning batch at 118 g, saw six days of Brick Dust tint left at this pace, and drafted repeat PO-0151 on Sethi's terms under Aditi's standing approval.",
    "tap": {
     "who": "Arjun",
     "what": "scanned the packed box",
@@ -541,7 +551,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "9:53 am",
-      "text": "The whole batch goes on the 11:20 am pickup, not the 2 pm van. Delhi hits 41°C by afternoon."
+      "text": "The whole batch goes on the 11:20 am pickup, not the 2 pm van. Delhi hits 41°C by afternoon, and oil hates a hot van."
      }
     ],
     "os": {
@@ -599,7 +609,7 @@
    "presence": {
     "running": [
      "Weighing every box vs the kit",
-     "Brick Dust: 6 days of stock left",
+     "Brick Dust tint: 6 days of stock left",
      "PO-0151 drafted · Sethi · repeat"
     ],
     "managing": [
@@ -633,13 +643,18 @@
     {
      "t": "raised",
      "s": "feed",
-     "text": "Morning batch to Okhla: 86 orders",
-     "desc": "OH-20418 first out"
+     "text": "86 in the Okhla batch today. tint ones first",
+     "desc": "OH-20418 first out",
+     "via": "meeting",
+     "where": "9:30 warehouse huddle",
+     "at": "09:34",
+     "who": "Arjun"
     },
     {
      "t": "assign",
      "s": "os",
-     "text": "Weighing every box vs the kit"
+     "text": "Weighing every box vs the kit",
+     "caught": "Picked up from the 9:30 warehouse huddle"
     },
     {
      "t": "ask",
@@ -665,7 +680,7 @@
     {
      "t": "auto",
      "s": "hub",
-     "text": "Brick Dust: 6 days of stock left",
+     "text": "Brick Dust tint: 6 days of stock left",
      "media": {
       "type": "chart",
       "kind": "bar",
@@ -697,7 +712,7 @@
      "type": "toast",
      "where": "OS",
      "title": "Stock alert",
-     "text": "Brick Dust: 6 days left. Reorder drafted."
+     "text": "Brick Dust tint: 6 days left. Reorder drafted."
     }
    ]
   },
@@ -725,7 +740,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "11:42 pm",
-      "text": "New order from tonight's shade chat. Brick Dust, ₹899, prepaid. Address matches 110017. First in the morning batch."
+      "text": "New order from ad cut B. Brick Dust lip oil tint, ₹899, prepaid. Address matches 110017. First in the morning batch."
      },
      {
       "who": "Arjun",
@@ -742,7 +757,7 @@
      "rows": [
       [
        "Item",
-       "Brick Dust matte lipstick, 4.2 g"
+       "Brick Dust lip oil tint, 4 ml"
       ],
       [
        "Total",
@@ -803,13 +818,16 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "OH-20418 · Brick Dust · ₹899 · prepaid",
-     "desc": "Ad cut B · 11:42 pm"
+     "text": "OH-20418 · Brick Dust tint · ₹899 · prepaid",
+     "desc": "Ad cut B · 11:42 pm",
+     "via": "email",
+     "where": "[Ohra] Order #OH-20418 placed"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Address says Saket. Pincode says 110071"
+     "text": "Address says Saket. Pincode says 110071",
+     "caught": "From the Shopify order email"
     },
     {
      "t": "auto",
@@ -885,7 +903,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "1:30 am",
-      "text": "Cut B, the sunlit swatch, is at ROAS 2.8. Paused cut C at 0.9 and moved its ₹1,100 a day onto B."
+      "text": "Cut B, the sunlit swipe, is at ROAS 2.8. Paused cut C at 0.9 and moved its ₹1,100 a day onto B."
      },
      {
       "who": "Naina",
@@ -910,14 +928,14 @@
      ],
      "rows": [
       [
-       "A, bullet side-on",
+       "A, tube and wand",
        "₹12,400",
        "1.9",
        "1.6%",
        "Running"
       ],
       [
-       "B, sunlit swatch",
+       "B, sunlit swipe",
        "₹21,800",
        "2.8",
        "2.2%",
@@ -979,11 +997,11 @@
     "ask": "Pick the cut to scale for the next 14 days. Cut B is at ROAS 2.8 over 7 days.",
     "options": [
      {
-      "label": "Cut B, sunlit swatch, ROAS 2.8",
+      "label": "Cut B, sunlit swipe, ROAS 2.8",
       "recommended": true
      },
      {
-      "label": "Cut A, bullet side-on, 1.9"
+      "label": "Cut A, tube and wand, 1.9"
      },
      {
       "label": "Cut C, close-ups, 0.9"
@@ -999,8 +1017,11 @@
     {
      "t": "raised",
      "s": "feed",
-     "text": "3 cuts live from the shoot",
-     "desc": "A bullet · B sunlit swatch · C close-ups"
+     "text": "3 cuts go live tonight. watch ROAS",
+     "desc": "A tube + wand · B sunlit swipe · C close-ups",
+     "via": "meeting",
+     "where": "6 pm growth sync",
+     "at": "18:22"
     },
     {
      "t": "auto",
@@ -1020,7 +1041,8 @@
        "C"
       ],
       "unit": "ROAS"
-     }
+     },
+     "caught": "Tracked from the 6 pm growth sync"
     },
     {
      "t": "ask",
@@ -1041,7 +1063,7 @@
     {
      "t": "q",
      "s": "chat",
-     "text": "is the launch paying for itself?",
+     "text": "is the tint launch paying for itself?",
      "who": "Aditi",
      "answer": "Yes. ₹2.10 back per ₹1, last 7 days.",
      "ch": "growth"
@@ -1070,9 +1092,9 @@
    "when": "2 weeks before",
    "mode": "dusk",
    "object": "hero",
-   "line": "Studio Pell changed the hero line. Naina's agent caught it in 40 seconds, checked it against 41 reviews, and put the line customers actually use up for her.",
+   "line": "Studio Pell changed the hero line. Naina's agent caught it in 40 seconds, checked it against 41 reviews, and put up the line customers actually use.",
    "card": {
-    "title": "Brick Dust matte lipstick, 4.2 g",
+    "title": "Brick Dust lip oil tint, 4 ml",
     "price": "₹899",
     "rating": 4.6
    },
@@ -1083,7 +1105,7 @@
    },
    "tags": [
     {
-     "text": "Sunlit swatch: 3.4% vs 2.6%",
+     "text": "Sunlit swipe: 3.4% vs 2.6%",
      "at": [
       0.352,
       0.424
@@ -1097,13 +1119,13 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "11:02 am",
-      "text": "29 of 41 reviews say it never dries the lips. The new first line leads with that. Naina, the card is up."
+      "text": "29 of 41 reviews say real colour, never sticky. The new first line leads with that. Naina, the card is up."
      },
      {
       "who": "Chief of staff",
       "agent": true,
       "time": "11:20 am",
-      "text": "Photo test done, 2,400 visits each. Sunlit swatch converts at 3.4%, studio bullet at 2.6%. Swapped the hero."
+      "text": "Photo test done, 2,400 visits each. Sunlit swipe converts at 3.4%, studio tube at 2.6%. Swapped the hero."
      },
      {
       "who": "Naina",
@@ -1121,13 +1143,13 @@
      "rows": [
       [
        "First line",
-       "A matte red for every day",
-       "A matte red that never dries your lips"
+       "Glossy colour, every day",
+       "Real colour. Never sticky."
       ],
       [
        "Hero photo",
-       "Studio bullet",
-       "Sunlit swatch"
+       "Studio tube",
+       "Sunlit swipe"
       ],
       [
        "Price",
@@ -1139,13 +1161,13 @@
     "hub": {
      "metrics": [
       {
-       "label": "Conversion, sunlit swatch",
+       "label": "Conversion, sunlit swipe",
        "value": "3.4%",
        "source": "Shopify",
        "fetched": "11:20 am"
       },
       {
-       "label": "Conversion, studio bullet",
+       "label": "Conversion, studio tube",
        "value": "2.6%",
        "source": "Shopify",
        "fetched": "11:20 am"
@@ -1157,7 +1179,7 @@
        "fetched": "11:02 am"
       },
       {
-       "label": "Reviews that say it never dries",
+       "label": "Reviews that say never sticky",
        "value": "29 of 41",
        "source": "Judge.me",
        "fetched": "11:02 am"
@@ -1168,7 +1190,7 @@
    "presence": {
     "running": [
      "Caught in 40 sec. Checking it vs 41 reviews",
-     "29/41 reviews say \"never dries\""
+     "29/41 reviews say \"never sticky\""
     ],
     "managing": [
      "Waiting on Naina: 1 tap"
@@ -1181,44 +1203,47 @@
    },
    "decision": {
     "area": "Website",
-    "ask": "Approve the new first line: \"A matte red that never dries your lips.\"",
+    "ask": "Approve the new first line: \"Real colour. Never sticky.\"",
     "options": [
      {
       "label": "Approve the new line",
       "recommended": true
      },
      {
-      "label": "Keep \"A matte red for every day\""
+      "label": "Keep \"Glossy colour, every day\""
      }
     ],
     "by": "Naina",
     "checker": "Aditi",
     "action": "Approve the copy",
-    "signal": "29 of 41 reviews say it never dries",
+    "signal": "29 of 41 reviews say never sticky",
     "osRow": 0
    },
    "flow": [
     {
      "t": "raised",
      "s": "chat",
-     "text": "new hero line is live: matte that stays soft",
+     "text": "new hero line is live: glossy colour, every day",
      "who": "Studio Pell",
      "ch": "studio-pell",
      "media": {
       "type": "link",
       "title": "ohra.in/brick-dust",
       "note": "hero line changed"
-     }
+     },
+     "via": "email",
+     "where": "Re: Brick Dust page, new hero line"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Caught in 40 sec. Checking it vs 41 reviews"
+     "text": "Caught in 40 sec. Checking it vs 41 reviews",
+     "caught": "From Studio Pell's email"
     },
     {
      "t": "auto",
      "s": "hub",
-     "text": "29/41 reviews say \"never dries\"",
+     "text": "29/41 reviews say \"never sticky\"",
      "media": {
       "type": "chart",
       "kind": "bar",
@@ -1228,8 +1253,8 @@
        4
       ],
       "labels": [
-       "never dries",
-       "true red",
+       "never sticky",
+       "real colour",
        "lasts"
       ],
       "unit": "reviews"
@@ -1241,7 +1266,7 @@
      "text": "Pell's line or the reviews' line?",
      "who": "Naina",
      "options": [
-      "never dries your lips",
+      "real colour, never sticky",
       "keep Pell's"
      ],
      "ch": "growth"
@@ -1260,14 +1285,14 @@
      "type": "text",
      "screen": "listing",
      "sel": ".scr-big",
-     "to": "Matte that stays soft"
+     "to": "Glossy colour, every day"
     },
     {
      "beat": 4,
      "type": "text",
      "screen": "listing",
      "sel": ".scr-big",
-     "to": "Never dries your lips"
+     "to": "Real colour. Never sticky."
     },
     {
      "beat": 5,
@@ -1283,7 +1308,7 @@
    "when": "5 weeks before",
    "mode": "dusk",
    "object": "hero",
-   "line": "The test shot read orange under warm lamps. Matched it to the bullet, moved the shoot to a north-light studio on Saturday and sent a ten-shot list.",
+   "line": "The test shot blew the gloss out to white glare under a ring light. Moved the shoot to a north-light studio on Saturday and sent a ten-shot list.",
    "tap": {
     "who": "Kavya, the creator",
     "what": "confirmed Saturday",
@@ -1312,7 +1337,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "12:40 pm",
-      "text": "Brief and ten-shot list are in your inbox. North-light studio held for Saturday so the red doesn't go orange."
+      "text": "Brief and ten-shot list are in your inbox. North-light studio held for Saturday, so the shine reads as shine, not glare."
      },
      {
       "who": "Kavya",
@@ -1323,7 +1348,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "1:16 pm",
-      "text": "9:30 am call. Swatches first, while the light is soft."
+      "text": "9:30 am call. Swipes first, while the light is soft."
      }
     ],
     "os": {
@@ -1336,22 +1361,22 @@
      "rows": [
       [
        "1",
-       "Bullet, side-on",
+       "Tube and wand, side-on",
        "Product page"
       ],
       [
        "2",
-       "Swatch on warm medium skin",
+       "Swipe on warm medium skin",
        "Product page, ads"
       ],
       [
        "3",
-       "Sunlit swatch",
+       "Sunlit swipe",
        "Ads"
       ],
       [
        "4",
-       "Bullet in a handbag",
+       "Tube in a handbag",
        "Social"
       ],
       [
@@ -1386,7 +1411,7 @@
    },
    "presence": {
     "running": [
-     "Checked: warm lamps, not the shade",
+     "Checked: ring light glare, not the formula",
      "Studio held · 10-shot list sent"
     ],
     "managing": [
@@ -1420,7 +1445,7 @@
     {
      "t": "raised",
      "s": "chat",
-     "text": "test shot attached. bhai this is orange on camera",
+     "text": "test shot attached. bhai the gloss is just white glare",
      "who": "Kavya",
      "ch": "content",
      "media": {
@@ -1432,20 +1457,23 @@
        0.7,
        0.45
       ]
-     }
+     },
+     "via": "whatsapp",
+     "where": "Ohra content"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Checked: warm lamps, not the shade",
+     "text": "Checked: ring light glare, not the formula",
      "media": {
       "type": "swatch",
       "colors": [
        "#8b3a2e",
        "#c0562f"
       ],
-      "label": "bullet vs test shot"
-     }
+      "label": "tint vs test shot"
+     },
+     "caught": "From Kavya in the content group"
     },
     {
      "t": "ask",
@@ -1466,10 +1494,10 @@
     {
      "t": "done",
      "s": "feed",
-     "text": "42 photos in. The red reads red"
+     "text": "42 photos in. Colour and shine both read"
     }
    ],
-   "summary": "The test shot turns the red orange. The light gets fixed, not the photo.",
+   "summary": "The ring light turns the gloss into glare. The light gets fixed, not the photo.",
    "live": [
     {
      "beat": 4,
@@ -1485,7 +1513,7 @@
    "when": "10 weeks before",
    "mode": "dusk",
    "object": "variants3",
-   "line": "Drafted PO-0142 for 5,000 units on Sethi's quote, 45 days to pay. Aditi approved; sent at 4:02 pm, confirmed at 4:40 pm, dock slot held.",
+   "line": "Drafted PO-0142 for 5,000 tubes and wands on Sethi's quote, 45 days to pay. Aditi approved; sent at 4:02 pm, confirmed at 4:40 pm, dock slot held.",
    "tap": {
     "who": "Aditi",
     "what": "approved PO-0142",
@@ -1493,7 +1521,7 @@
    },
    "tags": [
     {
-     "text": "Sethi Tubes, ₹38 a tube",
+     "text": "Sethi, ₹38 tube + wand",
      "at": [
       0.498,
       0.58
@@ -1514,12 +1542,12 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "1:50 pm",
-      "text": "Three quotes for 5,000 ribbed tubes. Sethi Tubes isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, dented tubes replaced free."
+      "text": "Three quotes for 5,000 glass tubes with doe-foot wands. Sethi isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, leaky wands replaced free."
      },
      {
       "who": "Arjun",
       "time": "2:02 pm",
-      "text": "Their samples were the cleanest too."
+      "text": "Their wand didn't leak in my bag test either."
      },
      {
       "who": "Chief of staff",
@@ -1529,13 +1557,13 @@
      }
     ],
     "os": {
-     "title": "Quotes: 5,000 ribbed metal tubes",
+     "title": "Quotes: 5,000 glass tubes + wands",
      "cols": [
       "Vendor",
-      "Per tube",
+      "Per unit",
       "Terms",
       "Lead time",
-      "Dented tubes"
+      "Leaky wands"
      ],
      "rows": [
       [
@@ -1546,7 +1574,7 @@
        "Not covered"
       ],
       [
-       "Sethi Tubes, Delhi",
+       "Sethi Packaging, Delhi",
        "₹38",
        "45 days",
        "18 days",
@@ -1564,7 +1592,7 @@
     "hub": {
      "metrics": [
       {
-       "label": "Tube cost per lipstick",
+       "label": "Tube + wand per lip oil",
        "value": "₹38",
        "source": "PO-0142",
        "fetched": "2:15 pm"
@@ -1594,16 +1622,16 @@
     ],
     "monitoring": [
      "Cash in the bank, daily",
-     "Tube prices, three vendors",
+     "Tube + wand prices, three vendors",
      "Vendor lead times, weekly"
     ]
    },
    "card": {
     "area": "Purchasing",
-    "ask": "Approve PO-0142: 5,000 ribbed tubes from Sethi Tubes, ₹1,90,000, 45 days to pay.",
+    "ask": "Approve PO-0142: 5,000 glass tubes and wands from Sethi, ₹1,90,000, 45 days to pay.",
     "options": [
      {
-      "label": "Sethi Tubes, ₹38, 45 days to pay",
+      "label": "Sethi, ₹38, 45 days to pay",
       "recommended": true
      },
      {
@@ -1616,21 +1644,26 @@
     "by": "Aditi",
     "checker": "Arjun",
     "action": "Approve the PO",
-    "signal": "Filling booked in 3 weeks. Only Sethi Tubes lands in time: 18 days.",
+    "signal": "Filling booked in 3 weeks. Only Sethi lands in time: 18 days.",
     "osRow": 1
    },
    "flow": [
     {
      "t": "raised",
      "s": "os",
-     "text": "PO-0142 drafted · 5,000 units",
-     "desc": "Sethi terms · 45 days to pay"
+     "text": "5,000 at ₹38, 45 days. if PO comes this week",
+     "desc": "Sethi terms · 45 days to pay",
+     "via": "meeting",
+     "where": "11 am Sethi call",
+     "at": "11:24",
+     "who": "Sethi Glass"
     },
     {
      "t": "assign",
      "s": "chat",
-     "text": "@Arjun dock 2 held for the landing",
-     "ch": "purchasing"
+     "text": "PO drafted. @Arjun dock 2 held for the landing",
+     "ch": "purchasing",
+     "caught": "Picked up from the 11 am Sethi call"
     },
     {
      "t": "ask",
@@ -1676,11 +1709,11 @@
    "when": "3 months before",
    "mode": "dusk",
    "object": "box_flat",
-   "line": "Checked carton proof v3 against 14 labelling rules, caught the missing net weight, and cleared v4 for a run of 5,000.",
+   "line": "Checked carton proof v3 against 14 labelling rules, caught the missing net quantity, and cleared v4 for a run of 5,000.",
    "tap": null,
    "tags": [
     {
-     "text": "Net wt. 4.2 g added",
+     "text": "Net 4 ml added",
      "at": [
       0.703,
       0.43
@@ -1694,7 +1727,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "11:10 am",
-      "text": "Carton proof v3 is missing one required line: net weight. It should read Net wt. 4.2 g."
+      "text": "Carton proof v3 is missing one required line: net quantity. It should read Net 4 ml."
      },
      {
       "who": "Arjun",
@@ -1705,7 +1738,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "5:42 pm",
-      "text": "v4 is back. Net weight in, nothing else moved. Cleared for 5,000."
+      "text": "v4 is back. Net quantity in, nothing else moved. Cleared for 5,000."
      }
     ],
     "os": {
@@ -1722,7 +1755,7 @@
        "Yes"
       ],
       [
-       "Net weight",
+       "Net quantity",
        "Yes",
        "Added in v4"
       ],
@@ -1769,7 +1802,7 @@
    "presence": {
     "running": [
      "Checking v3 against 14 label rules",
-     "v3 missing net wt. pls add \"Net wt. 4.2 g\" under shade",
+     "v3 missing net qty. pls add \"Net 4 ml\" under the name",
      "Proof v4: 14/14 pass"
     ],
     "managing": [
@@ -1791,17 +1824,20 @@
      "media": {
       "type": "doc",
       "name": "carton_v3.pdf"
-     }
+     },
+     "via": "email",
+     "where": "Re: carton v3 proof"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Checking v3 against 14 label rules"
+     "text": "Checking v3 against 14 label rules",
+     "caught": "From Studio Pell's email"
     },
     {
      "t": "auto",
      "s": "chat",
-     "text": "v3 missing net wt. pls add \"Net wt. 4.2 g\" under shade",
+     "text": "v3 missing net qty. pls add \"Net 4 ml\" under the name",
      "ch": "studio-pell",
      "media": {
       "type": "photo",
@@ -1835,7 +1871,7 @@
       0.5,
       0.7
      ],
-     "text": "Net wt 4.2 g",
+     "text": "Net 4 ml",
      "badge": "v4"
     }
    ]
@@ -1845,7 +1881,7 @@
    "when": "4 months before",
    "mode": "dusk",
    "object": "variants3",
-   "line": "Lined up three vendors for shade 3 with tube and case options. Recommended Sethi: Rs 38, ribbed gold, the only one landing before launch.",
+   "line": "Lined up three vendors for the frosted glass tube and doe-foot wand. Recommended Sethi: Rs 38, the only one landing before launch.",
    "tap": {
     "who": "Aditi",
     "what": "chose Sethi",
@@ -1853,7 +1889,7 @@
    },
    "tags": [
     {
-     "text": "Sethi Tubes, ₹38 a tube",
+     "text": "Sethi, ₹38 tube + wand",
      "at": [
       0.498,
       0.58
@@ -1874,12 +1910,12 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "1:50 pm",
-      "text": "Three quotes for 5,000 ribbed tubes. Sethi Tubes isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, dented tubes replaced free."
+      "text": "Three quotes for 5,000 glass tubes with doe-foot wands. Sethi isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, leaky wands replaced free."
      },
      {
       "who": "Arjun",
       "time": "2:02 pm",
-      "text": "Their samples were the cleanest too."
+      "text": "Their wand didn't leak in my bag test either."
      },
      {
       "who": "Chief of staff",
@@ -1889,13 +1925,13 @@
      }
     ],
     "os": {
-     "title": "Quotes: 5,000 ribbed metal tubes",
+     "title": "Quotes: 5,000 glass tubes + wands",
      "cols": [
       "Vendor",
-      "Per tube",
+      "Per unit",
       "Terms",
       "Lead time",
-      "Dented tubes"
+      "Leaky wands"
      ],
      "rows": [
       [
@@ -1906,7 +1942,7 @@
        "Not covered"
       ],
       [
-       "Sethi Tubes, Delhi",
+       "Sethi Packaging, Delhi",
        "₹38",
        "45 days",
        "18 days",
@@ -1924,7 +1960,7 @@
     "hub": {
      "metrics": [
       {
-       "label": "Tube cost per lipstick",
+       "label": "Tube + wand per lip oil",
        "value": "₹38",
        "source": "PO-0142",
        "fetched": "2:15 pm"
@@ -1946,7 +1982,7 @@
    },
    "presence": {
     "running": [
-     "@Aditi tube + case options from all 3",
+     "@Aditi tube + cap options from all 3",
      "Nova's cheaper. Lands 3 wks after launch"
     ],
     "managing": [
@@ -1961,14 +1997,16 @@
     {
      "t": "raised",
      "s": "hub",
-     "text": "3 quotes in for shade 3",
+     "text": "3 quotes in for the tube + wand",
      "src": "Quotes",
-     "desc": "Step 3 · owner: Aditi"
+     "desc": "Step 3 · owner: Aditi",
+     "via": "email",
+     "where": "Quotation: 4 ml tube + doe-foot wand"
     },
     {
      "t": "assign",
      "s": "chat",
-     "text": "@Aditi tube + case options from all 3",
+     "text": "@Aditi tube + cap options from all 3",
      "ch": "purchasing",
      "media": {
       "type": "photo",
@@ -1979,7 +2017,8 @@
        1.0,
        1.0
       ]
-     }
+     },
+     "caught": "From 3 vendor quote emails"
     },
     {
      "t": "auto",
@@ -2005,7 +2044,7 @@
     {
      "t": "ask",
      "s": "chat",
-     "text": "Sethi · ribbed gold · ₹38. Only one on time. Go?",
+     "text": "Sethi · frosted glass + wand · ₹38. Only one on time. Go?",
      "who": "Aditi",
      "options": [
       "Sethi",
@@ -2019,7 +2058,7 @@
      "text": "Vendor: Sethi. Carton next"
     }
    ],
-   "summary": "Cheapest tube lands three weeks late. Sethi lands on time.",
+   "summary": "The cheapest tube lands three weeks late. Sethi's lands on time, wand and all.",
    "live": [
     {
      "beat": 3,
@@ -2027,16 +2066,16 @@
      "title": "Three vendors",
      "groups": [
       {
-       "label": "Tube",
+       "label": "Tube + wand",
        "options": [
-        "Sethi, ribbed, Rs 38",
-        "Nova, smooth, Rs 34",
+        "Sethi, frosted, Rs 38",
+        "Nova, clear, Rs 34",
         "Guangzhou, Rs 29"
        ],
        "chosen": 0
       },
       {
-       "label": "Case colour",
+       "label": "Cap colour",
        "swatches": [
         "#c9a24a",
         "#d9a48f",
@@ -2069,18 +2108,18 @@
    "when": "5 months before",
    "mode": "dusk",
    "object": "trials5",
-   "line": "Ran heat and wear tests on five samples from three labs. Sample 2 sweated at 45°C, 9 of 20; sent it back to Kesar Labs with the log. The other four went on.",
+   "line": "Ritika made five tint-to-oil ratios. Heat and wear tests on all five: ratio 2 split at 45°C, 9 of 20, and went back to Kesar Labs with the log. Ratio 3, 60:40, won.",
    "tap": null,
    "tags": [
     {
-     "text": "Shade 3: 5 of 8 votes",
+     "text": "Ratio 3: 5 of 8 votes",
      "at": [
       0.5,
       0.38
      ]
     },
     {
-     "text": "5 shades, blind",
+     "text": "5 ratios, blind",
      "at": [
       0.8,
       0.81
@@ -2094,56 +2133,56 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "9:30 am",
-      "text": "Wear test is set. Five shades coded 1 to 5, eight people, eight hours each. Nobody knows which is which."
+      "text": "Wear test is set. Five tint-to-oil ratios coded 1 to 5, eight people, eight hours each. Nobody knows which is which."
      },
      {
       "who": "Tanvi",
       "time": "5:48 pm",
-      "text": "Shade 2 feathered at the edges by hour six."
+      "text": "Ratio 1 feels tight by hour three. That's just liquid lipstick again."
      },
      {
       "who": "Chief of staff",
       "agent": true,
       "time": "6:20 pm",
-      "text": "Results: shades 1, 3 and 5 held all eight hours. Shade 3 scored 4.4 on colour and took 5 of 8 votes. Shade 1 read brown on four of eight."
+      "text": "Results: ratio 3, 60 tint to 40 oil, scored 4.4 on colour and 4.5 on comfort, 5 of 8 votes. Ratio 5 is pretty but sheer."
      }
     ],
     "os": {
-     "title": "Wear test: 5 shades, blind",
+     "title": "Wear test: 5 ratios, blind",
      "cols": [
-      "Shade",
+      "Ratio",
       "At 8 hours",
       "Colour",
       "Votes"
      ],
      "rows": [
       [
-       "1",
-       "Holds",
+       "1 · 80:20",
+       "Feels tight",
        "3.1",
        "0"
       ],
       [
-       "2",
-       "Feathers at 6 h",
+       "2 · 70:30",
+       "Split at 45°C",
        "3.8",
        "1"
       ],
       [
-       "3",
-       "Holds",
+       "3 · 60:40",
+       "Holds, comfy",
        "4.4",
        "5"
       ],
       [
-       "4",
+       "4 · 50:50",
        "Fades at 5 h",
        "3.6",
        "1"
       ],
       [
-       "5",
-       "Holds",
+       "5 · 40:60",
+       "Sheer by 3 h",
        "3.9",
        "1"
       ]
@@ -2158,13 +2197,13 @@
        "fetched": "6:18 pm"
       },
       {
-       "label": "Shade 3 colour score",
+       "label": "Ratio 3 colour score",
        "value": "4.4 / 5",
        "source": "Google Forms",
        "fetched": "6:18 pm"
       },
       {
-       "label": "Votes for shade 3",
+       "label": "Votes for ratio 3",
        "value": "5 of 8",
        "source": "Google Forms",
        "fetched": "6:18 pm"
@@ -2175,7 +2214,7 @@
    "presence": {
     "running": [
      "@Tanvi heat + wear on all 5. Arjun's van spec: 45°C",
-     "Sample 2: 9/20 sweated at 45°C",
+     "Ratio 2: 9/20 split at 45°C",
      "Sent back to Kesar Labs with the log"
     ],
     "managing": [
@@ -2190,19 +2229,23 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "5 samples in from 3 labs",
-     "desc": "Step 2 · owner: Ritika"
+     "text": "5 tint/oil ratios in, 80:20 to 40:60",
+     "desc": "Step 2 · owner: Ritika",
+     "via": "meeting",
+     "where": "4 pm lab review",
+     "at": "16:12"
     },
     {
      "t": "assign",
      "s": "chat",
      "text": "@Tanvi heat + wear on all 5. Arjun's van spec: 45°C",
-     "ch": "npd"
+     "ch": "npd",
+     "caught": "Picked up from Ritika's 4 pm lab review"
     },
     {
      "t": "auto",
      "s": "hub",
-     "text": "Sample 2: 9/20 sweated at 45°C",
+     "text": "Ratio 2: 9/20 split at 45°C",
      "desc": "Limit is 1/20",
      "media": {
       "type": "photo",
@@ -2231,18 +2274,18 @@
     {
      "t": "done",
      "s": "feed",
-     "text": "4 go on. Shade 3 leads on wear",
+     "text": "4 go on. Ratio 3, 60:40, leads",
      "media": {
       "type": "swatch",
       "colors": [
        "#8b3a2e",
        "#a04530"
       ],
-      "label": "shade 3 vs 5"
+      "label": "ratio 3 vs 5"
      }
     }
    ],
-   "summary": "Arjun's van test, run on day one. Sample 2 melts and never reaches a customer.",
+   "summary": "Arjun's van test, run on day one. Ratio 2 splits in the heat and never reaches a customer.",
    "live": [
     {
      "beat": 2,
@@ -2283,7 +2326,7 @@
    "when": "6 months before",
    "mode": "dusk",
    "object": "maker_tool",
-   "line": "Wrote the formulation chemist role, screened 37 applicants to four, and booked interviews around Aditi's and the lab's calendars.",
+   "line": "Wrote the role for a chemist who has shipped oil-based tints, screened 37 applicants to four, and booked interviews around Aditi's and the lab's calendars.",
    "tap": {
     "who": "Vikram",
     "what": "made the offer to Ritika",
@@ -2305,7 +2348,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "10:12 am",
-      "text": "Chemist role: 37 applicants in nine days. Four fit: cosmetic chemistry, matte bases, small batches."
+      "text": "Chemist role: 37 applicants in nine days. Four have shipped oil-based tints, pigment that stays put in an oil."
      },
      {
       "who": "Vikram",
@@ -2316,11 +2359,11 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "10:21 am",
-      "text": "Booked Tuesday and Wednesday around Aditi and the lab. Scorecards are in the OS. The other 33 have their replies."
+      "text": "Booked Thursday and Friday around Aditi and the lab. Scorecards are in the OS. The other 33 have their replies."
      }
     ],
     "os": {
-     "title": "Hiring: formulation chemist",
+     "title": "Hiring: oil-tint chemist",
      "cols": [
       "Candidate",
       "Stage",
@@ -2332,25 +2375,25 @@
        "Ritika S.",
        "Interview",
        "4.5 / 5",
-       "Tue 11:00"
+       "Thu 11:00"
       ],
       [
        "Farhan Q.",
        "Interview",
        "4.2 / 5",
-       "Tue 15:00"
+       "Thu 15:00"
       ],
       [
        "Meera J.",
        "Interview",
        "3.9 / 5",
-       "Wed 11:30"
+       "Fri 11:30"
       ],
       [
        "Kunal B.",
        "Interview",
        "3.8 / 5",
-       "Wed 16:00"
+       "Fri 16:00"
       ],
       [
        "33 others",
@@ -2399,7 +2442,7 @@
    },
    "card": {
     "area": "People",
-    "ask": "Make the formulation chemist offer. Ritika S. scored 4.5 of 5.",
+    "ask": "Make the oil-tint chemist offer. Ritika S. scored 4.5 of 5.",
     "options": [
      {
       "label": "Ritika S., 4.5 / 5",
@@ -2419,13 +2462,17 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "Step 1: NPD chemist",
-     "desc": "Owner: Vikram · due in 4 wks"
+     "text": "need an oil-tint chemist in 4 wks. can u start?",
+     "desc": "Owner: Vikram · due in 4 wks",
+     "via": "whatsapp",
+     "where": "Ohra hiring",
+     "who": "Vikram"
     },
     {
      "t": "assign",
      "s": "feed",
-     "text": "Role posted on Naukri, LinkedIn, IIM Jobs"
+     "text": "Role posted on Naukri, LinkedIn, IIM Jobs",
+     "caught": "From Vikram in the hiring group"
     },
     {
      "t": "auto",
@@ -2441,7 +2488,7 @@
     {
      "t": "ask",
      "s": "chat",
-     "text": "Ritika 4.5/5, built matte bases at a small lab. Send offer?",
+     "text": "Ritika 4.5/5, made 3 lip oil tints at a Baddi lab. Send offer?",
      "who": "Vikram",
      "options": [
       "send offer",
@@ -2451,7 +2498,7 @@
      "media": {
       "type": "doc",
       "name": "ritika_cv.pdf",
-      "note": "4 yrs, matte bases"
+      "note": "4 yrs, oil tints"
      }
     },
     {
@@ -2460,7 +2507,7 @@
      "text": "Ritika signed. Starts Monday, 3 days early"
     }
    ],
-   "summary": "Nobody on the team can make the shade. Ritika can.",
+   "summary": "Nobody on the team can get real colour to sit in an oil. Ritika has done it three times.",
    "live": [
     {
      "beat": 5,
@@ -2476,15 +2523,15 @@
    "when": "7 months before, 10:00 am",
    "mode": "wire",
    "object": "wireframe",
-   "line": "Played Aditi's voice note as item 1 at standup, took Naina's price and Arjun's heat constraint, and turned the yes into a four-step plan with owners and dates.",
+   "line": "Played Aditi's voice note as item 1 at standup, took Naina's search numbers and Arjun's heat warning, and shaped it into one product: liquid lipstick colour with a lip oil feel.",
    "tap": {
     "who": "Aditi",
-    "what": "said go on the plan",
+    "what": "said go on the hybrid",
     "cost": "1 tap, 4 sec"
    },
    "tags": [
     {
-     "text": "Project: Brick Dust",
+     "text": "Project: Brick Dust lip oil tint",
      "at": [
       0.54,
       0.38
@@ -2504,22 +2551,22 @@
      {
       "who": "Aditi",
       "time": "4:02 pm",
-      "text": "That voice note from last month. The old Delhi red. Let's make it."
+      "text": "That voice note. They want an oil, but with real colour."
      },
      {
       "who": "Naina",
       "time": "4:03 pm",
-      "text": "Matte, but not the drying kind. 46 reviews are asking for exactly that."
+      "text": "Sheer oils get 1-star reviews for 'no colour'. 46 of them."
      },
      {
       "who": "Chief of staff",
       "agent": true,
       "time": "4:05 pm",
-      "text": "Project opened: Brick Dust. Owner Aditi. Step one, hire a formulation chemist. Vikram has it."
+      "text": "So not an oil. A hybrid: liquid lipstick colour, lip oil feel. Project opened: Brick Dust lip oil tint. Step one, a chemist. Vikram has it."
      }
     ],
     "os": {
-     "title": "Project: Brick Dust",
+     "title": "Project: Brick Dust lip oil tint",
      "cols": [
       "Step",
       "Owner",
@@ -2528,19 +2575,19 @@
      ],
      "rows": [
       [
-       "Hire a formulation chemist",
+       "Hire an oil-tint chemist",
        "Vikram",
        "In 4 weeks",
        "Open"
       ],
       [
-       "Shade brief",
+       "Tint-to-oil ratio brief",
        "Aditi",
        "In 2 weeks",
        "Open"
       ],
       [
-       "Tube and carton suppliers",
+       "Tube and wand suppliers",
        "Arjun",
        "In 8 weeks",
        "Not started"
@@ -2550,13 +2597,13 @@
     "hub": {
      "metrics": [
       {
-       "label": "Matte share of lipstick sales",
-       "value": "31%",
+       "label": "Lip oil searches, 12 months",
+       "value": "Up 3.2x",
        "source": "Shopify, last 90 days",
        "fetched": "4:06 pm"
       },
       {
-       "label": "Reviews asking for a non-drying matte",
+       "label": "Reviews saying sheer oils show no colour",
        "value": "46",
        "source": "Judge.me",
        "fetched": "4:06 pm"
@@ -2588,42 +2635,52 @@
      "s": "feed",
      "text": "Item 1: Aditi's 12:52 note",
      "who": "Aditi",
-     "desc": "0:16, played back",
+     "desc": "0:22, played back",
      "media": {
       "type": "voice",
-      "len": "0:16"
-     }
+      "len": "0:22"
+     },
+     "via": "meeting",
+     "where": "10:00 standup",
+     "at": "10:01"
     },
     {
      "t": "raised",
      "s": "chat",
-     "text": "899 max. above that they wait for a sale",
+     "text": "oil searches 3x in a year. but sheer ones get '1 star, no colour'",
      "who": "Naina",
-     "ch": "standup"
+     "ch": "standup",
+     "via": "meeting",
+     "where": "10:00 standup",
+     "at": "10:04"
     },
     {
      "t": "raised",
      "s": "chat",
-     "text": "bhai it has to survive a june van. 45° inside",
+     "text": "bhai oil leaks in a june van. 45° inside. needs a proper tube",
      "who": "Arjun",
-     "ch": "standup"
+     "ch": "standup",
+     "via": "meeting",
+     "where": "10:00 standup",
+     "at": "10:06"
     },
     {
      "t": "ask",
      "s": "chat",
-     "text": "Brick Dust · ₹899 · heat-tested · 6 months. Go?",
+     "text": "Hybrid: liquid lipstick colour, lip oil feel. ₹899, 4 ml. Go?",
      "who": "Aditi",
      "options": [
       "ok go",
       "park it"
      ],
-     "ch": "standup"
+     "ch": "standup",
+     "caught": "Summarised from the 10:00 standup"
     },
     {
      "t": "done",
      "s": "os",
      "text": "Plan: 4 steps, 4 owners, dates set",
-     "desc": "Chemist · samples · vendor · carton",
+     "desc": "Chemist · ratios · tube + wand · carton",
      "media": {
       "type": "photo",
       "kit": "wireframe_ink",
@@ -2636,7 +2693,7 @@
      }
     }
    ],
-   "summary": "Price and heat land on the table. Aditi says go in one tap.",
+   "summary": "Her note says oil. The standup says colour too. The answer is both, in one tube.",
    "live": [
     {
      "beat": 4,
@@ -2646,7 +2703,7 @@
       0.5,
       0.78
      ],
-     "text": "Rs 899, heat-tested",
+     "text": "Tint + oil, Rs 899",
      "badge": "Go"
     }
    ]
@@ -2665,15 +2722,15 @@
      {
       "who": "Aditi",
       "time": "12:52 am",
-      "text": "Can't sleep. That red on the old walls behind Chandni Chowk, just when the light goes. Not bright. Dusty, like brick. Find out if anyone's asked for something like that. Might just be me.",
+      "text": "Okay... can't sleep. Fourth girl in our DMs today asking for a lip oil. Not lipstick. My cousin's nineteen and she hasn't bought a bullet in a year, it's all balms and oils now. But they still want colour, right? Like, real colour that doesn't feel like lipstick. Check if it's just my DMs or if it's actually happening.",
       "voice": true,
-      "length": "0:15"
+      "length": "0:22"
      },
      {
       "who": "Chief of staff",
       "agent": true,
       "time": "12:53 am",
-      "text": "Saved to Ideas as Old Delhi red. 17 customers asked for a dusty red in six months, so not just you. It's on next month's product call."
+      "text": "Saved to Ideas as Lip oils. 64 DMs asked for one since June, so not just you. It's on tomorrow's 10 am standup."
      }
     ],
     "os": {
@@ -2686,29 +2743,29 @@
      ],
      "rows": [
       [
-       "Old Delhi red, a dusty matte",
+       "Lip oils, with real colour",
        "Aditi, voice note",
        "12:53 am",
-       "Product call, next month"
+       "Standup, 10 am"
       ]
      ]
     },
     "hub": {
      "metrics": [
       {
-       "label": "Searches for brick red lipstick, Delhi",
-       "value": "Up 34% in 90 days",
+       "label": "Searches for lip oil, India",
+       "value": "Up 3.2x in a year",
        "source": "Google Trends",
        "fetched": "12:53 am"
       },
       {
-       "label": "Customers asking for a dusty red",
-       "value": "17",
+       "label": "DMs asking for a lip oil",
+       "value": "64",
        "source": "Website chat, last 6 months",
        "fetched": "12:53 am"
       },
       {
-       "label": "Matte reds in the range today",
+       "label": "Lip oils in the range today",
        "value": "0",
        "source": "Shopify catalogue",
        "fetched": "12:53 am"
@@ -2719,7 +2776,7 @@
    "presence": {
     "running": [
      "On it. Checking if it's just your DMs",
-     "Not just you. 1,240 searches/mo for brick red"
+     "Not just you. 1,240 searches/mo for lip oil"
     ],
     "managing": [
      "Nobody needed for this one"
@@ -2727,32 +2784,35 @@
     "monitoring": [
      "Website chat, every 15 min",
      "Judge.me reviews, hourly",
-     "Searches for matte reds, daily"
+     "Searches for lip oils, daily"
     ]
    },
    "flow": [
     {
      "t": "raised",
      "s": "chat",
-     "text": "can't sleep. 3rd DM today: a red that won't go orange, under 900",
+     "text": "can't sleep. 4th DM today asking for a lip oil, not lipstick",
      "who": "Aditi",
      "media": {
       "type": "voice",
-      "len": "0:16"
+      "len": "0:22"
      },
-     "desc": "Voice note, 0:16"
+     "desc": "Voice note, 0:22",
+     "via": "whatsapp",
+     "where": "Aditi (DM)"
     },
     {
      "t": "assign",
      "s": "feed",
      "text": "On it. Checking if it's just your DMs",
-     "desc": "Saved as idea #41: Brick Dust"
+     "desc": "Saved as idea #41: Lip oils",
+     "caught": "From Aditi's 12:52 am voice note"
     },
     {
      "t": "auto",
      "s": "hub",
-     "text": "Not just you. 1,240 searches/mo for brick red",
-     "desc": "64 DMs asked since June",
+     "text": "Not just you. 1,240 searches/mo for lip oil",
+     "desc": "Lipstick searches down 18%. 64 DMs",
      "media": {
       "type": "chart",
       "kind": "bar",
@@ -2762,9 +2822,9 @@
        380
       ],
       "labels": [
-       "brick red",
-       "matte red",
-       "nude red"
+       "lip oil",
+       "tinted balm",
+       "lipstick"
       ],
       "unit": "/mo"
      }
@@ -2775,14 +2835,14 @@
      "text": "On tomorrow's 10 am standup. Go sleep"
     }
    ],
-   "summary": "12:52 am. A red that won't go orange. Is it just her DMs?",
+   "summary": "12:52 am. Girls want lip oil, not lipstick. Is it just her DMs?",
    "live": [
     {
      "beat": 3,
      "type": "toast",
      "where": "Hub",
      "title": "Overnight demand check",
-     "text": "1,240 searches a month. 64 DMs."
+     "text": "Lip oil: 1,240 searches a month. 64 DMs."
     }
    ]
   }
@@ -2792,16 +2852,16 @@
   "time": "12:52 am",
   "when": "7 months before",
   "lead": "Before any of it, at 12:52 am, Aditi left herself a voice note.",
-  "words": "Can't sleep. Third girl in our DMs today: she wants a red that doesn't go orange on warm skin and doesn't dry out by lunch. The good ones are two thousand rupees. A dusty brick red, matte, under nine hundred. Check if it's just my DMs.",
+  "words": "Okay... can't sleep. Fourth girl in our DMs today asking for a lip oil. Not lipstick. My cousin's nineteen and she hasn't bought a bullet in a year, it's all balms and oils now. But they still want colour, right? Like, real colour that doesn't feel like lipstick. Check if it's just my DMs or if it's actually happening.",
   "audio": null,
-  "length": "0:16"
+  "length": "0:22"
  },
  "team": [
   {
    "name": "Aditi",
    "role": "Founder",
    "initial": "A",
-   "waiting": "1 shade to pick, 1 PO"
+   "waiting": "1 tube to pick, 1 PO"
   },
   {
    "name": "Naina",
@@ -2834,7 +2894,7 @@
  },
  "page": {
   "title": "Chief of Staff for brands and agencies",
-  "description": "An AI chief of staff that runs, manages and monitors a D2C brand. Watch it take one lipstick from a 12:52 am voice note to a doorstep in Saket, with 8 taps from people.",
+  "description": "An AI chief of staff that runs, manages and monitors a D2C brand. Watch it take one lip oil tint from a 12:52 am voice note to a doorstep in Saket, with 8 taps from people.",
   "rewind_hint": "Scroll to rewind seven months",
   "strip_label": "Chief of staff, on now",
   "strip_modes": {
@@ -2847,15 +2907,6 @@
    "demo": "Try the demo",
    "login": "Log in",
    "plans": "See plans"
-  }
- },
- "sequences": {
-  "hire-formula": {
-   "from": "hire",
-   "to": "samples",
-   "dir": "scenes/ohra/seq/hire-formula",
-   "count": 96,
-   "source": "video (MiniMax H3 Max Turbo, start+end frames from the kit)"
   }
  },
  "shipping": {
@@ -2949,5 +3000,131 @@
   "packed": "Stock",
   "samples": "QC log",
   "vendor": "Quotes"
+ },
+ "crops": {
+  "trials": [
+   [
+    0.029,
+    0.193,
+    0.209,
+    0.8
+   ],
+   [
+    0.221,
+    0.193,
+    0.402,
+    0.8
+   ],
+   [
+    0.412,
+    0.193,
+    0.593,
+    0.8
+   ],
+   [
+    0.604,
+    0.193,
+    0.785,
+    0.8
+   ],
+   [
+    0.796,
+    0.193,
+    0.976,
+    0.8
+   ]
+  ],
+  "pick": 2,
+  "pickAt": {
+   "x": 0.3275,
+   "y": 0.2,
+   "s": 0.62
+  },
+  "flat": [
+   0.044,
+   0.043,
+   0.685,
+   0.967
+  ],
+  "flatLip": {
+   "x": 0.3275,
+   "y": 0.0025,
+   "s": 0.974
+  },
+  "vL": [
+   0.147,
+   0.023,
+   0.342,
+   0.978
+  ],
+  "vR": [
+   0.674,
+   0.022,
+   0.874,
+   0.977
+  ],
+  "qcR": 180,
+  "kit": {
+   "kBullet": {
+    "crop": [
+     0.242,
+     0.092,
+     0.303,
+     0.451
+    ],
+    "home": {
+     "x": 0,
+     "y": 0.09
+    }
+   },
+   "kTube": {
+    "crop": [
+     0.422,
+     0.024,
+     0.567,
+     0.451
+    ],
+    "home": {
+     "x": 0,
+     "y": 0.18
+    }
+   },
+   "kCap": {
+    "crop": [
+     0.654,
+     0.169,
+     0.816,
+     0.453
+    ],
+    "home": {
+     "x": 0,
+     "y": -0.3
+    }
+   },
+   "kCarton": {
+    "crop": [
+     0.099,
+     0.47,
+     0.664,
+     0.989
+    ],
+    "home": {
+     "x": -0.7,
+     "y": 0.25
+    }
+   },
+   "kCard": {
+    "crop": [
+     0.713,
+     0.583,
+     0.9,
+     0.877
+    ],
+    "home": {
+     "x": 0.7,
+     "y": 0.25
+    }
+   }
+  }
  }
 }

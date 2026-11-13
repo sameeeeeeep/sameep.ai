@@ -35,6 +35,16 @@
     return '../app/' + (email ? '?email=' + encodeURIComponent(email) : '') + '#/w/' + encodeURIComponent(ws) + '/today';
   }
 
+  var BRAND_ID = '';
+  /* the person's illustrated face (faces/<brand>-<name>.webp); their initial if there is none */
+  function avatar(m, cls) {
+    var ini = str(m.initial, str(m.name, '?').charAt(0)).slice(0, 2).toUpperCase(), el = h('span', cls, ini);
+    if (!BRAND_ID || !str(m.name)) return el;
+    var im = document.createElement('img'); im.alt = ''; im.decoding = 'async';
+    im.onload = function () { el.textContent = ''; el.appendChild(im); el.classList.add('has-face'); };
+    im.src = 'faces/' + BRAND_ID + '-' + str(m.name).toLowerCase().split(/\s+/)[0] + '.webp';
+    return el;
+  }
   function card(m, i, brand, end, demo) {
     var name = str(m.name, 'Teammate');
     var role = str(m.role);
@@ -52,7 +62,7 @@
     // face-up: the person's app card
     var front = h('div', 'fin-face fin-front');
     var top = h('div', 'fin-top');
-    top.appendChild(h('span', 'fin-av', str(m.initial, name.charAt(0)).slice(0, 2).toUpperCase())).setAttribute('aria-hidden', 'true');
+    top.appendChild(avatar(m, 'fin-av')).setAttribute('aria-hidden', 'true');
     var who = h('div', 'fin-who');
     who.appendChild(h('p', 'fin-name', name));
     if (role) who.appendChild(h('p', 'fin-role', role));
@@ -83,7 +93,7 @@
   function bubble(m, cls) {
     var b = h('span', 'lg-bub ' + (cls || ''));
     if (str(m.photo)) { var im = h('img'); im.src = m.photo; im.alt = ''; b.appendChild(im); }
-    else b.textContent = str(m.initial, str(m.name, '?').charAt(0)).slice(0, 2).toUpperCase();
+    else { var a = avatar(m, 'lg-face'); while (a.firstChild) b.appendChild(a.firstChild); var mo = new MutationObserver(function () { b.textContent = ''; while (a.firstChild) b.appendChild(a.firstChild); mo.disconnect(); }); mo.observe(a, { childList: true }); }
     return b;
   }
   function openLogin(m, brand, href, demo) {
@@ -128,6 +138,38 @@
     addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { back.click(); removeEventListener('keydown', esc); } });
   }
 
+  var CATS = [['Minutes', 'calico', 'Meetings'], ['Scout', 'siamese', 'Hiring'], ['Haggle', 'orange', 'Vendors'], ['Quill', 'calico', 'Content'],
+    ['Polish', 'siamese', 'Website'], ['Mango', 'orange', 'Ads'], ['Crate', 'grey', 'Warehouse'], ['Ink', 'black', 'Support']];
+  function glimpse(c, brand, team, demo) {
+    var a = h('a', 'gl'); a.href = demo; a.setAttribute('aria-label', 'Open the ' + brand + ' demo');
+    var win = h('div', 'gl-win');
+    var bar = h('div', 'gl-bar'); bar.appendChild(h('b', null, 'Chief of Staff')); bar.appendChild(h('span', null, brand)); win.appendChild(bar);
+    var body = h('div', 'gl-body');
+    var founder = team[0] ? str(team[0].name) : '';
+    body.appendChild(h('p', 'gl-hi', 'Good morning' + (founder ? ', ' + founder : '')));
+    var needs = team.filter(function (m) { return str(m.waiting); });
+    var n = 0; needs.forEach(function (m) { var k = str(m.waiting).match(/\d+/g); n += k ? Math.min(3, k.length) : 1; });
+    n = Math.max(n, needs.length, 3);
+    var tiles = h('div', 'gl-tiles');
+    var big = h('div', 'gl-tile gl-big'); big.appendChild(h('b', null, String(n))); big.appendChild(h('span', null, 'things need you')); tiles.appendChild(big);
+    var sh = c.shipping || {}, del = (c.stages || []).filter(function (s) { return s && s.id === 'delivered'; })[0] || {};
+    var hub = ((del.surfaces || {}).hub || {}).metrics || [];
+    [['Delivered today', hub[0] && hub[0].value ? String(hub[0].value).split(/\s|→|->/).pop() : '38'], ['Out for delivery', str(sh.out_for_delivery, '11')], ['Agents working', String(CATS.length)]].forEach(function (t) {
+      var d = h('div', 'gl-tile'); d.appendChild(h('b', null, t[1])); d.appendChild(h('span', null, t[0])); tiles.appendChild(d);
+    });
+    body.appendChild(tiles);
+    var cols = h('div', 'gl-cols');
+    var list = h('ul', 'gl-needs');
+    needs.slice(0, 4).forEach(function (m) { var li = h('li'); li.appendChild(avatar(m, 'gl-av')); var tx = h('div'); tx.appendChild(h('b', null, str(m.name))); tx.appendChild(h('span', null, str(m.waiting))); li.appendChild(tx); list.appendChild(li); });
+    cols.appendChild(list);
+    var cats = h('ul', 'gl-cats');
+    CATS.forEach(function (k, i) { var li = h('li'); var im = h('img'); im.alt = ''; im.src = 'cats/' + k[1] + '.png'; li.appendChild(im); li.appendChild(h('b', null, k[0])); li.appendChild(h('span', null, k[2])); cats.appendChild(li); });
+    cols.appendChild(cats);
+    body.appendChild(cols);
+    win.appendChild(body); a.appendChild(win);
+    a.appendChild(h('span', 'gl-go', 'Try the demo, as ' + (founder || brand)));
+    return a;
+  }
   window.renderEnding = function (config, root) {
     var c = config && typeof config === 'object' ? config : {};
     var end = c.end && typeof c.end === 'object' ? c.end : {};
@@ -137,7 +179,8 @@
     TEAM = team;
     // the demo continues the show: a well-formed brand id rides along (../app/#demo?brand=<id>)
     var id = /^[a-z0-9][a-z0-9-]{1,23}$/.test(str(c.id)) ? str(c.id) : '';
-    var demo = str(links.demo, '../app/#demo' + (id ? '?brand=' + id : ''));
+    BRAND_ID = id;
+    var demo = str(links.demo, '/cos/app/#demo' + (id ? '?brand=' + id : ''));
     var calm = still();
 
     var sec = h('section', 'fin' + (calm ? ' fin-still' : ''));
@@ -160,6 +203,9 @@
       inner.appendChild(ul);
       if (!str(end.workspace)) inner.appendChild(h('p', 'fin-sub fin-note', brand + ' is a sample brand, so each login opens the demo workspace.'));
     }
+
+    /* a glimpse of the real app, in the same world: the dashboard the demo opens on */
+    inner.appendChild(glimpse(c, brand, team, demo));
 
     var row = h('div', 'fin-ctas');
     [['Try the demo', demo, 'fin-cta is-main'],

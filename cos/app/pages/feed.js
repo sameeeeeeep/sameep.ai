@@ -141,6 +141,8 @@ export async function mount(root, ctx) {
     data = { state, ...f };
     await loadFaces(ctx, state.people);
   };
+  // a fresh copy seeds on its first read; a read that raced it comes back empty, so look again shortly
+  const settle = async () => { for (let i = 0; i < 4 && !(data.posts || []).length && data.state?.presence; i++) { await new Promise((r) => setTimeout(r, 1200)); await load(); } };
   // keep what the person opened across a live refresh
   const paint = () => {
     const open = new Set([...root.querySelectorAll('details[open]')].map((d) => d.closest('[id]')?.id + '|' + d.className));
@@ -149,7 +151,7 @@ export async function mount(root, ctx) {
     for (const d of root.querySelectorAll('details')) if (open.has(d.closest('[id]')?.id + '|' + d.className)) d.open = true;
   };
   const refresh = async () => { try { await load(); paint(); } catch (e) { ctx.toast(e.message); } };
-  await load(); paint();
+  await load(); await settle(); paint();
   focusCard(root, ctx);
   const unbind = bindCards(root, ctx, refresh);
   const stop = live(ctx, refresh);

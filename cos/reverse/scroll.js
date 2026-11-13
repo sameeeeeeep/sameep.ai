@@ -219,6 +219,7 @@
     var top = h('header', 'top');
     top.appendChild(h('p', 'top-name', 'Chief of Staff'));
     top.appendChild(h('p', 'top-for', str((cfg.page || {}).title, 'for brands and agencies').replace(/^Chief of Staff\s*/i, '')));
+    var dl = h('a', 'top-demo', 'Try the demo'); dl.href = '/cos/app/#demo?brand=' + brandId; top.appendChild(dl);
     stage.appendChild(top); ui.top = top;
     /* phone: the caption sheet (solid page colour, full width) and a probe that reads the safe-area insets */
     ui.sheet = h('div', 'sheet'); stage.appendChild(ui.sheet);
@@ -226,10 +227,10 @@
 
     buildWindow();
     var ctl = h('div', 'ctl');
-    ui.playBtn = h('button', 'ctl-btn ctl-main', 'I’ve got no time'); ui.playBtn.type = 'button';
+    ui.playBtn = h('button', 'ctl-btn ctl-main', 'Play'); ui.playBtn.type = 'button';
     ui.playBtn.addEventListener('click', startPlay); ctl.appendChild(ui.playBtn);
     if (!/[?&]mute\b/.test(location.search) && Object.keys(cfg.audio || {}).length) {   /* no clips, no toggle */
-      var sb = h('button', 'ctl-btn', 'Sound off'); sb.type = 'button'; sb.setAttribute('aria-pressed', 'false');
+      var sb = h('button', 'ctl-btn', 'Sound off'); sb.type = 'button'; sb.setAttribute('aria-pressed', 'false'); ui.soundBtn = sb;
       sb.addEventListener('click', function () {
         SOUND = !SOUND; sb.textContent = SOUND ? 'Sound on' : 'Sound off'; sb.setAttribute('aria-pressed', String(SOUND));
         if (!SOUND && NOW_AUDIO) { NOW_AUDIO.pause(); NOW_AUDIO = null; }
@@ -279,8 +280,8 @@
       list.appendChild(h('p', 'ap-sys', str(v.when, 'Today') + ', ' + str(v.time, '12:52 am')));
       function apm(nm, agent, time, body) {
         var m = h('div', 'ap-m' + (agent ? ' is-agent' : ''));
-        m.appendChild(h('span', 'ap-face', nm.charAt(0)));
-        var hd = h('p', 'ap-h'); hd.appendChild(h('b', null, nm)); hd.appendChild(h('span', null, time)); m.appendChild(hd);
+        var fc = agent ? catEl('voice', 'ap-face') : faceEl(nm, 'ap-face'); m.appendChild(fc);
+        var hd = h('p', 'ap-h'); hd.appendChild(h('b', null, agent ? agentOf('voice')[0] : nm)); hd.appendChild(h('span', null, time)); m.appendChild(hd);
         if (body) m.appendChild(body);
         return m;
       }
@@ -301,15 +302,15 @@
       list.appendChild(apm('Chief of staff', true, rt || '12:53 am', rep));
       el.appendChild(list);
       var comp = h('div', 'ap-comp'); comp.appendChild(h('span', 'ap-in', 'Ask in plain words')); comp.appendChild(h('span', 'ap-send', 'Send'));
-      el.appendChild(comp);
+      el.appendChild(comp); el.insertBefore(statusBar(), el.firstChild); var tbv = tabBar(); tbv.querySelector('[data-t="Chat"]').classList.add('on'); el.appendChild(tbv);
     } else if (name === 'standup') {
       /* the product: Chief of Staff's Feed, the 10 am standup; item 1 is her note, played back with the overnight numbers */
       var v2 = cfg.voice || {}, fl = arr(st.flow), it1 = fl[0] || {}, hubB = arr((byId.voice || {}).flow).filter(function (x) { return x.s === 'hub'; })[0] || {};
       el.classList.add('scr-app');
       var tp = h('div', 'ap-top'); var tt2 = h('div', 'ap-title'); tt2.appendChild(h('b', null, 'Feed')); tt2.appendChild(h('span', null, str(st.when, 'Standup'))); tp.appendChild(tt2); el.appendChild(tp);
       var ls = h('div', 'ap-msgs');
-      var post = h('div', 'ap-m is-agent'); post.appendChild(h('span', 'ap-face', 'C'));
-      var ph2 = h('p', 'ap-h'); ph2.appendChild(h('b', null, 'Chief of staff')); ph2.appendChild(h('span', null, (str(st.when).match(/\d{1,2}:\d{2}\s?[ap]m/) || ['10:00 am'])[0])); post.appendChild(ph2);
+      var post = h('div', 'ap-m is-agent'); post.appendChild(catEl('standup', 'ap-face'));
+      var ph2 = h('p', 'ap-h'); ph2.appendChild(h('b', null, agentOf('standup')[0])); ph2.appendChild(h('span', null, (str(st.when).match(/\d{1,2}:\d{2}\s?[ap]m/) || ['10:00 am'])[0])); post.appendChild(ph2);
       var bd = h('div', 'ap-post');
       bd.appendChild(h('p', 'ap-b ap-b-on', str(it1.text, 'Item 1')));
       var vn2 = h('div', 'ap-vn'); vn2.appendChild(h('span', 'ap-play'));
@@ -319,7 +320,7 @@
       vn2.appendChild(wv2); vn2.appendChild(h('span', 'ap-len', str(v2.length, '0:16'))); bd.appendChild(vn2);
       if (hubB.text) { var nb = h('p', 'ap-note'); nb.textContent = hubB.text; bd.appendChild(nb); }
       post.appendChild(bd); ls.appendChild(post);
-      el.appendChild(ls);
+      el.appendChild(ls); el.insertBefore(statusBar(), el.firstChild); var tbs = tabBar(); tbs.querySelector('[data-t="Feed"]').classList.add('on'); el.appendChild(tbs);
     } else if (name === 'ad') {
       el.appendChild(h('div', 'scr-img scr-img-ad'));
       el.appendChild(h('p', 'scr-label', str(b.name) + ', Sponsored'));
@@ -576,45 +577,148 @@
     });
     return el;
   }
+  /* ---------- who is speaking: faces for people, named cats for the chief's agents ---------- */
+  var FACES = {
+    ohra: ['aditi', 'naina', 'arjun', 'tanvi', 'vikram', 'kavya', 'customer', 'agency'],
+    ondri: ['kavya', 'meher', 'rohan', 'tara', 'zoya', 'ira', 'customer', 'agency'],
+    siro: ['nikhil', 'pooja', 'farhan', 'leela', 'varun', 'meera', 'customer', 'agency']
+  };
+  /* each stop is run by one of the chief's agents, a named cat (psspss cats) */
+  var AGENTS = {
+    voice: ['Minutes', 'calico', 'Meeting cat'], standup: ['Minutes', 'calico', 'Meeting cat'], hire: ['Scout', 'siamese', 'Recruiter cat'],
+    samples: ['Patch', 'grey', 'Research cat'], vendor: ['Haggle', 'orange', 'Supplier cat'], packaging: ['Sprint', 'grey', 'Project cat'],
+    po: ['Haggle', 'orange', 'Supplier cat'], shoot: ['Quill', 'calico', 'Content cat'], listing: ['Polish', 'siamese', 'Website cat'],
+    ad: ['Mango', 'orange', 'Ads cat'], order: ['Crate', 'grey', 'Warehouse cat'], packed: ['Crate', 'grey', 'Warehouse cat'],
+    support: ['Ink', 'black', 'Support cat'], courier: ['Crate', 'grey', 'Warehouse cat'], delivered: ['Boss', 'black', 'Chief of Staff']
+  };
+  function agentOf(sid) { return AGENTS[sid] || ['Boss', 'black', 'Chief of Staff']; }
+  function isCustomer(who) { return /customer|,/i.test(str(who)); }
+  function isAgency(who) { return /studio|inkline|agency/i.test(str(who)); }
+  function faceSlug(who) {
+    var w = str(who); if (!w) return '';
+    var s = isCustomer(w) ? 'customer' : isAgency(w) ? 'agency' : w.toLowerCase().split(/\s+/)[0];
+    return (FACES[brandId] || []).indexOf(s) >= 0 ? s : '';
+  }
+  function faceEl(who, cls) {
+    var s = faceSlug(who), el = h('span', 'face' + (cls ? ' ' + cls : ''));
+    if (s) { var im = h('img'); im.alt = ''; im.decoding = 'async'; im.src = 'faces/' + brandId + '-' + s + '.webp'; el.appendChild(im); }
+    else { el.classList.add('face-txt'); el.textContent = str(who, '?').charAt(0); }
+    return el;
+  }
+  function catEl(sid, cls) {
+    var a = agentOf(sid), el = h('span', 'cat' + (cls ? ' ' + cls : ''));
+    var im = h('img'); im.alt = ''; im.decoding = 'async'; im.src = 'cats/' + a[1] + '.png'; el.appendChild(im);
+    return el;
+  }
+  function personName(who) { var w = str(who); return isCustomer(w) ? w.replace(/^Customer,?\s*/i, '') || 'Customer' : w; }
+  /* the channel a beat arrived in decides what its card looks like; no two channels look alike */
+  function kindOf(b, sid) {
+    if (b.via === 'whatsapp') return 'whatsapp';
+    if (b.via === 'email') return 'email';
+    if (b.via === 'meeting') return sid === 'standup' ? 'huddle' : 'meeting';
+    if (b.t === 'q') return 'dm';
+    if (b.s === 'feed') return 'agent';
+    if (b.s === 'os') return 'record';
+    if (b.s === 'hub') return (str(b.src, SOURCE[sid]) === 'Quotes' || (b.media && b.media.type === 'doc')) ? 'doc' : 'data';
+    var ch = str(b.ch, CHANNEL[sid] || '');
+    if (b.media && b.media.type === 'voice' && b.who) return 'voicenote';
+    if (isCustomer(b.who)) return 'whatsapp';
+    if (isAgency(b.who) || /studio|inkline|agency/.test(ch)) return 'email';
+    if (ch === 'support') return 'ticket';
+    if (ch === 'standup') return 'huddle';
+    return 'team';
+  }
+  function slugify(s) { return str(s).toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+  function recId(text) { var m = String(text || '').match(/\b([A-Z]{2,3}-\d{3,6})\b/); return m ? m[1] : ''; }
+  function tickNo(sid) { var n = 0; String(brandId + sid).split('').forEach(function (c) { n = (n * 31 + c.charCodeAt(0)) % 9000; }); return 40000 + n; }
+  function authorRow(face, name, meta) {
+    var r = h('p', 'k-au'); r.appendChild(face);
+    var t = h('span', 'k-au-t'); t.appendChild(h('b', null, name)); if (meta) t.appendChild(h('span', 'k-au-m', meta)); r.appendChild(t);
+    return r;
+  }
   function makeBeat(b, st) {
-      var c = h('div', 'bc bc-' + b.s + ' bc-t-' + b.t), sid = st.id;
-      var lab = b.t === 'ask' ? 'Checks with ' + b.who : b.t === 'q' ? b.who + ' asks' : (b.t === 'raised' && b.who ? b.who : LABEL[b.t]);
-      var hd = h('p', 'bc-hd');
-      var where = b.s === 'chat' ? '#' + str(b.ch, CHANNEL[sid] || 'general') : b.s === 'os' ? 'OS · ' + str(b.area, AREA[sid] || 'Records') : b.s === 'hub' ? 'Hub · ' + str(b.src, SOURCE[sid] || 'Data') : 'Feed';
-      hd.appendChild(h('span', 'bc-where', where));
-      hd.appendChild(h('span', 'bc-lab', lab));
-      c.appendChild(hd);
-      if (b.t === 'q') {
-        c.appendChild(h('p', 'b-q', b.text));
-        c.appendChild(h('p', 'b-a', b.answer));
-      } else if (b.s === 'chat') {
-        var m = h('div', 'bc-msg');
-        m.appendChild(h('span', 'av', b.t === 'raised' && b.who ? str(b.who).charAt(0) : 'C'));
-        m.appendChild(withMentions(h('p', 'bc-text'), (b.t === 'ask' ? '@' + b.who + ' ' : '') + b.text));
-        c.appendChild(m);
-      } else if (b.s === 'os') {
-        var row = h('div', 'bc-row');
-        row.appendChild(h('p', 'bc-text', b.text));
-        row.appendChild(h('span', 'pill ' + (b.t === 'raised' ? 'pill-hold' : 'pill-done'), b.t === 'raised' ? 'Open' : 'Done'));
-        c.appendChild(row);
-      } else {
-        c.appendChild(withMentions(h('p', 'bc-text'), b.text));
-      }
-      if (b.media) { var md = mediaEl(b.media); if (md) c.appendChild(md); }
-      if (b.desc) c.appendChild(h('p', 'bc-desc', b.desc));
-      if (arr(b.react).length) { var rx = h('p', 'bc-react'); arr(b.react).forEach(function (r) { rx.appendChild(h('span', 'rx', str(r))); }); c.appendChild(rx); }
-      if (b.t === 'ask') {
-        var opts = h('div', 'cc-opts');
-        arr(b.options).forEach(function (o, oi) {
-          var bt = h('button', 'cc-opt', o); bt.type = 'button';
-          bt.addEventListener('click', function () { markOpt(c, oi); c.setAttribute('data-user', '1'); });
-          opts.appendChild(bt);
-        });
-        c.appendChild(opts);
-        var tap = st.tap || {};
-        c.appendChild(h('p', 'b-tap', str(tap.who, b.who) + ', ' + str(tap.cost, '1 tap')));
-      }
-      return c;
+    var sid = st.id, kind = kindOf(b, sid), ag = agentOf(sid);
+    var c = h('div', 'bc bc-' + b.s + ' bc-t-' + b.t + ' k k-' + kind);
+    var mine = !b.who || b.t === 'ask' || b.t === 'assign' || b.t === 'auto' || b.t === 'done';   /* the agent speaks, unless a person raised it */
+    var who = b.t === 'raised' && b.who ? b.who : null;
+    var paren = (str(b.where).match(/\(([^)]+)\)\s*$/) || [])[1] || '';
+    var whereClean = str(b.where).replace(/\s*\([^)]*\)\s*$/, '');
+    if (b.via && !who) who = b.who || paren || null;
+    if (b.caught) { var cg = h('p', 'k-caught'); cg.appendChild(catEl(sid)); cg.appendChild(h('span', null, b.caught)); c.appendChild(cg); }
+    var chName = '#' + str(b.ch, CHANNEL[sid] || 'general');
+    var body = function () { return withMentions(h('p', 'bc-text'), (b.t === 'ask' ? '@' + b.who + ' ' : '') + b.text); };
+    if (kind === 'team') {
+      var bar = h('p', 'k-bar'); bar.appendChild(h('span', 'k-ch', chName)); bar.appendChild(h('span', 'k-app', 'Team chat')); c.appendChild(bar);
+      c.appendChild(authorRow(who ? faceEl(who) : catEl(sid), who ? personName(who) : ag[0], who ? null : 'agent'));
+      c.appendChild(body());
+    } else if (kind === 'whatsapp') {
+      var wb = h('p', 'k-bar'); wb.appendChild(h('span', 'k-ch', 'WhatsApp')); wb.appendChild(h('span', 'k-app', whereClean || personName(b.who))); c.appendChild(wb);
+      var waWho = who || b.who || whereClean, bub = h('div', 'k-bub');
+      if (b.via && waWho && !/\(DM\)|DM$/.test(str(b.where)) && whereClean !== personName(waWho)) bub.appendChild(h('b', 'k-bub-n', personName(waWho)));
+      bub.appendChild(body()); bub.appendChild(h('span', 'k-read', 'Read')); c.appendChild(bub);
+      c.insertBefore(faceEl(waWho, 'k-wa-face'), bub);
+    } else if (kind === 'email') {
+      var from = who || b.who || (/^\[/.test(str(b.where)) ? 'Shopify' : str(b.where).indexOf(':') > 0 ? str(b.where).split(':')[0] : str((cfg.brand || {}).name, 'Team') + ' inbox'), subj = b.where ? whereClean : str(b.text).split(/[.?!:]/)[0];
+      var eh = h('div', 'k-mail');
+      var l1 = h('p', 'k-mail-l'); l1.appendChild(h('span', 'k-mail-k', 'From')); l1.appendChild(h('span', null, personName(from) + (isAgency(from) ? ' <hello@' + slugify(from) + '.in>' : ''))); eh.appendChild(l1);
+      var l2 = h('p', 'k-mail-l'); l2.appendChild(h('span', 'k-mail-k', 'To')); l2.appendChild(h('span', null, str((cfg.brand || {}).name, 'Team') + ' team')); eh.appendChild(l2);
+      var l3 = h('p', 'k-mail-l k-mail-s'); l3.appendChild(h('span', 'k-mail-k', 'Subject')); l3.appendChild(h('span', null, subj.length > 46 ? subj.slice(0, 44) + '…' : subj)); eh.appendChild(l3);
+      eh.insertBefore(faceEl(from, 'k-mail-face'), l1);
+      c.appendChild(eh); c.appendChild(body());
+    } else if (kind === 'ticket') {
+      var tb = h('p', 'k-bar'); tb.appendChild(h('span', 'k-ch', 'Ticket #' + tickNo(sid))); tb.appendChild(h('span', 'k-st ' + (b.t === 'done' || b.t === 'auto' ? 'is-done' : 'is-open'), b.t === 'done' || b.t === 'auto' ? 'Solved' : 'Open')); c.appendChild(tb);
+      c.appendChild(authorRow(who ? faceEl(who) : catEl(sid), who ? personName(who) : ag[0], who ? 'customer' : 'replied'));
+      c.appendChild(body());
+    } else if (kind === 'huddle') {
+      var hb = h('p', 'k-bar'); hb.appendChild(h('span', 'k-ch', (whereClean || 'Standup').replace(/,.*$/, '') + (b.at ? ' · ' + b.at : ''))); hb.appendChild(h('span', 'k-live', 'Live')); c.appendChild(hb);
+      var sp = authorRow(who ? faceEl(who) : catEl(sid), who ? personName(who) : ag[0], null);
+      var wv = h('span', 'k-talk'); for (var i = 0; i < 9; i++) { var bi = h('i'); bi.style.animationDelay = (i * 70) + 'ms'; wv.appendChild(bi); } sp.appendChild(wv);
+      c.appendChild(sp); var q2 = body(); q2.classList.add('k-said'); c.appendChild(q2);
+    } else if (kind === 'meeting') {
+      var mb = h('p', 'k-bar'); mb.appendChild(h('span', 'k-ch', 'Transcript')); mb.appendChild(h('span', 'k-app', whereClean.replace(/,\s*\d{1,2}:\d{2}$/, ''))); c.appendChild(mb);
+      var tsm = (str(b.where).match(/(\d{1,2}:\d{2})$/) || [])[1];
+      var ml = h('div', 'k-tr'); ml.appendChild(h('span', 'k-tr-t', str(b.at, tsm || ''))); ml.appendChild(who ? faceEl(who) : catEl(sid));
+      var mt = h('div', 'k-tr-b'); mt.appendChild(h('b', null, who ? personName(who) : ag[0])); var said = body(); said.classList.add('k-said'); mt.appendChild(said); ml.appendChild(mt);
+      c.appendChild(ml);
+    } else if (kind === 'voicenote') {
+      c.appendChild(authorRow(faceEl(b.who), personName(b.who), 'voice note'));
+      c.appendChild(body());
+    } else if (kind === 'dm') {
+      var db = h('p', 'k-bar'); db.appendChild(h('span', 'k-ch', 'Direct message')); db.appendChild(h('span', 'k-app', 'Chief of Staff')); c.appendChild(db);
+      var qa = h('div', 'k-dm k-dm-q'); qa.appendChild(faceEl(b.who)); qa.appendChild(h('p', 'b-q', b.text)); c.appendChild(qa);
+      var an = h('div', 'k-dm k-dm-a'); an.appendChild(catEl(sid)); an.appendChild(h('p', 'b-a', b.answer)); c.appendChild(an);
+    } else if (kind === 'agent') {
+      c.appendChild(authorRow(catEl(sid), ag[0], ag[2] + ' · Chief of Staff'));
+      c.appendChild(body());
+    } else if (kind === 'record') {
+      var rb = h('p', 'k-bar'); rb.appendChild(h('span', 'k-ch', 'OS · ' + str(b.area, AREA[sid] || 'Records'))); var rid = recId(b.text); if (rid) rb.appendChild(h('span', 'k-id', rid)); c.appendChild(rb);
+      var row = h('div', 'bc-row'); row.appendChild(h('p', 'bc-text', b.text));
+      row.appendChild(h('span', 'pill ' + (b.t === 'raised' ? 'pill-hold' : 'pill-done'), b.t === 'raised' ? 'Open' : 'Done'));
+      c.appendChild(row);
+    } else if (kind === 'doc') {
+      var dn = b.media && b.media.type === 'doc' ? b.media : null;
+      var dh = h('p', 'k-doc-h'); dh.appendChild(h('span', 'k-doc-n', dn ? str(dn.name) : str(b.src, SOURCE[sid] || 'Quote') + '.pdf')); dh.appendChild(h('span', 'k-doc-p', dn && dn.note ? dn.note : 'Page 1 of 1')); c.appendChild(dh);
+      var pg = h('div', 'k-page'); pg.appendChild(h('p', 'k-page-t', b.text)); for (var j = 0; j < 4; j++) pg.appendChild(h('i', 'k-rule')); c.appendChild(pg);
+      b = Object.assign({}, b); if (dn) b.media = null;
+    } else {   /* data: a Hub reading, with where it came from */
+      var hb2 = h('p', 'k-bar'); hb2.appendChild(h('span', 'k-ch', 'Hub · ' + str(b.src, SOURCE[sid] || 'Data'))); hb2.appendChild(h('span', 'k-app', 'live')); c.appendChild(hb2);
+      c.appendChild(body());
+    }
+    if (b.media && !(kind === 'voicenote' && false)) { var md = mediaEl(b.media); if (md) c.appendChild(md); }
+    if (b.desc) c.appendChild(h('p', 'bc-desc', b.desc));
+    if (arr(b.react).length) { var rx = h('p', 'bc-react'); arr(b.react).forEach(function (r) { rx.appendChild(h('span', 'rx', str(r))); }); c.appendChild(rx); }
+    if (b.t === 'ask') {
+      var opts = h('div', 'cc-opts');
+      arr(b.options).forEach(function (o, oi) {
+        var bt = h('button', 'cc-opt', o); bt.type = 'button';
+        bt.addEventListener('click', function () { markOpt(c, oi); c.setAttribute('data-user', '1'); });
+        opts.appendChild(bt);
+      });
+      c.appendChild(opts);
+      var tap = st.tap || {};
+      c.appendChild(h('p', 'b-tap', str(tap.who, b.who) + ', ' + str(tap.cost, '1 tap')));
+    }
+    return c;
   }
   function buildFlow() {}
   /* a chat attachment on a message: voice note, photo cut from the kit, colour chips, a tiny bar chart, a file, a link */
@@ -686,6 +790,27 @@
   }
   var TAP_AT = 2200;
   var WIDTH = { stop: 340, raised: 290, assign: 250, ask: 340, auto: 260, done: 280, q: 330 };
+  /* the app's chrome: a status bar on top and a tab bar at the bottom (Feed, Chat, OS, Hub) */
+  var TAB_ICON = {
+    Feed: 'M4 6h16M4 12h16M4 18h10',
+    Chat: 'M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H10l-4 3v-3H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z',
+    OS: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+    Hub: 'M5 20V11M10 20V5M15 20v-6M20 20V9'
+  };
+  function statusBar() {
+    var sb = h('div', 'sbar'); sb.appendChild(h('span', 'sbar-t', '9:41'));
+    var ic = h('span', 'sbar-ic'); ic.appendChild(h('i', 'sbar-sig')); ic.appendChild(h('i', 'sbar-bat')); sb.appendChild(ic);
+    return sb;
+  }
+  function tabBar() {
+    var tb = h('nav', 'tabbar');
+    ['Feed', 'Chat', 'OS', 'Hub'].forEach(function (t) {
+      var b = h('span', 'tabbar-t'); b.setAttribute('data-t', t);
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + TAB_ICON[t] + '"/></svg>';
+      b.appendChild(h('span', 'tabbar-l', t)); tb.appendChild(b);
+    });
+    return tb;
+  }
   function buildTimeline() {
     ui.spine = h('div', 'spine'); stage.insertBefore(ui.spine, objEl);
     ui.tlBack = h('div', 'tl tl-back'); stage.insertBefore(ui.tlBack, objEl);
@@ -694,10 +819,13 @@
     ui.tl = h('div', 'tl'); stage.appendChild(ui.tl);
     /* the app phone that stands in the scene: Chief of Staff's own screen, showing the stop's decisions and records */
     ui.dock = h('div', 'dock'); var dsc = h('div', 'dock-scr scr-app');
-    var dtop = h('div', 'ap-top dock-top'); var dtabs = h('p', 'dock-tabs');
-    ['Feed', 'Chat', 'OS', 'Hub'].forEach(function (t) { dtabs.appendChild(h('span', 'dock-tab', t)); });
-    dtop.appendChild(dtabs); ui.dockTitle = h('b', 'dock-title'); dtop.appendChild(ui.dockTitle); dsc.appendChild(dtop);
-    ui.dockBody = h('div', 'dock-body'); dsc.appendChild(ui.dockBody); ui.dock.appendChild(dsc); stage.appendChild(ui.dock);
+    dsc.appendChild(statusBar());
+    var dtop = h('div', 'dock-top'); ui.dockCat = h('span', 'dock-av'); dtop.appendChild(ui.dockCat);
+    var dtt = h('div', 'dock-tt'); ui.dockTitle = h('b', 'dock-title'); ui.dockSub = h('span', 'dock-sub'); dtt.appendChild(ui.dockTitle); dtt.appendChild(ui.dockSub); dtop.appendChild(dtt);
+    dsc.appendChild(dtop);
+    ui.dockBody = h('div', 'dock-body'); dsc.appendChild(ui.dockBody);
+    var comp = h('div', 'dock-comp'); comp.appendChild(h('span', 'dock-in', 'Message')); comp.appendChild(h('span', 'dock-send')); dsc.appendChild(comp);
+    dsc.appendChild(tabBar()); ui.dock.appendChild(dsc); stage.appendChild(ui.dock);
     var holdAt = HOLD;
     SEG.forEach(function (sg) { if (sg.type === 'hold') holdAt[sg.a] = sg.at; });
     ORDER.forEach(function (id, i) {
@@ -751,7 +879,7 @@
       var jit = [0, 46, 14, 70, 28][(k + i) % 5];
       var it = { el: el, dot: dot, link: link, wy: wy, side: side, jit: jit, type: type, i: i, b: b, h: 0, k: k };
       if (b && k > 1) { it.path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); ui.svg.appendChild(it.path); }
-      if (b) it.prop = makeProp(b, k);
+      if (b) it.prop = makeProp(b, k, ORDER[i]);
       if (b && inApp(ORDER[i], b, k)) {   /* this beat plays inside the product mockup, so it does not float as a card */
         it.inApp = true;
         if (appBeat(b)) { it.dock = appItem(b, byId[ORDER[i]] || {}); dockList(i).appendChild(it.dock); }
@@ -768,7 +896,14 @@
   /* beats the product mockup in the scene shows itself (the phone's Chat at the voice stop: her note, the chief's reply) */
   var PLAY_AT = -1, DOCK = {};
   /* the app's own components, for the mockups: the decision card (cos.js decisionCard) and the OS record row */
-  function dockList(i) { return DOCK[i] || (DOCK[i] = h('div', 'ap-list')); }
+  function dockList(i) {
+    if (DOCK[i]) return DOCK[i];
+    var l = DOCK[i] = h('div', 'ap-list'), id = ORDER[i], st = byId[id] || {};
+    if (id === 'standup') return l;
+    l.appendChild(h('p', 'ap-sys in', str(st.when, 'Today')));
+    var m = h('div', 'ap-hello in'); m.appendChild(catEl(id)); var t = h('p'); t.appendChild(h('b', null, agentOf(id)[0])); t.appendChild(document.createTextNode(' ' + (st.summary ? str(st.summary).split(/(?<=[.!?])\s/)[0] : 'On it.'))); m.appendChild(t); l.appendChild(m);
+    return l;
+  }
   function appItem(b, st) {
     var sid = st.id, el;
     if (b.t === 'ask') {
@@ -872,11 +1007,11 @@
   }
   function stopPlay() {
     PLAY.on = false; clearTimeout(PLAY.timer); document.documentElement.style.scrollSnapType = '';
-    if (ui.playBtn) ui.playBtn.textContent = 'I’ve got no time';
+    if (ui.playBtn) ui.playBtn.textContent = 'Play';
   }
   function startPlay() {
     if (PLAY.on) { stopPlay(); return; }
-    PLAY.on = true; AUTO.on = true; ui.playBtn.textContent = 'Stop';
+    PLAY.on = true; AUTO.on = true; ui.playBtn.textContent = 'Pause';
     var vh = VH(), start = SEG.filter(function (q) { return q.type === 'hold'; })[0].at * vh;
     var gs = grooveList().filter(function (y) { return y >= start - 2; });
     var endY = document.getElementById('end').offsetTop;
@@ -899,18 +1034,72 @@
     else go(gs.findIndex(function (y) { return y >= scrollY - 2; }));
   }
   ['wheel', 'touchstart', 'keydown'].forEach(function (ev) { addEventListener(ev, function (e) { if (PLAY.on && !(e.target && e.target.closest && e.target.closest('.ctl'))) { stopPlay(); AUTO.on = false; } }, { passive: true }); });
-  function makeProp(b, k) {
+  function makeProp(b, k, sid) {
     var el = h('div', 'prop prop-' + b.t);
     if (b.t === 'raised') el.appendChild(h('span', 'pr-mark', '!'));
-    else if (b.t === 'assign') el.appendChild(h('span', 'pr-av', 'C'));
-    else if (b.t === 'ask') { el.appendChild(h('span', 'pr-av pr-person', str(b.who, '?').charAt(0))); var tp = h('span', 'pr-tap'); tp.appendChild(h('span', 'pr-tn', str(b.who, 'Founder') + ' · ')); tp.appendChild(document.createTextNode('1 tap')); el.appendChild(tp); }
+    else if (b.t === 'assign') el.appendChild(catEl(sid, 'pr-av pr-cat'));
+    else if (b.t === 'ask') { el.appendChild(faceEl(b.who, 'pr-av pr-person')); var tp = h('span', 'pr-tap'); tp.appendChild(h('span', 'pr-tn', str(b.who, 'Founder') + ' · ')); tp.appendChild(document.createTextNode('1 tap')); el.appendChild(tp); }
     else if (b.t === 'auto') el.appendChild(h('span', 'pr-chip', 'Auto'));
-    else if (b.t === 'q') el.appendChild(h('span', 'pr-av pr-person', str(b.who, '?').charAt(0)));
+    else if (b.t === 'q') el.appendChild(faceEl(b.who, 'pr-av pr-person'));
     else el.appendChild(h('span', 'pr-stamp', 'Done'));
     ui.props.appendChild(el);
     return el;
   }
 
+  /* ---------- the journey: the newest card in the scene is tied to the app phone, and lands in it ---------- */
+  var FLY = [], LINK = { key: '' };
+  function phoneTarget(act) {
+    if (ui.dock && ui.dock.classList.contains('in')) return ui.dock;
+    var id = ORDER[act];
+    if (layerEls.phone && mockupStop(id) && layerEls.phone.style.visibility !== 'hidden') return layerEls.phone;
+    if (layerEls.notify && id === 'delivered' && layerEls.notify.style.visibility !== 'hidden') return layerEls.notify;
+    return null;
+  }
+  function linkPhone(G) {
+    if (!ui.link) {
+      ui.link = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); ui.link.setAttribute('class', 'phone-link');
+      ui.link.innerHTML = '<defs><marker id="pl-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z"/></marker></defs><path class="pl-path" marker-end="url(#pl-arrow)"/><circle class="pl-dot" r="4"/>';
+      stage.appendChild(ui.link); ui.linkPath = ui.link.querySelector('.pl-path'); ui.linkDot = ui.link.querySelector('.pl-dot');
+    }
+    var act = activeStop(scrollY / VH()), tgt = act >= 0 ? phoneTarget(act) : null, src = null;
+    if (tgt) TL.forEach(function (it) { if (it.i === act && it.on && it.type !== 'stop' && (!src || it.k > src.k)) src = it; });
+    var sr = stage.getBoundingClientRect();
+    ui.link.setAttribute('width', G.W); ui.link.setAttribute('height', G.H);
+    /* cards that just landed in the phone fly in from the card before them */
+    while (FLY.length) {
+      var f = FLY.shift(), from = null;
+      TL.forEach(function (it) { if (it.i === f.i && it.on && it.type !== 'stop' && it.k < f.k && (!from || it.k > from.k)) from = it; });
+      if (from && tgt && f.dock.offsetParent) fly(from.el, f.dock, sr);
+    }
+    if (!tgt || !src || AUTO.on && !PLAY.on) { if (LINK.key) { ui.link.classList.remove('on'); LINK.key = ''; } return; }
+    var a = src.el.getBoundingClientRect(), b = tgt.getBoundingClientRect();
+    if (!a.width || !b.width) return;
+    var aC = a.left + a.width / 2, bC = b.left + b.width / 2, right = aC > bC;
+    var x0, y0, x1, y1;
+    if (G.mob && a.top > b.bottom - 4) { x0 = a.left + Math.min(a.width * .3, 60) - sr.left; y0 = a.top - sr.top; x1 = Math.min(b.right - 24, x0) - sr.left + sr.left; y1 = b.bottom - sr.top - 6; }
+    else { x0 = (right ? a.left : a.right) - sr.left; y0 = a.top + Math.min(a.height / 2, 40) - sr.top; x1 = (right ? b.right - 6 : b.left + 6) - sr.left; y1 = clamp(y0, b.top - sr.top + 60, b.bottom - sr.top - 90); }
+    var dx = (x1 - x0) * .5, d = G.mob && a.top > b.bottom - 4
+      ? 'M' + x0 + ' ' + y0 + ' C' + x0 + ' ' + (y0 + y1) / 2 + ' ' + x1 + ' ' + (y0 + y1) / 2 + ' ' + x1 + ' ' + y1
+      : 'M' + x0 + ' ' + y0 + ' C' + (x0 + dx) + ' ' + y0 + ' ' + (x1 - dx) + ' ' + y1 + ' ' + x1 + ' ' + y1;
+    ui.linkPath.setAttribute('d', d); ui.linkDot.setAttribute('cx', x0); ui.linkDot.setAttribute('cy', y0);
+    var key = act + ':' + src.k;
+    if (LINK.key !== key) {   /* a new step: draw the line again from the card to the phone */
+      LINK.key = key; ui.link.classList.remove('on'); var L2 = ui.linkPath.getTotalLength ? ui.linkPath.getTotalLength() : 600;
+      ui.linkPath.style.strokeDasharray = L2; ui.linkPath.style.strokeDashoffset = L2; ui.link.getBoundingClientRect();
+      ui.link.classList.add('on'); ui.linkPath.style.strokeDashoffset = 0;
+    }
+  }
+  function fly(fromEl, toEl, sr) {
+    var a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    if (!a.width || !b.width) return;
+    var g = fromEl.cloneNode(true); g.classList.add('fly'); g.classList.remove('now');
+    g.style.width = a.width + 'px'; g.style.transform = 'translate3d(' + (a.left - sr.left) + 'px,' + (a.top - sr.top) + 'px,0)';
+    stage.appendChild(g); g.getBoundingClientRect();
+    var s = Math.min(.6, b.width / a.width);
+    g.style.transform = 'translate3d(' + (b.left - sr.left) + 'px,' + (b.top - sr.top) + 'px,0) scale(' + s.toFixed(3) + ')';
+    g.style.opacity = '0';
+    setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 800);
+  }
   function updateTimeline(pos, G, cx, cy, B) {
     /* the beats appear in place, one by one, and leave when the stop ends; nothing slides with the scroll.
        p = how far past a beat the scroll is (in viewport heights): it appears at p >= 0 */
@@ -1160,7 +1349,7 @@
     var items = TL.filter(function (it) { return it.dock; });
     items.forEach(function (it) {
       var sh = shown(it);
-      if (sh !== it.dockOn) { it.dockOn = sh; it.dock.classList.toggle('in', sh); }
+      if (sh !== it.dockOn) { it.dockOn = sh; it.dock.classList.toggle('in', sh); if (sh && !SQ[it.i].instant) FLY.push(it); }
       if (it.type === 'ask') { var pr = sh && age(it) > TAP_AT; if (pr !== it.dockPr) { it.dockPr = pr; it.dock.classList.toggle('pressed', pr); } if (sh && age(it) < TAP_AT + 100) ANIM = true; }
     });
     var show = on && dockStop(id);
@@ -1184,9 +1373,10 @@
     /* the header follows the newest item: a decision opens its channel, a record its OS area */
     var last = null; items.forEach(function (it) { if (it.i === act && it.dockOn) last = it; });
     var tab = last && last.b.s === 'os' ? 'OS' : 'Chat';
-    Array.prototype.forEach.call(ui.dock.querySelectorAll('.dock-tab'), function (t) { t.classList.toggle('on', t.textContent === tab); });
-    var ttl = !last ? '' : last.b.s === 'os' ? str(last.b.area, AREA[id] || 'Records') : '#' + str(last.b.ch, CHANNEL[id] || 'general');
+    Array.prototype.forEach.call(ui.dock.querySelectorAll('.tabbar-t'), function (t) { t.classList.toggle('on', t.getAttribute('data-t') === tab); });
+    var ttl = !last ? '#' + str(CHANNEL[id], 'general') : last.b.s === 'os' ? str(last.b.area, AREA[id] || 'Records') : '#' + str(last.b.ch, CHANNEL[id] || 'general');
     if (ui.dockTitle.textContent !== ttl) ui.dockTitle.textContent = ttl;
+    if (ui.dockCatFor !== id) { ui.dockCatFor = id; ui.dockCat.textContent = ''; ui.dockCat.appendChild(catEl(id)); ui.dockSub.textContent = agentOf(id)[0] + ' is on it'; }
     /* newest at the bottom; when the list outgrows the screen it scrolls up */
     var lst = dockList(act), over = Math.max(0, lst.scrollHeight - ui.dockBody.clientHeight);
     lst.style.transform = 'translate3d(0,' + (-over) + 'px,0)';
@@ -1460,6 +1650,7 @@
 
     /* the card presses itself part-way through the hold (a person's one tap) */
     updateTimeline(pos, G, cx, G.mob ? G.H * .6 : G.cy, B);
+    linkPhone(G);
     if ((ANIM || (G.mob && ANIM_SHEET)) && !raf) raf = requestAnimationFrame(render);   /* time-based moments keep drawing */
     ui.presBar.style.opacity = seg.type === 'hold' || seg.type === 'trans' ? 1 : 0;
     ui.spine.style.opacity = seg.type === 'hold' || seg.type === 'trans' ? 1 : seg.type === 'rew' && seg.b === 0 ? ease(t) : 0;
@@ -1531,6 +1722,40 @@
   }
   function onScroll() { if (!AUTO.on) { autoRewind(); armSettle(); } if (!raf) raf = requestAnimationFrame(render); }
 
+  /* ---------- the one tap: the parcel hangs over her doormat; tapping it drops it, and the story plays itself ---------- */
+  var HOVER = { on: false, t0: 0 };
+  function startHover() {
+    INTRO.done = false; INTRO.phone = 0; INTRO.wake = INTRO.n1 = INTRO.n2 = 0; INTRO.drop = .52;
+    HOVER.on = true; HOVER.t0 = performance.now(); stage.classList.add('await');
+    ui.hint = h('button', 'hint', 'Tap the parcel'); ui.hint.type = 'button'; stage.appendChild(ui.hint);
+    ui.ctl.classList.add('ctl-wait');
+    (function bob(now) {
+      if (!HOVER.on) return;
+      var t = (now - HOVER.t0) / 1000;
+      INTRO.drop = .52 + Math.sin(t * 2.2) * .025; INTRO.buzz = 0;
+      render(); requestAnimationFrame(bob);
+    })(HOVER.t0);
+    stage.addEventListener('pointerdown', dropIt);
+    addEventListener('keydown', function onKey(e) { if (HOVER.on && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); dropIt(e); } if (!HOVER.on) removeEventListener('keydown', onKey); });
+    addEventListener('scroll', function onS() { if (HOVER.on && scrollY > 20) { endHover(); INTRO.done = true; INTRO.drop = 1; render(); } removeEventListener('scroll', onS); }, { passive: true });
+  }
+  function endHover() {
+    HOVER.on = false; stage.classList.remove('await'); stage.removeEventListener('pointerdown', dropIt);
+    if (ui.hint) { ui.hint.classList.add('out'); var hn = ui.hint; setTimeout(function () { if (hn.parentNode) hn.parentNode.removeChild(hn); }, 400); }
+    ui.ctl.classList.remove('ctl-wait');
+  }
+  function dropIt(e) {
+    if (!HOVER.on || (e && e.target && e.target.closest && e.target.closest('.ctl'))) return;
+    endHover();
+    if (!MUTED && Object.keys(cfg.audio || {}).length) {   /* this tap is the gesture the browser needs for sound */
+      SOUND = true;
+      if (ui.soundBtn) { ui.soundBtn.textContent = 'Sound on'; ui.soundBtn.setAttribute('aria-pressed', 'true'); }
+      var u = PLAYER(); u.muted = true; u.src = (cfg.audio || {})['voice-note'] || ''; var pp = u.play(); if (pp && pp.then) pp.then(function () { u.pause(); u.muted = false; }).catch(function () { u.muted = false; });
+    }
+    INTRO.t0 = performance.now() - INTRO.drop * 1100;
+    requestAnimationFrame(introTick);
+    (function after() { if (!INTRO.done) return setTimeout(after, 120); setTimeout(function () { if (scrollY < 20 && !PLAY.on) startPlay(); }, 1500); })();
+  }
   function init(raw) {
     cfg = raw || {};
     buildStates(cfg.crops);
@@ -1578,7 +1803,8 @@
     presTimer = setInterval(function () { if (cur >= 0) { presIdx++; presence(); } }, 2600);
     render();
     window.__render = render;
-    if (!STILL && scrollY < 10 && !/[?&]nointro\b/.test(location.search)) { INTRO.done = false; INTRO.drop = 0; INTRO.phone = 0; INTRO.wake = INTRO.n1 = INTRO.n2 = 0; requestAnimationFrame(introTick); }
+    if (!STILL && scrollY < 10 && !/[?&]nointro\b/.test(location.search)) startHover();
+    else if (/[?&]autoplay\b/.test(location.search)) setTimeout(startPlay, 600);
   }
 
   var q = new URLSearchParams(location.search);

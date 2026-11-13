@@ -144,3 +144,44 @@
 .lg-back { background: none; border: 1px solid rgba(22, 21, 18, .2); padding: 10px 18px; border-radius: 999px; font: inherit; cursor: pointer; }
 .lg-still .lg-me, .lg-still .lg-other { transition: none; }
 @media (max-width: 600px) { .lg-ring { height: 280px; } .lg-me { width: 104px; height: 104px; margin: -52px 0 0 -52px; font-size: 36px; } }
+
+/* ---------- a glimpse of the real app (the demo's dashboard) ---------- */
+.gl { display: block; width: min(860px, 100%); margin: 36px auto 8px; color: #ecebe4; text-decoration: none; }
+.gl-win { background: #0b0c0a; border: 1px solid #22231f; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 60px rgba(40, 30, 20, .16); transition: transform .3s ease; }
+.gl:hover .gl-win { transform: translateY(-3px); }
+.gl-bar { display: flex; gap: 10px; align-items: baseline; padding: 12px 18px; border-bottom: 1px solid rgba(236,235,228,.085); font-size: 14px; }
+.gl-bar span { color: #8b8a82; }
+.gl-body { padding: 20px 18px 22px; display: flex; flex-direction: column; gap: 16px; text-align: left; }
+.gl-hi { font-size: 22px; font-weight: 500; }
+.gl-tiles { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 10px; }
+.gl-tile { background: #151613; border: 1px solid rgba(236,235,228,.085); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+.gl-tile b { font: 500 30px/1 var(--f-mono); }
+.gl-tile span { font-size: 13px; color: #8b8a82; }
+.gl-big { background: #ecebe4; color: #0b0c0a; }
+.gl-big b { font-size: 46px; }
+.gl-big span { color: #45433d; font-size: 15px; font-weight: 500; }
+.gl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gl-needs, .gl-cats { list-style: none; margin: 0; padding: 0; }
+.gl-needs { display: flex; flex-direction: column; gap: 8px; }
+.gl-needs li { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid rgba(236,235,228,.085); border-radius: 12px; }
+.gl-needs b { font-size: 14px; font-weight: 600; }
+.gl-needs span { font-size: 13px; color: #a9a79e; }
+.gl-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.gl-cats li { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; background: #151613; }
+.gl-cats img { width: 34px; height: 44px; object-fit: contain; object-position: 50% 100%; }
+.gl-cats b { font-size: 12.5px; font-weight: 600; }
+.gl-cats span { font-size: 11px; color: #8b8a82; }
+.gl-go { display: inline-block; margin-top: 14px; font-weight: 600; font-size: 16px; color: var(--fin-ink, #161512); text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 700px) {
+  .gl-tiles { grid-template-columns: 1fr 1fr; }
+  .gl-big { grid-column: 1 / -1; }
+  .gl-cols { grid-template-columns: 1fr; }
+  .gl-hi { font-size: 19px; }
+}
+.fin-av.has-face, .gl-av.has-face, .lg-av.has-face { background: #e4dcf4; overflow: hidden; padding: 0; }
+.fin-av img, .gl-av img, .lg-av img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.gl-needs li { flex-direction: row; align-items: center; gap: 10px; }
+.gl-needs li > div { display: flex; flex-direction: column; gap: 2px; }
+.gl-av { flex: none; width: 34px; height: 34px; border-radius: 50%; background: #22231f; display: grid; place-items: center; font-weight: 600; font-size: 13px; }
+@media (max-width: 700px) { .gl-tiles { grid-template-columns: 1fr 1fr 1fr; } .gl-tile b { font-size: 24px; } .gl-tile span { font-size: 12px; } }
+.lg-bub:has(img) { background: #e4dcf4; }

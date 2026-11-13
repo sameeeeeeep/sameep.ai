@@ -161,9 +161,11 @@ export async function mount(root, ctx) {
     ]);
     data = { state, feed, today, inv };
   };
+  // a fresh copy seeds on its first read; a read that raced it comes back empty, so look again shortly
+  const settle = async () => { for (let i = 0; i < 4 && !(data.feed?.posts || []).length && data.state?.presence; i++) { await new Promise((r) => setTimeout(r, 1200)); await load(); } };
   const paint = () => { root.innerHTML = String(view(data, ctx)); };
   const refresh = async () => { try { await load(); paint(); } catch (e) { ctx.toast(e.message); } };
-  await load(); paint();
+  await load(); await settle(); paint();
   const unbind = bindCards(root, ctx, refresh);
   // a tap on a waiting item opens the Feed on that card
   root.addEventListener('click', (e) => {
