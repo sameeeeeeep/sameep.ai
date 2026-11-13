@@ -21,6 +21,7 @@ export function view(data, ctx, ui = {}) {
   const slug = cur?.thread?.slug || null;
   const canPost = ['member', 'admin', 'owner'].includes(ctx.role);
   const list = html`<nav class="ct-list" aria-label="Threads">${threads.map((t) => html`<a class="ct-th" href="#/w/${ctx.wid}/chat/${t.slug}"${raw(t.slug === slug ? ' aria-current="page"' : '')}>
+    ${face(t.agent || 'Chief of staff', { agent: true })}
     <span class="ct-th-n"><span title="${t.name}">#${t.slug}${owner(t, s) ? html` <span class="ct-own">@${owner(t, s)}</span>` : ''}</span>${t.open ? html`<span class="ct-badge" title="Cards waiting">${t.open}</span>` : ''}</span>
     <span class="ct-th-p">${t.preview ? `${t.preview.author}: ${t.preview.body}` : t.agent}</span></a>`)}</nav>`;
   let main = '';
@@ -55,7 +56,7 @@ export function view(data, ctx, ui = {}) {
       <header class="ct-head">
         <a class="ct-back linkish" href="#/w/${ctx.wid}/chat">All threads</a>
         <h2 title="${t.name}">#${t.slug}${owner(t, s) ? html` <span class="ct-own">@${owner(t, s)}</span>` : ''}</h2>
-        <p class="ct-who"><span>${t.fns.map((f) => f.agent).filter((a, i, all) => all.indexOf(a) === i).join(', ')}</span><span>${t.people.map((p) => p.name).join(', ')}</span></p>
+        <p class="ct-who" aria-label="${[...t.fns.map((f) => f.agent), ...t.people.map((p) => p.name)].filter((a, i, all) => a && all.indexOf(a) === i).join(', ')}"><span class="ct-stack">${t.fns.map((f) => f.agent).filter((a, i, all) => all.indexOf(a) === i).map((a) => html`<span title="${a}">${face(a, { agent: true, small: true })}</span>`)}</span><span class="ct-stack">${t.people.map((p) => p.name).filter((n, i, all) => n && all.indexOf(n) === i).slice(0, 8).map((n) => html`<span title="${n}">${face((s.people || {})[n]?.name || n, { avatar: avatarOf(s, n), small: true })}</span>`)}</span></p>
       </header>
       <ul class="ct-msgs" id="ct-msgs">${cur.messages.length || p ? html`${cur.messages.map(msg)}${pend}` : html`<li class="muted">No messages yet.</li>`}</ul>
       ${canPost ? html`<form class="ct-comp" id="ct-form" autocomplete="off">
@@ -65,7 +66,7 @@ export function view(data, ctx, ui = {}) {
     </div>`;
   }
   return html`<section class="pg">
-    ${head('Chat', 'A thread per area. People and agents talk; agents drop the card when a person is needed.', s, ctx.wid)}
+    ${head('Chat', '', s, ctx.wid)}
     <div class="ct${cur ? ' has-thread' : ''}">${list}${main}</div>
   </section>`;
 }

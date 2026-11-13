@@ -201,3 +201,33 @@ a.db-t:hover { border-color: var(--line-2); }
 .fd-quote { margin: 10px 0 6px; padding: 10px 12px; border-left: 2px solid var(--line-2); background: var(--card-2); border-radius: 0 10px 10px 0; font-size: 14px; color: var(--ink-2); }
 .fd-open { font-size: 13.5px; color: var(--ink-2); text-underline-offset: 3px; }
 .fd-done-m .fd-src { min-height: 22px; font-size: 12px; }
+
+/* every face across the surfaces (js/cos.js face): agents are their cat, round */
+.cs-face.is-cat { border-radius: 50%; border: 0; background: var(--raise); }
+.cs-face.is-sm.is-cat { border-radius: 50%; }
+/* Chat's thread list: the thread's cat on the left */
+.ct-th { grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; }
+.ct-th > .cs-face { grid-row: 1 / span 2; align-self: center; width: 40px; height: 40px; }
+.ct-th-n, .ct-th-p { grid-column: 2; }
+
+/* Hub: the long lists fold away */
+.hb-count { font: 400 13px/1 var(--f-mono); color: var(--muted); margin-left: 6px; }
+.hb-more { margin-top: 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); }
+.hb-more > summary { list-style: none; cursor: pointer; display: flex; align-items: center; padding: 16px; font: 600 16px/1.2 var(--f-head); }
+.hb-more > summary::-webkit-details-marker { display: none; }
+.hb-more > summary::after { content: '+'; margin-left: auto; font: 400 20px/1 var(--f-mono); color: var(--muted); }
+.hb-more[open] > summary::after { content: '-'; }
+.hb-more > ul { margin: 0 16px 16px; }
+@media (max-width: 760px) {
+  .hb-c .hb-what, .hb-c .hb-read { display: none; }
+  .hb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hb-c { padding: 12px; gap: 6px; }
+  .hb-c .btn { min-height: 40px; font-size: 14px; }
+  .hb-c-h { flex-wrap: wrap; }
+}
+/* a thread's agents and people as faces, not a list of names */
+.ct-who { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.ct-stack { display: inline-flex; }
+.ct-stack > span + span { margin-left: -6px; }
+.ct-stack .cs-face { box-shadow: 0 0 0 2px var(--bg); }
+@media (max-width: 760px) { .os2-rule { display: none; } }

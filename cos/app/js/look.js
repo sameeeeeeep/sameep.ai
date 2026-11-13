@@ -9,6 +9,10 @@
 import { html, raw, esc } from './ui.js';
 
 const A = './assets';
+// the workspace in view (js/app.js sets it on every route), for the shared pieces that do not get a ctx
+let cur = null;
+export const useWs = (ws) => { cur = ws || null; };
+export const curWs = () => cur;
 // sixteen agents, five coats; a name each, the way you would name a cat
 const CATS = {
   'Chief of staff': ['Miso', 'siamese'], 'Finance agent': ['Paisa', 'black'], 'Ops agent': ['Dabba', 'orange'],

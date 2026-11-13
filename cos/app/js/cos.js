@@ -11,6 +11,7 @@
 //   as / setAs           who is tapping: in a demo workspace the presenter taps as a person of the world
 // Pure view functions take plain data and return html``; nothing touches the DOM at import time.
 import { html, raw, esc } from './ui.js';
+import { catOf, faceSrc, curWs } from './look.js';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -79,12 +80,13 @@ export function sourceLabel(src) {
 
 // a face: avatar (blob URL once loaded) or initials. Agents get a square mark.
 export const faces = new Map(); // avatar path -> object URL
+// Agents are their cat (js/look.js); a sample brand's people their illustrated face.
 export function face(name, { avatar = null, agent = false, small = false } = {}) {
-  if (agent) return html`<span class="cs-face is-agent${small ? ' is-sm' : ''}" aria-hidden="true">${raw(AGENT_MARK)}</span>`;
-  const src = avatar && faces.get(avatar);
+  if (agent) return html`<span class="cs-face is-agent is-cat${small ? ' is-sm' : ''}" aria-hidden="true"><img src="${catOf(name).src}" alt=""></span>`;
+  const src = (avatar && faces.get(avatar)) || faceSrc(curWs(), name);
   return html`<span class="cs-face${small ? ' is-sm' : ''}" aria-hidden="true">${src ? raw(`<img src="${esc(src)}" alt="">`) : initials(name)}</span>`;
 }
-const AGENT_MARK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 4v3M9.5 12h.01M14.5 12h.01"/></svg>';
+export const AGENT_MARK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="11" rx="3"/><path d="M12 4v3M9.5 12h.01M14.5 12h.01"/></svg>';
 export async function loadFaces(ctx, people) {
   const paths = [...new Set(Object.values(people || {}).map((p) => p.avatar).filter((p) => p && !faces.has(p)))];
   await Promise.all(paths.map(async (p) => {
@@ -279,7 +281,7 @@ export function bindCards(root, ctx, refresh) {
 export function head(title, sub, s, wid, extra = '') {
   return html`<div class="cs-top">
     <div><h1 class="pg-h">${title}${s?.demo ? html` <span class="sample-tag">Sample data</span>` : ''}</h1>${sub ? html`<p class="pg-sub">${sub}</p>` : ''}</div>
-    <div class="cs-top-r">${extra}${personaPicker(s, wid)}</div>
+    <div class="cs-top-r">${extra}${title === 'OS' ? personaPicker(s, wid) : ''}</div>
   </div>`;
 }
 

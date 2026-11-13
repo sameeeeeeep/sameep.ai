@@ -16,6 +16,7 @@
 import { api, apiBase, token, ApiError } from './api.js';
 import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
 import { askView, runAsk } from './ask.js';
+import { useWs } from './look.js';
 import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
 // The Dashboard (pages/dash.js) and the Chief of Staff surfaces come first (Feed, Chat, Agents, OS, Hub: pages/feed.js, chat.js, cosos.js, coshub.js,
@@ -255,6 +256,7 @@ function boot() {
     if (!ws || !r.section) { location.replace(hrefFor(ws ? ws.id : me.workspaces[0].id, HOME)); return; }
     if (cur && cur.id !== ws.id) { ask = null; askRun++; }
     cur = ws;
+    useWs(ws);
     paintBrand(ws, mine);
 
     const nav = NAV.find((n) => n.section === r.section);

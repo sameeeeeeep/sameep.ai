@@ -24,9 +24,9 @@ export function view(data, ctx) {
     return html`<button class="btn is-small${c.state === 'not_synced' ? ' is-primary' : ''}" type="button" data-conn="sync" data-key="${c.key}">Sync now</button>`;
   };
   return html`<section class="pg">
-    ${head('Hub', `${counts.connected} connected, ${counts.not_synced} not synced, ${counts.not_connected} not connected. Every number shows where it came from.`, s, ctx.wid, html`<a class="btn is-small" href="#/w/${encodeURIComponent(ctx.wid)}/hub/live">Live data</a>`)}
+    ${head('Hub', '', s, ctx.wid, html`<a class="btn is-small" href="#/w/${encodeURIComponent(ctx.wid)}/hub/live">Live data</a>`)}
     ${h.numbers.length ? html`<div class="hb-nums">${h.numbers.map((n) => html`<div class="hb-num"><span class="l">${n.label}, latest full day</span><span class="v">${n.value}</span>${n.sub ? html`<span class="s">${n.sub}</span>` : ''}${src(n.source)}</div>`)}</div>` : ''}
-    <h2 class="cs-h2">Connectors</h2>
+    <h2 class="cs-h2">Connectors <span class="hb-count">${counts.connected} of ${h.connectors.length} on</span></h2>
     <div class="hb-grid">${h.connectors.map((c) => html`<article class="hb-c is-${c.state}">
       <div class="hb-c-h"><b>${c.name}</b><span class="hb-state is-${c.state}">${STATE[c.state]}</span></div>
       <p class="hb-what">${c.what}</p>
@@ -35,11 +35,11 @@ export function view(data, ctx) {
       <p class="hb-read">Read by ${c.readers.length ? c.readers.join(', ') : 'no agent yet'}</p>
       ${btn(c)}
     </article>`)}</div>
-    <h2 class="cs-h2">What each agent reads</h2>
+    <details class="hb-more"><summary>What each agent reads</summary>
     <ul class="hb-agents">${h.agents.map((a) => html`<li><b>${face(a.name, { agent: true, small: true })}<span>${a.name}<small>${a.fns.join(', ')}</small></span></b>
-      <span class="hb-reads">${a.reads.length ? a.reads.map((r) => html`<span class="hb-state is-${r.state}">${r.name}</span>`) : html`<span class="muted">Hub summaries only</span>`}</span></li>`)}</ul>
-    <h2 class="cs-h2">What the agents watch</h2>
-    <ul class="hb-mon">${h.monitors.map((m) => html`<li><span><b>${m.label}</b><br><small>${m.limit ? `Keep ${m.limit}` : ''}</small></span><span><span class="v is-${m.state}">${m.value}</span><br>${src(m.source)}</span></li>`)}</ul>
+      <span class="hb-reads">${a.reads.length ? a.reads.map((r) => html`<span class="hb-state is-${r.state}">${r.name}</span>`) : html`<span class="muted">Hub summaries only</span>`}</span></li>`)}</ul></details>
+    <details class="hb-more"><summary>What the agents watch <span class="hb-count">${h.monitors.length}</span></summary>
+    <ul class="hb-mon">${h.monitors.map((m) => html`<li><span><b>${m.label}</b><br><small>${m.limit ? `Keep ${m.limit}` : ''}</small></span><span><span class="v is-${m.state}">${m.value}</span><br>${src(m.source)}</span></li>`)}</ul></details>
   </section>`;
 }
 
