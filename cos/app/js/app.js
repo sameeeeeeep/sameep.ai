@@ -259,8 +259,7 @@ function boot() {
     let st = document.getElementById('brand-pack');
     if (!p) { if (st) st.remove(); return; }
     if (!st) { st = document.createElement('style'); st.id = 'brand-pack'; document.head.appendChild(st); }
-    // the pack's logo only: the app keeps its one accent (the brand's colour belongs to its products, not the chrome)
-    st.textContent = ':root[data-theme="light"] .bp-logo.is-dark,:root:not([data-theme="light"]) .bp-logo.is-light{display:none}.bp-logo{height:18px;width:auto;vertical-align:middle;display:inline-block}';
+    st.textContent = String(p.css || '') + ':root[data-theme="light"] .bp-logo.is-dark,:root:not([data-theme="light"]) .bp-logo.is-light{display:none}.bp-logo{height:18px;width:auto;vertical-align:middle;display:inline-block}';
     const okSrc = (u) => typeof u === 'string' && /^data:image\/(png|webp|svg\+xml);base64,/.test(u);
     if (p.logo && okSrc(p.logo.light) && okSrc(p.logo.dark)) {
       const c = $('crumb-ws'); c.textContent = '';

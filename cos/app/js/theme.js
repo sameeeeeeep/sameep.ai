@@ -5,16 +5,15 @@
 export const KEY = 'bc-theme';
 
 // Pure: the theme to show. saved: 'light' | 'dark' | anything else (no pick). systemLight: boolean.
-// Light is the default; dark is an option the person picks (systemLight is kept for callers, no longer decides).
-export function resolveTheme(saved, systemLight) { // eslint-disable-line no-unused-vars
-  return saved === 'dark' ? 'dark' : 'light';
+export function resolveTheme(saved, systemLight) {
+  return saved === 'light' || saved === 'dark' ? saved : (systemLight ? 'light' : 'dark');
 }
 
 // Pure: what one press does. Flips the shown theme; when the new theme matches the system the pick is
 // dropped (save: null) so the page goes back to following it.
-export function toggleTheme(current, systemLight) { // eslint-disable-line no-unused-vars
+export function toggleTheme(current, systemLight) {
   const theme = current === 'light' ? 'dark' : 'light';
-  return { theme, save: theme === 'light' ? null : theme };
+  return { theme, save: theme === (systemLight ? 'light' : 'dark') ? null : theme };
 }
 
 // Pure: the button's label and icon for the theme on screen (it offers the other one).
@@ -26,7 +25,7 @@ export function buttonFor(theme) {
     : { label: 'Switch to light mode', icon: SUN };
 }
 
-export const THEME_COLOR = { dark: '#0b0c0a', light: '#f4f3ef' };
+export const THEME_COLOR = { dark: '#0b0c0a', light: '#f5f3ec' };
 
 if (typeof document !== 'undefined') bind();
 

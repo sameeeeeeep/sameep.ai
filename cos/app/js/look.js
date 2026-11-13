@@ -54,9 +54,7 @@ export function productSrc(ws, fn) {
 export const initials = (name) => String(name || '?').replace(/\(.*?\)/g, '').trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '?';
 const px = (n) => raw(`style="--sz:${Number(n) || 40}px"`);
 
-// every agent wears the same glyph: a small star in a dark circle (its name always sits beside it)
-export const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2z" fill="currentColor"/></svg>';
-export const mark = (agent, size = 40) => html`<span class="lk-av is-agent" ${px(size)} title="${agentOf(agent).name}" aria-hidden="true">${raw(STAR)}</span>`;
+export const mark = (agent, size = 40) => html`<span class="lk-av is-agent" ${px(size)} title="${agentOf(agent).name}" aria-hidden="true">${agentOf(agent).mark}</span>`;
 export function face(ws, name, size = 40) {
   const src = faceSrc(ws, name);
   return src ? html`<span class="lk-av" ${px(size)}><img src="${src}" alt="" loading="lazy"></span>` : html`<span class="lk-av is-init" ${px(size)} aria-hidden="true">${initials(name)}</span>`;
