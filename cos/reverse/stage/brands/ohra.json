@@ -1,0 +1,2953 @@
+{
+ "id": "ohra",
+ "brand": {
+  "name": "Ohra",
+  "category": "lipstick",
+  "city": "Delhi",
+  "product": "Brick Dust matte bullet lipstick",
+  "founder": "Aditi"
+ },
+ "palette": {
+  "sky": [
+   "#3a2f2e",
+   "#c8664a"
+  ],
+  "ground": "#0b0908",
+  "night": [
+   "#120d12",
+   "#3a2431"
+  ],
+  "accent": "#c8664a"
+ },
+ "intro": {
+  "line": "One Brick Dust lipstick, delivered in Saket at 6:08 pm.",
+  "sub": "Seven months of work behind it. People tapped 8 times, 32 seconds in all. Scroll back."
+ },
+ "assets": {
+  "hero": "assets/ohra/hero.webp",
+  "hero_boxed": "assets/ohra/hero_boxed.webp",
+  "parcel": "assets/ohra/parcel.webp",
+  "parcel_top": "assets/ohra/parcel_top.webp",
+  "kit_flatlay": "assets/ohra/kit_flatlay.webp",
+  "qc": "assets/ohra/qc.webp",
+  "carton_top": "assets/ohra/carton_top.webp",
+  "variants3": "assets/ohra/variants3.webp",
+  "box_flat": "assets/ohra/box_flat.webp",
+  "trials5": "assets/ohra/trials5.webp",
+  "maker_tool": "assets/ohra/maker_tool.webp",
+  "wireframe": "assets/ohra/wireframe.webp"
+ },
+ "stages": [
+  {
+   "id": "delivered",
+   "when": "Today, 7:10 pm",
+   "mode": "dusk",
+   "object": "hero_boxed",
+   "line": "Delivered at 6:08 pm. At 7:10 pm, sent her a care note: keep it off the windowsill, and try Clay liner.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Care note sent, 7:10 pm",
+     "at": [
+      0.483,
+      0.33
+     ]
+    },
+    {
+     "text": "Delivered, Saket 110017",
+     "at": [
+      0.703,
+      0.486
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Support",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "7:10 pm",
+      "text": "Care note out to OH-20418 in Saket: keep the bullet off the windowsill in this heat, and Clay liner goes with it."
+     },
+     {
+      "who": "Naina",
+      "time": "7:14 pm",
+      "text": "Nice. Put Clay on her account page too."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "7:15 pm",
+      "text": "Done. It shows there for 30 days, then I check whether she bought it."
+     }
+    ],
+    "os": {
+     "title": "Order OH-20418",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Status",
+       "Delivered"
+      ],
+      [
+       "Delivered",
+       "Today, 6:08 pm"
+      ],
+      [
+       "Courier",
+       "Delhivery, surface"
+      ],
+      [
+       "Care note",
+       "Sent 7:10 pm, WhatsApp"
+      ],
+      [
+       "Next suggestion",
+       "Clay liner, 30 days"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Delivered today",
+       "value": "38",
+       "source": "Shopify",
+       "fetched": "7:05 pm"
+      },
+      {
+       "label": "Care notes opened",
+       "value": "61%",
+       "source": "WhatsApp",
+       "fetched": "7:05 pm"
+      },
+      {
+       "label": "Clay liner added from care notes, 7 days",
+       "value": "23",
+       "source": "Shopify",
+       "fetched": "7:05 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Care note sent: keep it off the windowsill"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Care-note opens, hourly",
+     "Clay liner adds from care notes, daily",
+     "New Brick Dust reviews, hourly"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "OH-20418 delivered · Saket · 6:08 pm",
+     "media": {
+      "type": "photo",
+      "kit": "hero_boxed",
+      "crop": [
+       0.1,
+       0.0,
+       0.9,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "Care note sent: keep it off the windowsill",
+     "ch": "support",
+     "desc": "Clay liner nudge on day 30"
+    },
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "sales today?",
+     "who": "Naina",
+     "answer": "₹2,31,187 · 233 orders · up 3.7%.",
+     "ch": "growth"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "wait what. 233?",
+     "who": "Aditi",
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "One lipstick: voice note to doorstep",
+     "desc": "7 months · 8 taps · 32 sec"
+    }
+   ],
+   "summary": "6:08 pm, her door. 7:10 pm, a care note. Then: how's today?"
+  },
+  {
+   "id": "courier",
+   "when": "2 days before, 11:40 am",
+   "mode": "dusk",
+   "object": "parcel",
+   "line": "Booked Delhivery for 110017: 2.1% failed deliveries, against 4.8% and 6.3%. Tracking went in Hindi, her WhatsApp language.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Delhivery: 2.1% failed in 110017",
+     "at": [
+      0.404,
+      0.48
+     ]
+    },
+    {
+     "text": "Tracking sent in Hindi",
+     "at": [
+      0.65,
+      0.23
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:40 am",
+      "text": "Booked Delhivery for OH-20418. 2.1% failed deliveries in 110017 over 90 days, against 4.8% and 6.3%. Tracking went out in Hindi, the language she uses on WhatsApp."
+     },
+     {
+      "who": "Customer, Saket",
+      "time": "12:02 pm",
+      "text": "Dhanyavaad, mil gaya."
+     }
+    ],
+    "os": {
+     "title": "Shipment OH-20418",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Courier",
+       "Delhivery, surface"
+      ],
+      [
+       "Pincode",
+       "110017"
+      ],
+      [
+       "Picked up",
+       "11:20 am"
+      ],
+      [
+       "Tracking",
+       "Sent in Hindi, 11:40 am"
+      ],
+      [
+       "Promised",
+       "In 2 days"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Failed deliveries, Delhivery, 110017",
+       "value": "2.1%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "11:38 am"
+      },
+      {
+       "label": "Failed deliveries, Blue Dart, 110017",
+       "value": "4.8%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "11:38 am"
+      },
+      {
+       "label": "Failed deliveries, Ecom Express, 110017",
+       "value": "6.3%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "11:38 am"
+      },
+      {
+       "label": "Tracking link opened",
+       "value": "12:01 pm",
+       "source": "WhatsApp",
+       "fetched": "12:03 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Comparing 3 couriers in 110017, last 90 days",
+     "Failed deliveries: Delhivery 2.1%. Others 4.8, 6.3"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Failed deliveries by pincode, every 15 min",
+     "Courier pickups, live",
+     "Tracking opens, live"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "OH-20418 packed · 110017"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Comparing 3 couriers in 110017, last 90 days"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Failed deliveries: Delhivery 2.1%. Others 4.8, 6.3",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       2.1,
+       4.8,
+       6.3
+      ],
+      "labels": [
+       "Delhivery",
+       "Xpressbees",
+       "Ekart"
+      ],
+      "unit": "%"
+     }
+    },
+    {
+     "t": "done",
+     "s": "chat",
+     "text": "Booked Delhivery. Tracking sent in Hindi",
+     "ch": "shipping",
+     "desc": "She opened it 12:01 pm"
+    }
+   ],
+   "summary": "The courier is picked by who actually delivers in 110017.",
+   "live": [
+    {
+     "beat": 3,
+     "type": "toast",
+     "where": "OS",
+     "title": "Courier picked",
+     "text": "Delhivery, pickup 11:20 am"
+    }
+   ]
+  },
+  {
+   "id": "support",
+   "when": "2 days before, 10:05 am",
+   "mode": "dusk",
+   "object": "phone",
+   "line": "She asked where her order was at 10:05 am. Answered from the 9:52 am warehouse scan in 40 seconds: packed, on the 11:20 am pickup.",
+   "ask": "will brick dust look too brown on me? warm medium skin",
+   "answer": "On warm, medium skin it reads as a deep red with some brick in it, not brown. Our three testers with your tone all said red. Dab it on for softer.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Answered in 3 min",
+     "at": [
+      0.611,
+      0.613
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Support",
+    "chat": [
+     {
+      "who": "Customer, Saket",
+      "time": "10:05 am",
+      "text": "hi, where's my order? OH-20418"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:05 am",
+      "text": "Packed at 9:52 am. It leaves Okhla on the 11:20 am pickup; tracking comes the moment it does."
+     },
+     {
+      "who": "Customer, Saket",
+      "time": "10:06 am",
+      "text": "ok thanks"
+     }
+    ],
+    "os": {
+     "title": "Support chat #8812",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Channel",
+       "Website chat"
+      ],
+      [
+       "Question",
+       "Too brown on warm, medium skin"
+      ],
+      [
+       "Answered from",
+       "Wear test, 3 testers with her tone"
+      ],
+      [
+       "First reply",
+       "3 min"
+      ],
+      [
+       "Outcome",
+       "Ordered at 11:42 pm"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "First reply tonight, median",
+       "value": "2 min",
+       "source": "Website chat",
+       "fetched": "11:40 pm"
+      },
+      {
+       "label": "Shade questions this week",
+       "value": "64",
+       "source": "Website chat",
+       "fetched": "11:40 pm"
+      },
+      {
+       "label": "Shade chats that end in an order",
+       "value": "27%",
+       "source": "Shopify and website chat",
+       "fetched": "11:40 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Read off Arjun's 9:52 scan",
+     "Answered in 40 sec. Nobody looked it up"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Where-is-my-order chats, live",
+     "First reply time, every 15 min"
+    ]
+   },
+   "flow": [
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "hi where's my order? OH-20418",
+     "who": "Customer, Saket",
+     "answer": "Packed 9:52 am. Leaves on the 11:20 pickup.",
+     "ch": "support"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Read off Arjun's 9:52 scan"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Answered in 40 sec. Nobody looked it up"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "ok thank u",
+     "who": "Customer, Saket",
+     "ch": "support"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Tracking queued for the pickup",
+     "media": {
+      "type": "link",
+      "title": "ohra.in/track/OH-20418",
+      "note": "pickup 11:20 am"
+     }
+    }
+   ],
+   "summary": "\"Where's my order?\" Answered off the warehouse scan in 40 seconds."
+  },
+  {
+   "id": "packed",
+   "when": "2 days before, 9:50 am",
+   "mode": "top",
+   "object": "parcel_top",
+   "line": "Packed OH-20418 first in Okhla's morning batch at 118 g, saw six days of Brick Dust left at this pace, and drafted repeat PO-0151 on Sethi's terms under Aditi's standing approval.",
+   "tap": {
+    "who": "Arjun",
+    "what": "scanned the packed box",
+    "cost": "1 tap, 2 sec"
+   },
+   "tags": [
+    {
+     "text": "118 g, matches the kit",
+     "at": [
+      0.45,
+      0.49
+     ]
+    },
+    {
+     "text": "First out, morning batch",
+     "at": [
+      0.75,
+      0.35
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:50 am",
+      "text": "Morning batch released to Okhla, OH-20418 first. Packed at 118 g, the kit is 118 g. Arjun, scan to close it."
+     },
+     {
+      "who": "Arjun",
+      "time": "9:52 am",
+      "text": "Scanned."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:53 am",
+      "text": "The whole batch goes on the 11:20 am pickup, not the 2 pm van. Delhi hits 41°C by afternoon."
+     }
+    ],
+    "os": {
+     "title": "Morning batch, Okhla",
+     "cols": [
+      "Order",
+      "Packed",
+      "Expected",
+      "Status"
+     ],
+     "rows": [
+      [
+       "OH-20418",
+       "118 g",
+       "118 g",
+       "Packed, first out"
+      ],
+      [
+       "OH-20419",
+       "236 g",
+       "236 g",
+       "Packed"
+      ],
+      [
+       "OH-20421",
+       "124 g",
+       "118 g",
+       "Re-weighed, extra fill out"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Packed by 10 am",
+       "value": "86 orders",
+       "source": "Warehouse scans",
+       "fetched": "9:58 am"
+      },
+      {
+       "label": "Weight mismatches",
+       "value": "1 of 86",
+       "source": "Warehouse scans",
+       "fetched": "9:58 am"
+      },
+      {
+       "label": "Delhi at 2 pm",
+       "value": "41°C",
+       "source": "Weather feed",
+       "fetched": "9:40 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Weighing every box vs the kit",
+     "Brick Dust: 6 days of stock left",
+     "PO-0151 drafted · Sethi · repeat"
+    ],
+    "managing": [
+     "Waiting on Arjun: 1 tap"
+    ],
+    "monitoring": [
+     "Packed weight vs kit, every scan",
+     "Delhi temperature, hourly",
+     "Van slots, every 30 min"
+    ]
+   },
+   "card": {
+    "area": "Warehouse",
+    "ask": "Scan OH-20418 to close it: packed at 118 g, the kit is 118 g.",
+    "options": [
+     {
+      "label": "Scanned, weight matches",
+      "recommended": true
+     },
+     {
+      "label": "Hold it and re-weigh"
+     }
+    ],
+    "by": "Arjun",
+    "checker": "Tanvi",
+    "action": "Scan the box",
+    "signal": "Packed weight vs kit, every scan",
+    "osRow": 0
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "Morning batch to Okhla: 86 orders",
+     "desc": "OH-20418 first out"
+    },
+    {
+     "t": "assign",
+     "s": "os",
+     "text": "Weighing every box vs the kit"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "OH-20418: 118 g, kit is 118 g. Scan to close?",
+     "who": "Arjun",
+     "options": [
+      "scanned",
+      "re-weigh"
+     ],
+     "ch": "warehouse",
+     "media": {
+      "type": "photo",
+      "kit": "parcel_top",
+      "crop": [
+       0.1,
+       0.1,
+       0.9,
+       0.9
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Brick Dust: 6 days of stock left",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       5000,
+       860,
+       140
+      ],
+      "labels": [
+       "landed",
+       "sold",
+       "per day"
+      ],
+      "unit": "units"
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "PO-0151 drafted · Sethi · repeat",
+     "area": "Purchase orders",
+     "desc": "Standing approval. No tap."
+    }
+   ],
+   "summary": "Her box goes out first. The chief sees stock running low and reorders.",
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "Stock alert",
+     "text": "Brick Dust: 6 days left. Reorder drafted."
+    }
+   ]
+  },
+  {
+   "id": "order",
+   "when": "3 days before, 11:42 pm",
+   "mode": "dusk",
+   "night": true,
+   "object": "phone",
+   "line": "Logged her 11:42 pm order from ad cut B, saw the pincode didn't match Saket, asked her on WhatsApp and fixed it to 110017 in 4 minutes. First in the morning batch.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Address matches 110017",
+     "at": [
+      0.57,
+      0.423
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:42 pm",
+      "text": "New order from tonight's shade chat. Brick Dust, ₹899, prepaid. Address matches 110017. First in the morning batch."
+     },
+     {
+      "who": "Arjun",
+      "time": "8:40 am",
+      "text": "Seen. Printing labels now."
+     }
+    ],
+    "os": {
+     "title": "Order OH-20418",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Item",
+       "Brick Dust matte lipstick, 4.2 g"
+      ],
+      [
+       "Total",
+       "₹899, prepaid"
+      ],
+      [
+       "Ship to",
+       "Saket, 110017"
+      ],
+      [
+       "Address check",
+       "Matches the pincode"
+      ],
+      [
+       "Batch",
+       "Morning, first out"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Orders today",
+       "value": "143",
+       "source": "Shopify",
+       "fetched": "11:45 pm"
+      },
+      {
+       "label": "Prepaid share",
+       "value": "71%",
+       "source": "Razorpay",
+       "fetched": "11:45 pm"
+      },
+      {
+       "label": "Addresses flagged",
+       "value": "0 of 143",
+       "source": "Address check",
+       "fetched": "11:45 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Address says Saket. Pincode says 110071",
+     "hi, pincode looks off for Saket. 110017?"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "New orders, live",
+     "Address checks, every order",
+     "Prepaid share, hourly"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "OH-20418 · Brick Dust · ₹899 · prepaid",
+     "desc": "Ad cut B · 11:42 pm"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Address says Saket. Pincode says 110071"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "hi, pincode looks off for Saket. 110017?",
+     "ch": "support"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "haan sorry, 110017",
+     "who": "Customer, Saket",
+     "ch": "support",
+     "media": {
+      "type": "voice",
+      "len": "0:04"
+     }
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "First in Okhla's 8:40 am batch",
+     "area": "Warehouse"
+    }
+   ],
+   "summary": "11:42 pm order, wrong pincode. Fixed before she sleeps.",
+   "live": [
+    {
+     "beat": 2,
+     "type": "text",
+     "screen": "order",
+     "sel": ".scr-mid + .scr-label",
+     "to": "Pincode 110071? Checking"
+    },
+    {
+     "beat": 4,
+     "type": "text",
+     "screen": "order",
+     "sel": ".scr-mid + .scr-label",
+     "to": "Saket 110017, checked"
+    }
+   ]
+  },
+  {
+   "id": "ad",
+   "stats": [
+    "ROAS 2.8",
+    "CTR 2.2%",
+    "3 cuts"
+   ],
+   "when": "10 days before, 1:30 am",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "Cut three ads. At 1:30 am, paused cut C at ROAS 0.9 and moved its ₹1,100 a day to cut B.",
+   "tap": {
+    "who": "Naina",
+    "what": "picked cut B to scale",
+    "cost": "1 tap, 3 sec"
+   },
+   "tags": [
+    {
+     "text": "₹1,100 a day moved here",
+     "at": [
+      0.499,
+      0.421
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Performance",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:30 am",
+      "text": "Cut B, the sunlit swatch, is at ROAS 2.8. Paused cut C at 0.9 and moved its ₹1,100 a day onto B."
+     },
+     {
+      "who": "Naina",
+      "time": "9:05 am",
+      "text": "Saw it. What about A at 1.9?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:06 am",
+      "text": "A stays on at ₹1,700 a day as the control. Scaling B for the next 14 days needs your pick. Card is in the thread."
+     }
+    ],
+    "os": {
+     "title": "Ad cuts, last 7 days",
+     "cols": [
+      "Cut",
+      "Spend",
+      "ROAS",
+      "CTR",
+      "Status"
+     ],
+     "rows": [
+      [
+       "A, bullet side-on",
+       "₹12,400",
+       "1.9",
+       "1.6%",
+       "Running"
+      ],
+      [
+       "B, sunlit swatch",
+       "₹21,800",
+       "2.8",
+       "2.2%",
+       "Scaled"
+      ],
+      [
+       "C, close-ups",
+       "₹7,900",
+       "0.9",
+       "0.8%",
+       "Paused"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "ROAS, cut B",
+       "value": "2.8",
+       "source": "Meta Ads",
+       "fetched": "1:28 am"
+      },
+      {
+       "label": "CTR, cut B",
+       "value": "2.2%",
+       "source": "Meta Ads",
+       "fetched": "1:28 am"
+      },
+      {
+       "label": "Budget moved to cut B",
+       "value": "₹1,100 a day",
+       "source": "Meta Ads",
+       "fetched": "1:30 am"
+      },
+      {
+       "label": "Cut C paused at",
+       "value": "ROAS 0.9",
+       "source": "Meta Ads",
+       "fetched": "1:30 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "1:30 am · cut C ROAS 0.9 · paused"
+    ],
+    "managing": [
+     "Waiting on Naina: 1 tap"
+    ],
+    "monitoring": [
+     "ROAS per cut, hourly",
+     "CTR per cut, hourly",
+     "Daily spend cap, every 15 min"
+    ]
+   },
+   "card": {
+    "area": "Performance",
+    "ask": "Pick the cut to scale for the next 14 days. Cut B is at ROAS 2.8 over 7 days.",
+    "options": [
+     {
+      "label": "Cut B, sunlit swatch, ROAS 2.8",
+      "recommended": true
+     },
+     {
+      "label": "Cut A, bullet side-on, 1.9"
+     },
+     {
+      "label": "Cut C, close-ups, 0.9"
+     }
+    ],
+    "by": "Naina",
+    "checker": "Aditi",
+    "action": "Pick the cut",
+    "signal": "Cut B at 2.8, cut C at 0.9, 7 days",
+    "osRow": 1
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "3 cuts live from the shoot",
+     "desc": "A bullet · B sunlit swatch · C close-ups"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "1:30 am · cut C ROAS 0.9 · paused",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       2.8,
+       1.6,
+       0.9
+      ],
+      "labels": [
+       "B",
+       "A",
+       "C"
+      ],
+      "unit": "ROAS"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "B at 2.8 for 7 days. Scale for 14?",
+     "who": "Naina",
+     "options": [
+      "scale B",
+      "hold"
+     ],
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "hub",
+     "text": "₹1,100/day moved C → B"
+    },
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "is the launch paying for itself?",
+     "who": "Aditi",
+     "answer": "Yes. ₹2.10 back per ₹1, last 7 days.",
+     "ch": "growth"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "nice. keep B running",
+     "who": "Aditi",
+     "ch": "growth"
+    }
+   ],
+   "summary": "1:30 am, one ad is burning money. It stops before anyone wakes up.",
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "Hub",
+     "title": "Budget moved",
+     "text": "Rs 1,100 a day from cut C to cut B"
+    }
+   ]
+  },
+  {
+   "id": "listing",
+   "when": "2 weeks before",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "Studio Pell changed the hero line. Naina's agent caught it in 40 seconds, checked it against 41 reviews, and put the line customers actually use up for her.",
+   "card": {
+    "title": "Brick Dust matte lipstick, 4.2 g",
+    "price": "₹899",
+    "rating": 4.6
+   },
+   "tap": {
+    "who": "Naina",
+    "what": "approved the new first line",
+    "cost": "1 tap, 4 sec"
+   },
+   "tags": [
+    {
+     "text": "Sunlit swatch: 3.4% vs 2.6%",
+     "at": [
+      0.352,
+      0.424
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Website",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:02 am",
+      "text": "29 of 41 reviews say it never dries the lips. The new first line leads with that. Naina, the card is up."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:20 am",
+      "text": "Photo test done, 2,400 visits each. Sunlit swatch converts at 3.4%, studio bullet at 2.6%. Swapped the hero."
+     },
+     {
+      "who": "Naina",
+      "time": "11:31 am",
+      "text": "Line's good. Approving."
+     }
+    ],
+    "os": {
+     "title": "Product page changes",
+     "cols": [
+      "Field",
+      "Before",
+      "After"
+     ],
+     "rows": [
+      [
+       "First line",
+       "A matte red for every day",
+       "A matte red that never dries your lips"
+      ],
+      [
+       "Hero photo",
+       "Studio bullet",
+       "Sunlit swatch"
+      ],
+      [
+       "Price",
+       "₹899",
+       "₹899"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Conversion, sunlit swatch",
+       "value": "3.4%",
+       "source": "Shopify",
+       "fetched": "11:20 am"
+      },
+      {
+       "label": "Conversion, studio bullet",
+       "value": "2.6%",
+       "source": "Shopify",
+       "fetched": "11:20 am"
+      },
+      {
+       "label": "Rating",
+       "value": "4.6 from 41",
+       "source": "Judge.me",
+       "fetched": "11:02 am"
+      },
+      {
+       "label": "Reviews that say it never dries",
+       "value": "29 of 41",
+       "source": "Judge.me",
+       "fetched": "11:02 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Caught in 40 sec. Checking it vs 41 reviews",
+     "29/41 reviews say \"never dries\""
+    ],
+    "managing": [
+     "Waiting on Naina: 1 tap"
+    ],
+    "monitoring": [
+     "Conversion per photo, hourly",
+     "New reviews, hourly",
+     "Page load time, daily"
+    ]
+   },
+   "decision": {
+    "area": "Website",
+    "ask": "Approve the new first line: \"A matte red that never dries your lips.\"",
+    "options": [
+     {
+      "label": "Approve the new line",
+      "recommended": true
+     },
+     {
+      "label": "Keep \"A matte red for every day\""
+     }
+    ],
+    "by": "Naina",
+    "checker": "Aditi",
+    "action": "Approve the copy",
+    "signal": "29 of 41 reviews say it never dries",
+    "osRow": 0
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "new hero line is live: matte that stays soft",
+     "who": "Studio Pell",
+     "ch": "studio-pell",
+     "media": {
+      "type": "link",
+      "title": "ohra.in/brick-dust",
+      "note": "hero line changed"
+     }
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Caught in 40 sec. Checking it vs 41 reviews"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "29/41 reviews say \"never dries\"",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       29,
+       8,
+       4
+      ],
+      "labels": [
+       "never dries",
+       "true red",
+       "lasts"
+      ],
+      "unit": "reviews"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Pell's line or the reviews' line?",
+     "who": "Naina",
+     "options": [
+      "never dries your lips",
+      "keep Pell's"
+     ],
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "chat",
+     "text": "Swapped to the review line. 2 hero photos on A/B",
+     "ch": "studio-pell"
+    }
+   ],
+   "summary": "The agency swaps the hero line. 29 reviews say something better.",
+   "live": [
+    {
+     "beat": 1,
+     "type": "text",
+     "screen": "listing",
+     "sel": ".scr-big",
+     "to": "Matte that stays soft"
+    },
+    {
+     "beat": 4,
+     "type": "text",
+     "screen": "listing",
+     "sel": ".scr-big",
+     "to": "Never dries your lips"
+    },
+    {
+     "beat": 5,
+     "type": "toast",
+     "where": "OS",
+     "title": "Website, live",
+     "text": "Hero line changed. Pell told in their channel."
+    }
+   ]
+  },
+  {
+   "id": "shoot",
+   "when": "5 weeks before",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "The test shot read orange under warm lamps. Matched it to the bullet, moved the shoot to a north-light studio on Saturday and sent a ten-shot list.",
+   "tap": {
+    "who": "Kavya, the creator",
+    "what": "confirmed Saturday",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "10 shots planned",
+     "at": [
+      0.15,
+      0.37
+     ]
+    },
+    {
+     "text": "North-light studio, Saturday",
+     "at": [
+      0.925,
+      0.14
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Content",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:40 pm",
+      "text": "Brief and ten-shot list are in your inbox. North-light studio held for Saturday so the red doesn't go orange."
+     },
+     {
+      "who": "Kavya",
+      "time": "1:15 pm",
+      "text": "Saturday works. What time?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:16 pm",
+      "text": "9:30 am call. Swatches first, while the light is soft."
+     }
+    ],
+    "os": {
+     "title": "Shoot, Saturday",
+     "cols": [
+      "Shot",
+      "What",
+      "For"
+     ],
+     "rows": [
+      [
+       "1",
+       "Bullet, side-on",
+       "Product page"
+      ],
+      [
+       "2",
+       "Swatch on warm medium skin",
+       "Product page, ads"
+      ],
+      [
+       "3",
+       "Sunlit swatch",
+       "Ads"
+      ],
+      [
+       "4",
+       "Bullet in a handbag",
+       "Social"
+      ],
+      [
+       "5 to 10",
+       "Lip close-ups",
+       "Ads, social"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Studio",
+       "value": "6 hours, north light",
+       "source": "Studio calendar",
+       "fetched": "12:38 pm"
+      },
+      {
+       "label": "Shots planned",
+       "value": "10",
+       "source": "Shot list",
+       "fetched": "12:40 pm"
+      },
+      {
+       "label": "Creator fee",
+       "value": "₹18,000",
+       "source": "Creator agreement",
+       "fetched": "1:16 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Checked: warm lamps, not the shade",
+     "Studio held · 10-shot list sent"
+    ],
+    "managing": [
+     "Waiting on Kavya: 1 tap"
+    ],
+    "monitoring": [
+     "Studio calendar, hourly",
+     "Saturday's weather, daily",
+     "Creator replies, every 15 min"
+    ]
+   },
+   "card": {
+    "area": "Content",
+    "ask": "Confirm the shoot: Saturday, 9:30 am, north-light studio.",
+    "options": [
+     {
+      "label": "Saturday, 9:30 am",
+      "recommended": true
+     },
+     {
+      "label": "The Saturday after"
+     }
+    ],
+    "by": "Kavya",
+    "checker": "Naina",
+    "action": "Confirm the date",
+    "signal": "Studio hold expires in 24 h",
+    "osRow": 0
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "test shot attached. bhai this is orange on camera",
+     "who": "Kavya",
+     "ch": "content",
+     "media": {
+      "type": "photo",
+      "kit": "hero",
+      "crop": [
+       0.3,
+       0.0,
+       0.7,
+       0.45
+      ]
+     }
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Checked: warm lamps, not the shade",
+     "media": {
+      "type": "swatch",
+      "colors": [
+       "#8b3a2e",
+       "#c0562f"
+      ],
+      "label": "bullet vs test shot"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Sat 9:30, north-light studio. Works?",
+     "who": "Kavya",
+     "options": [
+      "works",
+      "next week"
+     ],
+     "ch": "content"
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Studio held · 10-shot list sent"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "42 photos in. The red reads red"
+    }
+   ],
+   "summary": "The test shot turns the red orange. The light gets fixed, not the photo.",
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "Studio booked",
+     "text": "Saturday 9:30, north light"
+    }
+   ]
+  },
+  {
+   "id": "po",
+   "when": "10 weeks before",
+   "mode": "dusk",
+   "object": "variants3",
+   "line": "Drafted PO-0142 for 5,000 units on Sethi's quote, 45 days to pay. Aditi approved; sent at 4:02 pm, confirmed at 4:40 pm, dock slot held.",
+   "tap": {
+    "who": "Aditi",
+    "what": "approved PO-0142",
+    "cost": "1 tap, 6 sec"
+   },
+   "tags": [
+    {
+     "text": "Sethi Tubes, ₹38 a tube",
+     "at": [
+      0.498,
+      0.58
+     ]
+    },
+    {
+     "text": "45 days to pay",
+     "at": [
+      0.81,
+      0.6
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:50 pm",
+      "text": "Three quotes for 5,000 ribbed tubes. Sethi Tubes isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, dented tubes replaced free."
+     },
+     {
+      "who": "Arjun",
+      "time": "2:02 pm",
+      "text": "Their samples were the cleanest too."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:15 pm",
+      "text": "PO-0142 drafted for ₹1,90,000. Waiting on Aditi."
+     }
+    ],
+    "os": {
+     "title": "Quotes: 5,000 ribbed metal tubes",
+     "cols": [
+      "Vendor",
+      "Per tube",
+      "Terms",
+      "Lead time",
+      "Dented tubes"
+     ],
+     "rows": [
+      [
+       "Mumbai",
+       "₹34",
+       "Pay upfront",
+       "30 days",
+       "Not covered"
+      ],
+      [
+       "Sethi Tubes, Delhi",
+       "₹38",
+       "45 days",
+       "18 days",
+       "Replaced free"
+      ],
+      [
+       "Guangzhou",
+       "₹29",
+       "Pay upfront",
+       "55 days",
+       "Not covered"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Tube cost per lipstick",
+       "value": "₹38",
+       "source": "PO-0142",
+       "fetched": "2:15 pm"
+      },
+      {
+       "label": "Cash out at order",
+       "value": "₹0",
+       "source": "PO-0142, 45 days to pay",
+       "fetched": "2:15 pm"
+      },
+      {
+       "label": "PO total",
+       "value": "₹1,90,000",
+       "source": "PO-0142",
+       "fetched": "2:15 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Arjun dock 2 held for the landing",
+     "PO-0142 sent · Sethi · ₹1.9L"
+    ],
+    "managing": [
+     "Waiting on Aditi: 1 tap"
+    ],
+    "monitoring": [
+     "Cash in the bank, daily",
+     "Tube prices, three vendors",
+     "Vendor lead times, weekly"
+    ]
+   },
+   "card": {
+    "area": "Purchasing",
+    "ask": "Approve PO-0142: 5,000 ribbed tubes from Sethi Tubes, ₹1,90,000, 45 days to pay.",
+    "options": [
+     {
+      "label": "Sethi Tubes, ₹38, 45 days to pay",
+      "recommended": true
+     },
+     {
+      "label": "Mumbai, ₹34, pay upfront"
+     },
+     {
+      "label": "Guangzhou, ₹29, 55 days to land"
+     }
+    ],
+    "by": "Aditi",
+    "checker": "Arjun",
+    "action": "Approve the PO",
+    "signal": "Filling booked in 3 weeks. Only Sethi Tubes lands in time: 18 days.",
+    "osRow": 1
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "PO-0142 drafted · 5,000 units",
+     "desc": "Sethi terms · 45 days to pay"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Arjun dock 2 held for the landing",
+     "ch": "purchasing"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "PO-0142 · 5,000 · ₹1.9L · 45 days. Approve?",
+     "who": "Aditi",
+     "options": [
+      "approve",
+      "hold"
+     ],
+     "ch": "purchasing",
+     "media": {
+      "type": "doc",
+      "name": "PO-0142.pdf",
+      "note": "₹1,90,000"
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "PO-0142 sent · Sethi · ₹1.9L",
+     "desc": "Confirmed 4:40 pm"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Tracking it daily till dock 2"
+    }
+   ],
+   "summary": "The money goes out on Sethi's terms, with the dock already held.",
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "PO-0142 confirmed",
+     "text": "Lands 9 days before launch"
+    }
+   ]
+  },
+  {
+   "id": "packaging",
+   "when": "3 months before",
+   "mode": "dusk",
+   "object": "box_flat",
+   "line": "Checked carton proof v3 against 14 labelling rules, caught the missing net weight, and cleared v4 for a run of 5,000.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Net wt. 4.2 g added",
+     "at": [
+      0.703,
+      0.43
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:10 am",
+      "text": "Carton proof v3 is missing one required line: net weight. It should read Net wt. 4.2 g."
+     },
+     {
+      "who": "Arjun",
+      "time": "11:24 am",
+      "text": "Printer says they'll fix it today."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "5:42 pm",
+      "text": "v4 is back. Net weight in, nothing else moved. Cleared for 5,000."
+     }
+    ],
+    "os": {
+     "title": "Carton artwork check, proof v4",
+     "cols": [
+      "Line",
+      "Required",
+      "On the proof"
+     ],
+     "rows": [
+      [
+       "Product name",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Net weight",
+       "Yes",
+       "Added in v4"
+      ],
+      [
+       "MRP incl. taxes",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Manufacturer address",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Batch and expiry",
+       "Yes",
+       "Printed at filling"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Labelling rules met",
+       "value": "14 of 14",
+       "source": "Labelling checklist",
+       "fetched": "5:42 pm"
+      },
+      {
+       "label": "Carton run",
+       "value": "5,000",
+       "source": "Printer quote",
+       "fetched": "5:42 pm"
+      },
+      {
+       "label": "Cost per carton",
+       "value": "₹6.80",
+       "source": "Printer quote",
+       "fetched": "5:42 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Checking v3 against 14 label rules",
+     "v3 missing net wt. pls add \"Net wt. 4.2 g\" under shade",
+     "Proof v4: 14/14 pass"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Printer proof inbox, hourly",
+     "Labelling rule changes, weekly",
+     "Carton cost, every quote"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "carton v3 attached. ok to print?",
+     "who": "Studio Pell",
+     "ch": "studio-pell",
+     "media": {
+      "type": "doc",
+      "name": "carton_v3.pdf"
+     }
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Checking v3 against 14 label rules"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "v3 missing net wt. pls add \"Net wt. 4.2 g\" under shade",
+     "ch": "studio-pell",
+     "media": {
+      "type": "photo",
+      "kit": "box_flat",
+      "crop": [
+       0.0,
+       0.0,
+       0.7,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Proof v4: 14/14 pass"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "5,000 cartons cleared to print. Nobody chased"
+    }
+   ],
+   "summary": "Carton v3 is missing a line the law needs. Caught before 5,000 print.",
+   "live": [
+    {
+     "beat": 4,
+     "type": "stamp",
+     "key": "flat",
+     "at": [
+      0.5,
+      0.7
+     ],
+     "text": "Net wt 4.2 g",
+     "badge": "v4"
+    }
+   ]
+  },
+  {
+   "id": "vendor",
+   "when": "4 months before",
+   "mode": "dusk",
+   "object": "variants3",
+   "line": "Lined up three vendors for shade 3 with tube and case options. Recommended Sethi: Rs 38, ribbed gold, the only one landing before launch.",
+   "tap": {
+    "who": "Aditi",
+    "what": "chose Sethi",
+    "cost": "1 tap, 3 sec"
+   },
+   "tags": [
+    {
+     "text": "Sethi Tubes, ₹38 a tube",
+     "at": [
+      0.498,
+      0.58
+     ]
+    },
+    {
+     "text": "45 days to pay",
+     "at": [
+      0.81,
+      0.6
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:50 pm",
+      "text": "Three quotes for 5,000 ribbed tubes. Sethi Tubes isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, dented tubes replaced free."
+     },
+     {
+      "who": "Arjun",
+      "time": "2:02 pm",
+      "text": "Their samples were the cleanest too."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:15 pm",
+      "text": "PO-0142 drafted for ₹1,90,000. Waiting on Aditi."
+     }
+    ],
+    "os": {
+     "title": "Quotes: 5,000 ribbed metal tubes",
+     "cols": [
+      "Vendor",
+      "Per tube",
+      "Terms",
+      "Lead time",
+      "Dented tubes"
+     ],
+     "rows": [
+      [
+       "Mumbai",
+       "₹34",
+       "Pay upfront",
+       "30 days",
+       "Not covered"
+      ],
+      [
+       "Sethi Tubes, Delhi",
+       "₹38",
+       "45 days",
+       "18 days",
+       "Replaced free"
+      ],
+      [
+       "Guangzhou",
+       "₹29",
+       "Pay upfront",
+       "55 days",
+       "Not covered"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Tube cost per lipstick",
+       "value": "₹38",
+       "source": "PO-0142",
+       "fetched": "2:15 pm"
+      },
+      {
+       "label": "Cash out at order",
+       "value": "₹0",
+       "source": "PO-0142, 45 days to pay",
+       "fetched": "2:15 pm"
+      },
+      {
+       "label": "PO total",
+       "value": "₹1,90,000",
+       "source": "PO-0142",
+       "fetched": "2:15 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Aditi tube + case options from all 3",
+     "Nova's cheaper. Lands 3 wks after launch"
+    ],
+    "managing": [
+     "Waiting on Aditi: 1 tap"
+    ],
+    "monitoring": [
+     "Vendor lead times, weekly",
+     "Quote expiry, daily"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "3 quotes in for shade 3",
+     "src": "Quotes",
+     "desc": "Step 3 · owner: Aditi"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Aditi tube + case options from all 3",
+     "ch": "purchasing",
+     "media": {
+      "type": "photo",
+      "kit": "variants3",
+      "crop": [
+       0.0,
+       0.0,
+       1.0,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Nova's cheaper. Lands 3 wks after launch",
+     "desc": "Guangzhou: 7 wks by sea",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       38,
+       34,
+       29
+      ],
+      "labels": [
+       "Sethi",
+       "Nova",
+       "Guangzhou"
+      ],
+      "unit": "₹"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Sethi · ribbed gold · ₹38. Only one on time. Go?",
+     "who": "Aditi",
+     "options": [
+      "Sethi",
+      "Nova, ₹34"
+     ],
+     "ch": "purchasing"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Vendor: Sethi. Carton next"
+    }
+   ],
+   "summary": "Cheapest tube lands three weeks late. Sethi lands on time.",
+   "live": [
+    {
+     "beat": 3,
+     "type": "pick",
+     "title": "Three vendors",
+     "groups": [
+      {
+       "label": "Tube",
+       "options": [
+        "Sethi, ribbed, Rs 38",
+        "Nova, smooth, Rs 34",
+        "Guangzhou, Rs 29"
+       ],
+       "chosen": 0
+      },
+      {
+       "label": "Case colour",
+       "swatches": [
+        "#c9a24a",
+        "#d9a48f",
+        "#1d1c1a"
+       ],
+       "names": [
+        "Gold",
+        "Rose gold",
+        "Black"
+       ],
+       "chosen": 0
+      }
+     ],
+     "delay": 900
+    },
+    {
+     "beat": 4,
+     "type": "focus",
+     "keep": "lip",
+     "dim": [
+      "vL",
+      "vR"
+     ],
+     "delay": 700
+    }
+   ]
+  },
+  {
+   "id": "samples",
+   "when": "5 months before",
+   "mode": "dusk",
+   "object": "trials5",
+   "line": "Ran heat and wear tests on five samples from three labs. Sample 2 sweated at 45°C, 9 of 20; sent it back to Kesar Labs with the log. The other four went on.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Shade 3: 5 of 8 votes",
+     "at": [
+      0.5,
+      0.38
+     ]
+    },
+    {
+     "text": "5 shades, blind",
+     "at": [
+      0.8,
+      0.81
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Product",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:30 am",
+      "text": "Wear test is set. Five shades coded 1 to 5, eight people, eight hours each. Nobody knows which is which."
+     },
+     {
+      "who": "Tanvi",
+      "time": "5:48 pm",
+      "text": "Shade 2 feathered at the edges by hour six."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "6:20 pm",
+      "text": "Results: shades 1, 3 and 5 held all eight hours. Shade 3 scored 4.4 on colour and took 5 of 8 votes. Shade 1 read brown on four of eight."
+     }
+    ],
+    "os": {
+     "title": "Wear test: 5 shades, blind",
+     "cols": [
+      "Shade",
+      "At 8 hours",
+      "Colour",
+      "Votes"
+     ],
+     "rows": [
+      [
+       "1",
+       "Holds",
+       "3.1",
+       "0"
+      ],
+      [
+       "2",
+       "Feathers at 6 h",
+       "3.8",
+       "1"
+      ],
+      [
+       "3",
+       "Holds",
+       "4.4",
+       "5"
+      ],
+      [
+       "4",
+       "Fades at 5 h",
+       "3.6",
+       "1"
+      ],
+      [
+       "5",
+       "Holds",
+       "3.9",
+       "1"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Testers",
+       "value": "8",
+       "source": "Google Forms",
+       "fetched": "6:18 pm"
+      },
+      {
+       "label": "Shade 3 colour score",
+       "value": "4.4 / 5",
+       "source": "Google Forms",
+       "fetched": "6:18 pm"
+      },
+      {
+       "label": "Votes for shade 3",
+       "value": "5 of 8",
+       "source": "Google Forms",
+       "fetched": "6:18 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Tanvi heat + wear on all 5. Arjun's van spec: 45°C",
+     "Sample 2: 9/20 sweated at 45°C",
+     "Sent back to Kesar Labs with the log"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Heat and wear scores, per sample",
+     "Lab replies, live"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "5 samples in from 3 labs",
+     "desc": "Step 2 · owner: Ritika"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Tanvi heat + wear on all 5. Arjun's van spec: 45°C",
+     "ch": "npd"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Sample 2: 9/20 sweated at 45°C",
+     "desc": "Limit is 1/20",
+     "media": {
+      "type": "photo",
+      "kit": "trials5",
+      "crop": [
+       0.2,
+       0.15,
+       0.41,
+       0.85
+      ]
+     }
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "told you. delhi june",
+     "who": "Arjun",
+     "ch": "npd"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "Sent back to Kesar Labs with the log",
+     "ch": "npd"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "4 go on. Shade 3 leads on wear",
+     "media": {
+      "type": "swatch",
+      "colors": [
+       "#8b3a2e",
+       "#a04530"
+      ],
+      "label": "shade 3 vs 5"
+     }
+    }
+   ],
+   "summary": "Arjun's van test, run on day one. Sample 2 melts and never reaches a customer.",
+   "live": [
+    {
+     "beat": 2,
+     "type": "cycle",
+     "keys": [
+      "b0",
+      "b1",
+      "b2",
+      "b3",
+      "b4"
+     ],
+     "label": "Heat test, 45°C"
+    },
+    {
+     "beat": 3,
+     "type": "stamp",
+     "key": "b1",
+     "at": [
+      0.5,
+      0.45
+     ],
+     "text": "9 of 20",
+     "badge": "Fail"
+    },
+    {
+     "beat": 4,
+     "type": "focus",
+     "keep": "b2",
+     "dim": [
+      "b1"
+     ],
+     "delay": 700
+    }
+   ]
+  },
+  {
+   "id": "hire",
+   "when": "6 months before",
+   "mode": "dusk",
+   "object": "maker_tool",
+   "line": "Wrote the formulation chemist role, screened 37 applicants to four, and booked interviews around Aditi's and the lab's calendars.",
+   "tap": {
+    "who": "Vikram",
+    "what": "made the offer to Ritika",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "37 screened, 4 interviewed",
+     "at": [
+      0.52,
+      0.37
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "People",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:12 am",
+      "text": "Chemist role: 37 applicants in nine days. Four fit: cosmetic chemistry, matte bases, small batches."
+     },
+     {
+      "who": "Vikram",
+      "time": "10:20 am",
+      "text": "Get all four in this week."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:21 am",
+      "text": "Booked Tuesday and Wednesday around Aditi and the lab. Scorecards are in the OS. The other 33 have their replies."
+     }
+    ],
+    "os": {
+     "title": "Hiring: formulation chemist",
+     "cols": [
+      "Candidate",
+      "Stage",
+      "Score",
+      "Next"
+     ],
+     "rows": [
+      [
+       "Ritika S.",
+       "Interview",
+       "4.5 / 5",
+       "Tue 11:00"
+      ],
+      [
+       "Farhan Q.",
+       "Interview",
+       "4.2 / 5",
+       "Tue 15:00"
+      ],
+      [
+       "Meera J.",
+       "Interview",
+       "3.9 / 5",
+       "Wed 11:30"
+      ],
+      [
+       "Kunal B.",
+       "Interview",
+       "3.8 / 5",
+       "Wed 16:00"
+      ],
+      [
+       "33 others",
+       "Not a fit",
+       "",
+       "Replies sent"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Applicants",
+       "value": "37",
+       "source": "Naukri",
+       "fetched": "10:10 am"
+      },
+      {
+       "label": "Shortlisted to interview",
+       "value": "4",
+       "source": "Agent scorecards",
+       "fetched": "10:11 am"
+      },
+      {
+       "label": "Days open, target 30",
+       "value": "9",
+       "source": "OS hiring board",
+       "fetched": "10:11 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Role posted on Naukri, LinkedIn, IIM Jobs",
+     "37 applied → 4 shortlisted. Interviews thu/fri"
+    ],
+    "managing": [
+     "Waiting on Vikram: 1 tap"
+    ],
+    "monitoring": [
+     "New applicants on Naukri, hourly",
+     "Days open, daily",
+     "Interview no-shows, daily"
+    ]
+   },
+   "card": {
+    "area": "People",
+    "ask": "Make the formulation chemist offer. Ritika S. scored 4.5 of 5.",
+    "options": [
+     {
+      "label": "Ritika S., 4.5 / 5",
+      "recommended": true
+     },
+     {
+      "label": "Farhan Q., 4.2 / 5"
+     }
+    ],
+    "by": "Vikram",
+    "checker": "Aditi",
+    "action": "Make the offer",
+    "signal": "4 interviews done, scorecards in",
+    "osRow": 0
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "Step 1: NPD chemist",
+     "desc": "Owner: Vikram · due in 4 wks"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Role posted on Naukri, LinkedIn, IIM Jobs"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "37 applied → 4 shortlisted. Interviews thu/fri",
+     "ch": "people",
+     "media": {
+      "type": "doc",
+      "name": "chemist_shortlist.pdf",
+      "note": "4 of 37"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Ritika 4.5/5, built matte bases at a small lab. Send offer?",
+     "who": "Vikram",
+     "options": [
+      "send offer",
+      "see Farhan, 4.2"
+     ],
+     "ch": "people",
+     "media": {
+      "type": "doc",
+      "name": "ritika_cv.pdf",
+      "note": "4 yrs, matte bases"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Ritika signed. Starts Monday, 3 days early"
+    }
+   ],
+   "summary": "Nobody on the team can make the shade. Ritika can.",
+   "live": [
+    {
+     "beat": 5,
+     "type": "toast",
+     "where": "OS",
+     "title": "Step 1 done",
+     "text": "Ritika starts Monday. 3 days early."
+    }
+   ]
+  },
+  {
+   "id": "standup",
+   "when": "7 months before, 10:00 am",
+   "mode": "wire",
+   "object": "wireframe",
+   "line": "Played Aditi's voice note as item 1 at standup, took Naina's price and Arjun's heat constraint, and turned the yes into a four-step plan with owners and dates.",
+   "tap": {
+    "who": "Aditi",
+    "what": "said go on the plan",
+    "cost": "1 tap, 4 sec"
+   },
+   "tags": [
+    {
+     "text": "Project: Brick Dust",
+     "at": [
+      0.54,
+      0.38
+     ]
+    },
+    {
+     "text": "Owner: Aditi",
+     "at": [
+      0.72,
+      0.22
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Product call",
+    "chat": [
+     {
+      "who": "Aditi",
+      "time": "4:02 pm",
+      "text": "That voice note from last month. The old Delhi red. Let's make it."
+     },
+     {
+      "who": "Naina",
+      "time": "4:03 pm",
+      "text": "Matte, but not the drying kind. 46 reviews are asking for exactly that."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:05 pm",
+      "text": "Project opened: Brick Dust. Owner Aditi. Step one, hire a formulation chemist. Vikram has it."
+     }
+    ],
+    "os": {
+     "title": "Project: Brick Dust",
+     "cols": [
+      "Step",
+      "Owner",
+      "Due",
+      "Status"
+     ],
+     "rows": [
+      [
+       "Hire a formulation chemist",
+       "Vikram",
+       "In 4 weeks",
+       "Open"
+      ],
+      [
+       "Shade brief",
+       "Aditi",
+       "In 2 weeks",
+       "Open"
+      ],
+      [
+       "Tube and carton suppliers",
+       "Arjun",
+       "In 8 weeks",
+       "Not started"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Matte share of lipstick sales",
+       "value": "31%",
+       "source": "Shopify, last 90 days",
+       "fetched": "4:06 pm"
+      },
+      {
+       "label": "Reviews asking for a non-drying matte",
+       "value": "46",
+       "source": "Judge.me",
+       "fetched": "4:06 pm"
+      },
+      {
+       "label": "Meeting length",
+       "value": "38 min",
+       "source": "Google Meet",
+       "fetched": "4:41 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Item 1: Aditi's 12:52 note"
+    ],
+    "managing": [
+     "Waiting on Aditi: 1 tap"
+    ],
+    "monitoring": [
+     "Plan steps vs dates, daily",
+     "Owner replies, live"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "Item 1: Aditi's 12:52 note",
+     "who": "Aditi",
+     "desc": "0:16, played back",
+     "media": {
+      "type": "voice",
+      "len": "0:16"
+     }
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "899 max. above that they wait for a sale",
+     "who": "Naina",
+     "ch": "standup"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "bhai it has to survive a june van. 45° inside",
+     "who": "Arjun",
+     "ch": "standup"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Brick Dust · ₹899 · heat-tested · 6 months. Go?",
+     "who": "Aditi",
+     "options": [
+      "ok go",
+      "park it"
+     ],
+     "ch": "standup"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Plan: 4 steps, 4 owners, dates set",
+     "desc": "Chemist · samples · vendor · carton",
+     "media": {
+      "type": "photo",
+      "kit": "wireframe_ink",
+      "crop": [
+       0.3,
+       0.05,
+       0.7,
+       0.95
+      ]
+     }
+    }
+   ],
+   "summary": "Price and heat land on the table. Aditi says go in one tap.",
+   "live": [
+    {
+     "beat": 4,
+     "type": "stamp",
+     "key": "sketch",
+     "at": [
+      0.5,
+      0.78
+     ],
+     "text": "Rs 899, heat-tested",
+     "badge": "Go"
+    }
+   ]
+  },
+  {
+   "id": "voice",
+   "when": "7 months before, 12:52 am",
+   "mode": "dusk",
+   "night": true,
+   "object": "phone",
+   "tap": null,
+   "tags": [],
+   "surfaces": {
+    "thread": "Ideas",
+    "chat": [
+     {
+      "who": "Aditi",
+      "time": "12:52 am",
+      "text": "Can't sleep. That red on the old walls behind Chandni Chowk, just when the light goes. Not bright. Dusty, like brick. Find out if anyone's asked for something like that. Might just be me.",
+      "voice": true,
+      "length": "0:15"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:53 am",
+      "text": "Saved to Ideas as Old Delhi red. 17 customers asked for a dusty red in six months, so not just you. It's on next month's product call."
+     }
+    ],
+    "os": {
+     "title": "Ideas",
+     "cols": [
+      "Idea",
+      "From",
+      "Saved",
+      "Next"
+     ],
+     "rows": [
+      [
+       "Old Delhi red, a dusty matte",
+       "Aditi, voice note",
+       "12:53 am",
+       "Product call, next month"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Searches for brick red lipstick, Delhi",
+       "value": "Up 34% in 90 days",
+       "source": "Google Trends",
+       "fetched": "12:53 am"
+      },
+      {
+       "label": "Customers asking for a dusty red",
+       "value": "17",
+       "source": "Website chat, last 6 months",
+       "fetched": "12:53 am"
+      },
+      {
+       "label": "Matte reds in the range today",
+       "value": "0",
+       "source": "Shopify catalogue",
+       "fetched": "12:53 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "On it. Checking if it's just your DMs",
+     "Not just you. 1,240 searches/mo for brick red"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Website chat, every 15 min",
+     "Judge.me reviews, hourly",
+     "Searches for matte reds, daily"
+    ]
+   },
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "can't sleep. 3rd DM today: a red that won't go orange, under 900",
+     "who": "Aditi",
+     "media": {
+      "type": "voice",
+      "len": "0:16"
+     },
+     "desc": "Voice note, 0:16"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "On it. Checking if it's just your DMs",
+     "desc": "Saved as idea #41: Brick Dust"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Not just you. 1,240 searches/mo for brick red",
+     "desc": "64 DMs asked since June",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       1240,
+       610,
+       380
+      ],
+      "labels": [
+       "brick red",
+       "matte red",
+       "nude red"
+      ],
+      "unit": "/mo"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "On tomorrow's 10 am standup. Go sleep"
+    }
+   ],
+   "summary": "12:52 am. A red that won't go orange. Is it just her DMs?",
+   "live": [
+    {
+     "beat": 3,
+     "type": "toast",
+     "where": "Hub",
+     "title": "Overnight demand check",
+     "text": "1,240 searches a month. 64 DMs."
+    }
+   ]
+  }
+ ],
+ "voice": {
+  "who": "Aditi",
+  "time": "12:52 am",
+  "when": "7 months before",
+  "lead": "Before any of it, at 12:52 am, Aditi left herself a voice note.",
+  "words": "Can't sleep. Third girl in our DMs today: she wants a red that doesn't go orange on warm skin and doesn't dry out by lunch. The good ones are two thousand rupees. A dusty brick red, matte, under nine hundred. Check if it's just my DMs.",
+  "audio": null,
+  "length": "0:16"
+ },
+ "team": [
+  {
+   "name": "Aditi",
+   "role": "Founder",
+   "initial": "A",
+   "waiting": "1 shade to pick, 1 PO"
+  },
+  {
+   "name": "Naina",
+   "role": "Growth",
+   "initial": "N",
+   "waiting": "1 ad cut, 1 line of copy"
+  },
+  {
+   "name": "Arjun",
+   "role": "Warehouse",
+   "initial": "A",
+   "waiting": "9 boxes to scan"
+  },
+  {
+   "name": "Tanvi",
+   "role": "Quality",
+   "initial": "T",
+   "waiting": "1 batch to check"
+  },
+  {
+   "name": "Vikram",
+   "role": "People",
+   "initial": "V",
+   "waiting": "1 offer to make"
+  }
+ ],
+ "end": {
+  "line": "Aditi had the idea at 12:52 am. The chief of staff did the rest, and asked her team for 8 taps.",
+  "workspace": null
+ },
+ "page": {
+  "title": "Chief of Staff for brands and agencies",
+  "description": "An AI chief of staff that runs, manages and monitors a D2C brand. Watch it take one lipstick from a 12:52 am voice note to a doorstep in Saket, with 8 taps from people.",
+  "rewind_hint": "Scroll to rewind seven months",
+  "strip_label": "Chief of staff, on now",
+  "strip_modes": {
+   "running": "Running",
+   "managing": "Managing",
+   "monitoring": "Monitoring"
+  },
+  "counter": "Steps so far: {steps}. Taps by people: {taps}.",
+  "cta": {
+   "demo": "Try the demo",
+   "login": "Log in",
+   "plans": "See plans"
+  }
+ },
+ "sequences": {
+  "hire-formula": {
+   "from": "hire",
+   "to": "samples",
+   "dir": "scenes/ohra/seq/hire-formula",
+   "count": 96,
+   "source": "video (MiniMax H3 Max Turbo, start+end frames from the kit)"
+  }
+ },
+ "shipping": {
+  "to_name": "Customer, OH-20418",
+  "to_line": "Saket, New Delhi",
+  "pin": "110017",
+  "order": "OH-20418",
+  "courier": "Delhivery",
+  "service": "Surface",
+  "weight": "118 g",
+  "awb": "2841 7730 1962"
+ },
+ "audio": {
+  "voice-note": "assets/ohra/audio/voice-note.mp3",
+  "hire-ask": "assets/ohra/audio/hire-ask.mp3",
+  "hire-reply": "assets/ohra/audio/hire-reply.mp3",
+  "po-ask": "assets/ohra/audio/po-ask.mp3",
+  "po-reply": "assets/ohra/audio/po-reply.mp3",
+  "shoot-ask": "assets/ohra/audio/shoot-ask.mp3",
+  "shoot-reply": "assets/ohra/audio/shoot-reply.mp3",
+  "ad-ask": "assets/ohra/audio/ad-ask.mp3",
+  "ad-reply": "assets/ohra/audio/ad-reply.mp3",
+  "listing-ask": "assets/ohra/audio/listing-ask.mp3",
+  "listing-agency": "assets/ohra/audio/listing-agency.mp3",
+  "delivered-q": "assets/ohra/audio/delivered-q.mp3",
+  "delivered-a": "assets/ohra/audio/delivered-a.mp3",
+  "support-q": "assets/ohra/audio/support-q.mp3",
+  "support-a": "assets/ohra/audio/support-a.mp3",
+  "listing-reply": "assets/ohra/audio/listing-reply.mp3",
+  "ad-q": "assets/ohra/audio/ad-q.mp3",
+  "ad-a": "assets/ohra/audio/ad-a.mp3",
+  "standup-1": "assets/ohra/audio/voice-note.mp3",
+  "packed-ask": "assets/ohra/audio/packed-ask.mp3",
+  "packed-reply": "assets/ohra/audio/packed-reply.mp3",
+  "shoot-agency": "assets/ohra/audio/shoot-agency.mp3",
+  "packaging-agency": "assets/ohra/audio/packaging-agency.mp3",
+  "vendor-ask": "assets/ohra/audio/vendor-ask.mp3",
+  "vendor-reply": "assets/ohra/audio/vendor-reply.mp3",
+  "standup-2": "assets/ohra/audio/standup-2.mp3",
+  "standup-3": "assets/ohra/audio/standup-3.mp3",
+  "standup-ask": "assets/ohra/audio/standup-ask.mp3",
+  "standup-reply": "assets/ohra/audio/standup-reply.mp3",
+  "delivered-agency": "assets/ohra/audio/delivered-agency.mp3",
+  "support-agency": "assets/ohra/audio/support-agency.mp3",
+  "order-agency": "assets/ohra/audio/order-agency.mp3",
+  "ad-agency": "assets/ohra/audio/ad-agency.mp3",
+  "samples-agency": "assets/ohra/audio/samples-agency.mp3"
+ },
+ "channels": {
+  "voice": "aditi-notes",
+  "hire": "people",
+  "packaging": "studio-pell",
+  "po": "purchasing",
+  "shoot": "content",
+  "ad": "growth",
+  "listing": "studio-pell",
+  "support": "support",
+  "order": "support",
+  "packed": "warehouse",
+  "courier": "shipping",
+  "delivered": "growth",
+  "standup": "standup",
+  "samples": "npd",
+  "vendor": "purchasing"
+ },
+ "areas": {
+  "voice": "Ideas",
+  "hire": "Hiring",
+  "packaging": "Packaging",
+  "po": "Purchase orders",
+  "shoot": "Content",
+  "ad": "Ads",
+  "listing": "Website",
+  "support": "Orders",
+  "order": "Orders",
+  "packed": "Warehouse",
+  "courier": "Shipments",
+  "delivered": "Orders",
+  "standup": "Projects",
+  "samples": "Product",
+  "vendor": "Vendors"
+ },
+ "sources": {
+  "voice": "Google Trends",
+  "ad": "Meta Ads",
+  "listing": "Reviews",
+  "support": "WhatsApp",
+  "courier": "Shiprocket",
+  "delivered": "Delhivery",
+  "po": "Quotes",
+  "packed": "Stock",
+  "samples": "QC log",
+  "vendor": "Quotes"
+ }
+}

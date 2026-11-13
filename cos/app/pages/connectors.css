@@ -1,0 +1,13 @@
+/* connectors.css: Hub > Live data. Builds on hub.css tiles; only the source switch and the settings form are new. */
+.cx-seg { display: inline-flex; align-self: flex-start; padding: 2px; margin-top: 4px; border: 1px solid var(--line-2); border-radius: 999px; }
+.cx-seg button { min-height: 30px; padding: 0 14px; border: 0; border-radius: 999px; background: none; font: 500 12.5px/1 var(--f-body); color: var(--muted); cursor: pointer; }
+.cx-seg button[aria-pressed="true"] { background: var(--raise); color: var(--ink); }
+.cx-seg button:disabled { cursor: not-allowed; opacity: .55; }
+.cx-fix { font-size: 12.5px; }
+.cx-form { display: grid; gap: 12px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+.cx-form small { font-weight: 400; font-size: 12px; line-height: 1.4; }
+.cx-form input { font-family: var(--f-mono, monospace); font-size: 13px; min-width: 0; }
+.cx-keystate { font-weight: 400; font-size: 12px; margin-left: 4px; }
+.cx-hook { font-size: 12.5px; overflow-wrap: anywhere; }
+.cx-acts { margin-top: 28px; }
+.cx .tbl { min-width: 560px; }

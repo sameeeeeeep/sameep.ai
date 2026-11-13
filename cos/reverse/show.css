@@ -1,0 +1,345 @@
+/* show.css: the v4 show. Two objects on a plain dark stage: the scene as a framed print (behind, left, tilted in 3D,
+   captioned with time + title) and, in front of it, the brandcos window as a device-like panel
+   (tokens and building blocks copied from ../app/app.css and pages/{today,chats,os,hub}.css) with the chief of
+   staff's presence strip, four real tabs (Feed, Chat, OS, Hub) and the one decision card (.cos-card) that every
+   surface shares. Type: Inter, Spline Sans Mono for times and counts. Inside the window two sizes: 15px and
+   12.5px. On the print: 24px and 12.5px. Lime only on the button you press. */
+:root {
+  color-scheme: dark;
+  --bg: #0b0c0a; --card: #131411; --card-2: #191a17; --raise: #1f201c;
+  --line: rgba(236, 235, 228, .085); --line-2: rgba(236, 235, 228, .16);
+  --ink: #ecebe4; --ink-2: #c9c8c0; --muted: #8b8a82; --faint: #5f5e58;
+  --acc: #c8f04a; --acc-ink: #121409; --acc-hover: #d6f770;
+  --ok: #8ccf8a; --warn: #f0a35a; --agent-ink: #d6d8d0;
+  --f-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --f-mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
+  --s1: 15px; --s2: 12.5px;
+  --gut: 40px;
+  --win-w: clamp(760px, 56vw, 840px);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 400 15px/1.5 var(--f-body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+p, h1, h2, h3, ul, ol { margin: 0; }
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.skip { position: absolute; left: -9999px; top: 8px; z-index: 50; padding: 8px 12px; border-radius: 8px; background: var(--ink); color: var(--bg); }
+.skip:focus { left: 8px; }
+.msg { padding: 40px 16px; color: var(--muted); }
+
+/* ---------- the sticky stage: a plain dark floor holding two objects ---------- */
+#track { position: relative; }
+#stage {
+  position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg);
+  --wave: 0; --drift: 0;
+  --pw: clamp(300px, 34vw, 520px);   /* the print's width */
+  --ov: 72px;                        /* how far the window lies over the print */
+  --grp: calc(var(--pw) + var(--win-w) - var(--ov));
+  --side: max(24px, calc((100% - var(--grp)) / 2));
+}
+
+/* object 1: the scene as a framed print, behind and to the left, turned a few degrees toward the window */
+.sv-print {
+  position: absolute; z-index: 2; left: var(--side); top: 50%; width: var(--pw);
+  padding: 10px 10px 0; border: 1px solid rgba(236, 235, 228, .14); border-radius: 10px; background: #151613;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, .55), 0 2px 6px rgba(0, 0, 0, .4);
+  transform-origin: 70% 50%;
+  transform: perspective(1800px)
+    translateY(calc(-53% + var(--drift) * -36px + var(--wave) * -16px))
+    rotateY(calc(9deg + var(--wave) * 3deg)) rotateX(2deg) rotateZ(-1.2deg);
+  will-change: transform;
+}
+.sv-shot { position: relative; aspect-ratio: 4 / 3; border-radius: 4px; overflow: hidden; background: #1c1d1a; }
+.sv-shot img, .sv-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.92); }
+.sv-shot.no-image img { visibility: hidden; }
+/* the scene's loop lies over the still and is shown only while it plays: a hard cut, never a fade */
+.sv-vid { display: block; visibility: hidden; pointer-events: none; }
+.sv-shot.has-vid .sv-vid { visibility: visible; }
+/* its caption: the time and what this is, written on the print (two sizes: 24px and 12.5px) */
+.sv-cap { display: grid; gap: 6px; padding: 16px 6px 18px; max-width: calc(100% - var(--ov) - 4px); }
+.sv-cap-w { font: 400 var(--s2)/1.45 var(--f-mono); color: var(--ink-2); }
+.sv-cap-t { font: 500 24px/1.2 var(--f-body); letter-spacing: -.015em; color: var(--ink); text-wrap: balance; }
+.sv-cap-n { margin-top: 6px; font: 400 var(--s2)/1.45 var(--f-mono); color: var(--muted); }
+.sv-cap-w:empty { display: none; }
+.sv-prog { height: 2px; border-radius: 2px; background: rgba(236, 235, 228, .14); overflow: hidden; }
+.sv-prog i { display: block; height: 100%; width: 100%; background: var(--ink-2); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform .3s ease; }
+
+/* object 2: the brandcos window, in front, a device-like panel with a bezel */
+.sv-win {
+  position: absolute; z-index: 3; right: var(--side); width: var(--win-w);
+  top: max(28px, calc((100% - 880px) / 2)); bottom: max(28px, calc((100% - 880px) / 2));
+  display: flex; flex-direction: column; min-height: 0;
+  border: 7px solid #191a17; border-radius: 22px; background: var(--bg); overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(236, 235, 228, .12), 0 40px 90px rgba(0, 0, 0, .6), 0 4px 12px rgba(0, 0, 0, .45);
+  font-size: var(--s1); line-height: 1.55;
+  transform: translateY(calc(var(--drift) * 14px + var(--wave) * 7px));
+  will-change: transform;
+}
+.mono { font-family: var(--f-mono); font-size: var(--s2); }
+.muted { color: var(--muted); }
+
+.sv-bar { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 58px; padding: 0 20px; border-bottom: 1px solid var(--line); }
+.sv-crumbs { display: flex; align-items: center; gap: 9px; min-width: 0; white-space: nowrap; }
+.sv-logo { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--ink); color: var(--bg); font-weight: 600; }
+.sv-crumbs b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.sv-sep { color: var(--faint); }
+.sv-sec { color: var(--ink-2); }
+.sv-clock { display: inline-flex; align-items: center; height: 28px; padding: 0 11px; border: 1px solid var(--line-2); border-radius: 999px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+
+/* presence: the chief of staff, always on */
+.sv-pres { flex: none; position: relative; padding: 14px 20px 14px; border-bottom: 1px solid var(--line); background: var(--card); }
+.pr-row { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.pr-who { display: flex; align-items: center; gap: 9px; margin-right: auto; min-width: 0; }
+.pr-mark, .cc-mark, .fp-av, .ch-av { flex: none; display: grid; place-items: center; border-radius: 7px; background: var(--ink); color: var(--bg); font-weight: 600; }
+.pr-mark { width: 26px; height: 26px; }
+.pr-who b { font-weight: 600; }
+.pr-modes { display: flex; gap: 6px; }
+.pr-m { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 13px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--card-2); color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.pr-m:hover { color: var(--ink); border-color: var(--ink-2); }
+.pr-m[aria-expanded="true"] { color: var(--ink); background: var(--raise); border-color: var(--ink-2); }
+.pr-m .n { color: var(--ink); }
+.pr-now { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; align-items: baseline; margin-top: 12px; }
+.pr-k { color: var(--muted); }
+.pr-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--agent-ink); }
+.pr-bar { grid-column: 1 / -1; height: 2px; margin-top: 10px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.pr-bar i { display: block; height: 100%; width: 100%; background: var(--ink-2); transform: scaleX(0); transform-origin: left; }
+.pr-bar.go i { transform: scaleX(1); transition: transform 2.4s linear; }
+.pr-list { position: absolute; left: 12px; right: 12px; top: calc(100% - 4px); z-index: 6; padding: 12px 14px; list-style: none; border: 1px solid var(--line-2); border-radius: 12px; background: var(--card-2); box-shadow: 0 18px 40px rgba(0, 0, 0, .5); display: grid; gap: 7px; }
+.pr-list li { display: grid; grid-template-columns: 18px minmax(0, 1fr); color: var(--ink-2); }
+.pr-list li::before { content: ''; width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: var(--faint); }
+.pr-list .pr-lh { display: block; grid-template-columns: none; color: var(--muted); }
+.pr-list .pr-lh::before { display: none; }
+/* reduced motion: the three lists, standing still */
+.pr-static { display: none; }
+.still .pr-now { display: none; }
+.still .pr-static { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
+.pr-static ul { list-style: none; padding: 0; display: grid; gap: 3px; color: var(--ink-2); }
+.pr-static p { color: var(--muted); }
+
+/* tabs (app .tabs) */
+.sv-tabs { flex: none; display: flex; gap: 4px; padding: 10px 16px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.sv-tabs button { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 15px; border: 0; border-radius: 10px; background: none; color: var(--muted); font-weight: 500; cursor: pointer; white-space: nowrap; }
+.sv-tabs button:hover { color: var(--ink); }
+.sv-tabs button[aria-selected="true"] { color: var(--ink); background: var(--raise); }
+.tab-n { min-width: 20px; padding: 0 6px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--ink-2); font: 400 var(--s2)/1.55 var(--f-mono); text-align: center; }
+
+.sv-body { flex: 1; min-height: 0; position: relative; }
+.sv-panel { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: auto; padding: 22px 24px 32px; scrollbar-width: thin; scrollbar-color: var(--raise) transparent; }
+.sv-ph { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+.sv-ph b { font-weight: 600; }
+
+/* ---------- Feed ---------- */
+.feed { list-style: none; padding: 0; display: grid; gap: 18px; }
+.fp { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 14px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.fp.is-new { animation: fp-in .32s cubic-bezier(.16, 1, .3, 1); }
+@keyframes fp-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.fp.is-gone { opacity: .28; }
+.fp-av { width: 32px; height: 32px; }
+.fp-av.is-person { background: var(--raise); color: var(--ink); border: 1px solid var(--line-2); border-radius: 50%; }
+.fp-main { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.fp-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.fp-h b { font-weight: 600; }
+.fp-area { color: var(--muted); }
+.fp-h time { margin-left: auto; color: var(--muted); }
+.fp-row { display: grid; grid-template-columns: minmax(0, 1fr) 128px; gap: 16px; align-items: start; }
+.fp-t { color: var(--agent-ink); }
+.fp-thumb { width: 128px; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--card-2); border: 1px solid var(--line); }
+.fp-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fp-tags { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.fp-tags li { padding: 2px 9px; border-radius: 6px; background: var(--raise); border: 1px solid var(--line-2); color: var(--ink-2); font: 400 var(--s2)/1.6 var(--f-mono); }
+.fp-reply { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--agent-ink); }
+.fp-reply .fp-av { width: 22px; height: 22px; border-radius: 6px; font-size: var(--s2); }
+
+/* the voice note */
+.vn { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card-2); min-width: 0; }
+.vn-play { flex: none; min-width: 66px; height: 32px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--raise); font-weight: 600; cursor: pointer; }
+.vn-play:hover { border-color: var(--ink); }
+.vn-bars { flex: 1 1 0; width: 0; min-width: 0; height: 28px; }
+.vn-bars rect { fill: var(--faint); }
+.vn-bars rect.on { fill: var(--ink); }
+.vn-time { flex: none; color: var(--muted); }
+.vn-words { color: var(--muted); }
+.vn-words .w.lit { color: var(--ink); }
+
+/* ---------- Chat ---------- */
+.ch-msgs { list-style: none; padding: 0; display: grid; gap: 22px; }
+.ch-msg > div { min-width: 0; }
+.ch-msg { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; min-width: 0; }
+.ch-av { width: 30px; height: 30px; }
+.ch-av.is-person { border-radius: 50%; background: var(--raise); color: var(--ink); border: 1px solid var(--line-2); }
+.ch-msg-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.ch-msg-h b { font-weight: 600; }
+.ch-msg-h .mono { color: var(--faint); }
+.ch-body { margin-top: 2px; overflow-wrap: anywhere; }
+.ch-msg.is-agent .ch-body { color: var(--agent-ink); }
+.ch-msg .cos-card, .ch-msg .vn { margin-top: 12px; }
+
+/* ---------- OS ---------- */
+.tbl-wrap { border: 1px solid var(--line); border-radius: 14px; background: var(--card); overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th { text-align: left; font-weight: 500; font-size: var(--s2); color: var(--muted); padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--card-2); white-space: nowrap; }
+.tbl td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl tr.is-here td { background: var(--card-2); }
+.tbl tr.is-here td:first-child { box-shadow: inset 2px 0 0 var(--ink-2); }
+.tbl td.att { padding: 6px 14px 16px; background: var(--card-2); }
+.att-l { margin-bottom: 8px; color: var(--muted); }
+.os-meta { margin-top: 14px; color: var(--muted); }
+
+/* ---------- Hub ---------- */
+.kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.kpi { display: grid; align-content: start; gap: 6px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); min-width: 0; }
+.kpi-l { color: var(--muted); font-size: var(--s2); }
+.kpi-v { font: 500 var(--s1)/1.3 var(--f-mono); color: var(--ink); overflow-wrap: anywhere; }
+.kpi-s { font: 400 var(--s2)/1.4 var(--f-mono); color: var(--muted); }
+.hub-sec { margin-top: 26px; }
+.hub-sec > p { margin-bottom: 10px; font-weight: 600; }
+.watch { list-style: none; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.watch li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+.watch li + li { border-top: 1px solid var(--line); }
+.watch .mono { color: var(--muted); white-space: nowrap; }
+.raised { margin-bottom: 8px; color: var(--muted); }
+
+/* ---------- the one decision card ---------- */
+.cos-card { max-width: 600px; padding: 16px 18px; border: 1px solid var(--line-2); border-radius: 12px; background: var(--card-2); display: grid; gap: 12px; min-width: 0; }
+.cc-h { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.cc-mark { width: 22px; height: 22px; border-radius: 6px; font-size: var(--s2); }
+.cc-who { display: flex; flex-wrap: wrap; gap: 0 8px; min-width: 0; margin-right: auto; }
+.cc-who b { font-weight: 600; }
+.cc-area { color: var(--muted); }
+.cc-st { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--line-2); font: 400 var(--s2)/1.9 var(--f-mono); color: var(--ink-2); white-space: nowrap; }
+.cc-st::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); }
+.cos-card[data-state="done"] .cc-st::before { background: var(--ok); }
+.cc-ask { font-weight: 500; color: var(--ink); }
+.cc-opts { display: grid; gap: 8px; }
+.cc-opt { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 9px; background: var(--card); text-align: left; cursor: pointer; }
+.cc-opt::before { content: ''; flex: none; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--line-2); }
+.cc-opt[aria-checked="true"] { border-color: var(--ink-2); background: var(--raise); }
+.cc-opt[aria-checked="true"]::before { border: 4px solid var(--ink); }
+.cc-opt:hover:not([disabled]) { border-color: var(--ink-2); }
+.cc-opt[disabled] { cursor: default; }
+.cos-card[data-state="done"] .cc-opt[aria-checked="false"] { color: var(--muted); }
+.cc-ol { flex: 1; min-width: 0; }
+.cc-rec { flex: none; padding: 0 7px; border-radius: 6px; border: 1px solid var(--line-2); font: 400 var(--s2)/1.7 var(--f-mono); color: var(--ink-2); }
+.cc-f { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.cc-go { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 16px; border-radius: 9px; border: 1px solid var(--acc); background: var(--acc); color: var(--acc-ink); font-weight: 600; cursor: pointer; transition: transform .14s ease, background .14s ease; }
+.cc-go:hover { background: var(--acc-hover); }
+.cos-card[data-state="pressing"] .cc-go { transform: scale(.95); background: #a9cf2e; }
+.cc-for { color: var(--muted); }
+.cc-done { color: var(--ink); }
+.cc-chk { color: var(--muted); margin-top: -6px; }
+.cos-card[data-state="done"] .cc-f { display: none; }
+
+/* ---------- the ending sits after the track ---------- */
+#end { position: relative; z-index: 4; background: var(--bg); }
+
+/* ---------- narrower desktops: the print tucks further under the window ---------- */
+@media (max-width: 1100px) and (min-width: 761px) {
+  :root { --win-w: min(760px, calc(100vw - 210px)); }
+  #stage { --pw: clamp(260px, 38vw, 400px); }
+}
+
+/* ---------- phones: the print, smaller, lies over the top edge of the window ---------- */
+@media (max-width: 760px) {
+  :root { --gut: 16px; --win-w: auto; --s1: 15px; }
+  #stage { --pw: min(66vw, 258px); --ov: 0px; --mtop: 200px; } /* --mtop is set from the print's height (layout()) */
+  /* on a phone the print lies in front, across the window's top-right edge, clear of the brand name */
+  .sv-print {
+    z-index: 4; left: auto; right: 14px; top: 10px; padding: 7px 7px 0; border-radius: 8px;
+    transform-origin: 50% 100%;
+    /* per mix (below): --mx 0 = right edge, 1 = left edge, .5 = centred; --ms its size; the tilt mirrors with the side.
+       On the left the print would sit on the brand name, so it lifts (--my) and lies over less of the window's bar */
+    transform: perspective(1200px)
+      translate(calc(var(--mx, 0) * (var(--pw) + 28px - 100vw)), var(--my, 0px))
+      rotateY(var(--mry, -6deg)) rotateX(3deg) rotateZ(var(--mrz, 2deg)) scale(var(--ms, 1));
+    translate: 0 calc(var(--drift) * -10px + var(--wave) * -8px);
+    transition: transform var(--cam) var(--ease);
+  }
+  #stage[data-mix="scene-r"] { --mx: 1; --my: -9px; --mry: 6deg;  --mrz: -2deg; --ms: .94; }
+  #stage[data-mix="scene-l"] { --mx: 0; }
+  #stage[data-mix="app-l"]   { --mx: 1; --my: -9px; --mry: 5deg;  --mrz: -3deg; --ms: .84; }
+  #stage[data-mix="app-r"]   { --mx: 0; --mry: -5deg; --mrz: 3deg;  --ms: .86; }
+  #stage[data-mix="center"]  { --mx: .5; --my: -4px; --mry: 0deg; --mrz: 0deg; }
+  .sv-shot { aspect-ratio: 16 / 9; border-radius: 3px; }
+  /* the window covers the print's bottom strip, so the caption keeps its words above it */
+  .sv-cap { gap: 2px; padding: 8px 3px 11px; max-width: none; }
+  /* two lines held for every title, so the print keeps one size from stage to stage */
+  .sv-cap-t { font-size: 17px; line-height: 1.25; min-height: 2.5em; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .sv-cap-n, .sv-prog { display: none; }
+  .sv-win {
+    top: var(--mtop); bottom: 12px; left: 16px; right: 16px; width: auto;
+    border-width: 5px; border-radius: 18px;
+    transform: translateY(calc(var(--drift) * 6px + var(--wave) * 4px));
+  }
+  .sv-bar { height: 50px; padding: 0 14px; }
+  .sv-clock { display: none; } /* the print's caption carries the time on a phone */
+  .sv-pres { padding: 10px 12px 11px; }
+  .pr-who { display: none; }
+  .pr-modes { width: 100%; }
+  .pr-m { flex: 1 1 0; justify-content: center; padding: 0 6px; gap: 5px; min-width: 0; height: 32px; font-size: var(--s2); }
+  .pr-now { margin-top: 9px; }
+  .sv-tabs { padding: 6px 8px; }
+  .sv-tabs button { flex: 1 1 0; justify-content: center; padding: 0 6px; height: 34px; }
+  .sv-panel { padding: 14px 12px 22px; }
+  .feed { gap: 12px; }
+  .fp { grid-template-columns: minmax(0, 1fr); padding: 14px; gap: 10px; }
+  .fp > .fp-av { display: none; }
+  .fp-main { gap: 10px; }
+  .fp-row { grid-template-columns: minmax(0, 1fr) 76px; gap: 12px; }
+  .fp-thumb { width: 76px; }
+  .cos-card { padding: 13px 13px; }
+  .still .pr-static { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .tbl th, .tbl td { padding: 9px 10px; }
+  .ch-msgs { gap: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fp.is-new { animation: none; }
+  .sv-print, .sv-win { will-change: auto; }
+  .pr-bar.go i, .sv-prog i, .cc-go { transition: none; }
+}
+
+/* ---------- variable mix (Sameep): the two objects are re-composed per stage, and glide between compositions.
+   Each mix is only numbers (where each object sits, how big, how tilted). The mix lives in `transform`, which is
+   the only thing that transitions; the scroll drift lives in the separate `translate` property, so it follows the
+   scroll directly and never restarts the move. One long ease-in-out shared by both objects reads as one camera
+   move; the window starts 80 ms after the print, so the nearer object trails the farther one (depth).
+   Phones keep their layout; only the print changes side and size (in the phone block above). ---------- */
+#stage { --cam: 1.35s; --ease: cubic-bezier(.58, .04, .16, 1); --lag: 80ms; }
+@media (min-width: 761px) {
+  #stage { --pw: min(1100px, 78vw); }
+  .sv-print, .sv-win { left: 50%; top: 50%; right: auto; bottom: auto; }
+  .sv-print { width: var(--pw); padding: 12px; border-radius: 14px; transform-origin: 50% 50%;
+    transform: perspective(2200px) translate(-50%, -50%)
+      translate(calc(var(--px, 0) * 1vw), calc(var(--py, 0) * 1vh))
+      rotateX(var(--prx, 0deg)) rotateY(var(--pry, 0deg)) rotateZ(var(--prz, 0deg)) scale(var(--ps, 1));
+    translate: 0 calc(var(--drift) * -18px);
+    z-index: var(--pz, 1);
+    /* the print drops behind the window at once, and comes in front only when it has landed on the corner */
+    transition: transform var(--cam) var(--ease), z-index 0s; }
+  #stage[data-mix^="app"] .sv-print { transition: transform var(--cam) var(--ease), z-index var(--cam) steps(1, end); }
+  .sv-shot { aspect-ratio: 16 / 9; border-radius: 6px; }
+  .sv-shot img, .sv-vid { transition: filter var(--cam) var(--ease); filter: brightness(var(--pb, .7)); }
+  .sv-cap { position: absolute; left: 28px; bottom: 24px; max-width: 34%; padding: 0; gap: 8px; text-shadow: 0 1px 12px rgba(0,0,0,.65); }
+  .sv-win { width: 700px; height: min(800px, calc(100vh - 72px));
+    transform: perspective(2200px) translate(-50%, -50%)
+      translate(calc(var(--wx, 0) * 1vw), calc(var(--wy, 0) * 1vh))
+      rotateY(var(--wry, 0deg)) scale(var(--ws, 1));
+    translate: 0 calc(var(--drift) * 12px);
+    z-index: var(--wz, 3);
+    transition: transform var(--cam) var(--ease) var(--lag); }
+
+  /* A: the scene is the big object, the window floats in front, off to one side */
+  #stage[data-mix="scene-r"] { --px: -6; --ps: 1;   --prx: 6deg; --pb: .78; --wx: 22; --ws: .86; --wry: -6deg; }
+  #stage[data-mix="scene-l"] { --px: 6;  --ps: 1;   --prx: 6deg; --pb: .78; --wx: -22; --ws: .86; --wry: 6deg; }
+  /* B: the app is the big object; the scene becomes a small print laid over the window's corner, in front */
+  #stage[data-mix="app-l"]   { --px: -24; --py: -20; --ps: .34; --prz: -4deg; --pry: 10deg; --pz: 4; --pb: .95; --wx: 4; --ws: 1; }
+  #stage[data-mix="app-r"]   { --px: 24;  --py: 18;  --ps: .34; --prz: 3deg;  --pry: -10deg; --pz: 4; --pb: .95; --wx: -4; --ws: 1; }
+  /* C: the opening and the voice note. The scene stays the room: big, bright enough to read (.8), the window
+     smaller and set down and to the right of centre, so the picture shows around it and its caption stays clear */
+  #stage[data-mix="center"]  { --px: -4; --py: -2; --ps: .94; --prx: 7deg; --pb: .8; --wx: 15; --wy: 6; --ws: .78; --wry: -3deg; }
+  .sv-cap { transition: opacity .5s ease; }
+  #stage[data-mix^="app"] .sv-cap { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .sv-print, .sv-win, .sv-shot img, .sv-vid { transition: none !important; } }
+.still .sv-print, .still .sv-win, .still .sv-shot img { transition: none !important; }

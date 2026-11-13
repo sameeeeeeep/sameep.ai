@@ -1,0 +1,202 @@
+/* ending.js: the show's last beat. After the story closes on the delivered box, the company's own team
+   appears face-down (brand name + role) and the cards turn over one by one as they scroll into view, each
+   revealing that person's login, styled like the brandcos app. Then three CTAs.
+
+   window.renderEnding(config, root) appends one <section class="fin"> to root and returns it.
+   Data: config.team = [{ name, role, initial, waiting, email? }], config.end = { line, workspace, links? }.
+   "Log in as <name>" goes to the real sign-in (../app/, email -> 6-digit code, POST /d2c-api/auth/login + verify)
+   when end.workspace is set: ../app/?email=<email>#/w/<workspace>/today. ?email fills the address in (the app's
+   invite path) and the hash survives sign-in, so the person lands in that workspace. A fictional brand
+   (no workspace) falls back to ../app/#demo?brand=<config.id>, and the page says so.
+
+   Motion: the cards turn with CSS 3D in sequence (the same "light up as named, in order" beat as the topic
+   cards on sameep.ai, with its ease-out curve). Reduced motion (or html.still): face-up from the start, no turn.
+   Keyboard: focusing a face-down card's login turns it at once, so nothing focusable is ever hidden. */
+(function () {
+  'use strict';
+
+  function str(v, d) { return typeof v === 'string' && v.trim() ? v.trim() : (d || ''); }
+  function h(tag, cls, text) {
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+  function still() {
+    var s = false;
+    try { s = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* old browser */ }
+    return s || document.documentElement.classList.contains('still') || /[?&]still\b/.test(location.search);
+  }
+
+  function loginHref(member, end, demo) {
+    var ws = str(end.workspace);
+    if (!ws) return demo;
+    var email = str(member.email);
+    return '../app/' + (email ? '?email=' + encodeURIComponent(email) : '') + '#/w/' + encodeURIComponent(ws) + '/today';
+  }
+
+  function card(m, i, brand, end, demo) {
+    var name = str(m.name, 'Teammate');
+    var role = str(m.role);
+    var li = h('li', 'fin-card');
+    li.style.setProperty('--i', i);
+    var flip = h('div', 'fin-flip');
+
+    // face-down: the brand and the seat, nothing else. Decorative for screen readers (the face-up side says it all).
+    var back = h('div', 'fin-face fin-back');
+    back.setAttribute('aria-hidden', 'true');
+    back.appendChild(h('span', 'fin-brand', brand));
+    if (role) back.appendChild(h('span', 'fin-seat', role));
+    flip.appendChild(back);
+
+    // face-up: the person's app card
+    var front = h('div', 'fin-face fin-front');
+    var top = h('div', 'fin-top');
+    top.appendChild(h('span', 'fin-av', str(m.initial, name.charAt(0)).slice(0, 2).toUpperCase())).setAttribute('aria-hidden', 'true');
+    var who = h('div', 'fin-who');
+    who.appendChild(h('p', 'fin-name', name));
+    if (role) who.appendChild(h('p', 'fin-role', role));
+    top.appendChild(who);
+    front.appendChild(top);
+    if (str(m.waiting)) {
+      var w = h('p', 'fin-wait');
+      w.appendChild(h('span', 'fin-wait-k', 'Waiting'));
+      w.appendChild(h('span', 'fin-wait-v', m.waiting));
+      front.appendChild(w);
+    }
+    var a = h('a', 'fin-btn', 'Log in as ' + name);
+    a.href = loginHref(m, end, demo);
+    a.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault(); openLogin(m, brand, a.href, demo);
+    });
+    front.appendChild(a);
+    flip.appendChild(front);
+
+    li.appendChild(flip);
+    return li;
+  }
+
+  /* the login, full screen: the person's bubble in the middle, the rest of the team popping in around it,
+     the code filling itself, then a choice: see the demo, or go back */
+  var TEAM = [];
+  function bubble(m, cls) {
+    var b = h('span', 'lg-bub ' + (cls || ''));
+    if (str(m.photo)) { var im = h('img'); im.src = m.photo; im.alt = ''; b.appendChild(im); }
+    else b.textContent = str(m.initial, str(m.name, '?').charAt(0)).slice(0, 2).toUpperCase();
+    return b;
+  }
+  function openLogin(m, brand, href, demo) {
+    var old = document.getElementById('lg'); if (old) old.remove();
+    var ov = h('div', 'lg' + (still() ? ' lg-still' : '')); ov.id = 'lg';
+    ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Log in as ' + str(m.name));
+    var ring = h('div', 'lg-ring');
+    var others = TEAM.filter(function (x) { return x !== m; });
+    others.forEach(function (x, i) {
+      var b = bubble(x, 'lg-other'); var a = -Math.PI + ((i + 0.5) / Math.max(1, others.length)) * Math.PI;   /* an arc over the top */
+      b.style.setProperty('--x', (Math.cos(a) * Math.min(190, innerWidth * .38)).toFixed(0) + 'px'); b.style.setProperty('--y', (Math.sin(a) * Math.min(150, innerWidth * .34)).toFixed(0) + 'px');
+      b.style.setProperty('--d', (0.25 + i * 0.12) + 's');
+      var tag = h('span', 'lg-tag', str(x.name)); b.appendChild(tag);
+      ring.appendChild(b);
+    });
+    var me = bubble(m, 'lg-me'); ring.appendChild(me);
+    ov.appendChild(ring);
+    var box = h('div', 'lg-box');
+    box.appendChild(h('p', 'lg-name', str(m.name)));
+    box.appendChild(h('p', 'lg-role', str(m.role) + ', ' + brand));
+    var mail = h('p', 'lg-mail', str(m.email, str(m.name).toLowerCase().replace(/[^a-z]/g, '') + '@' + brand.toLowerCase().replace(/[^a-z]/g, '') + '.example'));
+    box.appendChild(mail);
+    var code = h('div', 'lg-code'); var digits = [];
+    for (var i = 0; i < 6; i++) { var d = h('span', 'lg-d'); code.appendChild(d); digits.push(d); }
+    box.appendChild(code);
+    var status = h('p', 'lg-status', 'Code sent to your email');
+    box.appendChild(status);
+    var row = h('div', 'lg-ctas');
+    var go = h('a', 'lg-go', 'See the demo'); go.href = href || demo;
+    var back = h('button', 'lg-back', 'Back'); back.type = 'button';
+    back.addEventListener('click', function () { ov.classList.add('lg-out'); setTimeout(function () { ov.remove(); }, 300); });
+    row.appendChild(go); row.appendChild(back);
+    box.appendChild(row);
+    ov.appendChild(box);
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('lg-in'); });
+    var c = '482913'.split(''), k = 0;
+    var timer = setInterval(function () {
+      if (k < 6) { digits[k].textContent = c[k]; digits[k].classList.add('on'); k++; return; }
+      clearInterval(timer); status.textContent = 'Signed in'; ov.classList.add('lg-done'); go.focus();
+    }, still() ? 1 : 170);
+    addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { back.click(); removeEventListener('keydown', esc); } });
+  }
+
+  window.renderEnding = function (config, root) {
+    var c = config && typeof config === 'object' ? config : {};
+    var end = c.end && typeof c.end === 'object' ? c.end : {};
+    var links = end.links && typeof end.links === 'object' ? end.links : {};
+    var brand = str(c.brand && c.brand.name, 'Your brand');
+    var team = Array.isArray(c.team) ? c.team.filter(function (m) { return m && str(m.name); }).slice(0, 8) : [];
+    TEAM = team;
+    // the demo continues the show: a well-formed brand id rides along (../app/#demo?brand=<id>)
+    var id = /^[a-z0-9][a-z0-9-]{1,23}$/.test(str(c.id)) ? str(c.id) : '';
+    var demo = str(links.demo, '../app/#demo' + (id ? '?brand=' + id : ''));
+    var calm = still();
+
+    var sec = h('section', 'fin' + (calm ? ' fin-still' : ''));
+    sec.id = 'fin';
+    sec.setAttribute('aria-labelledby', 'fin-h');
+    var inner = h('div', 'fin-in');
+
+    var hd = h('h2', 'fin-line', str(end.line, 'She had the idea. Everything after it got done.'));
+    hd.id = 'fin-h';
+    inner.appendChild(hd);
+
+    var cards = [];
+    if (team.length) {
+      inner.appendChild(h('p', 'fin-sub', brand + '’s team. Each of them has their own login.'));
+      var ul = h('ul', 'fin-team');
+      ul.style.setProperty('--n', team.length);
+      ul.setAttribute('data-n', String(team.length));
+      ul.setAttribute('aria-label', brand + ' team logins');
+      team.forEach(function (m, i) { var li = card(m, i, brand, end, demo); cards.push(li); ul.appendChild(li); });
+      inner.appendChild(ul);
+      if (!str(end.workspace)) inner.appendChild(h('p', 'fin-sub fin-note', brand + ' is a sample brand, so each login opens the demo workspace.'));
+    }
+
+    var row = h('div', 'fin-ctas');
+    [['Try the demo', demo, 'fin-cta is-main'],
+     ['See plans', str(links.plans, '../plans/'), 'fin-cta'],
+     ['Talk to us', str(links.talk, '../plans/#enquire'), 'fin-cta']].forEach(function (b) {
+      var a = h('a', b[2], b[0]);
+      a.href = b[1];
+      row.appendChild(a);
+    });
+    inner.appendChild(row);
+    sec.appendChild(inner);
+    if (root && root.appendChild) root.appendChild(sec);
+
+    // ---- the turn ----
+    function up(li) { if (!li.classList.contains('is-up')) li.classList.add('is-up'); }
+    if (calm || !('IntersectionObserver' in window)) { cards.forEach(up); return sec; }
+
+    var queue = [], timer = null;
+    function tick() {
+      var li = queue.shift();
+      if (!li) { timer = null; return; }
+      up(li);
+      timer = setTimeout(tick, 190);
+    }
+    function enqueue(li) {
+      if (li.classList.contains('is-up') || queue.indexOf(li) > -1) return;
+      queue.push(li);
+      queue.sort(function (a, b) { return cards.indexOf(a) - cards.indexOf(b); });
+      if (!timer) timer = setTimeout(tick, 120);
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { enqueue(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.6 });
+    cards.forEach(function (li) {
+      io.observe(li);
+      li.addEventListener('focusin', function () { up(li); });
+    });
+    return sec;
+  };
+})();

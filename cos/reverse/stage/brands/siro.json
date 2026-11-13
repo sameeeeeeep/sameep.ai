@@ -1,0 +1,3069 @@
+{
+ "id": "siro",
+ "brand": {
+  "name": "Siro",
+  "category": "cold-brew coffee",
+  "city": "Bengaluru",
+  "product": "Hill Estate cold-brew concentrate, 250 ml",
+  "founder": "Nikhil"
+ },
+ "palette": {
+  "sky": [
+   "#2e2925",
+   "#b0764a"
+  ],
+  "ground": "#0a0908",
+  "night": [
+   "#0e0d12",
+   "#2b2630"
+  ],
+  "accent": "#b0764a"
+ },
+ "intro": {
+  "line": "One bottle of Hill Estate cold brew, delivered in Koramangala at 7:22 am.",
+  "sub": "Scroll to rewind seven months. A chief of staff did the work. People stepped in 8 times."
+ },
+ "assets": {
+  "hero": "assets/siro/hero.webp",
+  "hero_boxed": "assets/siro/hero_boxed.webp",
+  "parcel": "assets/siro/parcel.webp",
+  "parcel_top": "assets/siro/parcel_top.webp",
+  "kit_flatlay": "assets/siro/kit_flatlay.webp",
+  "qc": "assets/siro/qc.webp",
+  "carton_top": "assets/siro/carton_top.webp",
+  "variants3": "assets/siro/variants3.webp",
+  "box_flat": "assets/siro/box_flat.webp",
+  "trials5": "assets/siro/trials5.webp",
+  "maker_tool": "assets/siro/maker_tool.webp",
+  "wireframe": "assets/siro/wireframe.webp"
+ },
+ "stages": [
+  {
+   "id": "delivered",
+   "when": "Today, 8:20 am",
+   "mode": "dusk",
+   "object": "hero_boxed",
+   "line": "Delivered at 7:22 am. At 8:20 am, sent his care note: fridge, ten days, one part to three parts milk.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Care note sent, 8:20 am",
+     "at": [
+      0.45,
+      0.2
+     ]
+    },
+    {
+     "text": "Delivered, 560034",
+     "at": [
+      0.75,
+      0.4
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Care note sent: fridge, 10 days, 1:3"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Care-note opens, hourly",
+     "Repeat orders, daily",
+     "Hill Estate reviews, hourly"
+    ]
+   },
+   "surfaces": {
+    "thread": "Support",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "8:20 am",
+      "text": "Care note sent to SI-30562, Koramangala. Keep it in the fridge, finish within ten days, 1 part to 3 parts milk."
+     },
+     {
+      "who": "Pooja",
+      "time": "8:31 am",
+      "text": "Can he get a refill nudge before he runs out?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "8:32 am",
+      "text": "Set for day 8. At one glass a day, 30 ml each, 250 ml lasts about eight days."
+     }
+    ],
+    "os": {
+     "title": "Order SI-30562",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Status",
+       "Delivered"
+      ],
+      [
+       "Delivered",
+       "Today, 7:22 am"
+      ],
+      [
+       "Courier",
+       "Shadowfax, 7 to 9 am slot"
+      ],
+      [
+       "Care note",
+       "Sent, 8:20 am"
+      ],
+      [
+       "Next",
+       "Refill offer, day 8"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Delivered so far today",
+       "value": "38 of 54",
+       "source": "Shopify",
+       "fetched": "8:15 am"
+      },
+      {
+       "label": "Care notes opened",
+       "value": "58%",
+       "source": "WhatsApp",
+       "fetched": "8:40 am"
+      },
+      {
+       "label": "Hill Estate repeat buyers, 30 days",
+       "value": "19%",
+       "source": "Shopify",
+       "fetched": "8:15 am"
+      }
+     ]
+    }
+   },
+   "summary": "7:22 am, his door, still cold. Then: how's today?",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "SI-30562 delivered cold · 7:22 am",
+     "media": {
+      "type": "photo",
+      "kit": "hero_boxed",
+      "crop": [
+       0.15,
+       0.0,
+       0.85,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "Care note sent: fridge, 10 days, 1:3",
+     "ch": "support",
+     "desc": "Refill offer on day 8"
+    },
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "sales today?",
+     "who": "Pooja",
+     "answer": "₹14,817 · 33 orders since midnight · up 9%.",
+     "ch": "growth"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "33 by 7 am? wait what",
+     "who": "Nikhil",
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "One bottle: voice note to doorstep",
+     "desc": "7 months · 8 taps"
+    }
+   ]
+  },
+  {
+   "id": "courier",
+   "when": "1 day before, 4:15 pm",
+   "mode": "dusk",
+   "object": "parcel",
+   "line": "Chose Shadowfax for 560034: 1.4% late, the lowest of three couriers. Booked a 7 to 9 am drop so it arrives cold.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "560034: 1.4% late",
+     "at": [
+      0.72,
+      0.6
+     ]
+    },
+    {
+     "text": "Drop 7 to 9 am",
+     "at": [
+      0.3,
+      0.6
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Comparing 3 couriers in 560034, 7-9 am",
+     "Late drops: Shadowfax 1.4%. Next 3.6"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Late rate by pincode, every 15 min",
+     "Bengaluru traffic, hourly",
+     "Tracking opens, live"
+    ]
+   },
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:15 pm",
+      "text": "Shadowfax picked up 54 parcels at 3:30 pm. His is on the 7 to 9 am drop: 1.4% late in 560034, lowest of three. Tracking sent."
+     },
+     {
+      "who": "Customer, Koramangala",
+      "time": "4:40 pm",
+      "text": "Morning works. Thanks."
+     }
+    ],
+    "os": {
+     "title": "Shipment SI-30562",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Courier",
+       "Shadowfax"
+      ],
+      [
+       "Pincode",
+       "560034"
+      ],
+      [
+       "Picked up",
+       "3:30 pm"
+      ],
+      [
+       "Tracking",
+       "Sent, 4:15 pm"
+      ],
+      [
+       "Drop window",
+       "Tomorrow, 7 to 9 am"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Late deliveries, Shadowfax, 560034",
+       "value": "1.4%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "4:12 pm"
+      },
+      {
+       "label": "Late deliveries, Delhivery, 560034",
+       "value": "3.6%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "4:12 pm"
+      },
+      {
+       "label": "Late deliveries, Xpressbees, 560034",
+       "value": "5.1%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "4:12 pm"
+      },
+      {
+       "label": "Customer opened tracking",
+       "value": "4:38 pm",
+       "source": "WhatsApp",
+       "fetched": "4:40 pm"
+      }
+     ]
+    }
+   },
+   "summary": "The courier is picked by who's on time in Koramangala at 7 am.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "SI-30562 packed · 560034"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Comparing 3 couriers in 560034, 7-9 am"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Late drops: Shadowfax 1.4%. Next 3.6",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       1.4,
+       3.6,
+       5.1
+      ],
+      "labels": [
+       "Shadowfax",
+       "Dunzo",
+       "Porter"
+      ],
+      "unit": "%"
+     }
+    },
+    {
+     "t": "done",
+     "s": "chat",
+     "text": "Booked 7-9 am drop so it lands cold. Tracking sent",
+     "ch": "shipping"
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "toast",
+     "where": "OS",
+     "title": "Courier picked",
+     "text": "Shadowfax, 7 to 9 am slot"
+    }
+   ]
+  },
+  {
+   "id": "support",
+   "when": "1 day before, 3:05 pm",
+   "mode": "dusk",
+   "object": "phone",
+   "line": "He asked when it would arrive at 3:05 pm. Answered from the 2:52 pm cold-room scan in 40 seconds: packed cold, on the 3:30 van.",
+   "ask": "is this too strong if i add milk?",
+   "answer": "It's a concentrate, so cut it. 1 part to 3 parts cold milk tastes like a strong latte. Lighter: 1 to 4.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Answered in 2 min",
+     "at": [
+      0.5,
+      0.7
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Read off Farhan's 2:52 cold-room scan",
+     "Answered in 40 sec. Nobody looked it up"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Where-is-my-order chats, live",
+     "First reply time, every 15 min"
+    ]
+   },
+   "surfaces": {
+    "thread": "Support",
+    "chat": [
+     {
+      "who": "Customer, Koramangala",
+      "time": "3:05 pm",
+      "text": "when does SI-30562 reach me?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "3:05 pm",
+      "text": "Packed cold at 2:52 pm with an ice pack. It leaves on the 3:30 pm van; tracking comes then."
+     },
+     {
+      "who": "Customer, Koramangala",
+      "time": "3:06 pm",
+      "text": "nice"
+     }
+    ],
+    "os": {
+     "title": "Support chat #4471",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Channel",
+       "Website chat"
+      ],
+      [
+       "Question",
+       "Strength with milk"
+      ],
+      [
+       "Answered from",
+       "Hill Estate brew notes"
+      ],
+      [
+       "First reply",
+       "2 min"
+      ],
+      [
+       "Outcome",
+       "Order SI-30562, 10:48 pm"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Median first reply tonight",
+       "value": "2 min",
+       "source": "Website chat",
+       "fetched": "10:45 pm"
+      },
+      {
+       "label": "Dilution questions this week",
+       "value": "48",
+       "source": "Website chat",
+       "fetched": "10:45 pm"
+      },
+      {
+       "label": "Dilution chats that end in an order",
+       "value": "31%",
+       "source": "Shopify and website chat",
+       "fetched": "10:45 pm"
+      }
+     ]
+    }
+   },
+   "summary": "\"When does it reach me?\" Answered off the cold-room scan in 40 seconds.",
+   "flow": [
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "when does it reach me?",
+     "who": "Customer, Koramangala",
+     "answer": "Packed cold 2:52 pm. Leaves on the 3:30 van.",
+     "ch": "support"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Read off Farhan's 2:52 cold-room scan"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Answered in 40 sec. Nobody looked it up"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "cool thanks",
+     "who": "Customer, Koramangala",
+     "ch": "support"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Tracking queued for the van",
+     "media": {
+      "type": "link",
+      "title": "siro.in/track/SI-30562",
+      "note": "van 3:30 pm"
+     }
+    }
+   ]
+  },
+  {
+   "id": "packed",
+   "when": "1 day before, 2:50 pm",
+   "mode": "top",
+   "object": "parcel_top",
+   "line": "Packed SI-30562 cold at 640 g, last out of the cold room, saw ice packs at nine days with 34°C forecast, and drafted PO-0071 on last order's terms.",
+   "tap": {
+    "who": "Farhan",
+    "what": "scanned the packed box",
+    "cost": "1 tap, 2 sec"
+   },
+   "tags": [
+    {
+     "text": "Ice pack in",
+     "at": [
+      0.6,
+      0.68
+     ]
+    },
+    {
+     "text": "640 g, matches the kit",
+     "at": [
+      0.2,
+      0.2
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Checking every weight vs the kit",
+     "Ice packs: 9 days left. 34°C next week",
+     "PO-0071 drafted · ice packs · repeat"
+    ],
+    "managing": [
+     "Waiting on Farhan: 1 tap"
+    ],
+    "monitoring": [
+     "Cold room, every 5 min",
+     "Packed weight, every scan",
+     "Van slot, every 30 min"
+    ]
+   },
+   "card": {
+    "area": "Warehouse",
+    "ask": "SI-30562 weighs 640 g packed with ice. The kit spec is 640 g.",
+    "options": [
+     {
+      "label": "Matches, scan it",
+      "recommended": true
+     },
+     {
+      "label": "Re-pack it"
+     }
+    ],
+    "by": "Farhan",
+    "checker": "Meera",
+    "action": "Scan the box",
+    "signal": "Weight checked on every scan",
+    "osRow": 0
+   },
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:50 pm",
+      "text": "Cold-room batch is out. SI-30562 goes last so it leaves coldest. 640 g with the ice pack, matches the kit."
+     },
+     {
+      "who": "Farhan",
+      "time": "2:52 pm",
+      "text": "Scanned."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:53 pm",
+      "text": "Ice packs in all 54. SI-30565 came in 120 g light, ice pack re-added. Van at 3:30 pm."
+     }
+    ],
+    "os": {
+     "title": "Cold-room batch, HSR",
+     "cols": [
+      "Order",
+      "Packed",
+      "Expected",
+      "Status"
+     ],
+     "rows": [
+      [
+       "SI-30562",
+       "640 g",
+       "640 g",
+       "Packed, last out"
+      ],
+      [
+       "SI-30563",
+       "1,180 g",
+       "1,180 g",
+       "Packed"
+      ],
+      [
+       "SI-30565",
+       "520 g",
+       "640 g",
+       "Ice pack re-added"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Packed in this batch",
+       "value": "54 orders",
+       "source": "Warehouse scans",
+       "fetched": "2:57 pm"
+      },
+      {
+       "label": "Weight mismatches",
+       "value": "1 of 54",
+       "source": "Warehouse scans",
+       "fetched": "2:57 pm"
+      },
+      {
+       "label": "Cold room",
+       "value": "3°C",
+       "source": "Cold-room sensor",
+       "fetched": "2:55 pm"
+      }
+     ]
+    }
+   },
+   "summary": "His box goes out cold. Ice packs won't last the heatwave, so they're reordered.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "Cold-room batch, HSR: 54 orders"
+    },
+    {
+     "t": "assign",
+     "s": "os",
+     "text": "Checking every weight vs the kit"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "SI-30562: 640 g, kit is 640 g. Scan to close?",
+     "who": "Farhan",
+     "options": [
+      "scanned",
+      "re-pack"
+     ],
+     "ch": "warehouse",
+     "media": {
+      "type": "photo",
+      "kit": "parcel_top",
+      "crop": [
+       0.0,
+       0.0,
+       1.0,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Ice packs: 9 days left. 34°C next week",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       9,
+       14
+      ],
+      "labels": [
+       "ice packs",
+       "needed"
+      ],
+      "unit": "days"
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "PO-0071 drafted · ice packs · repeat",
+     "area": "Purchase orders",
+     "desc": "Last order's terms. No tap."
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "Stock alert",
+     "text": "Ice packs: 9 days. Reorder drafted."
+    }
+   ]
+  },
+  {
+   "id": "order",
+   "when": "2 days before, 10:48 pm",
+   "mode": "dusk",
+   "night": true,
+   "object": "phone",
+   "line": "Logged his 10:48 pm order from the pour ad, checked it against 560034, booked it into the 8 am cold-room batch with an ice pack, and told Farhan.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Address matches 560034",
+     "at": [
+      0.58,
+      0.425
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Checking address + cold slot",
+     "Cold-room batch, 8 am. Ice pack added"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "New orders, live",
+     "Address check, every order",
+     "Prepaid share, hourly"
+    ]
+   },
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:48 pm",
+      "text": "SI-30562 in from the dilution chat: Hill Estate, ₹449 prepaid. Address matches 560034. Booked into the 8 am cold-room batch."
+     },
+     {
+      "who": "Farhan",
+      "time": "8:10 am",
+      "text": "Seen. Printing the batch now."
+     }
+    ],
+    "os": {
+     "title": "Order SI-30562",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Item",
+       "Hill Estate cold brew, 250 ml"
+      ],
+      [
+       "Total",
+       "₹449, prepaid"
+      ],
+      [
+       "Ship to",
+       "Koramangala, 560034"
+      ],
+      [
+       "Address check",
+       "Matches the pincode"
+      ],
+      [
+       "Batch",
+       "Cold room, 8 am tomorrow"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Orders today",
+       "value": "118",
+       "source": "Shopify",
+       "fetched": "10:50 pm"
+      },
+      {
+       "label": "Prepaid share",
+       "value": "78%",
+       "source": "Razorpay",
+       "fetched": "10:50 pm"
+      },
+      {
+       "label": "Addresses flagged",
+       "value": "0 of 118",
+       "source": "Address check",
+       "fetched": "10:50 pm"
+      }
+     ]
+    }
+   },
+   "summary": "10:48 pm order from the pour ad. Farhan's cold slot is booked on its own.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "SI-30562 · Hill Estate · ₹449 · prepaid",
+     "area": "Orders",
+     "desc": "Pour ad · 10:48 pm"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Checking address + cold slot"
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Cold-room batch, 8 am. Ice pack added",
+     "desc": "Farhan's rule from standup"
+    },
+    {
+     "t": "done",
+     "s": "chat",
+     "text": "@Farhan SI-30562 in tmrw's cold-room batch",
+     "ch": "warehouse",
+     "media": {
+      "type": "photo",
+      "kit": "kit_flatlay",
+      "crop": [
+       0.0,
+       0.0,
+       0.6,
+       1.0
+      ]
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "text",
+     "screen": "order",
+     "sel": ".scr-mid + .scr-label",
+     "to": "Cold room, 8 am"
+    }
+   ]
+  },
+  {
+   "id": "ad",
+   "stats": [
+    "ROAS 2.4",
+    "CTR 1.9%",
+    "3 cuts"
+   ],
+   "when": "10 days before, 12:50 am",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "Cut three ads from the shoot. At 12:50 am, raised cut B, the pour, to ₹4,000 a day and paused cut C.",
+   "tap": {
+    "who": "Pooja",
+    "what": "picked cut B to scale",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "Raised to ₹4,000 a day",
+     "at": [
+      0.5,
+      0.42
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "12:50 am · cut C ROAS 0.8 · paused"
+    ],
+    "managing": [
+     "Waiting on Pooja: 1 tap"
+    ],
+    "monitoring": [
+     "ROAS per cut, hourly",
+     "CTR per cut, hourly",
+     "Daily spend cap, every 15 min"
+    ]
+   },
+   "card": {
+    "area": "Performance",
+    "ask": "Pick the cut to scale this week. Cut B leads at ROAS 2.4.",
+    "options": [
+     {
+      "label": "Cut B, pour over ice",
+      "recommended": true
+     },
+     {
+      "label": "Cut A, fridge door"
+     },
+     {
+      "label": "Cut C, bean close-up"
+     }
+    ],
+    "by": "Pooja",
+    "checker": "Nikhil",
+    "action": "Pick the cut",
+    "signal": "Cut B at ROAS 2.4, cut C at 0.8",
+    "osRow": 1
+   },
+   "surfaces": {
+    "thread": "Performance",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:50 am",
+      "text": "Cut B, the slow pour, is at ROAS 2.4. Raised it to ₹4,000 a day and paused cut C at 0.8."
+     },
+     {
+      "who": "Pooja",
+      "time": "9:15 am",
+      "text": "B is the pour over ice?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:16 am",
+      "text": "Yes. Your pick sets it for the week."
+     }
+    ],
+    "os": {
+     "title": "Ad cuts, last 7 days",
+     "cols": [
+      "Cut",
+      "Spend",
+      "ROAS",
+      "CTR",
+      "Status"
+     ],
+     "rows": [
+      [
+       "A, fridge door",
+       "₹8,200",
+       "1.7",
+       "1.4%",
+       "Running"
+      ],
+      [
+       "B, pour over ice",
+       "₹15,600",
+       "2.4",
+       "1.9%",
+       "Scaled"
+      ],
+      [
+       "C, bean close-up",
+       "₹5,300",
+       "0.8",
+       "0.7%",
+       "Paused"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "ROAS, cut B",
+       "value": "2.4",
+       "source": "Meta Ads",
+       "fetched": "12:48 am"
+      },
+      {
+       "label": "CTR, cut B",
+       "value": "1.9%",
+       "source": "Meta Ads",
+       "fetched": "12:48 am"
+      },
+      {
+       "label": "Cut B daily budget",
+       "value": "₹4,000 a day",
+       "source": "Meta Ads",
+       "fetched": "12:50 am"
+      },
+      {
+       "label": "Cut C paused at",
+       "value": "ROAS 0.8",
+       "source": "Meta Ads",
+       "fetched": "12:50 am"
+      }
+     ]
+    }
+   },
+   "summary": "12:50 am, one ad is losing money. The pour takes its budget.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "3 cuts live from the shoot",
+     "desc": "A fridge door · B the pour · C beans"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "12:50 am · cut C ROAS 0.8 · paused",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       2.4,
+       1.5,
+       0.8
+      ],
+      "labels": [
+       "B",
+       "A",
+       "C"
+      ],
+      "unit": "ROAS"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "B at 2.4. Raise to ₹4,000/day?",
+     "who": "Pooja",
+     "options": [
+      "scale B",
+      "hold"
+     ],
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "hub",
+     "text": "Cut B: ₹4,000/day from 9 am"
+    },
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "is the pour paying for itself?",
+     "who": "Nikhil",
+     "answer": "Yes. ₹2.40 back per ₹1, last 7 days.",
+     "ch": "growth"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "finally. the pour was my idea btw",
+     "who": "Pooja",
+     "ch": "growth"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "Hub",
+     "title": "Budget raised",
+     "text": "Cut B, the pour, to Rs 4,000 a day"
+    }
+   ]
+  },
+  {
+   "id": "listing",
+   "when": "2 weeks before",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "11 of 26 tester reviews asked how to dilute. Drafted a ratio-first line; the pour photo beat the bottle on white, 3.0% to 2.2%.",
+   "card": {
+    "title": "Hill Estate cold-brew concentrate, 250 ml",
+    "price": "₹449",
+    "rating": 4.5
+   },
+   "tap": {
+    "who": "Pooja",
+    "what": "approved the new first line",
+    "cost": "1 tap, 4 sec"
+   },
+   "tags": [
+    {
+     "text": "Ratio drafted for line one",
+     "at": [
+      0.64,
+      0.34
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "@Pooja drafted a ratio-first line",
+     "Photo test: pour 3.0%, bottle 2.2%"
+    ],
+    "managing": [
+     "Waiting on Pooja: 1 tap"
+    ],
+    "monitoring": [
+     "Conversion per photo, hourly",
+     "New reviews, hourly",
+     "Page speed, daily"
+    ]
+   },
+   "decision": {
+    "area": "Website",
+    "ask": "Approve the new first line: \"One part to three parts milk. A strong latte.\"",
+    "options": [
+     {
+      "label": "Approve it",
+      "recommended": true
+     },
+     {
+      "label": "Keep the old line"
+     }
+    ],
+    "by": "Pooja",
+    "checker": "Nikhil",
+    "action": "Approve the line",
+    "signal": "11 of 26 reviews ask how to dilute",
+    "osRow": 0
+   },
+   "surfaces": {
+    "thread": "Website",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:50 am",
+      "text": "11 of 26 reviews ask how much to dilute. Drafted a new first line that leads with the 1 to 3 ratio."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:30 am",
+      "text": "Photo test done, 2,100 visits each. Pour over ice converts at 3.0%, bottle on white at 2.2%. Switched to the pour."
+     },
+     {
+      "who": "Pooja",
+      "time": "11:41 am",
+      "text": "Reading it now."
+     }
+    ],
+    "os": {
+     "title": "Product page changes",
+     "cols": [
+      "Field",
+      "Before",
+      "After"
+     ],
+     "rows": [
+      [
+       "First line",
+       "Estate cold brew, ready in minutes",
+       "One part to three parts milk. A strong latte."
+      ],
+      [
+       "Hero photo",
+       "Bottle on white",
+       "Pour over ice"
+      ],
+      [
+       "Price",
+       "₹449",
+       "₹449"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Conversion, pour over ice",
+       "value": "3.0%",
+       "source": "Shopify",
+       "fetched": "11:30 am"
+      },
+      {
+       "label": "Conversion, bottle on white",
+       "value": "2.2%",
+       "source": "Shopify",
+       "fetched": "11:30 am"
+      },
+      {
+       "label": "Rating",
+       "value": "4.5 from 26",
+       "source": "Judge.me",
+       "fetched": "10:50 am"
+      },
+      {
+       "label": "Reviews asking how to dilute",
+       "value": "11 of 26",
+       "source": "Judge.me",
+       "fetched": "10:50 am"
+      }
+     ]
+    }
+   },
+   "summary": "Testers keep asking how to dilute it. The page answers first.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "11/26 tester reviews ask how to dilute",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       11,
+       9,
+       6
+      ],
+      "labels": [
+       "how to dilute",
+       "taste",
+       "other"
+      ],
+      "unit": "reviews"
+     }
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Pooja drafted a ratio-first line",
+     "ch": "growth"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Photo test: pour 3.0%, bottle 2.2%",
+     "src": "Shopify"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Lead with the 1:3 ratio?",
+     "who": "Pooja",
+     "options": [
+      "1 part to 3 parts milk",
+      "keep the old line"
+     ],
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Live: pour photo, ratio line",
+     "media": {
+      "type": "link",
+      "title": "siro.in/hill-estate",
+      "note": "1 part to 3 parts milk"
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "text",
+     "screen": "listing",
+     "sel": ".scr-big",
+     "to": "1 part to 3 parts milk"
+    },
+    {
+     "beat": 5,
+     "type": "toast",
+     "where": "OS",
+     "title": "Page updated",
+     "text": "The pour is the hero now"
+    }
+   ]
+  },
+  {
+   "id": "shoot",
+   "when": "5 weeks before",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "Wrote the brief and a ten-shot list with the slow pour as shot 4, held the studio, and sent call times.",
+   "tap": {
+    "who": "Leela",
+    "what": "confirmed Thursday",
+    "cost": "1 tap, 3 sec"
+   },
+   "tags": [
+    {
+     "text": "10-shot list",
+     "at": [
+      0.5,
+      0.15
+     ]
+    },
+    {
+     "text": "Shot 4: pour over ice",
+     "at": [
+      0.5,
+      0.75
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "@Leela brief + shot list sent",
+     "Studio booked · 20 kg ice ordered"
+    ],
+    "managing": [
+     "Waiting on Leela: 1 tap"
+    ],
+    "monitoring": [
+     "Studio calendar, hourly",
+     "Leela's replies, every 15 min",
+     "Ice delivery, day before"
+    ]
+   },
+   "card": {
+    "area": "Content",
+    "ask": "Confirm Thursday: 8 am call, cold set, 5 hours.",
+    "options": [
+     {
+      "label": "Thursday, 8 am",
+      "recommended": true
+     },
+     {
+      "label": "The Thursday after"
+     }
+    ],
+    "by": "Leela",
+    "checker": "Pooja",
+    "action": "Confirm the date",
+    "signal": "Studio hold lapses in 24 h",
+    "osRow": 0
+   },
+   "surfaces": {
+    "thread": "Content",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:20 pm",
+      "text": "Brief and ten-shot list are out. Studio on hold for Thursday. Shot 4 is the slow pour over ice."
+     },
+     {
+      "who": "Leela",
+      "time": "12:48 pm",
+      "text": "Thursday works. What time?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:49 pm",
+      "text": "8 am. Ice shots first, before the lights warm the set."
+     }
+    ],
+    "os": {
+     "title": "Shoot, Thursday",
+     "cols": [
+      "Shot",
+      "What",
+      "For"
+     ],
+     "rows": [
+      [
+       "1",
+       "Bottle, side-on",
+       "Product page"
+      ],
+      [
+       "2",
+       "The 1 to 3 ratio in a glass",
+       "Product page"
+      ],
+      [
+       "3",
+       "Fridge door shelf",
+       "Ads"
+      ],
+      [
+       "4",
+       "Slow pour over ice",
+       "Ads"
+      ],
+      [
+       "5 to 10",
+       "Close-ups",
+       "Ads, social"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Studio",
+       "value": "5 hours, cold set",
+       "source": "Studio calendar",
+       "fetched": "12:18 pm"
+      },
+      {
+       "label": "Shots planned",
+       "value": "10",
+       "source": "Shot list",
+       "fetched": "12:20 pm"
+      },
+      {
+       "label": "Ice ordered",
+       "value": "20 kg",
+       "source": "Shoot budget",
+       "fetched": "12:49 pm"
+      }
+     ]
+    }
+   },
+   "summary": "The pour is the shot. It needs ice, cold light and 8 am.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "Launch shoot: 10 shots. The pour is #4"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Leela brief + shot list sent",
+     "ch": "content",
+     "media": {
+      "type": "doc",
+      "name": "shotlist_pour.pdf",
+      "note": "10 shots"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Thu 8 am, cold set. Works?",
+     "who": "Leela",
+     "options": [
+      "works",
+      "week after"
+     ],
+     "ch": "content"
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Studio booked · 20 kg ice ordered"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Shot 4, the slow pour, wins",
+     "media": {
+      "type": "photo",
+      "kit": "hero",
+      "crop": [
+       0.2,
+       0.0,
+       0.8,
+       1.0
+      ]
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "Studio booked",
+     "text": "Thursday 8 am, 20 kg ice"
+    }
+   ]
+  },
+  {
+   "id": "po",
+   "when": "10 weeks before",
+   "mode": "dusk",
+   "object": "variants3",
+   "line": "Drafted PO-0063 for 4,000 bottles, Rs 1,12,000, 30 days to pay. Nikhil approved; sent at 11:20 am, confirmed by noon, cold room held.",
+   "tap": {
+    "who": "Nikhil",
+    "what": "approved PO-0063",
+    "cost": "1 tap, 6 sec"
+   },
+   "tags": [
+    {
+     "text": "Chosen: round shoulder",
+     "at": [
+      0.31,
+      0.38
+     ]
+    },
+    {
+     "text": "Pay in 30 days",
+     "at": [
+      0.61,
+      0.87
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "@Farhan cold room held for the landing",
+     "PO-0063 sent · Bengaluru · ₹1.12L"
+    ],
+    "managing": [
+     "Waiting on Nikhil: 1 tap"
+    ],
+    "monitoring": [
+     "Cash in the bank, daily",
+     "Bottle prices, three vendors",
+     "Lead times, weekly"
+    ]
+   },
+   "card": {
+    "area": "Purchasing",
+    "ask": "Approve PO-0063: 4,000 amber bottles at ₹28, ₹1,12,000, paid in 30 days.",
+    "options": [
+     {
+      "label": "Bengaluru, ₹28, pay in 30 days",
+      "recommended": true
+     },
+     {
+      "label": "Hosur, ₹24, pay upfront"
+     },
+     {
+      "label": "Firozabad, ₹22, pay upfront"
+     }
+    ],
+    "by": "Nikhil",
+    "checker": "Farhan",
+    "action": "Approve the PO",
+    "signal": "Bengaluru holds ₹28 for 7 days",
+    "osRow": 1
+   },
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:10 pm",
+      "text": "Three quotes in for 4,000 amber bottles. Bengaluru is ₹4 more than Hosur but gives 30 days to pay, ships in 14, and replaces chipped necks."
+     },
+     {
+      "who": "Farhan",
+      "time": "2:24 pm",
+      "text": "Their round shoulder fits our filler."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:30 pm",
+      "text": "PO-0063 drafted for ₹1,12,000. Sitting with Nikhil."
+     }
+    ],
+    "os": {
+     "title": "Quotes: 4,000 amber bottles, 250 ml",
+     "cols": [
+      "Vendor",
+      "Per bottle",
+      "Terms",
+      "Lead time",
+      "Chipped necks"
+     ],
+     "rows": [
+      [
+       "Hosur",
+       "₹24",
+       "Upfront",
+       "26 days",
+       "Not covered"
+      ],
+      [
+       "Bengaluru",
+       "₹28",
+       "30 days",
+       "14 days",
+       "Replaced free"
+      ],
+      [
+       "Firozabad",
+       "₹22",
+       "Upfront",
+       "35 days",
+       "Not covered"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Per bottle",
+       "value": "₹28",
+       "source": "PO-0063",
+       "fetched": "2:30 pm"
+      },
+      {
+       "label": "Cash out today",
+       "value": "₹0",
+       "source": "PO-0063, 30-day terms",
+       "fetched": "2:30 pm"
+      },
+      {
+       "label": "PO total",
+       "value": "₹1,12,000",
+       "source": "PO-0063",
+       "fetched": "2:30 pm"
+      }
+     ]
+    }
+   },
+   "summary": "The bottles are ordered, and Farhan's cold room is held before they land.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "PO-0063 drafted · 4,000 bottles",
+     "desc": "₹1,12,000 · 30 days to pay"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Farhan cold room held for the landing",
+     "ch": "purchasing"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "PO-0063 · 4,000 · ₹1.12L · 30 days. Approve?",
+     "who": "Nikhil",
+     "options": [
+      "approve",
+      "hold"
+     ],
+     "ch": "purchasing",
+     "media": {
+      "type": "doc",
+      "name": "PO-0063.pdf",
+      "note": "₹1,12,000"
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "PO-0063 sent · Bengaluru · ₹1.12L",
+     "desc": "Confirmed by noon"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Tracking it daily till the cold room"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "PO-0063 confirmed",
+     "text": "Ships in 14 days"
+    }
+   ]
+  },
+  {
+   "id": "packaging",
+   "when": "3 months before",
+   "mode": "dusk",
+   "object": "box_flat",
+   "line": "Checked label proof v2 against 12 food labelling rules, caught the missing FSSAI number, and cleared v3 for print.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "FSSAI number added in v3",
+     "at": [
+      0.7,
+      0.55
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Checking v2 against 12 food label rules",
+     "v2 missing FSSAI no. pls add it under the logo",
+     "Proof v3: 12/12 pass"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Printer proof inbox, hourly",
+     "FSSAI rule changes, weekly",
+     "Label cost, every quote"
+    ]
+   },
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:20 am",
+      "text": "Proof v2 checked against the food labelling rules. One line missing: the FSSAI licence number."
+     },
+     {
+      "who": "Farhan",
+      "time": "11:34 am",
+      "text": "Sending it back to the printer."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:50 pm",
+      "text": "v3 is back with the FSSAI number, nothing else changed. Cleared for 4,000."
+     }
+    ],
+    "os": {
+     "title": "Label check, proof v3",
+     "cols": [
+      "Line",
+      "Required",
+      "On the proof"
+     ],
+     "rows": [
+      [
+       "Product name",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "FSSAI licence number",
+       "Yes",
+       "Added in v3"
+      ],
+      [
+       "Net quantity, 250 ml",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Keep refrigerated",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Batch and best before",
+       "Yes",
+       "Printed at filling"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Labelling rules met",
+       "value": "12 of 12",
+       "source": "Labelling checklist",
+       "fetched": "4:50 pm"
+      },
+      {
+       "label": "Label run",
+       "value": "4,000",
+       "source": "Printer quote",
+       "fetched": "4:50 pm"
+      },
+      {
+       "label": "Label and carton, per unit",
+       "value": "₹9.40",
+       "source": "Printer quote",
+       "fetched": "4:50 pm"
+      }
+     ]
+    }
+   },
+   "summary": "The label is missing its FSSAI number. Caught before 4,000 print.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "label v2 attached. ok to print?",
+     "who": "Inkline Studio",
+     "ch": "inkline",
+     "media": {
+      "type": "doc",
+      "name": "label_v2.pdf"
+     }
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Checking v2 against 12 food label rules"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "v2 missing FSSAI no. pls add it under the logo",
+     "ch": "inkline",
+     "media": {
+      "type": "photo",
+      "kit": "hero",
+      "crop": [
+       0.2,
+       0.25,
+       0.8,
+       0.8
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Proof v3: 12/12 pass"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "4,000 labels cleared to print. Nobody chased"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "stamp",
+     "key": "flat",
+     "at": [
+      0.5,
+      0.5
+     ],
+     "text": "FSSAI no. added",
+     "badge": "v3"
+    }
+   ]
+  },
+  {
+   "id": "vendor",
+   "when": "4 months before",
+   "mode": "dusk",
+   "object": "variants3",
+   "line": "Lined up three glassworks for the 250 ml amber bottle. Recommended Bengaluru: Rs 28, 30-day terms, free chipped-neck replacement, 40 minutes from the cold room.",
+   "tap": {
+    "who": "Nikhil",
+    "what": "chose Bengaluru",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "Chosen: round shoulder",
+     "at": [
+      0.31,
+      0.38
+     ]
+    },
+    {
+     "text": "Pay in 30 days",
+     "at": [
+      0.61,
+      0.87
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "@Nikhil bottle + terms from all 3",
+     "Only Bengaluru replaces chipped necks"
+    ],
+    "managing": [
+     "Waiting on Nikhil: 1 tap"
+    ],
+    "monitoring": [
+     "Vendor lead times, weekly",
+     "Quote expiry, daily"
+    ]
+   },
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:10 pm",
+      "text": "Three quotes in for 4,000 amber bottles. Bengaluru is ₹4 more than Hosur but gives 30 days to pay, ships in 14, and replaces chipped necks."
+     },
+     {
+      "who": "Farhan",
+      "time": "2:24 pm",
+      "text": "Their round shoulder fits our filler."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:30 pm",
+      "text": "PO-0063 drafted for ₹1,12,000. Sitting with Nikhil."
+     }
+    ],
+    "os": {
+     "title": "Quotes: 4,000 amber bottles, 250 ml",
+     "cols": [
+      "Vendor",
+      "Per bottle",
+      "Terms",
+      "Lead time",
+      "Chipped necks"
+     ],
+     "rows": [
+      [
+       "Hosur",
+       "₹24",
+       "Upfront",
+       "26 days",
+       "Not covered"
+      ],
+      [
+       "Bengaluru",
+       "₹28",
+       "30 days",
+       "14 days",
+       "Replaced free"
+      ],
+      [
+       "Firozabad",
+       "₹22",
+       "Upfront",
+       "35 days",
+       "Not covered"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Per bottle",
+       "value": "₹28",
+       "source": "PO-0063",
+       "fetched": "2:30 pm"
+      },
+      {
+       "label": "Cash out today",
+       "value": "₹0",
+       "source": "PO-0063, 30-day terms",
+       "fetched": "2:30 pm"
+      },
+      {
+       "label": "PO total",
+       "value": "₹1,12,000",
+       "source": "PO-0063",
+       "fetched": "2:30 pm"
+      }
+     ]
+    }
+   },
+   "summary": "Cheapest bottle is two states away. The nearest one replaces chipped necks.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "3 quotes in for the bottle",
+     "src": "Quotes",
+     "desc": "Step 3 · owner: Nikhil"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Nikhil bottle + terms from all 3",
+     "ch": "purchasing",
+     "media": {
+      "type": "photo",
+      "kit": "variants3",
+      "crop": [
+       0.0,
+       0.0,
+       1.0,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Only Bengaluru replaces chipped necks",
+     "desc": "Firozabad: 6 days by road",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       28,
+       24,
+       22
+      ],
+      "labels": [
+       "Bengaluru",
+       "Hosur",
+       "Firozabad"
+      ],
+      "unit": "₹"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Bengaluru · ₹28 · chipped necks replaced. Go?",
+     "who": "Nikhil",
+     "options": [
+      "Bengaluru",
+      "Hosur, ₹24"
+     ],
+     "ch": "purchasing"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Vendor: Bengaluru. Label next"
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "pick",
+     "title": "Three glassworks",
+     "groups": [
+      {
+       "label": "Bottle",
+       "options": [
+        "Bengaluru, Rs 28",
+        "Hosur, Rs 24",
+        "Firozabad, Rs 22"
+       ],
+       "chosen": 0
+      },
+      {
+       "label": "Terms",
+       "options": [
+        "30 days, necks replaced",
+        "Upfront",
+        "Upfront"
+       ],
+       "chosen": 0
+      }
+     ],
+     "delay": 900
+    },
+    {
+     "beat": 4,
+     "type": "focus",
+     "keep": "lip",
+     "dim": [
+      "vL",
+      "vR"
+     ],
+     "delay": 700
+    }
+   ]
+  },
+  {
+   "id": "samples",
+   "when": "5 months before",
+   "mode": "dusk",
+   "object": "trials5",
+   "line": "Ran shelf-life and blind tasting on Anil's five roasts. Roast 2 went sour by day 9 against a 14-day promise; sent it back with the log. The other four went on.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Roast 4: 5 of 7 votes",
+     "at": [
+      0.645,
+      0.3
+     ]
+    },
+    {
+     "text": "5 roasts, blind",
+     "at": [
+      0.86,
+      0.2
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "@Meera fridge test, 14 days. + tasting w/ milk",
+     "Roast 2: sour by day 9",
+     "Roast 2 back to Anil with the log"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Shelf-life checks, daily",
+     "Roaster replies, live"
+    ]
+   },
+   "surfaces": {
+    "thread": "Product",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:00 am",
+      "text": "Blind tasting set: five roasts coded 1 to 5, black and with milk, seven tasters."
+     },
+     {
+      "who": "Meera",
+      "time": "12:40 pm",
+      "text": "5 goes bitter with milk."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:15 pm",
+      "text": "Tally: roast 4 scored 4.5 with milk, 4.2 black, 5 of 7 votes. Five tasters called roast 1 sour."
+     }
+    ],
+    "os": {
+     "title": "Blind tasting, 5 roasts",
+     "cols": [
+      "Roast",
+      "Black",
+      "With milk",
+      "Votes"
+     ],
+     "rows": [
+      [
+       "1",
+       "3.0",
+       "2.8",
+       "0"
+      ],
+      [
+       "2",
+       "3.6",
+       "3.5",
+       "1"
+      ],
+      [
+       "3",
+       "3.9",
+       "3.8",
+       "1"
+      ],
+      [
+       "4",
+       "4.2",
+       "4.5",
+       "5"
+      ],
+      [
+       "5",
+       "3.8",
+       "3.1",
+       "0"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Tasters",
+       "value": "7",
+       "source": "Google Forms",
+       "fetched": "1:12 pm"
+      },
+      {
+       "label": "Roast 4, with milk",
+       "value": "4.5 / 5",
+       "source": "Google Forms",
+       "fetched": "1:12 pm"
+      },
+      {
+       "label": "Steep time",
+       "value": "16 h",
+       "source": "Brew log",
+       "fetched": "1:12 pm"
+      }
+     ]
+    }
+   },
+   "summary": "Nikhil promised two weeks in the fridge. Roast 2 goes sour on day 9.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "5 roasts in from Anil",
+     "desc": "Step 2 · owner: Meera"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Meera fridge test, 14 days. + tasting w/ milk",
+     "ch": "npd"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Roast 2: sour by day 9",
+     "desc": "The promise is 14 days",
+     "media": {
+      "type": "photo",
+      "kit": "trials5",
+      "crop": [
+       0.18,
+       0.25,
+       0.4,
+       0.75
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "Roast 2 back to Anil with the log",
+     "ch": "npd",
+     "media": {
+      "type": "doc",
+      "name": "roast2_log.pdf",
+      "note": "sour, day 9"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "4 go on. Roast 4 wins with milk"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "roast 4 is the one. told u",
+     "who": "Nikhil",
+     "ch": "npd"
+    }
+   ],
+   "live": [
+    {
+     "beat": 2,
+     "type": "cycle",
+     "keys": [
+      "b0",
+      "b1",
+      "b2",
+      "b3",
+      "b4"
+     ],
+     "label": "Fridge test, 14 days"
+    },
+    {
+     "beat": 3,
+     "type": "stamp",
+     "key": "b1",
+     "at": [
+      0.5,
+      0.45
+     ],
+     "text": "Sour, day 9",
+     "badge": "Fail"
+    },
+    {
+     "beat": 4,
+     "type": "focus",
+     "keep": "b3",
+     "dim": [
+      "b1"
+     ],
+     "delay": 700
+    }
+   ]
+  },
+  {
+   "id": "hire",
+   "when": "6 months before",
+   "mode": "dusk",
+   "object": "maker_tool",
+   "line": "Wrote the roaster role, screened 29 applicants down to four, and booked cuppings around everyone's calendars.",
+   "tap": {
+    "who": "Varun",
+    "what": "made the offer to Anil M.",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "29 screened, 4 cupped",
+     "at": [
+      0.5,
+      0.12
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Role posted. Cupping slots booked",
+     "29 applied → 4 cupped on tue"
+    ],
+    "managing": [
+     "Waiting on Varun: 1 tap"
+    ],
+    "monitoring": [
+     "New applicants, hourly",
+     "Days open, daily",
+     "Cupping no-shows, daily"
+    ]
+   },
+   "card": {
+    "area": "People",
+    "ask": "Make the roaster offer. Anil M. scored 4.6 after cupping.",
+    "options": [
+     {
+      "label": "Anil M., 4.6 / 5",
+      "recommended": true
+     },
+     {
+      "label": "Shreya T., 4.3 / 5"
+     }
+    ],
+    "by": "Varun",
+    "checker": "Nikhil",
+    "action": "Make the offer",
+    "signal": "4 cuppings done, scorecards in",
+    "osRow": 0
+   },
+   "surfaces": {
+    "thread": "People",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:30 am",
+      "text": "Roaster role: 29 applicants in eight days. Four fit: specialty roasting, cold extraction, small batches."
+     },
+     {
+      "who": "Varun",
+      "time": "10:41 am",
+      "text": "Set cuppings for all four."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:42 am",
+      "text": "Done. Thursday and Friday at the roastery, around Nikhil's calendar. Scorecards are in the OS."
+     }
+    ],
+    "os": {
+     "title": "Hiring: roaster",
+     "cols": [
+      "Candidate",
+      "Stage",
+      "Score",
+      "Next"
+     ],
+     "rows": [
+      [
+       "Anil M.",
+       "Cupping",
+       "4.6 / 5",
+       "Thu 10:00"
+      ],
+      [
+       "Shreya T.",
+       "Cupping",
+       "4.3 / 5",
+       "Thu 14:00"
+      ],
+      [
+       "Joel D.",
+       "Cupping",
+       "3.9 / 5",
+       "Fri 10:00"
+      ],
+      [
+       "Kiran V.",
+       "Cupping",
+       "3.7 / 5",
+       "Fri 14:00"
+      ],
+      [
+       "25 others",
+       "Not a fit",
+       "",
+       "Declined, note sent"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Applicants",
+       "value": "29",
+       "source": "Naukri",
+       "fetched": "10:28 am"
+      },
+      {
+       "label": "Shortlisted to cup",
+       "value": "4",
+       "source": "Agent scorecards",
+       "fetched": "10:29 am"
+      },
+      {
+       "label": "Days open, target 30",
+       "value": "19",
+       "source": "OS hiring board",
+       "fetched": "10:29 am"
+      }
+     ]
+    }
+   },
+   "summary": "Hot-coffee roasters are easy to find. Cold ones aren't.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "Step 1: cold-brew roaster",
+     "desc": "Owner: Varun · due in 4 wks"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Role posted. Cupping slots booked"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "29 applied → 4 cupped on tue",
+     "ch": "people",
+     "media": {
+      "type": "photo",
+      "kit": "maker_tool",
+      "crop": [
+       0.0,
+       0.25,
+       0.7,
+       0.9
+      ]
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Anil 4.6 after cupping, 5 yrs cold brew. Send offer?",
+     "who": "Varun",
+     "options": [
+      "send offer",
+      "Shreya, 4.3"
+     ],
+     "ch": "people",
+     "media": {
+      "type": "doc",
+      "name": "anil_cv.pdf",
+      "note": "5 yrs, Chikmagalur"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Anil signed. 5 roasts due in 2 wks"
+    }
+   ],
+   "live": [
+    {
+     "beat": 5,
+     "type": "toast",
+     "where": "OS",
+     "title": "Step 1 done",
+     "text": "Anil starts Monday"
+    }
+   ]
+  },
+  {
+   "id": "standup",
+   "when": "7 months before, 9:00 am",
+   "mode": "wire",
+   "object": "wireframe",
+   "line": "Played Nikhil's note as item 1 at standup, took Pooja's reorder cycle and Farhan's cold-chain point, and turned the yes into a four-step plan with owners and dates.",
+   "tap": {
+    "who": "Nikhil",
+    "what": "said go on the plan",
+    "cost": "1 tap, 4 sec"
+   },
+   "tags": [
+    {
+     "text": "Project: Hill Estate",
+     "at": [
+      0.5,
+      0.12
+     ]
+    },
+    {
+     "text": "Owner: Nikhil",
+     "at": [
+      0.5,
+      0.8
+     ]
+    }
+   ],
+   "presence": {
+    "running": [
+     "Item 1: Nikhil's 1:06 am note"
+    ],
+    "managing": [
+     "Waiting on Nikhil: 1 tap"
+    ],
+    "monitoring": [
+     "Plan steps vs dates, daily",
+     "Owner replies, live"
+    ]
+   },
+   "surfaces": {
+    "thread": "All hands",
+    "chat": [
+     {
+      "who": "Nikhil",
+      "time": "4:30 pm",
+      "text": "That 1 am voice note. The estate coffee, steeped overnight. I want to bottle it."
+     },
+     {
+      "who": "Pooja",
+      "time": "4:31 pm",
+      "text": "As a concentrate, not ready-to-drink. Lasts longer, ships lighter."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:33 pm",
+      "text": "Project opened: Hill Estate. Owner Nikhil. Step one, hire a roaster: Varun has it."
+     }
+    ],
+    "os": {
+     "title": "Project: Hill Estate",
+     "cols": [
+      "Step",
+      "Owner",
+      "Due",
+      "Status"
+     ],
+     "rows": [
+      [
+       "Hire a roaster",
+       "Varun",
+       "In 4 weeks",
+       "Open"
+      ],
+      [
+       "Roast brief",
+       "Nikhil",
+       "In 2 weeks",
+       "Open"
+      ],
+      [
+       "Bottle and cap suppliers",
+       "Farhan",
+       "In 8 weeks",
+       "Not started"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Bean pouches sold, last 90 days",
+       "value": "6,420",
+       "source": "Shopify",
+       "fetched": "4:34 pm"
+      },
+      {
+       "label": "Reviews asking for cold brew",
+       "value": "38",
+       "source": "Judge.me",
+       "fetched": "4:34 pm"
+      },
+      {
+       "label": "Call length",
+       "value": "41 min",
+       "source": "Google Meet",
+       "fetched": "5:11 pm"
+      }
+     ]
+    }
+   },
+   "summary": "Pooja likes the price, Farhan says it must ship cold. Nikhil says go.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "Item 1: Nikhil's 1:06 am note",
+     "who": "Nikhil",
+     "desc": "0:16, played back",
+     "media": {
+      "type": "voice",
+      "len": "0:16"
+     }
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "449 works. offices reorder every 10 days",
+     "who": "Pooja",
+     "ch": "standup"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "has to ship cold. morning slots only",
+     "who": "Farhan",
+     "ch": "standup"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Concentrate · ₹449 · ships cold · 6 months. Go?",
+     "who": "Nikhil",
+     "options": [
+      "ok go",
+      "park it"
+     ],
+     "ch": "standup"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Plan: 4 steps, 4 owners, dates set",
+     "desc": "Roaster · samples · vendor · label",
+     "media": {
+      "type": "photo",
+      "kit": "wireframe_ink",
+      "crop": [
+       0.25,
+       0.05,
+       0.75,
+       0.95
+      ]
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "stamp",
+     "key": "sketch",
+     "at": [
+      0.5,
+      0.78
+     ],
+     "text": "Rs 449, ships cold",
+     "badge": "Go"
+    }
+   ]
+  },
+  {
+   "id": "voice",
+   "when": "7 months before, 1:06 am",
+   "mode": "dusk",
+   "night": true,
+   "object": "phone",
+   "line": "1:06 am, seven months before the doorstep. Everything that follows started with this.",
+   "tap": null,
+   "tags": [],
+   "presence": {
+    "running": [
+     "On it. Checking if people want it",
+     "23 chats asked for ready-to-drink"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Website chat, every 15 min",
+     "Reviews, hourly",
+     "Cold brew searches, daily"
+    ]
+   },
+   "surfaces": {
+    "thread": "Ideas",
+    "chat": [
+     {
+      "who": "Nikhil",
+      "time": "1:06 am",
+      "text": "Okay. Still up. That Chikmagalur estate lot, steeped overnight, beat everything we sell hot. Bottle it? Would people keep it in the fridge? Not sure. Look into it.",
+      "voice": true,
+      "length": "0:14"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:07 am",
+      "text": "Saved to Ideas as Estate cold brew, with 23 chat requests for ready-to-drink attached. On the next product review."
+     }
+    ],
+    "os": {
+     "title": "Ideas",
+     "cols": [
+      "Idea",
+      "From",
+      "Saved",
+      "Next"
+     ],
+     "rows": [
+      [
+       "Estate cold brew in a bottle",
+       "Nikhil, voice note",
+       "1:07 am",
+       "Next product review"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Cold brew searches, Bengaluru",
+       "value": "Up 41% in 90 days",
+       "source": "Google Trends",
+       "fetched": "1:07 am"
+      },
+      {
+       "label": "Customers asking for ready-to-drink",
+       "value": "23",
+       "source": "Website chat, last 6 months",
+       "fetched": "1:07 am"
+      },
+      {
+       "label": "Cold coffee in the range today",
+       "value": "0",
+       "source": "Shopify catalogue",
+       "fetched": "1:07 am"
+      }
+     ]
+    }
+   },
+   "summary": "1:06 am. Offices drink cold brew that tastes of tin. Nikhil has better beans.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "still up. cold brew that isn't tinny. 449, ten glasses, 2 wks in fridge",
+     "who": "Nikhil",
+     "media": {
+      "type": "voice",
+      "len": "0:16"
+     },
+     "desc": "Voice note, 0:16"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "On it. Checking if people want it",
+     "desc": "Saved as idea: Estate cold brew"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "23 chats asked for ready-to-drink",
+     "desc": "Canned reviews say \"tin\" 212 times",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       212,
+       64,
+       23
+      ],
+      "labels": [
+       "\"tin\"",
+       "\"too sweet\"",
+       "asks"
+      ],
+      "unit": "mentions"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "On the 9 am standup, with numbers"
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "toast",
+     "where": "Hub",
+     "title": "Overnight demand check",
+     "text": "23 asks. \"Tastes of tin\": 212 reviews."
+    }
+   ]
+  }
+ ],
+ "voice": {
+  "who": "Nikhil",
+  "time": "1:06 am",
+  "when": "7 months before",
+  "words": "Still up. Every office in Koramangala drinks cold brew from cans that taste of tin, or makes it at home and gives up in a week. Our estate beans, as a concentrate. One bottle, ten glasses, four forty-nine. Keeps two weeks in the fridge. Check if people actually want this.",
+  "audio": null,
+  "lead": "Before any of it, Nikhil left himself a voice note.",
+  "length": "0:16"
+ },
+ "team": [
+  {
+   "name": "Nikhil",
+   "role": "Founder",
+   "initial": "N",
+   "waiting": "1 roast to pick, 1 PO to approve"
+  },
+  {
+   "name": "Pooja",
+   "role": "Growth",
+   "initial": "P",
+   "waiting": "1 first line, 1 ad cut"
+  },
+  {
+   "name": "Farhan",
+   "role": "Ops",
+   "initial": "F",
+   "waiting": "12 boxes to scan"
+  },
+  {
+   "name": "Leela",
+   "role": "Content",
+   "initial": "L",
+   "waiting": "1 shoot date to confirm"
+  },
+  {
+   "name": "Varun",
+   "role": "People",
+   "initial": "V",
+   "waiting": "1 roaster offer to make"
+  },
+  {
+   "name": "Meera",
+   "role": "Quality",
+   "initial": "M",
+   "waiting": "1 batch to pass or reject"
+  }
+ ],
+ "end": {
+  "line": "Nikhil had the idea at 1:06 am. Seven months later it was on a doorstep. People tapped 8 times.",
+  "workspace": null
+ },
+ "page": {
+  "title": "Chief of Staff for brands and agencies",
+  "description": "An AI chief of staff that runs, manages and monitors a D2C brand. Watch it take one bottle of cold brew from a 1 am voice note to a doorstep, with 8 taps from people.",
+  "rewind_hint": "Scroll to rewind to the idea",
+  "strip_label": "Chief of staff, on now",
+  "strip_modes": {
+   "running": "Running",
+   "managing": "Managing",
+   "monitoring": "Monitoring"
+  },
+  "counter": "Steps so far: {steps}. Taps by people: {taps}.",
+  "cta": {
+   "demo": "Try the demo",
+   "login": "Log in",
+   "plans": "See plans"
+  }
+ },
+ "channels": {
+  "voice": "nikhil-notes",
+  "hire": "people",
+  "packaging": "inkline",
+  "po": "purchasing",
+  "shoot": "content",
+  "ad": "growth",
+  "listing": "growth",
+  "support": "support",
+  "order": "warehouse",
+  "packed": "warehouse",
+  "courier": "shipping",
+  "delivered": "growth",
+  "standup": "standup",
+  "samples": "npd",
+  "vendor": "purchasing"
+ },
+ "sources": {
+  "voice": "Website chat",
+  "po": "Quotes",
+  "ad": "Meta Ads",
+  "listing": "Judge.me",
+  "support": "WhatsApp",
+  "courier": "Shiprocket",
+  "delivered": "Shadowfax",
+  "samples": "QC log",
+  "vendor": "Quotes",
+  "packed": "Stock"
+ },
+ "shipping": {
+  "to_name": "Customer, SI-30562",
+  "to_line": "Koramangala, Bengaluru",
+  "pin": "560034",
+  "order": "SI-30562",
+  "courier": "Shadowfax",
+  "service": "7 to 9 am",
+  "weight": "640 g",
+  "awb": "7720 1394 0815",
+  "delivered_at": "7:22 am",
+  "light": "morning",
+  "care_at": "8:20 am",
+  "out_for_delivery": "16",
+  "others": [
+   [
+    "SI-30558",
+    "Indiranagar",
+    "Delivered"
+   ],
+   [
+    "SI-30566",
+    "HSR Layout",
+    "Out for delivery"
+   ]
+  ]
+ },
+ "po_doc": {
+  "id": "PO-0063",
+  "item": "Amber bottle, 4,000",
+  "terms": "30 days"
+ },
+ "crops": {
+  "trials": [
+   [
+    0.035,
+    0.307,
+    0.212,
+    0.694
+   ],
+   [
+    0.224,
+    0.308,
+    0.4,
+    0.694
+   ],
+   [
+    0.411,
+    0.308,
+    0.589,
+    0.694
+   ],
+   [
+    0.6,
+    0.308,
+    0.777,
+    0.694
+   ],
+   [
+    0.789,
+    0.308,
+    0.966,
+    0.694
+   ]
+  ],
+  "pick": 3,
+  "pickAt": {
+   "x": -0.292,
+   "y": 0.01,
+   "s": 0.6
+  },
+  "flat": [
+   0.39,
+   0.058,
+   0.976,
+   0.97
+  ],
+  "flatLip": {
+   "x": -0.292,
+   "y": 0.009,
+   "s": 0.932
+  },
+  "vL": [
+   0.021,
+   0.345,
+   0.363,
+   0.956
+  ],
+  "vR": [
+   0.671,
+   0.193,
+   0.974,
+   0.951
+  ],
+  "qcR": 180,
+  "kit": {
+   "kBullet": {
+    "crop": [
+     0.323,
+     0.569,
+     0.593,
+     0.948
+    ],
+    "home": {
+     "x": 0,
+     "y": 0.05
+    }
+   },
+   "kTube": {
+    "crop": [
+     0.018,
+     0.106,
+     0.309,
+     0.914
+    ],
+    "home": {
+     "x": 0,
+     "y": 0
+    }
+   },
+   "kCap": {
+    "crop": [
+     0.347,
+     0.06,
+     0.561,
+     0.294
+    ],
+    "home": {
+     "x": 0,
+     "y": -0.42
+    }
+   },
+   "kCarton": {
+    "crop": [
+     0.603,
+     0.05,
+     0.979,
+     0.95
+    ],
+    "home": {
+     "x": 0.7,
+     "y": 0.1
+    }
+   },
+   "kCard": {
+    "crop": [
+     0.324,
+     0.323,
+     0.596,
+     0.539
+    ],
+    "home": {
+     "x": 0,
+     "y": 0.1
+    }
+   }
+  }
+ },
+ "audio": {
+  "voice-note": "assets/siro/audio/voice-note.mp3",
+  "delivered-q": "assets/siro/audio/delivered-q.mp3",
+  "delivered-a": "assets/siro/audio/delivered-a.mp3",
+  "packed-ask": "assets/siro/audio/packed-ask.mp3",
+  "packed-reply": "assets/siro/audio/packed-reply.mp3",
+  "support-q": "assets/siro/audio/support-q.mp3",
+  "support-a": "assets/siro/audio/support-a.mp3",
+  "listing-ask": "assets/siro/audio/listing-ask.mp3",
+  "listing-reply": "assets/siro/audio/listing-reply.mp3",
+  "ad-ask": "assets/siro/audio/ad-ask.mp3",
+  "ad-reply": "assets/siro/audio/ad-reply.mp3",
+  "shoot-ask": "assets/siro/audio/shoot-ask.mp3",
+  "shoot-reply": "assets/siro/audio/shoot-reply.mp3",
+  "po-ask": "assets/siro/audio/po-ask.mp3",
+  "po-reply": "assets/siro/audio/po-reply.mp3",
+  "hire-ask": "assets/siro/audio/hire-ask.mp3",
+  "hire-reply": "assets/siro/audio/hire-reply.mp3",
+  "packaging-agency": "assets/siro/audio/packaging-agency.mp3",
+  "standup-1": "assets/siro/audio/voice-note.mp3",
+  "ad-q": "assets/siro/audio/ad-q.mp3",
+  "ad-a": "assets/siro/audio/ad-a.mp3",
+  "vendor-ask": "assets/siro/audio/vendor-ask.mp3",
+  "vendor-reply": "assets/siro/audio/vendor-reply.mp3",
+  "standup-2": "assets/siro/audio/standup-2.mp3",
+  "standup-3": "assets/siro/audio/standup-3.mp3",
+  "standup-ask": "assets/siro/audio/standup-ask.mp3",
+  "standup-reply": "assets/siro/audio/standup-reply.mp3",
+  "delivered-agency": "assets/siro/audio/delivered-agency.mp3",
+  "support-agency": "assets/siro/audio/support-agency.mp3",
+  "ad-agency": "assets/siro/audio/ad-agency.mp3",
+  "samples-agency": "assets/siro/audio/samples-agency.mp3"
+ },
+ "areas": {
+  "voice": "Ideas",
+  "hire": "Hiring",
+  "packaging": "Packaging",
+  "po": "Purchase orders",
+  "shoot": "Content",
+  "ad": "Ads",
+  "listing": "Website",
+  "support": "Orders",
+  "order": "Orders",
+  "packed": "Warehouse",
+  "courier": "Shipments",
+  "delivered": "Orders",
+  "standup": "Projects",
+  "samples": "Product",
+  "vendor": "Vendors"
+ }
+}

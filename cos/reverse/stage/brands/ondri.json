@@ -1,0 +1,3051 @@
+{
+ "id": "ondri",
+ "brand": {
+  "name": "Ondri",
+  "category": "home fragrance",
+  "city": "Pune",
+  "product": "Monsoon Earth reed diffuser",
+  "founder": "Kavya"
+ },
+ "palette": {
+  "sky": [
+   "#3b3f46",
+   "#e9a25a"
+  ],
+  "ground": "#0b0b0a",
+  "night": [
+   "#0d1220",
+   "#2a3550"
+  ],
+  "accent": "#e9a25a"
+ },
+ "intro": {
+  "line": "One Monsoon Earth diffuser, delivered in Kothrud at 5:41 pm.",
+  "sub": "Rewind it. People tapped 8 times. The chief of staff did everything else."
+ },
+ "assets": {
+  "hero": "assets/ondri/hero.webp",
+  "hero_boxed": "assets/ondri/hero_boxed.webp",
+  "parcel": "assets/ondri/parcel.webp",
+  "parcel_top": "assets/ondri/parcel_top.webp",
+  "kit_flatlay": "assets/ondri/kit_flatlay.webp",
+  "qc": "assets/ondri/qc.webp",
+  "carton_top": "assets/ondri/carton_top.webp",
+  "variants3": "assets/ondri/variants3.webp",
+  "box_flat": "assets/ondri/box_flat.webp",
+  "trials5": "assets/ondri/trials5.webp",
+  "maker_tool": "assets/ondri/maker_tool.webp",
+  "wireframe": "assets/ondri/wireframe.webp"
+ },
+ "stages": [
+  {
+   "id": "delivered",
+   "when": "Today, 6:40 pm",
+   "mode": "dusk",
+   "object": "hero_boxed",
+   "line": "Sent Shruti a care note an hour after delivery: four reeds to start, flip them weekly, keep it out of direct sun.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Care note sent, 6:40 pm",
+     "at": [
+      0.514,
+      0.62
+     ]
+    },
+    {
+     "text": "Delivered in Kothrud, 5:41 pm",
+     "at": [
+      0.684,
+      0.27
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Support",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "6:40 pm",
+      "text": "Care note sent to Shruti, ON-11873: start with four reeds, flip them once a week, keep it out of direct sun."
+     },
+     {
+      "who": "Meher",
+      "time": "6:45 pm",
+      "text": "nice. can we nudge her for a refill before it runs out?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "6:46 pm",
+      "text": "Refill reminder set for day 50. 100 ml lasts about 55 days on four reeds."
+     }
+    ],
+    "os": {
+     "title": "Order ON-11873",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Status",
+       "Delivered"
+      ],
+      [
+       "Delivered",
+       "Today, 5:41 pm"
+      ],
+      [
+       "Courier",
+       "Delhivery"
+      ],
+      [
+       "Care note",
+       "Sent 6:40 pm, opened 6:52 pm"
+      ],
+      [
+       "Refill reminder",
+       "Day 50, on WhatsApp"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Delivered today",
+       "value": "27",
+       "source": "Shopify",
+       "fetched": "6:35 pm"
+      },
+      {
+       "label": "Care notes opened, last 30 days",
+       "value": "67%",
+       "source": "WhatsApp",
+       "fetched": "7:00 pm"
+      },
+      {
+       "label": "Refill reminders set this week",
+       "value": "27",
+       "source": "WhatsApp",
+       "fetched": "6:46 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Care note sent: 4 reeds, flip weekly"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Care-note opens, hourly",
+     "Refill orders, daily",
+     "Monsoon Earth reviews, hourly"
+    ]
+   },
+   "summary": "5:41 pm, her door. 6:40 pm, a care note. Then: how's today?",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "ON-11873 delivered · Kothrud · 5:41 pm",
+     "media": {
+      "type": "photo",
+      "kit": "hero_boxed",
+      "crop": [
+       0.1,
+       0.0,
+       0.9,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "Care note sent: 4 reeds, flip weekly",
+     "ch": "support",
+     "desc": "Refill nudge on day 50"
+    },
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "sales today?",
+     "who": "Meher",
+     "answer": "₹1,23,840 · 96 orders · up 6%.",
+     "ch": "growth"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "96? on a tuesday? nice",
+     "who": "Kavya",
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "One diffuser: voice note to doorstep",
+     "desc": "7 months · 8 taps"
+    }
+   ]
+  },
+  {
+   "id": "courier",
+   "when": "2 days before, 4:10 pm",
+   "mode": "dusk",
+   "object": "parcel",
+   "line": "Booked Delhivery for 411038, lowest RTO of three at 1.8%. Sent Shruti tracking in Marathi after the 3:50 pm pickup.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "RTO 1.8% in 411038",
+     "at": [
+      0.45,
+      0.37
+     ]
+    },
+    {
+     "text": "Tracking in Marathi, her checkout language",
+     "at": [
+      0.684,
+      0.15
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:10 pm",
+      "text": "Delhivery picked up ON-11873 at 3:50 pm. Booked them at 10:25 am: RTO in 411038 is 1.8%, against 3.9% and 5.2%. Tracking sent in Marathi."
+     },
+     {
+      "who": "Shruti, Kothrud",
+      "time": "4:31 pm",
+      "text": "Dhanyavaad."
+     }
+    ],
+    "os": {
+     "title": "Shipment ON-11873",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Courier",
+       "Delhivery, surface"
+      ],
+      [
+       "Pincode",
+       "411038"
+      ],
+      [
+       "Picked up",
+       "3:50 pm"
+      ],
+      [
+       "Tracking",
+       "Sent in Marathi, 4:10 pm"
+      ],
+      [
+       "Promised",
+       "In 2 days"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "RTO, Delhivery, 411038",
+       "value": "1.8%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "10:22 am"
+      },
+      {
+       "label": "RTO, Xpressbees, 411038",
+       "value": "3.9%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "10:22 am"
+      },
+      {
+       "label": "RTO, Ecom Express, 411038",
+       "value": "5.2%",
+       "source": "Shiprocket, 90 days",
+       "fetched": "10:22 am"
+      },
+      {
+       "label": "Tracking link opened",
+       "value": "4:30 pm",
+       "source": "WhatsApp",
+       "fetched": "4:32 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Comparing 3 couriers in 411038, last 90 days",
+     "Returns: Delhivery 1.8%. Next best 3.9"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Courier RTO by pincode, every 15 min",
+     "Returns by courier, 90 days",
+     "Tracking opens, live"
+    ]
+   },
+   "summary": "The courier is picked by who actually delivers in Kothrud.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "ON-11873 packed · 411038"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Comparing 3 couriers in 411038, last 90 days"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Returns: Delhivery 1.8%. Next best 3.9",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       1.8,
+       3.9,
+       5.2
+      ],
+      "labels": [
+       "Delhivery",
+       "Xpressbees",
+       "Ekart"
+      ],
+      "unit": "%"
+     }
+    },
+    {
+     "t": "done",
+     "s": "chat",
+     "text": "Booked Delhivery. Tracking sent in Marathi",
+     "ch": "shipping"
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "toast",
+     "where": "OS",
+     "title": "Courier picked",
+     "text": "Delhivery, pickup 3:50 pm"
+    }
+   ]
+  },
+  {
+   "id": "support",
+   "when": "2 days before, 1:20 pm",
+   "mode": "dusk",
+   "object": "phone",
+   "line": "Shruti asked if her order had left at 1:20 pm. Answered from the 10:31 am seal scan in 40 seconds: packed, on the 3:50 pm pickup.",
+   "tap": null,
+   "ask": "Will this be too strong for a small bedroom?",
+   "answer": "For a 10 by 10 room, start with four reeds, not eight. If it's too light after a week, add two.",
+   "tags": [
+    {
+     "text": "Answered in 2 min",
+     "at": [
+      0.611,
+      0.613
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Support",
+    "chat": [
+     {
+      "who": "Shruti, Kothrud",
+      "time": "1:20 pm",
+      "text": "hi, has my order left yet? ON-11873"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:20 pm",
+      "text": "Packed and sealed at 10:31 am, double wrapped. It leaves Wakad on the 3:50 pm pickup; tracking comes then."
+     },
+     {
+      "who": "Shruti, Kothrud",
+      "time": "1:21 pm",
+      "text": "perfect"
+     }
+    ],
+    "os": {
+     "title": "Support chat #5307",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Channel",
+       "Website chat"
+      ],
+      [
+       "Question",
+       "Strength in a small bedroom"
+      ],
+      [
+       "Answered from",
+       "Ondri test notes, room sizes"
+      ],
+      [
+       "First reply",
+       "2 min"
+      ],
+      [
+       "Outcome",
+       "Ordered at 11:58 pm, ₹1,290"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "First reply tonight, median",
+       "value": "2 min",
+       "source": "Website chat",
+       "fetched": "11:55 pm"
+      },
+      {
+       "label": "Room-size questions this week",
+       "value": "38",
+       "source": "Website chat",
+       "fetched": "11:55 pm"
+      },
+      {
+       "label": "Chats that end in an order",
+       "value": "31%",
+       "source": "Shopify and website chat",
+       "fetched": "11:55 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Read off Rohan's 10:31 scan",
+     "Answered in 40 sec. Nobody looked it up"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Where-is-my-order chats, live",
+     "First reply time, every 15 min"
+    ]
+   },
+   "summary": "\"Has it left yet?\" Answered off the warehouse scan in 40 seconds.",
+   "flow": [
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "has my order left yet?",
+     "who": "Shruti, Kothrud",
+     "answer": "Packed 10:31 am. Leaves on the 3:50 pickup.",
+     "ch": "support"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Read off Rohan's 10:31 scan"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Answered in 40 sec. Nobody looked it up"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "ok super, thanks",
+     "who": "Shruti, Kothrud",
+     "ch": "support"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Tracking queued for the pickup",
+     "media": {
+      "type": "link",
+      "title": "ondri.in/track/ON-11873",
+      "note": "pickup 3:50 pm"
+     }
+    }
+   ]
+  },
+  {
+   "id": "packed",
+   "when": "2 days before, 10:20 am",
+   "mode": "top",
+   "object": "parcel_top",
+   "line": "Sealed ON-11873 at 412 g in the Wakad morning batch, saw reeds at two weeks of cover, and drafted PO-0094 on Kavya's standing terms.",
+   "tap": {
+    "who": "Rohan",
+    "what": "sealed ON-11873",
+    "cost": "1 tap, 2 sec"
+   },
+   "tags": [
+    {
+     "text": "412 g, matches the kit",
+     "at": [
+      0.456,
+      0.6
+     ]
+    },
+    {
+     "text": "Packed 10:20 am",
+     "at": [
+      0.482,
+      0.105
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:20 am",
+      "text": "Scale readings in from Wakad. ON-11873 packed at 412 g, same as the kit."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:21 am",
+      "text": "ON-11876 packed at 398 g, kit is 412 g. Glass wrap likely missing. Sent it back to packing."
+     },
+     {
+      "who": "Rohan",
+      "time": "10:23 am",
+      "text": "scanned. repacking 11876 now"
+     }
+    ],
+    "os": {
+     "title": "Morning batch, Wakad, 75 orders",
+     "cols": [
+      "Order",
+      "Packed",
+      "Expected",
+      "Status"
+     ],
+     "rows": [
+      [
+       "ON-11873",
+       "412 g",
+       "412 g",
+       "Packed"
+      ],
+      [
+       "ON-11874",
+       "824 g",
+       "824 g",
+       "Packed"
+      ],
+      [
+       "ON-11876",
+       "398 g",
+       "412 g",
+       "Re-packed, glass wrap missing"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Packed by 10:30 am",
+       "value": "61 of 75",
+       "source": "Warehouse scans",
+       "fetched": "10:31 am"
+      },
+      {
+       "label": "Weight mismatches",
+       "value": "1 of 61",
+       "source": "Warehouse scans",
+       "fetched": "10:31 am"
+      },
+      {
+       "label": "Glass breakage this month",
+       "value": "0.4%",
+       "source": "Warehouse returns log",
+       "fetched": "10:31 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Checking every scale reading vs the kit",
+     "Reeds: 2 wks of cover left",
+     "PO-0094 drafted · reeds · repeat"
+    ],
+    "managing": [
+     "Waiting on Rohan: 1 tap"
+    ],
+    "monitoring": [
+     "Scale readings, every scan",
+     "Glass breakage, weekly",
+     "Van slots, every 30 min"
+    ]
+   },
+   "card": {
+    "area": "Warehouse",
+    "ask": "ON-11873 packed at 412 g, same as the kit. Seal it for the 3:50 pm pickup.",
+    "options": [
+     {
+      "label": "Seal it",
+      "recommended": true
+     },
+     {
+      "label": "Re-pack it"
+     }
+    ],
+    "by": "Rohan",
+    "checker": "Tara",
+    "action": "Seal the box",
+    "signal": "Every scale reading checked against its kit",
+    "osRow": 0
+   },
+   "summary": "Her box gets sealed. The chief sees reeds running low and reorders.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "Morning batch to Wakad: 75 orders"
+    },
+    {
+     "t": "assign",
+     "s": "os",
+     "text": "Checking every scale reading vs the kit"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "ON-11873: 412 g, kit is 412 g. Seal it?",
+     "who": "Rohan",
+     "options": [
+      "sealed",
+      "re-pack"
+     ],
+     "ch": "warehouse",
+     "media": {
+      "type": "photo",
+      "kit": "parcel_top",
+      "crop": [
+       0.0,
+       0.0,
+       1.0,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Reeds: 2 wks of cover left",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       14,
+       30
+      ],
+      "labels": [
+       "reeds",
+       "bottles"
+      ],
+      "unit": "days"
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "PO-0094 drafted · reeds · repeat",
+     "area": "Purchase orders",
+     "desc": "Kavya's standing terms. No tap."
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "Stock alert",
+     "text": "Reeds at 2 weeks. Reorder drafted."
+    }
+   ]
+  },
+  {
+   "id": "order",
+   "when": "3 days before, 11:58 pm",
+   "mode": "dusk",
+   "night": true,
+   "object": "phone",
+   "line": "Logged Shruti's 11:58 pm order from the rain ad, checked it against 411038, switched on the glass rule (double wrap, this side up) and put it in the 8:50 am Wakad batch.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Address matches 411038",
+     "at": [
+      0.57,
+      0.423
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:58 pm",
+      "text": "ON-11873 in from the room-size chat: Monsoon Earth, ₹1,290, prepaid. Address matches 411038. Added to the 8:50 am Wakad batch, 75 of 75."
+     },
+     {
+      "who": "Rohan",
+      "time": "8:50 am",
+      "text": "seen, printing labels now"
+     }
+    ],
+    "os": {
+     "title": "Order ON-11873",
+     "cols": [
+      "Field",
+      "Value"
+     ],
+     "rows": [
+      [
+       "Item",
+       "Monsoon Earth reed diffuser, 100 ml"
+      ],
+      [
+       "Total",
+       "₹1,290, prepaid"
+      ],
+      [
+       "Ship to",
+       "Kothrud, 411038"
+      ],
+      [
+       "Address check",
+       "Matches the pincode"
+      ],
+      [
+       "Batch",
+       "Morning, 75 of 75"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Orders today",
+       "value": "96",
+       "source": "Shopify",
+       "fetched": "11:59 pm"
+      },
+      {
+       "label": "Prepaid share today",
+       "value": "78%",
+       "source": "Razorpay",
+       "fetched": "11:59 pm"
+      },
+      {
+       "label": "Addresses flagged",
+       "value": "0 of 96",
+       "source": "Address check",
+       "fetched": "11:59 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Checking address + item",
+     "Glass inside: double wrap, this side up"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "New orders, live",
+     "Address checks, every order",
+     "Prepaid share, hourly"
+    ]
+   },
+   "summary": "Shruti orders from the rain ad. Rohan's glass rule kicks in on its own.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "ON-11873 · Monsoon Earth · ₹1,290 · prepaid",
+     "area": "Orders",
+     "desc": "Rain ad · 11:58 pm"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Checking address + item"
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Glass inside: double wrap, this side up",
+     "desc": "Rohan's rule from standup"
+    },
+    {
+     "t": "done",
+     "s": "chat",
+     "text": "@Rohan ON-11873 in the 8:50 am Wakad batch",
+     "ch": "warehouse",
+     "media": {
+      "type": "photo",
+      "kit": "kit_flatlay",
+      "crop": [
+       0.0,
+       0.0,
+       0.6,
+       1.0
+      ]
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "text",
+     "screen": "order",
+     "sel": ".scr-mid + .scr-label",
+     "to": "Glass inside: double wrap"
+    }
+   ]
+  },
+  {
+   "id": "ad",
+   "stats": [
+    "ROAS 3.1",
+    "CTR 2.4%",
+    "Cut C paused at 1.1"
+   ],
+   "when": "10 days before, 2:00 am",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "Cut three ads from the shoot. At 2 am, raised the rain cut to ₹5,000 a day and paused cut C at 1.1.",
+   "tap": {
+    "who": "Meher",
+    "what": "picked cut B to scale",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "Raised to ₹5,000 a day",
+     "at": [
+      0.499,
+      0.421
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Performance",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "2:00 am",
+      "text": "Cut B, rain on the window, is at ROAS 3.1. Raised it to ₹5,000 a day, up from about ₹2,600. Paused cut C at 1.1."
+     },
+     {
+      "who": "Meher",
+      "time": "9:20 am",
+      "text": "B is the window one?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "9:21 am",
+      "text": "Yes. Pick it and it gets the full ₹5,000 a day from noon."
+     }
+    ],
+    "os": {
+     "title": "Ad cuts, last 7 days",
+     "cols": [
+      "Cut",
+      "Spend",
+      "ROAS",
+      "CTR",
+      "Status"
+     ],
+     "rows": [
+      [
+       "A, bedroom shelf",
+       "₹9,600",
+       "2.2",
+       "1.7%",
+       "Running"
+      ],
+      [
+       "B, rain on the window",
+       "₹18,300",
+       "3.1",
+       "2.4%",
+       "Scaled"
+      ],
+      [
+       "C, bottle close-up",
+       "₹6,100",
+       "1.1",
+       "0.9%",
+       "Paused"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "ROAS, cut B",
+       "value": "3.1",
+       "source": "Meta Ads",
+       "fetched": "1:58 am"
+      },
+      {
+       "label": "CTR, cut B",
+       "value": "2.4%",
+       "source": "Meta Ads",
+       "fetched": "1:58 am"
+      },
+      {
+       "label": "Cut B daily budget, was about ₹2,600",
+       "value": "₹5,000",
+       "source": "Meta Ads",
+       "fetched": "2:00 am"
+      },
+      {
+       "label": "Cut C paused at",
+       "value": "ROAS 1.1",
+       "source": "Meta Ads",
+       "fetched": "2:00 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "2 am · cut C ROAS 1.1 · paused"
+    ],
+    "managing": [
+     "Waiting on Meher: 1 tap"
+    ],
+    "monitoring": [
+     "ROAS per cut, hourly",
+     "CTR per cut, hourly",
+     "Daily spend cap, every 15 min"
+    ]
+   },
+   "card": {
+    "area": "Performance",
+    "ask": "Pick the cut to scale. Cut B leads at ROAS 3.1.",
+    "options": [
+     {
+      "label": "Cut B, rain on the window, 3.1",
+      "recommended": true
+     },
+     {
+      "label": "Cut A, bedroom shelf, 2.2"
+     },
+     {
+      "label": "Cut C, bottle close-up, 1.1"
+     }
+    ],
+    "by": "Meher",
+    "checker": "Kavya",
+    "action": "Pick the cut",
+    "signal": "Cut C dropped to ROAS 1.1",
+    "osRow": 1
+   },
+   "summary": "2 am, one ad is wasting money. By 9 the rain cut has the budget.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "3 cuts live from the shoot",
+     "desc": "A shelf · B rain on glass · C close-up"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "2 am · cut C ROAS 1.1 · paused",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       3.1,
+       1.9,
+       1.1
+      ],
+      "labels": [
+       "B",
+       "A",
+       "C"
+      ],
+      "unit": "ROAS"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "B at 3.1. Raise to ₹5,000/day?",
+     "who": "Meher",
+     "options": [
+      "scale B",
+      "hold"
+     ],
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "hub",
+     "text": "Cut B: ₹5,000/day from 9 am"
+    },
+    {
+     "t": "q",
+     "s": "chat",
+     "text": "is the rain cut paying for itself?",
+     "who": "Kavya",
+     "answer": "Yes. ₹3.10 back per ₹1, last 7 days.",
+     "ch": "growth"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "acha nice. keep it",
+     "who": "Kavya",
+     "ch": "growth"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "Hub",
+     "title": "Budget raised",
+     "text": "Cut B from Rs 2,600 to Rs 5,000 a day"
+    }
+   ]
+  },
+  {
+   "id": "listing",
+   "when": "2 weeks before",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "18 of 24 tester reviews mentioned rain. Drafted a first line around it, and the rain photo beat the bottle shot, 3.4% to 2.3%.",
+   "tap": {
+    "who": "Meher",
+    "what": "approved the new first line",
+    "cost": "1 tap, 4 sec"
+   },
+   "card": {
+    "title": "Monsoon Earth reed diffuser, 100 ml",
+    "price": "₹1,290",
+    "rating": 4.7
+   },
+   "tags": [
+    {
+     "text": "Rain photo: 3.4% conversion",
+     "at": [
+      0.352,
+      0.424
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Website",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:40 am",
+      "text": "3 of 3 reviews say it lasts longer than they expected. Drafted a new first line: Smells like the first rain, for weeks."
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:05 am",
+      "text": "Photo test done at 1,900 visits each. Rain on the window converts at 3.4%, the studio bottle at 2.3%. Rain photo is live."
+     },
+     {
+      "who": "Meher",
+      "time": "11:12 am",
+      "text": "reading the line now"
+     }
+    ],
+    "os": {
+     "title": "Product page changes",
+     "cols": [
+      "Field",
+      "Before",
+      "After"
+     ],
+     "rows": [
+      [
+       "First line",
+       "A reed diffuser for monsoon evenings",
+       "Smells like the first rain, for weeks"
+      ],
+      [
+       "Hero photo",
+       "Studio bottle",
+       "Rain on the window"
+      ],
+      [
+       "Price",
+       "₹1,290",
+       "₹1,290"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Conversion, rain photo, 1,900 visits",
+       "value": "3.4%",
+       "source": "Shopify",
+       "fetched": "11:05 am"
+      },
+      {
+       "label": "Conversion, studio bottle, 1,900 visits",
+       "value": "2.3%",
+       "source": "Shopify",
+       "fetched": "11:05 am"
+      },
+      {
+       "label": "Rating",
+       "value": "4.7 from 3 reviews",
+       "source": "Judge.me",
+       "fetched": "10:40 am"
+      },
+      {
+       "label": "Reviews that say it lasts longer",
+       "value": "3 of 3",
+       "source": "Judge.me",
+       "fetched": "10:40 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Meher drafted a rain-first line for the page",
+     "Photo test: rain 3.4%, bottle 2.3%"
+    ],
+    "managing": [
+     "Waiting on Meher: 1 tap"
+    ],
+    "monitoring": [
+     "Conversion per photo, hourly",
+     "New reviews, hourly",
+     "Page speed, daily"
+    ]
+   },
+   "decision": {
+    "area": "Website",
+    "ask": "Replace the first line with \"Smells like the first rain, for weeks.\"",
+    "options": [
+     {
+      "label": "Use the new line",
+      "recommended": true
+     },
+     {
+      "label": "Keep the old line"
+     }
+    ],
+    "by": "Meher",
+    "checker": "Kavya",
+    "action": "Approve the line",
+    "signal": "3 of 3 reviews say it lasts longer",
+    "osRow": 0
+   },
+   "summary": "Testers say it smells like rain. The page starts saying it too.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "18/24 tester reviews say \"rain\"",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       18,
+       4,
+       2
+      ],
+      "labels": [
+       "rain",
+       "earthy",
+       "other"
+      ],
+      "unit": "reviews"
+     }
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Meher drafted a rain-first line for the page",
+     "ch": "growth"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Photo test: rain 3.4%, bottle 2.3%",
+     "src": "Shopify"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Lead with the rain line + rain photo?",
+     "who": "Meher",
+     "options": [
+      "smells like the first rain",
+      "keep the old line"
+     ],
+     "ch": "growth"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Live: rain photo, new first line",
+     "media": {
+      "type": "link",
+      "title": "ondri.in/monsoon-earth",
+      "note": "hero line changed"
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "text",
+     "screen": "listing",
+     "sel": ".scr-big",
+     "to": "Smells like the first rain"
+    },
+    {
+     "beat": 5,
+     "type": "toast",
+     "where": "OS",
+     "title": "Page updated",
+     "text": "Rain photo is the hero now"
+    }
+   ]
+  },
+  {
+   "id": "shoot",
+   "when": "5 weeks before",
+   "mode": "dusk",
+   "object": "hero",
+   "line": "Ira asked for real rain. Checked the forecast, booked Friday 10 am on a Koregaon Park balcony, and held a studio rain rig as backup.",
+   "tap": {
+    "who": "Ira",
+    "what": "confirmed Friday, 10 am",
+    "cost": "1 tap, 3 sec"
+   },
+   "tags": [
+    {
+     "text": "12 shots",
+     "at": [
+      0.117,
+      0.486
+     ]
+    },
+    {
+     "text": "Rain rig booked",
+     "at": [
+      0.944,
+      0.17
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Content",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:10 pm",
+      "text": "Brief and 12-shot list sent to Ira. Studio held Friday, with a rain rig for the window shots."
+     },
+     {
+      "who": "Ira, creator",
+      "time": "1:02 pm",
+      "text": "friday works. what time?"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:03 pm",
+      "text": "10 am. Window shots first, while the light is soft. Call sheet is in your inbox."
+     }
+    ],
+    "os": {
+     "title": "Shoot, Friday, 10 am",
+     "cols": [
+      "Shot",
+      "What",
+      "For"
+     ],
+     "rows": [
+      [
+       "1",
+       "Bottle, side-on",
+       "Product page"
+      ],
+      [
+       "2",
+       "Reeds by a rainy window",
+       "Product page, ads"
+      ],
+      [
+       "3",
+       "Bedroom shelf",
+       "Ads"
+      ],
+      [
+       "4",
+       "Flipping the reeds",
+       "Care note"
+      ],
+      [
+       "5 to 12",
+       "Close-ups",
+       "Ads, social"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Studio",
+       "value": "7 hours, rain rig",
+       "source": "Studio calendar",
+       "fetched": "12:08 pm"
+      },
+      {
+       "label": "Shots planned",
+       "value": "12",
+       "source": "Shot list",
+       "fetched": "12:10 pm"
+      },
+      {
+       "label": "Creator fee, 6 months usage",
+       "value": "₹22,000",
+       "source": "Creator agreement",
+       "fetched": "1:03 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Fri 10 am: 80% rain in Pune",
+     "Call sheet out · rig held as backup"
+    ],
+    "managing": [
+     "Waiting on Ira: 1 tap"
+    ],
+    "monitoring": [
+     "Studio calendar, hourly",
+     "Creator replies, every 15 min",
+     "Rain rig availability, daily"
+    ]
+   },
+   "card": {
+    "area": "Content",
+    "ask": "Friday, 10 am, studio with a rain rig. 7 hours, 12 shots.",
+    "options": [
+     {
+      "label": "Friday, 10 am",
+      "recommended": true
+     },
+     {
+      "label": "Next Friday"
+     }
+    ],
+    "by": "Ira",
+    "checker": "Meher",
+    "action": "Confirm the date",
+    "signal": "Studio hold expires in 24 h",
+    "osRow": 0
+   },
+   "summary": "Ira wants real rain, not a rig. The forecast says Friday.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "can we shoot in real rain? rig looks fake",
+     "who": "Ira",
+     "ch": "content",
+     "media": {
+      "type": "photo",
+      "kit": "hero",
+      "crop": [
+       0.2,
+       0.0,
+       0.8,
+       0.6
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Fri 10 am: 80% rain in Pune",
+     "desc": "Checked IMD + 2 apps"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Fri 10 am, balcony, real rain. Works?",
+     "who": "Ira",
+     "options": [
+      "works",
+      "studio rig"
+     ],
+     "ch": "content"
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Call sheet out · rig held as backup",
+     "media": {
+      "type": "doc",
+      "name": "callsheet_fri.pdf",
+      "note": "rig as backup"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "38 photos. Rain on the window wins"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "Backup held",
+     "text": "Studio rain rig, Friday 2 pm"
+    }
+   ]
+  },
+  {
+   "id": "po",
+   "when": "10 weeks before",
+   "mode": "dusk",
+   "object": "variants3",
+   "line": "Drafted PO-0087 for 3,000 bottles on Firozabad's quote, 45 days to pay. Kavya approved; sent at 3:10 pm, confirmed at 3:55 pm, bay 2 held.",
+   "tap": {
+    "who": "Kavya",
+    "what": "approved PO-0087",
+    "cost": "1 tap, 6 sec"
+   },
+   "tags": [
+    {
+     "text": "Firozabad: 45-day terms",
+     "at": [
+      0.485,
+      0.55
+     ]
+    },
+    {
+     "text": "Breakage replaced free",
+     "at": [
+      0.81,
+      0.72
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:30 pm",
+      "text": "Three quotes in for 3,000 amber bottles, 100 ml. Firozabad is ₹4 more than Vadodara, but gives 45-day terms and replaces breakage free."
+     },
+     {
+      "who": "Rohan",
+      "time": "12:44 pm",
+      "text": "their neck finish fits our reed cap, checked the sample"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:50 pm",
+      "text": "PO-0087 drafted: ₹1,38,000, nothing paid upfront. Waiting on Kavya."
+     }
+    ],
+    "os": {
+     "title": "Quotes: 3,000 amber bottles, 100 ml",
+     "cols": [
+      "Vendor",
+      "Per bottle",
+      "Terms",
+      "Lead time",
+      "Breakage"
+     ],
+     "rows": [
+      [
+       "Vadodara",
+       "₹42",
+       "Upfront",
+       "28 days",
+       "Not covered"
+      ],
+      [
+       "Firozabad",
+       "₹46",
+       "45 days",
+       "14 days",
+       "Replaced free"
+      ],
+      [
+       "Ningbo",
+       "₹37",
+       "Upfront",
+       "60 days",
+       "Not covered"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Glass cost per diffuser",
+       "value": "₹46",
+       "source": "PO-0087",
+       "fetched": "12:50 pm"
+      },
+      {
+       "label": "Cash out today",
+       "value": "₹0",
+       "source": "PO-0087, 45-day terms",
+       "fetched": "12:50 pm"
+      },
+      {
+       "label": "PO total",
+       "value": "₹1,38,000",
+       "source": "PO-0087",
+       "fetched": "12:50 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Rohan bay 2 held for the landing",
+     "PO-0087 sent · Firozabad · ₹1.38L"
+    ],
+    "managing": [
+     "Waiting on Kavya: 1 tap"
+    ],
+    "monitoring": [
+     "Cash in the bank, daily",
+     "Glass prices, three vendors",
+     "Lead times, weekly"
+    ]
+   },
+   "card": {
+    "area": "Purchasing",
+    "ask": "PO-0087: 3,000 amber bottles from Firozabad, ₹1,38,000, paid in 45 days.",
+    "options": [
+     {
+      "label": "Firozabad, ₹46, 45-day terms",
+      "recommended": true
+     },
+     {
+      "label": "Vadodara, ₹42, pay upfront"
+     },
+     {
+      "label": "Ningbo, ₹37, upfront, 60-day lead"
+     }
+    ],
+    "by": "Kavya",
+    "checker": "Rohan",
+    "action": "Approve the PO",
+    "signal": "Firozabad price held for 7 days",
+    "osRow": 1
+   },
+   "summary": "The bottles are ordered on Firozabad's terms, with a bay held for them.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "PO-0087 drafted · 3,000 bottles",
+     "desc": "Firozabad terms · 45 days to pay"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Rohan bay 2 held for the landing",
+     "ch": "purchasing"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "PO-0087 · 3,000 bottles · ₹1.38L · 45 days. Approve?",
+     "who": "Kavya",
+     "options": [
+      "approve",
+      "hold"
+     ],
+     "ch": "purchasing",
+     "media": {
+      "type": "doc",
+      "name": "PO-0087.pdf",
+      "note": "₹1,38,000"
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "PO-0087 sent · Firozabad · ₹1.38L",
+     "desc": "Confirmed 3:55 pm"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Tracking it daily till bay 2"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "toast",
+     "where": "OS",
+     "title": "PO-0087 confirmed",
+     "text": "14-day lead, lands before filling"
+    }
+   ]
+  },
+  {
+   "id": "packaging",
+   "when": "3 months before",
+   "mode": "dusk",
+   "object": "box_flat",
+   "line": "Checked label proof v2 against the Legal Metrology rules. It was missing the net quantity, 100 ml. Proof v3 came back fixed.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Net quantity: 100 ml added",
+     "at": [
+      0.66,
+      0.58
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "11:40 am",
+      "text": "Proof v2 checked against the Legal Metrology rules. One line missing: net quantity. It should read 100 ml."
+     },
+     {
+      "who": "Rohan",
+      "time": "11:52 am",
+      "text": "sending it back to the printer"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:15 pm",
+      "text": "v3 is back with 100 ml on it. 12 of 12 rules pass. Cleared for the run of 3,000."
+     }
+    ],
+    "os": {
+     "title": "Label check, proof v3",
+     "cols": [
+      "Line",
+      "Required",
+      "On the proof"
+     ],
+     "rows": [
+      [
+       "Product name",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Net quantity",
+       "Yes",
+       "Added in v3"
+      ],
+      [
+       "MRP incl. taxes",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Manufacturer address",
+       "Yes",
+       "Yes"
+      ],
+      [
+       "Caution line",
+       "Yes",
+       "Yes"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Label rules passed",
+       "value": "12 of 12",
+       "source": "Legal Metrology checklist",
+       "fetched": "4:15 pm"
+      },
+      {
+       "label": "Box run",
+       "value": "3,000",
+       "source": "Printer quote",
+       "fetched": "4:15 pm"
+      },
+      {
+       "label": "Cost per box",
+       "value": "₹11.50",
+       "source": "Printer quote",
+       "fetched": "4:15 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Checking v2 against 12 Legal Metrology rules",
+     "v2 missing net qty. pls add \"Net qty 100 ml\" bottom left",
+     "Proof v3: 12/12 pass"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Printer proof inbox, hourly",
+     "Labelling rule changes, weekly",
+     "Box cost per unit, per quote"
+    ]
+   },
+   "summary": "The label is missing its net quantity. Caught before 3,000 boxes print.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "label proof v2 attached. ok to print?",
+     "who": "Studio Ghar",
+     "ch": "studio-ghar",
+     "media": {
+      "type": "doc",
+      "name": "label_v2.pdf"
+     }
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Checking v2 against 12 Legal Metrology rules"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "v2 missing net qty. pls add \"Net qty 100 ml\" bottom left",
+     "ch": "studio-ghar",
+     "media": {
+      "type": "photo",
+      "kit": "box_flat",
+      "crop": [
+       0.1,
+       0.0,
+       0.9,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "os",
+     "text": "Proof v3: 12/12 pass"
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "3,000 boxes cleared to print. Nobody chased"
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "stamp",
+     "key": "flat",
+     "at": [
+      0.5,
+      0.27
+     ],
+     "text": "Net qty 100 ml",
+     "badge": "v3"
+    }
+   ]
+  },
+  {
+   "id": "vendor",
+   "when": "4 months before",
+   "mode": "dusk",
+   "object": "variants3",
+   "line": "Lined up three glassworks for the 100 ml amber bottle. Recommended Firozabad: Rs 46, 45-day terms, and the only one covering breakage, Rohan's point from standup.",
+   "tap": {
+    "who": "Kavya",
+    "what": "chose Firozabad",
+    "cost": "1 tap, 5 sec"
+   },
+   "tags": [
+    {
+     "text": "Firozabad: 45-day terms",
+     "at": [
+      0.485,
+      0.55
+     ]
+    },
+    {
+     "text": "Breakage replaced free",
+     "at": [
+      0.81,
+      0.72
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Ops",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:30 pm",
+      "text": "Three quotes in for 3,000 amber bottles, 100 ml. Firozabad is ₹4 more than Vadodara, but gives 45-day terms and replaces breakage free."
+     },
+     {
+      "who": "Rohan",
+      "time": "12:44 pm",
+      "text": "their neck finish fits our reed cap, checked the sample"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "12:50 pm",
+      "text": "PO-0087 drafted: ₹1,38,000, nothing paid upfront. Waiting on Kavya."
+     }
+    ],
+    "os": {
+     "title": "Quotes: 3,000 amber bottles, 100 ml",
+     "cols": [
+      "Vendor",
+      "Per bottle",
+      "Terms",
+      "Lead time",
+      "Breakage"
+     ],
+     "rows": [
+      [
+       "Vadodara",
+       "₹42",
+       "Upfront",
+       "28 days",
+       "Not covered"
+      ],
+      [
+       "Firozabad",
+       "₹46",
+       "45 days",
+       "14 days",
+       "Replaced free"
+      ],
+      [
+       "Ningbo",
+       "₹37",
+       "Upfront",
+       "60 days",
+       "Not covered"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Glass cost per diffuser",
+       "value": "₹46",
+       "source": "PO-0087",
+       "fetched": "12:50 pm"
+      },
+      {
+       "label": "Cash out today",
+       "value": "₹0",
+       "source": "PO-0087, 45-day terms",
+       "fetched": "12:50 pm"
+      },
+      {
+       "label": "PO total",
+       "value": "₹1,38,000",
+       "source": "PO-0087",
+       "fetched": "12:50 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Kavya bottle + terms from all 3",
+     "Only Firozabad covers breakage"
+    ],
+    "managing": [
+     "Waiting on Kavya: 1 tap"
+    ],
+    "monitoring": [
+     "Vendor lead times, weekly",
+     "Quote expiry, daily"
+    ]
+   },
+   "summary": "Rohan said glass breaks. Only one glassworks pays when it does.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "hub",
+     "text": "3 quotes in for the bottle",
+     "src": "Quotes",
+     "desc": "Step 3 · owner: Kavya"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Kavya bottle + terms from all 3",
+     "ch": "purchasing",
+     "media": {
+      "type": "photo",
+      "kit": "variants3",
+      "crop": [
+       0.0,
+       0.0,
+       1.0,
+       1.0
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Only Firozabad covers breakage",
+     "desc": "Rohan's point from standup",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       46,
+       42,
+       37
+      ],
+      "labels": [
+       "Firozabad",
+       "Vadodara",
+       "Ningbo"
+      ],
+      "unit": "₹"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Firozabad · ₹46 · breakage covered. Go?",
+     "who": "Kavya",
+     "options": [
+      "Firozabad",
+      "Vadodara, ₹42"
+     ],
+     "ch": "purchasing"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Vendor: Firozabad. Label next"
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "pick",
+     "title": "Three glassworks",
+     "groups": [
+      {
+       "label": "Bottle",
+       "options": [
+        "Firozabad, Rs 46",
+        "Vadodara, Rs 42",
+        "Ningbo, Rs 37"
+       ],
+       "chosen": 0
+      },
+      {
+       "label": "Terms",
+       "options": [
+        "45 days, breakage covered",
+        "Upfront",
+        "Upfront"
+       ],
+       "chosen": 0
+      }
+     ],
+     "delay": 900
+    },
+    {
+     "beat": 4,
+     "type": "focus",
+     "keep": "lip",
+     "dim": [
+      "vL",
+      "vR"
+     ],
+     "delay": 700
+    }
+   ]
+  },
+  {
+   "id": "samples",
+   "when": "5 months before",
+   "mode": "dusk",
+   "object": "trials5",
+   "line": "Ran a 14-day heat and throw test of Anaya's five blends in 9 homes. Blend 2 went cloudy by day 7 at 40°C and clogged the reeds; sent it back with the log.",
+   "tap": null,
+   "tags": [
+    {
+     "text": "Blend 3: 4.5 of 5",
+     "at": [
+      0.5,
+      0.69
+     ]
+    },
+    {
+     "text": "5 blends, 9 testers",
+     "at": [
+      0.75,
+      0.87
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "Product",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:00 am",
+      "text": "Blind test set: Anaya's five blends coded 1 to 5. Nine people smell all five on strips on day 1, 7 and 14."
+     },
+     {
+      "who": "Tara",
+      "time": "6:12 pm",
+      "text": "day 14 strips done. 5 has smelled like floor cleaner since day 7"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "6:30 pm",
+      "text": "All 9 in. Blend 3 held the wet-earth note to day 14: 4.5, and 6 of 9 votes. Blend 1 faded, 5 went sharp."
+     }
+    ],
+    "os": {
+     "title": "Blind test: 5 blends, 9 testers",
+     "cols": [
+      "Blend",
+      "After 2 weeks",
+      "Score",
+      "Votes"
+     ],
+     "rows": [
+      [
+       "1",
+       "Faded",
+       "3.2",
+       "1"
+      ],
+      [
+       "2",
+       "Too sweet",
+       "3.4",
+       "0"
+      ],
+      [
+       "3",
+       "Holds",
+       "4.5",
+       "6"
+      ],
+      [
+       "4",
+       "Holds",
+       "3.9",
+       "2"
+      ],
+      [
+       "5",
+       "Too sharp",
+       "3.0",
+       "0"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Testers",
+       "value": "9",
+       "source": "Google Forms",
+       "fetched": "6:28 pm"
+      },
+      {
+       "label": "Blend 3 score",
+       "value": "4.5 / 5",
+       "source": "Google Forms",
+       "fetched": "6:28 pm"
+      },
+      {
+       "label": "Days tested, strips on day 1, 7, 14",
+       "value": "14",
+       "source": "Google Forms",
+       "fetched": "6:28 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "@Tara 14-day test, 9 homes, 2 with cats",
+     "Blend 2: cloudy by day 7 at 40°C",
+     "Blend 2 back to Anaya with the log"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Throw and clarity scores, daily",
+     "Developer replies, live"
+    ]
+   },
+   "summary": "Five blends go into nine real homes. One turns cloudy and goes back.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "5 blends in from Anaya",
+     "desc": "Step 2 · owner: Tara"
+    },
+    {
+     "t": "assign",
+     "s": "chat",
+     "text": "@Tara 14-day test, 9 homes, 2 with cats",
+     "ch": "npd"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Blend 2: cloudy by day 7 at 40°C",
+     "desc": "Reeds clogged in 6/9 homes",
+     "media": {
+      "type": "photo",
+      "kit": "trials5",
+      "crop": [
+       0.17,
+       0.08,
+       0.4,
+       0.95
+      ]
+     }
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "Blend 2 back to Anaya with the log",
+     "ch": "npd",
+     "media": {
+      "type": "doc",
+      "name": "blend2_log.pdf",
+      "note": "cloudy, day 7"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "4 go on. Blend 3 smells most like rain"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "blend 3 is literally my balcony",
+     "who": "Kavya",
+     "ch": "npd"
+    }
+   ],
+   "live": [
+    {
+     "beat": 2,
+     "type": "cycle",
+     "keys": [
+      "b0",
+      "b1",
+      "b2",
+      "b3",
+      "b4"
+     ],
+     "label": "14 days, 9 homes"
+    },
+    {
+     "beat": 3,
+     "type": "stamp",
+     "key": "b1",
+     "at": [
+      0.5,
+      0.45
+     ],
+     "text": "Cloudy",
+     "badge": "Fail"
+    },
+    {
+     "beat": 4,
+     "type": "focus",
+     "keep": "b2",
+     "dim": [
+      "b1"
+     ],
+     "delay": 700
+    }
+   ]
+  },
+  {
+   "id": "hire",
+   "when": "6 months before",
+   "mode": "dusk",
+   "object": "maker_tool",
+   "line": "Wrote the contract fragrance developer role, screened 41 applicants down to four, booked interviews around the lab, and sent 37 replies.",
+   "tap": {
+    "who": "Zoya",
+    "what": "made the offer to Anaya",
+    "cost": "1 tap, 7 sec"
+   },
+   "tags": [
+    {
+     "text": "41 screened, 4 interviewed",
+     "at": [
+      0.39,
+      0.44
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "People",
+    "chat": [
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:05 am",
+      "text": "Fragrance developer role, contract: 41 applicants in 11 days. Four fit: natural materials, home fragrance, small batches."
+     },
+     {
+      "who": "Zoya",
+      "time": "10:16 am",
+      "text": "set all four for next week"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "10:18 am",
+      "text": "Booked Monday and Tuesday around Kavya's calendar and the lab. Scorecards are in the OS. 37 replies sent."
+     }
+    ],
+    "os": {
+     "title": "Hiring: fragrance developer, contract",
+     "cols": [
+      "Candidate",
+      "Stage",
+      "Score",
+      "Next"
+     ],
+     "rows": [
+      [
+       "Anaya P.",
+       "Interview",
+       "4.6 / 5",
+       "Mon, 11 am"
+      ],
+      [
+       "Siddharth K.",
+       "Interview",
+       "4.1 / 5",
+       "Mon, 3:30 pm"
+      ],
+      [
+       "Leela R.",
+       "Interview",
+       "4.0 / 5",
+       "Tue, 10 am"
+      ],
+      [
+       "Omkar D.",
+       "Interview",
+       "3.7 / 5",
+       "Tue, 2 pm"
+      ],
+      [
+       "37 others",
+       "Not a fit",
+       "",
+       "Replies sent"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Applicants, 11 days",
+       "value": "41",
+       "source": "LinkedIn Jobs",
+       "fetched": "10:02 am"
+      },
+      {
+       "label": "Shortlisted to interview",
+       "value": "4",
+       "source": "Chief of staff scorecards",
+       "fetched": "10:04 am"
+      },
+      {
+       "label": "Days open, target 30",
+       "value": "11",
+       "source": "OS hiring board",
+       "fetched": "10:04 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Role posted. Blind smell test sent to all",
+     "41 applied → 4 passed the smell test"
+    ],
+    "managing": [
+     "Waiting on Zoya: 1 tap"
+    ],
+    "monitoring": [
+     "New applicants, hourly",
+     "Days open, daily",
+     "Interview no-shows, daily"
+    ]
+   },
+   "card": {
+    "area": "People",
+    "ask": "Interviews done. Make the fragrance developer offer.",
+    "options": [
+     {
+      "label": "Anaya P., 4.6 / 5",
+      "recommended": true
+     },
+     {
+      "label": "Siddharth K., 4.1 / 5"
+     }
+    ],
+    "by": "Zoya",
+    "checker": "Kavya",
+    "action": "Make the offer",
+    "signal": "4 of 4 scorecards in",
+    "osRow": 0
+   },
+   "summary": "Nobody on the team has a nose for rain. Anaya does.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "os",
+     "text": "Step 1: fragrance developer",
+     "desc": "Owner: Zoya · due in 4 wks"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "Role posted. Blind smell test sent to all"
+    },
+    {
+     "t": "auto",
+     "s": "chat",
+     "text": "41 applied → 4 passed the smell test",
+     "ch": "people",
+     "media": {
+      "type": "doc",
+      "name": "smell_test_results.pdf",
+      "note": "4 of 41"
+     }
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Anaya 4.6/5, nailed petrichor blind. Send offer?",
+     "who": "Zoya",
+     "options": [
+      "send offer",
+      "Siddharth, 4.1"
+     ],
+     "ch": "people",
+     "media": {
+      "type": "doc",
+      "name": "anaya_cv.pdf",
+      "note": "6 yrs, home scent"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "Anaya signed. 5 blends due in 3 wks"
+    }
+   ],
+   "live": [
+    {
+     "beat": 5,
+     "type": "toast",
+     "where": "OS",
+     "title": "Step 1 done",
+     "text": "Anaya signed, on contract"
+    }
+   ]
+  },
+  {
+   "id": "standup",
+   "when": "7 months before, 9:30 am",
+   "mode": "wire",
+   "object": "wireframe",
+   "line": "Played Kavya's note as item 1 at standup, took Meher's price and Rohan's breakage point, and turned the yes into a four-step plan with owners and dates.",
+   "tap": {
+    "who": "Kavya",
+    "what": "said go on the plan",
+    "cost": "1 tap, 4 sec"
+   },
+   "tags": [
+    {
+     "text": "Project: Monsoon Earth",
+     "at": [
+      0.43,
+      0.75
+     ]
+    },
+    {
+     "text": "Owner: Kavya",
+     "at": [
+      0.635,
+      0.58
+     ]
+    }
+   ],
+   "surfaces": {
+    "thread": "All hands",
+    "chat": [
+     {
+      "who": "Kavya",
+      "time": "4:10 pm",
+      "text": "the first-rain thing from my voice note. I think we should make this"
+     },
+     {
+      "who": "Meher",
+      "time": "4:11 pm",
+      "text": "diffuser, not a candle. candles sweat in a Pune May"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "4:13 pm",
+      "text": "Project created: Monsoon Earth, reed diffuser. Owner Kavya. Step one, hire a contract fragrance developer, is on Zoya's list for 4 weeks."
+     }
+    ],
+    "os": {
+     "title": "Project: Monsoon Earth",
+     "cols": [
+      "Step",
+      "Owner",
+      "Due",
+      "Status"
+     ],
+     "rows": [
+      [
+       "Hire a fragrance developer, contract",
+       "Zoya",
+       "In 4 weeks",
+       "Open"
+      ],
+      [
+       "Scent brief",
+       "Kavya",
+       "In 2 weeks",
+       "Open"
+      ],
+      [
+       "Glass and reed suppliers",
+       "Rohan",
+       "In 8 weeks",
+       "Not started"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Reed diffuser searches, Pune",
+       "value": "Up 28% in a year",
+       "source": "Google Trends",
+       "fetched": "4:14 pm"
+      },
+      {
+       "label": "Customers asking for a rain scent",
+       "value": "26",
+       "source": "Website chat, last 7 months",
+       "fetched": "4:14 pm"
+      },
+      {
+       "label": "Meeting length",
+       "value": "42 min",
+       "source": "Google Meet",
+       "fetched": "4:52 pm"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "Item 1: Kavya's 1:14 am note"
+    ],
+    "managing": [
+     "Waiting on Kavya: 1 tap"
+    ],
+    "monitoring": [
+     "Plan steps vs dates, daily",
+     "Owner replies, live"
+    ]
+   },
+   "summary": "Meher sets the price, Rohan flags the glass. Kavya says go in one tap.",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "feed",
+     "text": "Item 1: Kavya's 1:14 am note",
+     "who": "Kavya",
+     "desc": "0:17, played back",
+     "media": {
+      "type": "voice",
+      "len": "0:17"
+     }
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "1290. good candles sell at 1200",
+     "who": "Meher",
+     "ch": "standup"
+    },
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "glass will break in transit yaar. plan for it",
+     "who": "Rohan",
+     "ch": "standup"
+    },
+    {
+     "t": "ask",
+     "s": "chat",
+     "text": "Rain diffuser · ₹1,290 · 100 ml glass · 6 months. Go?",
+     "who": "Kavya",
+     "options": [
+      "ok go",
+      "park it"
+     ],
+     "ch": "standup"
+    },
+    {
+     "t": "done",
+     "s": "os",
+     "text": "Plan: 4 steps, 4 owners, dates set",
+     "desc": "Developer · samples · vendor · label",
+     "media": {
+      "type": "photo",
+      "kit": "wireframe_ink",
+      "crop": [
+       0.2,
+       0.05,
+       0.8,
+       0.95
+      ]
+     }
+    }
+   ],
+   "live": [
+    {
+     "beat": 4,
+     "type": "stamp",
+     "key": "sketch",
+     "at": [
+      0.5,
+      0.78
+     ],
+     "text": "Rs 1,290, 100 ml",
+     "badge": "Go"
+    }
+   ]
+  },
+  {
+   "id": "voice",
+   "when": "7 months before, 1:14 am",
+   "mode": "dusk",
+   "night": true,
+   "object": "phone",
+   "tap": null,
+   "tags": [],
+   "surfaces": {
+    "thread": "Ideas",
+    "chat": [
+     {
+      "who": "Kavya",
+      "time": "1:14 am",
+      "text": "It just started raining and the whole balcony smells of mitti. Can we bottle this? As a home scent, I mean. Pata nahi if it would even last. Okay. Remind me in the morning.",
+      "voice": true,
+      "length": "0:15"
+     },
+     {
+      "who": "Chief of staff",
+      "agent": true,
+      "time": "1:15 am",
+      "text": "Saved to Ideas as First rain. 23 customers have asked for a rain scent in chat. Reminder set for 9 am."
+     }
+    ],
+    "os": {
+     "title": "Ideas",
+     "cols": [
+      "Idea",
+      "From",
+      "Saved",
+      "Next"
+     ],
+     "rows": [
+      [
+       "First rain, a home scent",
+       "Kavya, voice note",
+       "1:15 am",
+       "9 am reminder, then product meeting"
+      ]
+     ]
+    },
+    "hub": {
+     "metrics": [
+      {
+       "label": "Searches for petrichor scents, Pune",
+       "value": "Up 41% in 90 days",
+       "source": "Google Trends",
+       "fetched": "1:15 am"
+      },
+      {
+       "label": "Customers asking for a rain scent",
+       "value": "23",
+       "source": "Website chat, last 6 months",
+       "fetched": "1:15 am"
+      },
+      {
+       "label": "Diffusers in the range today",
+       "value": "0",
+       "source": "Shopify catalogue",
+       "fetched": "1:15 am"
+      }
+     ]
+    }
+   },
+   "presence": {
+    "running": [
+     "On it. Checking if it's just you",
+     "Not just you. 23 asked for a rain scent"
+    ],
+    "managing": [
+     "Nobody needed for this one"
+    ],
+    "monitoring": [
+     "Website chat, every 15 min",
+     "Reviews, hourly",
+     "Searches for petrichor scents, daily"
+    ]
+   },
+   "summary": "1:14 am, first rain. Her customers can't light candles. Is it just her?",
+   "flow": [
+    {
+     "t": "raised",
+     "s": "chat",
+     "text": "whole flat smells of mitti. first-rain diffuser, no flame, under 1500",
+     "who": "Kavya",
+     "media": {
+      "type": "voice",
+      "len": "0:17"
+     },
+     "desc": "Voice note, 0:17"
+    },
+    {
+     "t": "assign",
+     "s": "feed",
+     "text": "On it. Checking if it's just you",
+     "desc": "Saved as idea: First Rain"
+    },
+    {
+     "t": "auto",
+     "s": "hub",
+     "text": "Not just you. 23 asked for a rain scent",
+     "desc": "11 said: no candles, we have a cat",
+     "media": {
+      "type": "chart",
+      "kind": "bar",
+      "values": [
+       23,
+       11,
+       6
+      ],
+      "labels": [
+       "rain scent",
+       "no flame",
+       "reed refill"
+      ],
+      "unit": "asks"
+     }
+    },
+    {
+     "t": "done",
+     "s": "feed",
+     "text": "On the 9:30 am standup. Go sleep"
+    }
+   ],
+   "live": [
+    {
+     "beat": 3,
+     "type": "toast",
+     "where": "Hub",
+     "title": "Overnight demand check",
+     "text": "23 asks for a rain scent. 11 can't use candles."
+    }
+   ]
+  }
+ ],
+ "voice": {
+  "who": "Kavya",
+  "time": "1:14 am",
+  "when": "7 months before",
+  "lead": "Before any of it, Kavya left herself a 15-second voice note from the balcony.",
+  "words": "It just started raining and the whole flat smells of mitti. Half our customers live in small flats with a cat or a baby, they can't light candles. A reed diffuser that smells like first rain, no flame, lasts two months, under fifteen hundred. Nobody makes that here. Check if it's just me.",
+  "audio": null,
+  "length": "0:17"
+ },
+ "team": [
+  {
+   "name": "Kavya",
+   "role": "Founder",
+   "initial": "K",
+   "waiting": "1 PO to approve: 3,000 more bottles"
+  },
+  {
+   "name": "Meher",
+   "role": "Growth",
+   "initial": "M",
+   "waiting": "1 ad cut to pick: refill offer"
+  },
+  {
+   "name": "Rohan",
+   "role": "Warehouse",
+   "initial": "R",
+   "waiting": "18 boxes to scan, evening batch"
+  },
+  {
+   "name": "Tara",
+   "role": "Quality",
+   "initial": "T",
+   "waiting": "1 batch to check: G-07"
+  },
+  {
+   "name": "Zoya",
+   "role": "People",
+   "initial": "Z",
+   "waiting": "1 offer to send: Wakad packer"
+  }
+ ],
+ "end": {
+  "line": "Kavya had the idea at 1:14 am. The chief of staff did the rest and asked for 8 taps.",
+  "workspace": null
+ },
+ "page": {
+  "title": "Chief of Staff for brands and agencies",
+  "description": "An AI chief of staff that runs, manages and monitors a D2C brand. Follow one order back to a 1 am voice note: 8 human taps, everything else done for you.",
+  "rewind_hint": "Scroll to rewind this order",
+  "strip_label": "Chief of staff, on now",
+  "counter": "Steps so far: {n}. Taps by people: {taps}.",
+  "counter_after_voice": "Everything after it is in the feed."
+ },
+ "channels": {
+  "voice": "kavya-notes",
+  "hire": "people",
+  "packaging": "studio-ghar",
+  "po": "purchasing",
+  "shoot": "content",
+  "ad": "growth",
+  "listing": "growth",
+  "support": "support",
+  "order": "warehouse",
+  "packed": "warehouse",
+  "courier": "shipping",
+  "delivered": "growth",
+  "standup": "standup",
+  "samples": "npd",
+  "vendor": "purchasing"
+ },
+ "sources": {
+  "voice": "Website chat",
+  "po": "Quotes",
+  "ad": "Meta Ads",
+  "listing": "Judge.me",
+  "support": "WhatsApp",
+  "courier": "Shiprocket",
+  "delivered": "Delhivery",
+  "shoot": "Weather",
+  "samples": "QC log",
+  "vendor": "Quotes",
+  "packed": "Stock"
+ },
+ "shipping": {
+  "to_name": "Shruti, ON-11873",
+  "to_line": "Kothrud, Pune",
+  "pin": "411038",
+  "order": "ON-11873",
+  "courier": "Delhivery",
+  "service": "Surface",
+  "weight": "412 g",
+  "awb": "3317 0482 5519",
+  "delivered_at": "5:41 pm",
+  "care_at": "6:40 pm",
+  "out_for_delivery": "9",
+  "others": [
+   [
+    "ON-11868",
+    "Aundh",
+    "Delivered"
+   ],
+   [
+    "ON-11879",
+    "Baner",
+    "Out for delivery"
+   ]
+  ]
+ },
+ "po_doc": {
+  "id": "PO-0087",
+  "item": "Amber bottle, 3,000",
+  "terms": "45 days"
+ },
+ "crops": {
+  "trials": [
+   [
+    0.04,
+    0.09,
+    0.218,
+    0.89
+   ],
+   [
+    0.229,
+    0.06,
+    0.402,
+    0.9
+   ],
+   [
+    0.401,
+    0.04,
+    0.598,
+    0.95
+   ],
+   [
+    0.598,
+    0.09,
+    0.773,
+    0.9
+   ],
+   [
+    0.785,
+    0.095,
+    0.963,
+    0.89
+   ]
+  ],
+  "pick": 2,
+  "pickAt": {
+   "x": 0,
+   "y": -0.25,
+   "s": 0.6
+  },
+  "flat": [
+   0.16,
+   0.012,
+   0.83,
+   0.988
+  ],
+  "flatLip": {
+   "x": -0.008,
+   "y": -0.002,
+   "s": 0.99
+  },
+  "vL": [
+   0.033,
+   0.114,
+   0.277,
+   0.871
+  ],
+  "vR": [
+   0.689,
+   0.287,
+   0.981,
+   0.866
+  ],
+  "qcR": 0,
+  "kit": {
+   "kBullet": {
+    "crop": [
+     0.32,
+     0.145,
+     0.563,
+     0.882
+    ],
+    "home": {
+     "x": 0,
+     "y": -0.25
+    }
+   },
+   "kTube": {
+    "crop": [
+     0.016,
+     0.38,
+     0.312,
+     0.657
+    ],
+    "home": {
+     "x": 0,
+     "y": 0.22
+    }
+   },
+   "kCap": {
+    "crop": [
+     0.107,
+     0.201,
+     0.231,
+     0.35
+    ],
+    "home": {
+     "x": 0,
+     "y": 0.02
+    }
+   },
+   "kCarton": {
+    "crop": [
+     0.583,
+     0.065,
+     0.983,
+     0.93
+    ],
+    "home": {
+     "x": 0.7,
+     "y": 0.1
+    }
+   },
+   "kCard": {
+    "crop": [
+     0.054,
+     0.706,
+     0.282,
+     0.863
+    ],
+    "home": {
+     "x": -0.7,
+     "y": 0.25
+    }
+   }
+  }
+ },
+ "audio": {
+  "voice-note": "assets/ondri/audio/voice-note.mp3",
+  "delivered-q": "assets/ondri/audio/delivered-q.mp3",
+  "delivered-a": "assets/ondri/audio/delivered-a.mp3",
+  "packed-ask": "assets/ondri/audio/packed-ask.mp3",
+  "packed-reply": "assets/ondri/audio/packed-reply.mp3",
+  "support-q": "assets/ondri/audio/support-q.mp3",
+  "support-a": "assets/ondri/audio/support-a.mp3",
+  "listing-ask": "assets/ondri/audio/listing-ask.mp3",
+  "listing-reply": "assets/ondri/audio/listing-reply.mp3",
+  "ad-ask": "assets/ondri/audio/ad-ask.mp3",
+  "ad-reply": "assets/ondri/audio/ad-reply.mp3",
+  "shoot-ask": "assets/ondri/audio/shoot-ask.mp3",
+  "shoot-reply": "assets/ondri/audio/shoot-reply.mp3",
+  "po-ask": "assets/ondri/audio/po-ask.mp3",
+  "po-reply": "assets/ondri/audio/po-reply.mp3",
+  "hire-ask": "assets/ondri/audio/hire-ask.mp3",
+  "hire-reply": "assets/ondri/audio/hire-reply.mp3",
+  "ad-q": "assets/ondri/audio/ad-q.mp3",
+  "ad-a": "assets/ondri/audio/ad-a.mp3",
+  "shoot-agency": "assets/ondri/audio/shoot-agency.mp3",
+  "packaging-agency": "assets/ondri/audio/packaging-agency.mp3",
+  "standup-1": "assets/ondri/audio/voice-note.mp3",
+  "vendor-ask": "assets/ondri/audio/vendor-ask.mp3",
+  "vendor-reply": "assets/ondri/audio/vendor-reply.mp3",
+  "standup-2": "assets/ondri/audio/standup-2.mp3",
+  "standup-3": "assets/ondri/audio/standup-3.mp3",
+  "standup-ask": "assets/ondri/audio/standup-ask.mp3",
+  "standup-reply": "assets/ondri/audio/standup-reply.mp3",
+  "delivered-agency": "assets/ondri/audio/delivered-agency.mp3",
+  "support-agency": "assets/ondri/audio/support-agency.mp3",
+  "ad-agency": "assets/ondri/audio/ad-agency.mp3",
+  "samples-agency": "assets/ondri/audio/samples-agency.mp3"
+ },
+ "areas": {
+  "voice": "Ideas",
+  "hire": "Hiring",
+  "packaging": "Packaging",
+  "po": "Purchase orders",
+  "shoot": "Content",
+  "ad": "Ads",
+  "listing": "Website",
+  "support": "Orders",
+  "order": "Orders",
+  "packed": "Warehouse",
+  "courier": "Shipments",
+  "delivered": "Orders",
+  "standup": "Projects",
+  "samples": "Product",
+  "vendor": "Vendors"
+ }
+}
