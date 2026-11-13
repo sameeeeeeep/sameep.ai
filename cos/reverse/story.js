@@ -114,7 +114,7 @@
     var s = isCustomer(w) ? 'customer' : isAgency(w) ? 'agency' : first(w).toLowerCase();
     return (FACES[cfg.id] || []).indexOf(s) >= 0 ? 'faces/' + cfg.id + '-' + s + '.webp' : '';
   }
-  function roleOf(who) { var t = arr(cfg.team).filter(function (m) { return m.name === first(who) || m.name === who; })[0]; return t ? t.role : /^GG/.test(str(who)) ? 'Ghazal’s agent' : ''; }
+  function roleOf(who) { var t = arr(cfg.team).filter(function (m) { return m.name === first(who) || m.name === who; })[0]; return t ? t.role : /^GG/.test(str(who)) ? 'Founder’s agent' : ''; }
   function agentMark(n) { n = str(n, 'Chief of staff'); return /^chief/i.test(n) ? 'CS' : n.charAt(0).toUpperCase(); }
   function faceEl(who, cls) {
     var w = str(who, '?'), el = h('span', 'sx-face' + (cls ? ' ' + cls : ''));
