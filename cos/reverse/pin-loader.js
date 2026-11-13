@@ -2,7 +2,7 @@
    Public and neutral on purpose: no brand, no names, no workspace ids. Everything private comes from the Worker
    after sign-in, to members only.
 
-   Off unless the URL asks for it (/cos/#pin or /cos/?pin). Then:
+   Off unless the URL asks for it (/cos/#pin, /cos/?pin or /cos/?version=<any>). Then:
    1. A lock screen: the time, faces drifting, and two ways in: the PIN (POST /d2c-api/auth/pin) or an emailed
       6-digit code (POST /d2c-api/auth/login, then /auth/verify; the Worker answers the same for every address).
       The session is the app's own (localStorage d2c.session), so "Open your workspace" lands signed in.
@@ -17,7 +17,9 @@
 (function () {
   'use strict';
   var q = new URLSearchParams(location.search);
-  if (!/^#pin$/i.test(location.hash) && !q.has('pin')) return;
+  /* ?version=<anything> is a shareable alias for the lock: the value is never read or matched here, so no client
+     name lives in this file; the PIN decides which workspace opens */
+  if (!/^#pin$/i.test(location.hash) && !q.has('pin') && !q.get('version')) return;
 
   /* scroll.js reads ?brand once; a neutral id keeps it off the public brands' faces and paths */
   q.set('pin', ''); q.set('brand', 'private');
