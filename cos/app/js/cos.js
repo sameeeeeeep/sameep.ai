@@ -11,7 +11,7 @@
 //   as / setAs           who is tapping: in a demo workspace the presenter taps as a person of the world
 // Pure view functions take plain data and return html``; nothing touches the DOM at import time.
 import { html, raw, esc } from './ui.js';
-import { agentOf, faceSrc, curWs } from './look.js';
+import { agentOf, faceSrc, curWs, STAR } from './look.js';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -82,7 +82,7 @@ export function sourceLabel(src) {
 export const faces = new Map(); // avatar path -> object URL
 // Agents are their monogram mark (js/look.js); a sample brand's people their illustrated face.
 export function face(name, { avatar = null, agent = false, small = false } = {}) {
-  if (agent) return html`<span class="cs-face is-agent is-mark${small ? ' is-sm' : ''}" aria-hidden="true">${agentOf(name).mark}</span>`;
+  if (agent) return html`<span class="cs-face is-agent is-mark${small ? ' is-sm' : ''}" aria-hidden="true" title="${agentOf(name).name}">${raw(STAR)}</span>`;
   const src = (avatar && faces.get(avatar)) || faceSrc(curWs(), name);
   return html`<span class="cs-face${small ? ' is-sm' : ''}" aria-hidden="true">${src ? raw(`<img src="${esc(src)}" alt="">`) : initials(name)}</span>`;
 }
@@ -181,11 +181,10 @@ function pickChecker(d, s) {
   return named || t.find((x) => x.name !== d.decided_by && x.role === 'cos') || t.find((x) => x.name !== d.decided_by) || null;
 }
 
-// draft -> approved -> checked, as three dots (held and rejected shown on the second)
+// draft -> approved -> checked, as one plain word (no dot meter)
+const STEP_WORD = { draft: 'Draft', approved: 'Approved', held: 'On hold', rejected: 'Rejected', checked: 'Checked' };
 export function stepper(status) {
-  const i = { draft: 0, approved: 1, held: 1, rejected: 1, checked: 2 }[status] ?? 0;
-  const dots = [0, 1, 2].map((k) => `<i class="${k <= i ? 'on' : ''}${k === 1 && (status === 'held' || status === 'rejected') ? ' is-' + status : ''}"></i>`).join('');
-  return `<span class="cs-step" title="${esc(status)}" aria-label="${esc(status)}">${dots}</span>`;
+  return `<span class="cs-step is-${esc(status)}">${esc(STEP_WORD[status] || status)}</span>`;
 }
 
 // the knock-on of a re-plan: what moved, from which day to which

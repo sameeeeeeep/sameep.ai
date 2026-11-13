@@ -1,6 +1,6 @@
 /* mobile.css: the phone shell (js/mobile.js) and phone layouts for the four Chief of Staff surfaces. Everything
    here sits under max-width 760px except the rules that keep the phone-only pieces hidden on a desk. Loads last.
-   House rules: Inter + Spline Sans Mono, lime only on the primary button, no glow, no letterspaced kickers.
+   House rules: Bricolage Grotesque + Spline Sans Mono, the blue accent only on the primary button, no glow, no letterspaced kickers.
    Every tap target is at least 44 px; the one decision's main button sits pinned at the bottom of the sheet. */
 
 .mb-tabs, .mb-me { display: none; }
@@ -13,13 +13,13 @@
   /* ---------- shell: the rail gives way to the tab bar ---------- */
   .rail { display: none; }
   .mb-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 7; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); height: var(--mb-bottom); padding: 0 4px var(--mb-safe); border-top: 1px solid var(--line); background: var(--rail); }
-  .mb-tab { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 0; min-height: 44px; padding: 0; border: 0; background: none; color: var(--muted); text-decoration: none; font: 500 11.5px/1.1 var(--f-body); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .mb-tab { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 0; min-height: 44px; padding: 0; border: 0; background: none; color: var(--muted); text-decoration: none; font: 500 12px/1.1 var(--f-body); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .mb-tab[aria-current="page"] { color: var(--ink); }
   .mb-ic { position: relative; display: grid; place-items: center; width: 48px; height: 30px; border-radius: 999px; }
   .mb-tab[aria-current="page"] .mb-ic { background: var(--raise); }
   .mb-ic svg { width: 21px; height: 21px; }
   .mb-l { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mb-badge { position: absolute; top: -4px; right: 2px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 11px; line-height: 19px; text-align: center; }
+  .mb-badge { position: absolute; top: -4px; right: 2px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 12px; line-height: 19px; text-align: center; }
 
   .top { padding: 0 8px 0 16px; padding-top: env(safe-area-inset-top, 0px); height: calc(var(--top-h) + env(safe-area-inset-top, 0px)); }
   .top-r { gap: 4px; }
@@ -73,11 +73,13 @@
   .cs-plan-h { gap: 4px 10px; }
 
   /* ---------- the decision card, phone-sized ---------- */
-  .cs-card { gap: 12px; padding: 16px 14px 14px; border-radius: 18px; }
+  .cs-card { gap: 12px; padding: 16px 14px 14px; border-radius: 14px; }
   .cs-title { font-size: 17.5px; }
   .cs-why { font-size: 14.5px; }
   .cs-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cs-opt { grid-template-columns: minmax(0, 1fr); padding: 12px; border-radius: 14px; }
+  .cs-nums div:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .cs-nums div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .cs-opt { grid-template-columns: minmax(0, 1fr); padding: 12px 0; border-radius: 0; }
   .cs-opt > .btn { grid-column: 1; grid-row: auto; justify-self: stretch; width: 100%; margin-top: 6px; }
   .cs-acts .btn { flex: 1 1 140px; }
   .cs-card-f { gap: 8px 14px; }
@@ -131,7 +133,7 @@
   .ct-th { grid-template-columns: 40px minmax(0, 1fr); gap: 2px 12px; }
   .ct-th.is-all { margin: 0; border-radius: 0; }
   .wk-filter { margin: 0 -16px 14px; padding: 0 16px; }
-  .wk-filter button { height: 40px; padding: 0 14px; border-radius: 20px; font-size: 14px; }
+  .wk-filter button { height: 44px; padding: 0 2px; font-size: 14px; }
   .wk-row { grid-template-columns: 32px minmax(0, 1fr); gap: 10px; padding: 12px; min-height: 64px; }
   .wk-row-r { grid-column: 2; display: flex; justify-items: start; align-items: center; gap: 8px; }
   .wk-moreg > summary { min-height: 44px; display: flex; align-items: center; }
@@ -176,10 +178,10 @@
 
   /* ---------- the presenter's panel steps clear of the bar ---------- */
   /* in the top bar, between the breadcrumb and the theme and account buttons: clear of cards and the composer */
-  .gd-fab { right: 100px; top: calc(env(safe-area-inset-top, 0px) + 4px); bottom: auto; min-height: 44px; padding: 0 14px; box-shadow: none; }
+  .gd-fab { left: auto; transform: none; right: 100px; top: calc(env(safe-area-inset-top, 0px) + 6px); bottom: auto; min-height: 44px; padding: 0 14px; box-shadow: none; }
   body:has(.gd-fab) .crumbs { max-width: calc(100vw - 236px); }
   .crumbs { min-width: 0; overflow: hidden; }
-  .gd { right: 8px; left: 8px; width: auto; bottom: calc(var(--mb-bottom) + 8px); max-height: calc(100dvh - var(--mb-bottom) - var(--top-h) - 24px); }
+  .gd { right: 8px; left: 8px; transform: none; top: auto; width: auto; bottom: calc(var(--mb-bottom) + 8px); max-height: calc(100dvh - var(--mb-bottom) - var(--top-h) - 24px); }
   .gd-beat .btn, .gd-ev .btn, .gd-f .btn { min-height: 44px; }
   .gd-x { min-height: 44px; }
 
@@ -192,7 +194,7 @@
   .mb-sh-h .mono { font-size: 12.5px; }
   .mb-x { margin-left: auto; min-width: 64px; min-height: 44px; border: 0; background: none; color: var(--ink-2); font: 500 14.5px/1 var(--f-body); cursor: pointer; }
   .mb-sh-b { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 14px 18px; }
-  .mb-sh-b .cs-card { border-radius: 18px; }
+  .mb-sh-b .cs-card { border-radius: 14px; }
   .mb-sheet.has-go .mb-pinned > .btn.is-primary, .mb-sheet.has-go .cs-acts.mb-pinned > [data-dec="check"] { display: none; }
   .mb-sh-f:empty { display: none; }
   .mb-sh-f { padding: 10px 14px 12px; border-top: 1px solid var(--line); background: var(--bg); }

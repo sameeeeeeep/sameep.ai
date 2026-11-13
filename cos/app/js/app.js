@@ -88,8 +88,8 @@ export const initials = (name, email) => {
 export { askView };
 
 // #demo, or #demo?brand=<id> from the end of a show. A well-formed id is the only parameter read.
-export const DEMO_HASH = /^#demo(\?brand=[a-z0-9-]{0,40})?$/i;
-export const demoBrand = (hash) => { const m = String(hash || '').match(/^#demo\?brand=([a-z0-9][a-z0-9-]{1,23})$/i); return m ? m[1].toLowerCase() : null; };
+export const DEMO_HASH = /^#demo(\?brand=[a-z0-9-]{0,40})?(&[a-z0-9=_-]{0,40})*$/i;
+export const demoBrand = (hash) => { const m = String(hash || '').match(/^#demo\?brand=([a-z0-9][a-z0-9-]{1,23})(&[a-z0-9=_-]{0,40})*$/i); return m ? m[1].toLowerCase() : null; };
 
 if (typeof document !== 'undefined') boot();
 
@@ -259,8 +259,10 @@ function boot() {
     let st = document.getElementById('brand-pack');
     if (!p) { if (st) st.remove(); return; }
     if (!st) { st = document.createElement('style'); st.id = 'brand-pack'; document.head.appendChild(st); }
-    st.textContent = String(p.css || '') + ':root[data-theme="light"] .bp-logo.is-dark,:root:not([data-theme="light"]) .bp-logo.is-light{display:none}.bp-logo{height:18px;width:auto;vertical-align:middle;display:inline-block}';
-    const okSrc = (u) => typeof u === 'string' && /^data:image\/(png|webp|svg\+xml);base64,/.test(u);
+    // the pack's logo only: the app keeps its one accent (the brand's colour belongs to its products, not the chrome)
+    st.textContent = ':root[data-theme="light"] .bp-logo.is-dark,:root:not([data-theme="light"]) .bp-logo.is-light{display:none}.bp-logo{height:18px;width:auto;vertical-align:middle;display:inline-block}';
+    // the logo is the only thing taken from the pack: an inline image (base64 only), set as an <img> src, never as markup
+    const okSrc = (u) => typeof u === 'string' && u.length < 400000 && /^data:image\/(png|webp|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$/.test(u);
     if (p.logo && okSrc(p.logo.light) && okSrc(p.logo.dark)) {
       const c = $('crumb-ws'); c.textContent = '';
       for (const k of ['light', 'dark']) {

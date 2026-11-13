@@ -97,13 +97,13 @@ export function view(data, ctx, now = Date.now()) {
   const orders = small(ord, 'Orders', num, trend.map((d) => d.orders));
   const aovT = small(aov, 'Average order', inr, trend.filter((d) => d.orders).map((d) => d.revenue / d.orders));
 
-  const need = (d) => {
+  const need = (d, i) => {
     const a = quickAct(d, sx);
     const pic = productSrc(ws, d.fn);
     return html`<li class="db-need">
-      <a class="db-need-v" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}">${pic ? shot(ws, d.fn) : mark(d.agent, 44)}</a>
+      <a class="db-need-v" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}">${pic ? shot(ws, d.fn) : mark(d.agent, 28)}</a>
       <a class="db-need-t" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}"><b>${d.title}</b><span>${agentOf(d.agent).name} · ${d.status === 'to_check' ? `Check ${nm(d.decided_by)}'s call` : `${nm(d.decider?.name) || 'Anyone'}${d.kind === 'ask' ? ' is asked' : ' decides'}`}</span></a>
-      ${a ? quickBtn(a, 'is-primary', a.dec === 'check' ? 'Check' : a.verb) : ''}
+      ${a ? quickBtn(a, i === 0 ? 'is-primary' : '', a.dec === 'check' ? 'Check' : a.verb) : ''}
     </li>`;
   };
   const needs = html`<section class="db-t db-needs" aria-label="Needs you">

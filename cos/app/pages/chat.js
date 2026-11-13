@@ -22,6 +22,17 @@ import { boardView, focusCard } from './feed.js';
 import { recordsPane, TABS as KINDS } from './cosos.js';
 
 export const title = 'Chat';
+// each module keeps its own line icon in the list (the agent's star sits inside the thread)
+const MOD_ICON = {
+  website: 'M3.5 4.5h17v15h-17zM3.5 8.5h17M7 6.5h.01M9.5 6.5h.01',
+  performance: 'M4 19.5h16M6.5 16V11M11 16V7M15.5 16v-6M20 16V5',
+  ops: 'M2.5 7h11v8h-11zM13.5 10h4l3 3v2h-7M6 17.5a1.6 1.6 0 1 0 .01 0M16.5 17.5a1.6 1.6 0 1 0 .01 0',
+  content: 'M4 13V10l11-5v14l-11-5zM15 9v6M6.5 13.5l1.5 5h2.5l-1-4.6',
+  finance: 'M3.5 6.5h17v11h-17zM12 9.5a2.5 2.5 0 1 0 .01 0M6.5 12h.01M17.5 12h.01',
+  support: 'M12 12a3.6 3.6 0 1 0 0-7.2A3.6 3.6 0 0 0 12 12zM4.5 20c1-3.6 3.9-5.4 7.5-5.4s6.5 1.8 7.5 5.4',
+  'all-hands': 'M8.5 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM16.5 11a2.5 2.5 0 1 0 0-5M2.5 19.5c.8-3 3-4.5 6-4.5s5.2 1.5 6 4.5M15.5 15c2.6 0 4.6 1.4 5.5 4.5',
+};
+const modIcon = (slug) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${MOD_ICON[slug] || 'M5 5h14v14H5z'}"/></svg>`;
 export const CHIPS = ['How are sales today?', 'What is waiting for a tap?', 'When is the launch?', 'What is the stock cover?'];
 export const VIEWS = [['tasks', 'Tasks'], ['chat', 'Chat'], ['records', 'Records']];
 
@@ -56,7 +67,7 @@ export function view(data, ctx, ui = {}) {
       <span class="ct-th-n"><span>All modules</span>${badge(total)}</span>
       <span class="ct-th-p">Every module's tasks and records</span></a>
     ${threads.map((t) => html`<a class="ct-th" href="${href(t.slug)}"${raw(t.slug === scope ? ' aria-current="page"' : '')}>
-      ${face(t.agent || 'Chief of staff', { agent: true })}
+      <span class="ct-th-ic" aria-hidden="true">${raw(modIcon(t.slug))}</span>
       <span class="ct-th-n"><span title="${t.name}">${t.name}${owner(t, s) ? html` <span class="ct-own">@${owner(t, s)}</span>` : ''}</span>${badge(wait[t.slug] || 0)}</span>
       <span class="ct-th-p">${t.preview ? `${t.preview.author}: ${t.preview.body}` : t.agent}</span></a>`)}
   </nav>`;
@@ -66,7 +77,7 @@ export function view(data, ctx, ui = {}) {
     const isAll = scope === ALL;
     const name = isAll ? 'All modules' : th ? th.name : scope;
     const tabs = (isAll ? VIEWS.filter(([k]) => k !== 'chat') : VIEWS).map(([k, l]) => html`<a href="${href(scope, k)}"${raw(k === tab ? ' aria-current="page"' : '')}>${l}${k === 'tasks' && (isAll ? total : wait[scope]) ? html` <span class="mono">${isAll ? total : wait[scope]}</span>` : ''}</a>`);
-    const who = th ? html`<p class="ct-who"><span class="ct-stack">${(th.people || []).map((p) => (s.people || {})[p]?.name || p).filter((n, i, all) => n && all.indexOf(n) === i).slice(0, 8).map((n) => html`<span title="${n}">${face(n, { avatar: avatarOf(s, n), small: true })}</span>`)}</span></p>` : '';
+    const who = th ? html`<p class="ct-who"><span class="ct-stack">${(th.people || []).map((p) => (s.people || {})[p]?.name).filter((n, i, all) => n && all.indexOf(n) === i).slice(0, 8).map((n) => html`<span title="${n}">${face(n, { avatar: avatarOf(s, n), small: true })}</span>`)}</span></p>` : '';
     let body = '';
     if (tab === 'tasks') {
       const filter = isAll && ui.filter && mods[ui.filter] ? ui.filter : null;
