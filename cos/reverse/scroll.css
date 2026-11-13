@@ -605,12 +605,12 @@ html { scroll-snap-type: y proximity; }
 .prop.tap-left .pr-tn { display: none; }
 
 /* ---------- channel identity: every card looks like the place it arrived in ---------- */
-.face, .cat { flex: none; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: inline-grid; place-items: center; }
+.face, .mk { flex: none; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: inline-grid; place-items: center; }
 .face { background: #e4dcf4; }
 .face img { width: 100%; height: 100%; object-fit: cover; image-rendering: auto; }
 .face-txt { background: var(--ink); color: var(--card); font-weight: 600; font-size: 13px; }
-.cat { background: #ebe7de; }
-.cat img { width: 86%; height: 86%; object-fit: contain; object-position: 50% 100%; margin-top: 14%; }
+.mk { background: var(--ink); color: var(--card); font: 500 13px/1 var(--f-mono); letter-spacing: 0; }
+.mk-2 { font-size: 10.5px; }
 .k-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
 .k-ch { font: 500 12.5px var(--f-mono); color: var(--ink-2); }
 .k-au { display: flex; align-items: center; gap: 9px; }
@@ -665,7 +665,7 @@ html { scroll-snap-type: y proximity; }
 /* the chief's own card (feed): the product's dark card */
 .tl .bc.k-agent { background: #111210; border-color: #111210; color: #ecebe4; border-radius: 16px; }
 .k-agent .k-au-m { color: #8b8a82; }
-.k-agent .cat { background: #2a2a26; }
+.k-agent .mk { background: #2a2a26; }
 .k-agent .bc-text { font-weight: 500; }
 .k-agent .bc-desc { color: #a9a79e; }
 .k-agent .mention { color: #fff; }
@@ -708,7 +708,7 @@ html { scroll-snap-type: y proximity; }
 .sbar-bat { width: 1.5em; height: .7em; border: 1.5px solid #ecebe4; border-radius: .2em; position: relative; }
 .sbar-bat::after { content: ''; position: absolute; inset: 1.5px; right: 30%; background: #ecebe4; border-radius: 1px; }
 .dock .dock-top { display: flex; flex-direction: row; align-items: center; gap: .6em; padding: .55em .9em .6em; border-bottom: 1px solid rgba(236,235,228,.085); }
-.dock-av .cat { width: 2.1em; height: 2.1em; background: #2a2a26; }
+.dock-av .mk { width: 2.1em; height: 2.1em; background: #2a2a26; }
 .dock-tt { display: flex; flex-direction: column; min-width: 0; }
 .dock-title { font-weight: 600; font-size: .92em; color: #ecebe4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dock-sub { font-size: .7em; color: #8b8a82; }
@@ -716,7 +716,7 @@ html { scroll-snap-type: y proximity; }
 .dock-body > .ap-list { margin-top: auto; flex: none; }
 .ap-list > .ap-sys.in { display: block; text-align: center; animation: none; margin: .2em 0 .1em; }
 .ap-list > .ap-hello.in { display: flex; gap: .55em; align-items: flex-start; animation: none; }
-.ap-hello .cat { width: 1.7em; height: 1.7em; background: #2a2a26; }
+.ap-hello .mk { width: 1.7em; height: 1.7em; background: #2a2a26; }
 .ap-hello p { font-size: .76em; line-height: 1.38; color: #c9c8c0; background: #191a17; border-radius: .2em .9em .9em .9em; padding: .5em .7em; }
 .ap-hello b { color: #ecebe4; font-weight: 600; }
 .dock-comp { display: flex; align-items: center; gap: .5em; margin: .4em .7em .5em; padding: .3em .3em .3em .9em; border: 1px solid rgba(236,235,228,.14); border-radius: 99px; background: #151613; }
@@ -746,7 +746,7 @@ html { scroll-snap-type: y proximity; }
 .ctl.ctl-wait .ctl-main { display: none; }
 /* picked up: the chief caught this from a chat, a mail or a meeting */
 .k-caught { display: flex; align-items: center; gap: 7px; font: 500 12px/1.3 var(--f-mono); color: var(--ink-2); padding-bottom: 7px; border-bottom: 1px solid var(--line); }
-.k-caught .cat { width: 20px; height: 20px; }
+.k-caught .mk { width: 20px; height: 20px; }
 .k-agent .k-caught, .k-huddle .k-caught { color: #c9c8c0; border-color: rgba(236,235,228,.12); }
 .k-record .k-caught { padding: 8px 12px; margin: 0; }
 .k-bub-n { font-size: 12.5px; font-weight: 600; color: #3d6b48; }
@@ -760,8 +760,8 @@ html { scroll-snap-type: y proximity; }
 .tl .bc.k-meeting { border-left: 3px solid var(--ink); border-radius: 4px 14px 14px 4px; }
 .top-demo { font-size: 15px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; margin-left: 6px; pointer-events: auto; }
 @media (max-width: 819px) { .top-demo { font-size: 13.5px; } }
-.scr-app .ap-face.face, .scr-app .ap-face.cat { width: 1.9em; height: 1.9em; }
-.scr-app .ap-face.cat { background: #2a2a26; }
+.scr-app .ap-face.face, .scr-app .ap-face.mk { width: 1.9em; height: 1.9em; }
+.scr-app .ap-face.mk { background: #2a2a26; }
 .scr-app .ap-face.face { background: #e4dcf4; }
 .scr-app > .sbar { font-size: .9em; }
 .scr-app .ap-top { padding-top: .4em; }
@@ -769,9 +769,17 @@ html { scroll-snap-type: y proximity; }
 .scr-app .ap-comp { margin-bottom: .5em; }
 .scr-app .ap-msgs { min-height: 0; overflow: hidden; }
 .scr-app .ap-tr { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden; }
-@media (max-width: 819px) { .scr-app .ap-tr { -webkit-line-clamp: 4; } }
-.k-agent .cat, .k-huddle .cat, .dock-av .cat, .ap-hello .cat, .scr-app .ap-face.cat, .k-caught .cat { background: #ebe7de; }
-.prop .pr-av.face, .prop .pr-av.cat { padding: 0; overflow: hidden; border: 2px solid var(--card); }
+@media (max-width: 819px) { .scr-app .ap-tr { display: block; -webkit-line-clamp: none; overflow: visible; } }   /* phone: the whole transcript */
+@media (max-width: 819px) {   /* phone, voice stop: room for the whole transcript and the reply (the time is already in the title) */
+  .scr-voice .ap-sys, .scr-voice .ap-comp { display: none; }
+  .scr-voice .ap-msgs { gap: .7em; padding-top: .7em; }
+  .scr-voice .ap-tr { font-size: .7em; }
+}
+.k-agent .mk, .k-huddle .mk, .dock-av .mk, .ap-hello .mk, .scr-app .ap-face.mk, .k-caught .mk { background: var(--ink); color: var(--card); }
+.k-agent .mk, .k-huddle .mk, .dock .mk, .scr-app .mk, .scr-app .ap-face.mk, .k-agent .k-caught .mk { background: #ecebe4; color: #0b0c0a; }   /* on dark surfaces the mark is light */
+.prop .pr-av.face, .prop .pr-av.mk { padding: 0; overflow: hidden; border: 2px solid var(--card); }
 .prop .pr-av.face { background: #e4dcf4; }
-.prop .pr-av.cat { background: #ebe7de; }
-.prop .pr-av.face, .prop .pr-av.cat { width: 42px; height: 42px; }
+.prop .pr-av.mk { background: var(--ink); color: var(--card); font-size: 16px; }
+.prop .pr-av.mk-2 { font-size: 13px; }
+.k-caught .mk { font-size: 9px; }
+.prop .pr-av.face, .prop .pr-av.mk { width: 42px; height: 42px; }

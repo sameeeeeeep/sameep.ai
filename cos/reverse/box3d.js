@@ -558,11 +558,24 @@ export function init(cfg, kitSrc) {
     p.sub(t).multiplyScalar(k).add(t);
     camera.position.copy(p); camera.lookAt(t);
     scene.fog.near = 5.2 * k; scene.fog.far = 11.5 * k;
+    /* phone, at the door: the parcel is turned and sits left of the camera's aim, so slide the view until it is centred on cx */
+    camera.setViewOffset(vw, vh, OX, OY, vw, vh); camera.updateProjectionMatrix();
+    if (phone && ld > 0) {
+      camera.updateMatrixWorld();
+      mailer.updateMatrixWorld(true); let lo = Infinity, hi = -Infinity;
+      mailer.traverseVisible((o) => {   /* the real corners on screen, not a world box around the turned parcel */
+        if (!o.isMesh || !o.geometry.attributes.position) return;
+        const pa = o.geometry.attributes.position;
+        for (let i = 0; i < pa.count; i++) { V3.fromBufferAttribute(pa, i).applyMatrix4(o.matrixWorld).project(camera); const x = (V3.x * 0.5 + 0.5) * vw; if (x < lo) lo = x; if (x > hi) hi = x; }
+      });
+      camera.setViewOffset(vw, vh, OX + Math.round(((lo + hi) / 2 - CX) * ld), OY, vw, vh); camera.updateProjectionMatrix();
+    }
     renderer.render(scene, camera);
   }
 
   /* the canvas fills the stage; (cx, cy) is where the parcel sits, B the object box the 2D layers use */
-  let phone = false;
+  let phone = false, OX = 0, OY = 0, CX = 0;
+  const V3 = new THREE.Vector3();
   function size(w, h, cx, cy, B) {
     w = Math.round(w); h = Math.round(h);
     if ((w < 820) !== phone) {
@@ -575,7 +588,8 @@ export function init(cfg, kitSrc) {
     }
     if (w !== vw || h !== vh) { vw = w; vh = h; renderer.setSize(w, h, false); el.style.width = w + 'px'; el.style.height = h + 'px'; }
     camera.aspect = w / h;
-    camera.setViewOffset(w, h, Math.round(w / 2 - cx), Math.round(h / 2 - cy), w, h);
+    OX = Math.round(w / 2 - cx); OY = Math.round(h / 2 - cy); CX = cx;
+    camera.setViewOffset(w, h, OX, OY, w, h);
     camera.updateProjectionMatrix();
     k = h / (1.6 * B);
     dirty = true;

@@ -28,6 +28,12 @@
     return s || document.documentElement.classList.contains('still') || /[?&]still\b/.test(location.search);
   }
 
+  /* links from the config: http(s) and mailto only (same allowlist as pin-loader.js) */
+  function safeHref(v) {
+    if (typeof v !== 'string' || !v) return '';
+    try { var u = new URL(v, location.href); return /^(https?|mailto):$/.test(u.protocol) ? v : ''; } catch (e) { return ''; }
+  }
+
   function loginHref(member, end, demo) {
     var ws = str(end.workspace);
     if (!ws) return demo;
@@ -75,7 +81,7 @@
       front.appendChild(w);
     }
     var a = h('a', 'fin-btn', 'Log in as ' + name);
-    a.href = loginHref(m, end, demo);
+    a.href = safeHref(loginHref(m, end, demo)) || demo;
     a.addEventListener('click', function (e) {
       if (e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault(); openLogin(m, brand, a.href, demo);
@@ -122,7 +128,7 @@
     var status = h('p', 'lg-status', 'Code sent to your email');
     box.appendChild(status);
     var row = h('div', 'lg-ctas');
-    var go = h('a', 'lg-go', 'See the demo'); go.href = href || demo;
+    var go = h('a', 'lg-go', 'See the demo'); go.href = safeHref(href) || demo;
     var back = h('button', 'lg-back', 'Back'); back.type = 'button';
     back.addEventListener('click', function () { ov.classList.add('lg-out'); setTimeout(function () { ov.remove(); }, 300); });
     row.appendChild(go); row.appendChild(back);
@@ -138,8 +144,7 @@
     addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { back.click(); removeEventListener('keydown', esc); } });
   }
 
-  var CATS = [['Minutes', 'calico', 'Meetings'], ['Scout', 'siamese', 'Hiring'], ['Haggle', 'orange', 'Vendors'], ['Quill', 'calico', 'Content'],
-    ['Polish', 'siamese', 'Website'], ['Mango', 'orange', 'Ads'], ['Crate', 'grey', 'Warehouse'], ['Ink', 'black', 'Support']];
+  var AGENTS = [['M', 'Meetings'], ['H', 'Hiring'], ['V', 'Vendors'], ['C', 'Content'], ['W', 'Website'], ['A', 'Ads'], ['O', 'Ops'], ['S', 'Support']];
   function glimpse(c, brand, team, demo) {
     var a = h('a', 'gl'); a.href = demo; a.setAttribute('aria-label', 'Open the ' + brand + ' demo');
     var win = h('div', 'gl-win');
@@ -154,7 +159,7 @@
     var big = h('div', 'gl-tile gl-big'); big.appendChild(h('b', null, String(n))); big.appendChild(h('span', null, 'things need you')); tiles.appendChild(big);
     var sh = c.shipping || {}, del = (c.stages || []).filter(function (s) { return s && s.id === 'delivered'; })[0] || {};
     var hub = ((del.surfaces || {}).hub || {}).metrics || [];
-    [['Delivered today', hub[0] && hub[0].value ? String(hub[0].value).split(/\s|→|->/).pop() : '38'], ['Out for delivery', str(sh.out_for_delivery, '11')], ['Agents working', String(CATS.length)]].forEach(function (t) {
+    [['Delivered today', hub[0] && hub[0].value ? String(hub[0].value).split(/\s|→|->/).pop() : '38'], ['Out for delivery', str(sh.out_for_delivery, '11')], ['Agents working', String(AGENTS.length)]].forEach(function (t) {
       var d = h('div', 'gl-tile'); d.appendChild(h('b', null, t[1])); d.appendChild(h('span', null, t[0])); tiles.appendChild(d);
     });
     body.appendChild(tiles);
@@ -162,9 +167,9 @@
     var list = h('ul', 'gl-needs');
     needs.slice(0, 4).forEach(function (m) { var li = h('li'); li.appendChild(avatar(m, 'gl-av')); var tx = h('div'); tx.appendChild(h('b', null, str(m.name))); tx.appendChild(h('span', null, str(m.waiting))); li.appendChild(tx); list.appendChild(li); });
     cols.appendChild(list);
-    var cats = h('ul', 'gl-cats');
-    CATS.forEach(function (k, i) { var li = h('li'); var im = h('img'); im.alt = ''; im.src = 'cats/' + k[1] + '.png'; li.appendChild(im); li.appendChild(h('b', null, k[0])); li.appendChild(h('span', null, k[2])); cats.appendChild(li); });
-    cols.appendChild(cats);
+    var ags = h('ul', 'gl-ags'); ags.setAttribute('aria-label', 'Agents');
+    AGENTS.forEach(function (k) { var li = h('li'); var mk = h('span', 'gl-mk', k[0]); mk.setAttribute('aria-hidden', 'true'); li.appendChild(mk); li.appendChild(h('b', null, k[1])); ags.appendChild(li); });
+    cols.appendChild(ags);
     body.appendChild(cols);
     win.appendChild(body); a.appendChild(win);
     a.appendChild(h('span', 'gl-go', 'Try the demo, as ' + (founder || brand)));
@@ -180,7 +185,7 @@
     // the demo continues the show: a well-formed brand id rides along (../app/#demo?brand=<id>)
     var id = /^[a-z0-9][a-z0-9-]{1,23}$/.test(str(c.id)) ? str(c.id) : '';
     BRAND_ID = id;
-    var demo = str(links.demo, '/cos/app/#demo' + (id ? '?brand=' + id : ''));
+    var demo = safeHref(str(links.demo)) || '/cos/app/#demo' + (id ? '?brand=' + id : '');
     var calm = still();
 
     var sec = h('section', 'fin' + (calm ? ' fin-still' : ''));
@@ -209,10 +214,10 @@
 
     var row = h('div', 'fin-ctas');
     [['Try the demo', demo, 'fin-cta is-main'],
-     ['See plans', str(links.plans, '../plans/'), 'fin-cta'],
-     ['Talk to us', str(links.talk, '../plans/#enquire'), 'fin-cta']].forEach(function (b) {
+     ['See plans', safeHref(str(links.plans)) || '../plans/', 'fin-cta'],
+     ['Talk to us', safeHref(str(links.talk)) || '../plans/#enquire', 'fin-cta']].forEach(function (b) {
       var a = h('a', b[2], b[0]);
-      a.href = b[1];
+      a.href = safeHref(b[1]) || '../plans/';
       row.appendChild(a);
     });
     inner.appendChild(row);

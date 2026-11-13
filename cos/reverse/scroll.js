@@ -280,8 +280,8 @@
       list.appendChild(h('p', 'ap-sys', str(v.when, 'Today') + ', ' + str(v.time, '12:52 am')));
       function apm(nm, agent, time, body) {
         var m = h('div', 'ap-m' + (agent ? ' is-agent' : ''));
-        var fc = agent ? catEl('voice', 'ap-face') : faceEl(nm, 'ap-face'); m.appendChild(fc);
-        var hd = h('p', 'ap-h'); hd.appendChild(h('b', null, agent ? agentOf('voice')[0] : nm)); hd.appendChild(h('span', null, time)); m.appendChild(hd);
+        var fc = agent ? markEl('cos', 'ap-face') : faceEl(nm, 'ap-face'); m.appendChild(fc);
+        var hd = h('p', 'ap-h'); hd.appendChild(h('b', null, agent ? agentOf('cos')[0] : nm)); hd.appendChild(h('span', null, time)); m.appendChild(hd);
         if (body) m.appendChild(body);
         return m;
       }
@@ -309,7 +309,7 @@
       el.classList.add('scr-app');
       var tp = h('div', 'ap-top'); var tt2 = h('div', 'ap-title'); tt2.appendChild(h('b', null, 'Feed')); tt2.appendChild(h('span', null, str(st.when, 'Standup'))); tp.appendChild(tt2); el.appendChild(tp);
       var ls = h('div', 'ap-msgs');
-      var post = h('div', 'ap-m is-agent'); post.appendChild(catEl('standup', 'ap-face'));
+      var post = h('div', 'ap-m is-agent'); post.appendChild(markEl('standup', 'ap-face'));
       var ph2 = h('p', 'ap-h'); ph2.appendChild(h('b', null, agentOf('standup')[0])); ph2.appendChild(h('span', null, (str(st.when).match(/\d{1,2}:\d{2}\s?[ap]m/) || ['10:00 am'])[0])); post.appendChild(ph2);
       var bd = h('div', 'ap-post');
       bd.appendChild(h('p', 'ap-b ap-b-on', str(it1.text, 'Item 1')));
@@ -577,21 +577,21 @@
     });
     return el;
   }
-  /* ---------- who is speaking: faces for people, named cats for the chief's agents ---------- */
+  /* ---------- who is speaking: faces for people, monogram marks for the chief's agents ---------- */
   var FACES = {
     ohra: ['aditi', 'naina', 'arjun', 'tanvi', 'vikram', 'kavya', 'customer', 'agency'],
     ondri: ['kavya', 'meher', 'rohan', 'tara', 'zoya', 'ira', 'customer', 'agency'],
     siro: ['nikhil', 'pooja', 'farhan', 'leela', 'varun', 'meera', 'customer', 'agency']
   };
-  /* each stop is run by one of the chief's agents, a named cat (psspss cats) */
+  /* each stop is run by one of the chief's agents: a plain role with a monogram mark */
   var AGENTS = {
-    voice: ['Minutes', 'calico', 'Meeting cat'], standup: ['Minutes', 'calico', 'Meeting cat'], hire: ['Scout', 'siamese', 'Recruiter cat'],
-    samples: ['Patch', 'grey', 'Research cat'], vendor: ['Haggle', 'orange', 'Supplier cat'], packaging: ['Sprint', 'grey', 'Project cat'],
-    po: ['Haggle', 'orange', 'Supplier cat'], shoot: ['Quill', 'calico', 'Content cat'], listing: ['Polish', 'siamese', 'Website cat'],
-    ad: ['Mango', 'orange', 'Ads cat'], order: ['Crate', 'grey', 'Warehouse cat'], packed: ['Crate', 'grey', 'Warehouse cat'],
-    support: ['Ink', 'black', 'Support cat'], courier: ['Crate', 'grey', 'Warehouse cat'], delivered: ['Boss', 'black', 'Chief of Staff']
+    voice: ['Meetings agent', 'M'], standup: ['Meetings agent', 'M'], hire: ['Hiring agent', 'H'],
+    samples: ['Research agent', 'R'], vendor: ['Vendor agent', 'V'], packaging: ['Project agent', 'P'],
+    po: ['Vendor agent', 'V'], shoot: ['Content agent', 'C'], listing: ['Website agent', 'W'],
+    ad: ['Ads agent', 'A'], order: ['Ops agent', 'O'], packed: ['Ops agent', 'O'],
+    support: ['Support agent', 'S'], courier: ['Ops agent', 'O'], delivered: ['Chief of staff', 'CS']
   };
-  function agentOf(sid) { return AGENTS[sid] || ['Boss', 'black', 'Chief of Staff']; }
+  function agentOf(sid) { return AGENTS[sid] || ['Chief of staff', 'CS']; }
   function isCustomer(who) { return /customer|,/i.test(str(who)); }
   function isAgency(who) { return /studio|inkline|agency/i.test(str(who)); }
   function faceSlug(who) {
@@ -599,15 +599,22 @@
     var s = isCustomer(w) ? 'customer' : isAgency(w) ? 'agency' : w.toLowerCase().split(/\s+/)[0];
     return (FACES[brandId] || []).indexOf(s) >= 0 ? s : '';
   }
+  /* a face the config supplies (cfg.faces, keyed by name, first name or slug) wins over the built-in brand faces */
+  function cfgFace(who) {
+    var F = cfg.faces, w = str(who); if (!F || typeof F !== 'object' || !w) return '';
+    var keys = [w, personName(w), w.toLowerCase().split(/\s+/)[0], isCustomer(w) ? 'customer' : isAgency(w) ? 'agency' : ''];
+    for (var i = 0; i < keys.length; i++) if (keys[i] && typeof F[keys[i]] === 'string' && F[keys[i]]) return F[keys[i]];
+    return '';
+  }
   function faceEl(who, cls) {
-    var s = faceSlug(who), el = h('span', 'face' + (cls ? ' ' + cls : ''));
-    if (s) { var im = h('img'); im.alt = ''; im.decoding = 'async'; im.src = 'faces/' + brandId + '-' + s + '.webp'; el.appendChild(im); }
+    var cf = cfgFace(who), s = cf ? '' : faceSlug(who), el = h('span', 'face' + (cls ? ' ' + cls : ''));
+    if (cf || s) { var im = h('img'); im.alt = ''; im.decoding = 'async'; im.src = cf || 'faces/' + brandId + '-' + s + '.webp'; el.appendChild(im); }
     else { el.classList.add('face-txt'); el.textContent = str(who, '?').charAt(0); }
     return el;
   }
-  function catEl(sid, cls) {
-    var a = agentOf(sid), el = h('span', 'cat' + (cls ? ' ' + cls : ''));
-    var im = h('img'); im.alt = ''; im.decoding = 'async'; im.src = 'cats/' + a[1] + '.png'; el.appendChild(im);
+  function markEl(sid, cls) {
+    var a = agentOf(sid), el = h('span', 'mk' + (a[1].length > 1 ? ' mk-2' : '') + (cls ? ' ' + cls : ''), a[1]);
+    el.setAttribute('aria-hidden', 'true');
     return el;
   }
   function personName(who) { var w = str(who); return isCustomer(w) ? w.replace(/^Customer,?\s*/i, '') || 'Customer' : w; }
@@ -644,12 +651,12 @@
     var paren = (str(b.where).match(/\(([^)]+)\)\s*$/) || [])[1] || '';
     var whereClean = str(b.where).replace(/\s*\([^)]*\)\s*$/, '');
     if (b.via && !who) who = b.who || paren || null;
-    if (b.caught) { var cg = h('p', 'k-caught'); cg.appendChild(catEl(sid)); cg.appendChild(h('span', null, b.caught)); c.appendChild(cg); }
+    if (b.caught) { var cg = h('p', 'k-caught'); cg.appendChild(markEl(sid)); cg.appendChild(h('span', null, b.caught)); c.appendChild(cg); }
     var chName = '#' + str(b.ch, CHANNEL[sid] || 'general');
     var body = function () { return withMentions(h('p', 'bc-text'), (b.t === 'ask' ? '@' + b.who + ' ' : '') + b.text); };
     if (kind === 'team') {
       var bar = h('p', 'k-bar'); bar.appendChild(h('span', 'k-ch', chName)); bar.appendChild(h('span', 'k-app', 'Team chat')); c.appendChild(bar);
-      c.appendChild(authorRow(who ? faceEl(who) : catEl(sid), who ? personName(who) : ag[0], who ? null : 'agent'));
+      c.appendChild(authorRow(who ? faceEl(who) : markEl(sid), who ? personName(who) : ag[0], null));
       c.appendChild(body());
     } else if (kind === 'whatsapp') {
       var wb = h('p', 'k-bar'); wb.appendChild(h('span', 'k-ch', 'WhatsApp')); wb.appendChild(h('span', 'k-app', whereClean || personName(b.who))); c.appendChild(wb);
@@ -667,17 +674,17 @@
       c.appendChild(eh); c.appendChild(body());
     } else if (kind === 'ticket') {
       var tb = h('p', 'k-bar'); tb.appendChild(h('span', 'k-ch', 'Ticket #' + tickNo(sid))); tb.appendChild(h('span', 'k-st ' + (b.t === 'done' || b.t === 'auto' ? 'is-done' : 'is-open'), b.t === 'done' || b.t === 'auto' ? 'Solved' : 'Open')); c.appendChild(tb);
-      c.appendChild(authorRow(who ? faceEl(who) : catEl(sid), who ? personName(who) : ag[0], who ? 'customer' : 'replied'));
+      c.appendChild(authorRow(who ? faceEl(who) : markEl(sid), who ? personName(who) : ag[0], who ? 'customer' : 'replied'));
       c.appendChild(body());
     } else if (kind === 'huddle') {
       var hb = h('p', 'k-bar'); hb.appendChild(h('span', 'k-ch', (whereClean || 'Standup').replace(/,.*$/, '') + (b.at ? ' · ' + b.at : ''))); hb.appendChild(h('span', 'k-live', 'Live')); c.appendChild(hb);
-      var sp = authorRow(who ? faceEl(who) : catEl(sid), who ? personName(who) : ag[0], null);
+      var sp = authorRow(who ? faceEl(who) : markEl(sid), who ? personName(who) : ag[0], null);
       var wv = h('span', 'k-talk'); for (var i = 0; i < 9; i++) { var bi = h('i'); bi.style.animationDelay = (i * 70) + 'ms'; wv.appendChild(bi); } sp.appendChild(wv);
       c.appendChild(sp); var q2 = body(); q2.classList.add('k-said'); c.appendChild(q2);
     } else if (kind === 'meeting') {
       var mb = h('p', 'k-bar'); mb.appendChild(h('span', 'k-ch', 'Transcript')); mb.appendChild(h('span', 'k-app', whereClean.replace(/,\s*\d{1,2}:\d{2}$/, ''))); c.appendChild(mb);
       var tsm = (str(b.where).match(/(\d{1,2}:\d{2})$/) || [])[1];
-      var ml = h('div', 'k-tr'); ml.appendChild(h('span', 'k-tr-t', str(b.at, tsm || ''))); ml.appendChild(who ? faceEl(who) : catEl(sid));
+      var ml = h('div', 'k-tr'); ml.appendChild(h('span', 'k-tr-t', str(b.at, tsm || ''))); ml.appendChild(who ? faceEl(who) : markEl(sid));
       var mt = h('div', 'k-tr-b'); mt.appendChild(h('b', null, who ? personName(who) : ag[0])); var said = body(); said.classList.add('k-said'); mt.appendChild(said); ml.appendChild(mt);
       c.appendChild(ml);
     } else if (kind === 'voicenote') {
@@ -686,9 +693,9 @@
     } else if (kind === 'dm') {
       var db = h('p', 'k-bar'); db.appendChild(h('span', 'k-ch', 'Direct message')); db.appendChild(h('span', 'k-app', 'Chief of Staff')); c.appendChild(db);
       var qa = h('div', 'k-dm k-dm-q'); qa.appendChild(faceEl(b.who)); qa.appendChild(h('p', 'b-q', b.text)); c.appendChild(qa);
-      var an = h('div', 'k-dm k-dm-a'); an.appendChild(catEl(sid)); an.appendChild(h('p', 'b-a', b.answer)); c.appendChild(an);
+      var an = h('div', 'k-dm k-dm-a'); an.appendChild(markEl(sid)); an.appendChild(h('p', 'b-a', b.answer)); c.appendChild(an);
     } else if (kind === 'agent') {
-      c.appendChild(authorRow(catEl(sid), ag[0], ag[2] + ' · Chief of Staff'));
+      c.appendChild(authorRow(markEl(sid), ag[0], null));
       c.appendChild(body());
     } else if (kind === 'record') {
       var rb = h('p', 'k-bar'); rb.appendChild(h('span', 'k-ch', 'OS · ' + str(b.area, AREA[sid] || 'Records'))); var rid = recId(b.text); if (rid) rb.appendChild(h('span', 'k-id', rid)); c.appendChild(rb);
@@ -820,7 +827,7 @@
     /* the app phone that stands in the scene: Chief of Staff's own screen, showing the stop's decisions and records */
     ui.dock = h('div', 'dock'); var dsc = h('div', 'dock-scr scr-app');
     dsc.appendChild(statusBar());
-    var dtop = h('div', 'dock-top'); ui.dockCat = h('span', 'dock-av'); dtop.appendChild(ui.dockCat);
+    var dtop = h('div', 'dock-top'); ui.dockMk = h('span', 'dock-av'); dtop.appendChild(ui.dockMk);
     var dtt = h('div', 'dock-tt'); ui.dockTitle = h('b', 'dock-title'); ui.dockSub = h('span', 'dock-sub'); dtt.appendChild(ui.dockTitle); dtt.appendChild(ui.dockSub); dtop.appendChild(dtt);
     dsc.appendChild(dtop);
     ui.dockBody = h('div', 'dock-body'); dsc.appendChild(ui.dockBody);
@@ -901,7 +908,7 @@
     var l = DOCK[i] = h('div', 'ap-list'), id = ORDER[i], st = byId[id] || {};
     if (id === 'standup') return l;
     l.appendChild(h('p', 'ap-sys in', str(st.when, 'Today')));
-    var m = h('div', 'ap-hello in'); m.appendChild(catEl(id)); var t = h('p'); t.appendChild(h('b', null, agentOf(id)[0])); t.appendChild(document.createTextNode(' ' + (st.summary ? str(st.summary).split(/(?<=[.!?])\s/)[0] : 'On it.'))); m.appendChild(t); l.appendChild(m);
+    var m = h('div', 'ap-hello in'); m.appendChild(markEl(id)); var t = h('p'); t.appendChild(h('b', null, agentOf(id)[0])); t.appendChild(document.createTextNode(' ' + (st.summary ? str(st.summary).split(/(?<=[.!?])\s/)[0] : 'On it.'))); m.appendChild(t); l.appendChild(m);
     return l;
   }
   function appItem(b, st) {
@@ -1037,7 +1044,7 @@
   function makeProp(b, k, sid) {
     var el = h('div', 'prop prop-' + b.t);
     if (b.t === 'raised') el.appendChild(h('span', 'pr-mark', '!'));
-    else if (b.t === 'assign') el.appendChild(catEl(sid, 'pr-av pr-cat'));
+    else if (b.t === 'assign') el.appendChild(markEl(sid, 'pr-av pr-mk'));
     else if (b.t === 'ask') { el.appendChild(faceEl(b.who, 'pr-av pr-person')); var tp = h('span', 'pr-tap'); tp.appendChild(h('span', 'pr-tn', str(b.who, 'Founder') + ' · ')); tp.appendChild(document.createTextNode('1 tap')); el.appendChild(tp); }
     else if (b.t === 'auto') el.appendChild(h('span', 'pr-chip', 'Auto'));
     else if (b.t === 'q') el.appendChild(faceEl(b.who, 'pr-av pr-person'));
@@ -1139,7 +1146,7 @@
     var age = function (it) { return it.t0 ? now - it.t0 : -1; };
     updateDock(G, cx, B, act, now, shown, age);
     var SLOT = [[-1, -.44], [1, -.44], [-1, 0], [1, 0], [-1, .44], [1, .44]];   /* the story zigzags down the sides */
-    var mobN = 0, colEnd = {};   /* per stop and side: where the last card ended, so cards never stack on the title or each other */
+    var mobN = 0, colEnd = {}, cols = {};   /* per stop and side: where the last card ended, so cards never stack on the title or each other */
     TL.forEach(function (it) {
       var p = P(it);
       var on = shown(it) && !it.inApp;
@@ -1162,11 +1169,13 @@
         }
         y = G.cy + sl[1] * B * 1.2 - h / 2;
         var side = it.i + (sl[0] < 0 ? 'L' : 'R');
-        y = Math.max(y, (colEnd[side] || 44) + 14);
-        x = clamp(x, 12, W - cw - 12); y = clamp(y, 56, G.H - h - 56);
+        var floor = Math.max(56, (colEnd[side] || 44) + 14);
+        y = Math.max(y, floor);
+        x = clamp(x, 12, W - cw - 12);
         colEnd[side] = y + h;
+        (cols[side] = cols[side] || []).push({ it: it, x: x, y: y, h: h, r: x + cw, floor: floor });   /* placed once the whole column is known */
       }
-      if (!G.mob) it.el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+      if (!G.mob && it.type === 'stop') it.el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
       it.el.style.opacity = '';
       it.el.classList.toggle('now', it.type !== 'stop' && SQ[it.i].n === it.k);
       if (it.type === 'ask' && !it.el.getAttribute('data-user')) {
@@ -1176,6 +1185,26 @@
         if (!pressed && it.el.classList.contains('pressed')) { it.el.classList.remove('pressed'); Array.prototype.forEach.call(it.el.querySelectorAll('.cc-opt'), function (b) { b.classList.remove('on'); }); }
       }
     });
+    /* a busy stop: when a column runs past the bottom (or under the status bar), it slides up into the free room, then
+       shrinks as a whole, so every card stays on screen and none covers another */
+    if (!G.mob) {
+      var srS = stage.getBoundingClientRect(), pb = ui.presBar && ui.presBar.getBoundingClientRect(), pbOn = pb && pb.height && getComputedStyle(ui.presBar).opacity !== '0';
+      Object.keys(cols).forEach(function (side) {
+        var c = cols[side], end = c[c.length - 1].y + c[c.length - 1].h, minY = c[0].floor, maxY = G.H - 24;
+        if (pbOn && c.some(function (q) { return q.r > pb.left - srS.left; })) maxY = Math.min(maxY, pb.top - srS.top - 14);
+        var s = 1;
+        if (end > maxY) {   /* pack the column tight from the bottom up; if even that is too tall, shrink it */
+          var total = c.reduce(function (a, q) { return a + q.h; }, 0) + 14 * (c.length - 1);
+          s = Math.max(.5, Math.min(1, (maxY - minY) / total));
+          var y = Math.max(minY, maxY - total * s);
+          c.forEach(function (q) { q.y = y; y += (q.h + 14) * s; });
+        }
+        c.forEach(function (q) {
+          q.it.el.style.transformOrigin = '0 0';
+          q.it.el.style.transform = 'translate3d(' + q.x + 'px,' + q.y + 'px,0)' + (s < 1 ? ' scale(' + s.toFixed(3) + ')' : '');
+        });
+      });
+    }
     /* the thread: each step is joined to the one before it, the line passing behind the product */
     var sr = stage.getBoundingClientRect();
     ui.svg.setAttribute('width', W); ui.svg.setAttribute('height', G.H); ui.svg.style.display = G.mob ? 'none' : '';
@@ -1376,7 +1405,7 @@
     Array.prototype.forEach.call(ui.dock.querySelectorAll('.tabbar-t'), function (t) { t.classList.toggle('on', t.getAttribute('data-t') === tab); });
     var ttl = !last ? '#' + str(CHANNEL[id], 'general') : last.b.s === 'os' ? str(last.b.area, AREA[id] || 'Records') : '#' + str(last.b.ch, CHANNEL[id] || 'general');
     if (ui.dockTitle.textContent !== ttl) ui.dockTitle.textContent = ttl;
-    if (ui.dockCatFor !== id) { ui.dockCatFor = id; ui.dockCat.textContent = ''; ui.dockCat.appendChild(catEl(id)); ui.dockSub.textContent = agentOf(id)[0] + ' is on it'; }
+    if (ui.dockMkFor !== id) { ui.dockMkFor = id; ui.dockMk.textContent = ''; ui.dockMk.appendChild(markEl(id)); ui.dockSub.textContent = agentOf(id)[0] + ' is on it'; }
     /* newest at the bottom; when the list outgrows the screen it scrolls up */
     var lst = dockList(act), over = Math.max(0, lst.scrollHeight - ui.dockBody.clientHeight);
     lst.style.transform = 'translate3d(0,' + (-over) + 'px,0)';
