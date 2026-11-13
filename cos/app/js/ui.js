@@ -69,7 +69,7 @@ export function spark(values, label = '') {
 const I = (d) => raw(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`);
 export const ICONS = {
   dash: I('<rect x="3.5" y="3.5" width="7.5" height="10" rx="2"/><rect x="13" y="3.5" width="7.5" height="6" rx="2"/><rect x="13" y="11.5" width="7.5" height="9" rx="2"/><rect x="3.5" y="15.5" width="7.5" height="5" rx="2"/>'),
-  agents: I('<path d="M5 20v-8.5L4 4.5l4.5 3h7l4.5-3-1 7V20"/><path d="M5 20h14"/><path d="M9.5 12.5h.01M14.5 12.5h.01M11 15.5h2"/>'),
+  agents: I('<rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M10 2.5v3M14 2.5v3M10 18.5v3M14 18.5v3M2.5 10h3M2.5 14h3M18.5 10h3M18.5 14h3"/>'),
   more: I('<circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/>'),
   feed: I('<path d="M4 6h16M4 12h10M4 18h13"/><circle cx="19" cy="12" r="1.5"/>'),
   chat: I('<path d="M20 12a7.5 7.5 0 0 1-11 6.6L4 20l1-4.3A7.5 7.5 0 1 1 20 12z"/>'),

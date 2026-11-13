@@ -1,10 +1,9 @@
 /* dash.css: the Dashboard (pages/dash.js), the Agents page (pages/agents.js) and the pictures (js/look.js).
    Big numbers in Bricolage Grotesque, small labels in Spline Sans Mono, ink on card; lime only on the primary button. */
 
-/* ---------- pictures: cats, faces, product shots ---------- */
+/* ---------- pictures: agent marks, faces, product shots ---------- */
 .lk-av { --sz: 40px; position: relative; display: inline-grid; place-items: center; flex: none; width: var(--sz); height: var(--sz); border-radius: 50%; overflow: hidden; background: var(--card-2); color: var(--ink-2); font: 500 calc(var(--sz) * .36)/1 var(--f-mono); }
 .lk-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.lk-av.is-cat { background: var(--raise); }
 .lk-av.is-init { border: 1px solid var(--line-2); }
 .lk-shot { display: block; width: 100%; height: 100%; object-fit: contain; }
 
@@ -47,7 +46,6 @@ a.db-t:hover { border-color: var(--line-2); }
 .db-need-l { list-style: none; margin: 0; padding: 0; display: grid; }
 .db-need { display: grid; grid-template-columns: 60px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
 .db-need-v { position: relative; display: grid; place-items: center; width: 60px; height: 60px; border-radius: 14px; background: var(--card-2); padding: 4px; text-decoration: none; }
-.db-need-cat { position: absolute; right: -6px; bottom: -6px; border-radius: 50%; box-shadow: 0 0 0 2px var(--card); }
 .db-need-t { display: grid; gap: 2px; min-width: 0; text-decoration: none; color: var(--ink); }
 .db-need-t b { font: 500 15px/1.3 var(--f-body); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .db-need-t span { font: 400 12.5px/1.3 var(--f-mono); color: var(--muted); }
@@ -138,8 +136,6 @@ a.db-t:hover { border-color: var(--line-2); }
 .fd-need.is-flash { border-color: var(--ink-2); }
 .fd-need-top { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: start; }
 .fd-pic { display: grid; place-items: center; width: 84px; height: 84px; padding: 6px; border-radius: 16px; background: var(--card-2); }
-.fd-pic.is-cat { padding: 0; background: none; }
-.fd-pic.is-cat .lk-av { --sz: 64px !important; }
 .fd-need-b { display: grid; gap: 4px; min-width: 0; }
 .fd-who { display: flex; align-items: center; gap: 6px; font-size: 13.5px; }
 .fd-who span { font: 400 12.5px/1.3 var(--f-mono); color: var(--muted); }
@@ -202,10 +198,8 @@ a.db-t:hover { border-color: var(--line-2); }
 .fd-open { font-size: 13.5px; color: var(--ink-2); text-underline-offset: 3px; }
 .fd-done-m .fd-src { min-height: 22px; font-size: 12px; }
 
-/* every face across the surfaces (js/cos.js face): agents are their cat, round */
-.cs-face.is-cat { border-radius: 50%; border: 0; background: var(--raise); }
-.cs-face.is-sm.is-cat { border-radius: 50%; }
-/* Chat's thread list: the thread's cat on the left */
+/* every face across the surfaces (js/cos.js face): agents are their monogram mark */
+/* Chat's thread list: the agent mark on the left */
 .ct-th { grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; }
 .ct-th > .cs-face { grid-row: 1 / span 2; align-self: center; width: 40px; height: 40px; }
 .ct-th-n, .ct-th-p { grid-column: 2; }

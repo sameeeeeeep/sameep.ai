@@ -5,7 +5,7 @@
 // be missing; its tiles then step aside.
 import { html, raw, inr, num } from '../js/ui.js';
 import { cosApi, live, bindCards, quickAct, quickBtn, ago } from '../js/cos.js';
-import { cat, catOf, face, shot, productSrc } from '../js/look.js';
+import { mark, agentOf, face, shot, productSrc } from '../js/look.js';
 
 export const title = 'Dashboard';
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -99,22 +99,20 @@ export function view(data, ctx, now = Date.now()) {
     const a = quickAct(d, sx);
     const pic = productSrc(ws, d.fn);
     return html`<li class="db-need">
-      <a class="db-need-v" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}">${pic ? shot(ws, d.fn) : cat(d.agent, 52)}${pic ? html`<span class="db-need-cat">${cat(d.agent, 24)}</span>` : ''}</a>
-      <a class="db-need-t" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}"><b>${d.title}</b><span>${d.status === 'to_check' ? `Check ${nm(d.decided_by)}'s call` : `${nm(d.decider?.name) || 'Anyone'}${d.kind === 'ask' ? ' is asked' : ' decides'}`}</span></a>
+      <a class="db-need-v" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}">${pic ? shot(ws, d.fn) : mark(d.agent, 44)}</a>
+      <a class="db-need-t" href="${go(`chat/${encodeURIComponent(d.thread || 'all')}`)}" data-open-dec="${d.id}"><b>${d.title}</b><span>${agentOf(d.agent).name} · ${d.status === 'to_check' ? `Check ${nm(d.decided_by)}'s call` : `${nm(d.decider?.name) || 'Anyone'}${d.kind === 'ask' ? ' is asked' : ' decides'}`}</span></a>
       ${a ? quickBtn(a, 'is-primary', a.dec === 'check' ? 'Check' : a.verb) : ''}
     </li>`;
   };
   const needs = html`<section class="db-t db-needs" aria-label="Needs you">
-      <div class="db-needs-h"><p class="db-big">${open.length}</p><p class="db-needs-w">${open.length === 1 ? 'thing needs you' : open.length ? 'things need you' : 'Nothing needs you'}</p>
-        ${open.length ? html`<span class="db-stack">${[...new Set(open.map((d) => d.agent))].slice(0, 4).map((n) => cat(n, 30))}</span>` : ''}</div>
+      <div class="db-needs-h"><p class="db-big">${open.length}</p><p class="db-needs-w">${open.length === 1 ? 'thing needs you' : open.length ? 'things need you' : 'Nothing needs you'}</p></div>
       ${open.length ? html`<ul class="db-need-l">${open.slice(0, 3).map(need)}</ul>${open.length > 3 ? html`<a class="db-more" href="${go('chat/all')}">See all ${open.length}</a>` : ''}` : html`<p class="db-calm">The agents are on it.</p>`}
     </section>`;
 
   const night = on.n ? html`<a class="db-t db-night" href="${go('chat/all')}">
-      <span class="db-stack is-big">${on.agents.slice(0, 5).map((n) => cat(n, 44))}</span>
       <p class="db-mid"><b>${on.n}</b> things done</p>
       <p class="db-sub">by ${on.agents.length} agent${on.agents.length === 1 ? '' : 's'}, ${on.span}</p>
-      <ul class="db-did">${on.items.slice(0, 3).map((p) => html`<li>${cat(p.actor, 26)}<span><b>${catOf(p.actor).name}</b> ${p.text}</span></li>`)}</ul>
+      <ul class="db-did">${on.items.slice(0, 3).map((p) => html`<li>${mark(p.actor, 24)}<span><b>${agentOf(p.actor).name}</b> ${p.text}</span></li>`)}</ul>
     </a>` : '';
 
   let launch = '';

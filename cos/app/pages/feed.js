@@ -1,14 +1,14 @@
 // feed.js: the board a module's chat shows (and the All modules view merges): To do, In progress, Done.
 // Not a route of its own any more: #/w/<wid>/feed redirects to #/w/<wid>/chat/all (js/app.js MOVED), and
 // pages/chat.js renders boardView() for one module or for all of them. The groups come from js/board.js (pure).
-//   To do        each card: who raised it (a cat), a picture, the number that matters, where it came from (the
+//   To do        each card: which agent raised it, a picture, the number that matters, where it came from (the
 //                original line and a link to it in the module's chat), the one tap; the full card under Details
-//   In progress  each record in flight: its maker (a cat for an agent), owner (a face), where it came from, its step
+//   In progress  each record in flight: its maker (the agent's name), owner (a face), where it came from, its step
 //   Done         folded: closed cards (the chain as one line) and checked records
 import { html } from '../js/ui.js';
 import { decisionCard, quickAct, quickBtn, ago, clock, stepper } from '../js/cos.js';
 import { raw } from '../js/ui.js';
-import { cat, catOf, face, productSrc, shot } from '../js/look.js';
+import { mark, face, productSrc, shot, agentTag } from '../js/look.js';
 import { board, ALL } from '../js/board.js';
 import { nameOf } from './dash.js';
 
@@ -33,8 +33,8 @@ export function srcOf(src) {
   return { kind: k, label: SRC[k] || k, from: rest.join(':'), text: '' };
 }
 export const srcChip = (src, ts) => { const x = srcOf(src); return x ? html`<span class="fd-src is-${x.kind}"><b>${x.label}</b>${x.from ? html`<span>${x.from}</span>` : ''}${ts ? html`<span class="fd-src-t">${clock(ts)}</span>` : ''}</span>` : ''; };
-// a record with no source line still says where it came from: a sync is data, an agent is the agent's own work
-export const makerSrc = (r) => (r?.maker ? (/sync$/i.test(r.maker) ? { kind: 'connector', from: r.maker.replace(/\s*sync$/i, '') } : { kind: 'agent', from: '' }) : null); // the cat already says which agent
+// a record with no source line still says where it came from: a sync is data (an agent's own work shows the agent's name)
+export const makerSrc = (r) => (r?.maker ? (/sync$/i.test(r.maker) ? { kind: 'connector', from: r.maker.replace(/\s*sync$/i, '') } : { kind: 'agent', from: '' }) : null); // the agent's name sits beside it
 
 const STEP = { draft: 'Draft', approved: 'Approved, needs a check', held: 'On hold', checked: 'Checked', rejected: 'Rejected' };
 
@@ -48,7 +48,7 @@ export function boardView(b, data, ctx, opts = {}) {
   const sx = { ...s, wid: ctx.wid };
   const wid = encodeURIComponent(ctx.wid);
   const nm = (n) => nameOf(s, n);
-  const pf = (n, z) => (n === 'Chief of staff' ? cat(n, z) : face(ws, n, z)); // a person's face; the chief of staff is a cat
+  const pf = (n, z) => (n === 'Chief of staff' ? mark(n, z) : face(ws, n, z)); // a person's face; the chief of staff is its mark
   const modChip = (m) => (scope === ALL && m ? html`<a class="wk-mod" href="#/w/${wid}/chat/${encodeURIComponent(m)}">#${m}</a>` : '');
   const recHref = (r, m) => `#/w/${wid}/chat/${encodeURIComponent(scope === ALL ? m : scope)}/records/${encodeURIComponent(r.kind)}/${encodeURIComponent(r.ref)}`;
 
@@ -57,13 +57,12 @@ export function boardView(b, data, ctx, opts = {}) {
     const pic = productSrc(ws, d.fn);
     const rec = d.options.find((o) => o.recommended) || d.options[0];
     const n = d.numbers?.[0];
-    const c = catOf(d.agent);
     const src = d.source || post?.source;
     return html`<article class="fd-need" id="need-${d.id}">
-      <div class="fd-need-top">
-        <span class="fd-pic${pic ? '' : ' is-cat'}">${pic ? shot(ws, d.fn) : cat(d.agent, 56)}</span>
+      <div class="fd-need-top${pic ? '' : ' no-pic'}">
+        ${pic ? html`<span class="fd-pic">${shot(ws, d.fn)}</span>` : ''}
         <div class="fd-need-b">
-          <p class="fd-who">${pic ? cat(d.agent, 22) : ''}<b>${c.name}</b><span>${c.role}${post ? `, ${ago(post.ts, now)}` : ''}</span>${modChip(mod)}</p>
+          <p class="fd-who">${agentTag(d.agent)}${post ? html`<span>${ago(post.ts, now)}</span>` : ''}${modChip(mod)}</p>
           <h3 class="fd-need-t">${d.title}</h3>
           ${src ? html`<details class="fd-orig"><summary>${srcChip(src, post?.ts || d.ts)}</summary>
             <blockquote class="fd-quote">${srcOf(d.source)?.text || post?.text || ''}</blockquote>
@@ -81,13 +80,13 @@ export function boardView(b, data, ctx, opts = {}) {
     </article>`;
   };
 
-  // a record in flight: maker (cat or the data it synced from), title, owner, source, step
+  // a record in flight: maker (the agent, or the data it synced from), title, owner, source, step
   const doingRow = ({ r, mod, source }) => {
     const agent = /agent$|^chief of staff$/i.test(r.maker || '');
     return html`<li><a class="wk-row" href="${recHref(r, mod)}">
-      <span class="wk-row-v">${agent ? cat(r.maker, 34) : pf(nm(r.owner), 34)}</span>
+      <span class="wk-row-v">${r.owner ? pf(nm(r.owner), 30) : ''}</span>
       <span class="wk-row-b"><b>${r.title}</b>
-        <span class="wk-row-m">${r.owner ? html`${pf(nm(r.owner), 18)}<span>${nm(r.owner)}</span>` : ''}${srcChip(source || makerSrc(r))}<span class="wk-st is-${r.status}">${STEP[r.status] || r.status}</span></span></span>
+        <span class="wk-row-m">${agent ? agentTag(r.maker, 16) : ''}${r.owner ? html`<span>${nm(r.owner)}</span>` : ''}${srcChip(source || (agent ? null : makerSrc(r)))}<span class="wk-st is-${r.status}">${STEP[r.status] || r.status}</span></span></span>
       <span class="wk-row-r">${raw(stepper(r.status))}<span class="mono">${r.ref}</span>${scope === ALL ? html`<span class="wk-mod">#${mod}</span>` : ''}</span>
     </a></li>`;
   };
@@ -95,18 +94,16 @@ export function boardView(b, data, ctx, opts = {}) {
   const doneRow = (it) => {
     if (it.type === 'card') {
       const d = it.d;
-      return html`<li class="fd-done">
-        ${cat(it.agent, 32)}
-        <div><p><b>${catOf(it.agent).name}</b> ${it.result || d.title}</p>
-          <p class="fd-done-m">${d.decided_by ? html`${pf(nm(d.decided_by), 18)}<span>${nm(d.decided_by)} chose${d.checked_by ? `, ${nm(d.checked_by)} checked` : ''}</span>` : ''}${srcChip(d.source)}<a class="fd-open" href="#/w/${wid}/chat/${encodeURIComponent(d.thread || it.mod)}/chat">#${d.thread || it.mod}</a><span class="fd-t">${ago(it.ts, now)}</span></p></div>
+      return html`<li class="fd-done is-text">
+        <div><p>${it.result || d.title}</p>
+          <p class="fd-done-m">${agentTag(it.agent, 16)}${d.decided_by ? html`${pf(nm(d.decided_by), 18)}<span>${nm(d.decided_by)} chose${d.checked_by ? `, ${nm(d.checked_by)} checked` : ''}</span>` : ''}${srcChip(d.source)}<a class="fd-open" href="#/w/${wid}/chat/${encodeURIComponent(d.thread || it.mod)}/chat">#${d.thread || it.mod}</a><span class="fd-t">${ago(it.ts, now)}</span></p></div>
       </li>`;
     }
     const r = it.r;
     const agent = /agent$|^chief of staff$/i.test(r.maker || '');
-    return html`<li class="fd-done">
-      ${agent ? cat(r.maker, 32) : pf(nm(r.owner), 32)}
+    return html`<li class="fd-done is-text">
       <div><p><a class="wk-done-a" href="${recHref(r, it.mod)}">${r.title}</a></p>
-        <p class="fd-done-m">${r.checked_by ? html`${pf(nm(r.checked_by), 18)}<span>${nm(r.checked_by)} checked</span>` : ''}${srcChip(it.source || makerSrc(r))}${modChip(it.mod)}<span class="fd-t">${ago(it.ts, now)}</span></p></div>
+        <p class="fd-done-m">${agent ? agentTag(r.maker, 16) : ''}${r.checked_by ? html`${pf(nm(r.checked_by), 18)}<span>${nm(r.checked_by)} checked</span>` : ''}${srcChip(it.source || (agent ? null : makerSrc(r)))}${modChip(it.mod)}<span class="fd-t">${ago(it.ts, now)}</span></p></div>
     </li>`;
   };
 
@@ -114,7 +111,7 @@ export function boardView(b, data, ctx, opts = {}) {
   const doingList = (list) => html`<ul class="wk-rows">${list.slice(0, SHOW).map(doingRow)}</ul>${list.length > SHOW
     ? html`<details class="wk-moreg"><summary>${list.length - SHOW} more in progress</summary><ul class="wk-rows">${list.slice(SHOW).map(doingRow)}</ul></details>` : ''}`;
   // the agents of this module and what each is on now
-  const agentsNow = (opts.agents || []).length ? html`<ul class="wk-now">${opts.agents.map((a) => html`<li>${cat(a.name, 26)}<span><b>${catOf(a.name).name}</b> ${a.now}</span>${a.ts ? html`<span class="fd-t">${ago(a.ts, now)}</span>` : ''}</li>`)}</ul>` : '';
+  const agentsNow = (opts.agents || []).length ? html`<ul class="wk-now">${opts.agents.map((a) => html`<li>${agentTag(a.name, 16)}<span>${a.now}</span>${a.ts ? html`<span class="fd-t">${ago(a.ts, now)}</span>` : ''}</li>`)}</ul>` : '';
 
   return html`<div class="wk-board">
     <section class="wk-g" aria-label="To do">
@@ -125,7 +122,7 @@ export function boardView(b, data, ctx, opts = {}) {
       <h3 class="wk-h">In progress <span class="fd-c">${b.doing.length}</span></h3>
       ${agentsNow}
       ${b.doing.length ? doingList(b.doing) : html`<p class="fd-calm">Nothing in flight.</p>`}
-      ${b.done.length ? html`<details class="wk-done"${opts.openDone ? ' open' : ''}><summary><span class="wk-h">Done <span class="fd-c">${b.done.length}</span></span><span class="fd-stack">${[...new Set(b.done.filter((x) => x.type === 'card').map((x) => x.agent))].slice(0, 4).map((a) => cat(a, 26))}</span></summary>
+      ${b.done.length ? html`<details class="wk-done"${opts.openDone ? ' open' : ''}><summary><span class="wk-h">Done <span class="fd-c">${b.done.length}</span></span></summary>
         <ul class="fd-done-l">${b.done.slice(0, 30).map(doneRow)}</ul></details>` : ''}
     </section>
   </div>`;

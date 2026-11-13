@@ -54,7 +54,7 @@ export function view(data, ctx, ui = {}) {
     <a class="ct-th is-all" href="${href(ALL)}"${raw(scope === ALL ? ' aria-current="page"' : '')}>
       <span class="ct-th-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>
       <span class="ct-th-n"><span>All modules</span>${badge(total)}</span>
-      <span class="ct-th-p">To do, in progress and done, everywhere</span></a>
+      <span class="ct-th-p">Every module's tasks and records</span></a>
     ${threads.map((t) => html`<a class="ct-th" href="${href(t.slug)}"${raw(t.slug === scope ? ' aria-current="page"' : '')}>
       ${face(t.agent || 'Chief of staff', { agent: true })}
       <span class="ct-th-n"><span title="${t.name}">${t.name}${owner(t, s) ? html` <span class="ct-own">@${owner(t, s)}</span>` : ''}</span>${badge(wait[t.slug] || 0)}</span>
@@ -66,12 +66,12 @@ export function view(data, ctx, ui = {}) {
     const isAll = scope === ALL;
     const name = isAll ? 'All modules' : th ? th.name : scope;
     const tabs = (isAll ? VIEWS.filter(([k]) => k !== 'chat') : VIEWS).map(([k, l]) => html`<a href="${href(scope, k)}"${raw(k === tab ? ' aria-current="page"' : '')}>${l}${k === 'tasks' && (isAll ? total : wait[scope]) ? html` <span class="mono">${isAll ? total : wait[scope]}</span>` : ''}</a>`);
-    const who = th ? html`<p class="ct-who"><span class="ct-stack">${th.fns.map((f) => f.agent).filter((a, i, all) => all.indexOf(a) === i).map((a) => html`<span title="${a}">${face(a, { agent: true, small: true })}</span>`)}</span><span class="ct-stack">${th.people.map((p) => (s.people || {})[p]?.name || p).filter((n, i, all) => n && all.indexOf(n) === i).slice(0, 8).map((n) => html`<span title="${n}">${face(n, { avatar: avatarOf(s, n), small: true })}</span>`)}</span></p>` : '';
+    const who = th ? html`<p class="ct-who"><span class="ct-stack">${(th.people || []).map((p) => (s.people || {})[p]?.name || p).filter((n, i, all) => n && all.indexOf(n) === i).slice(0, 8).map((n) => html`<span title="${n}">${face(n, { avatar: avatarOf(s, n), small: true })}</span>`)}</span></p>` : '';
     let body = '';
     if (tab === 'tasks') {
       const filter = isAll && ui.filter && mods[ui.filter] ? ui.filter : null;
       const b = board({ ...feed, records: recs.records }, filter || scope, fns);
-      const agents = isAll ? [] : (s?.presence?.running?.agents || []).filter((a) => th?.fns.some((f) => f.agent === a.name));
+      const agents = isAll ? [] : (s?.presence?.running?.agents || []).filter((a) => (th?.fns || []).some((f) => f.agent === a.name));
       const chips = isAll ? html`<div class="wk-filter" role="group" aria-label="Module">
         <button type="button" data-mod=""${raw(filter ? '' : ' aria-pressed="true"')}>All <span class="mono">${total}</span></button>
         ${threads.map((t) => html`<button type="button" data-mod="${t.slug}"${raw(filter === t.slug ? ' aria-pressed="true"' : '')}>${t.name}${wait[t.slug] ? html` <span class="mono">${wait[t.slug]}</span>` : ''}</button>`)}

@@ -1,8 +1,8 @@
-// agents.js: Team and agents. The people (faces, what waits on each) and the agents (a named cat each, what it is
-// on now). One line each; the Feed and Chat hold the detail. API: GET cos/state, cos/feed.
+// agents.js: Team and agents. The people (faces, what waits on each) and the agents (each a plain named role with a
+// monogram mark, what it is on now). One line each; the Feed and Chat hold the detail. API: GET cos/state, cos/feed.
 import { html } from '../js/ui.js';
 import { cosApi, live, ago } from '../js/cos.js';
-import { cat, catOf, face } from '../js/look.js';
+import { mark, agentOf, face } from '../js/look.js';
 
 export const title = 'Team';
 
@@ -18,11 +18,14 @@ export function view(data, ctx, ui = {}) {
   const tabs = html`<div class="ag-tabs" role="group" aria-label="Show">
     <button type="button" data-ag="agents" aria-pressed="${tab === 'agents'}">Agents <span class="mono">${agents.length}</span></button>
     <button type="button" data-ag="people" aria-pressed="${tab === 'people'}">People <span class="mono">${people.length}</span></button></div>`;
-  const agentList = html`<ul class="ag-grid">${agents.map((a) => { const c = catOf(a.name); return html`<li class="ag-c">
-    ${cat(a.name, 64)}
-    <p class="ag-n"><b>${c.name}</b><span>${c.role}</span></p>
+  // each agent opens the chat of the module it runs (its thread, else the module of its first function)
+  const modFor = (name) => (data.threads || []).find((t) => t.agent === name)?.slug || (data.threads || []).find((t) => (t.fns || []).some((f) => f.agent === name))?.slug || null;
+  const agentList = html`<ul class="ag-grid">${agents.map((a) => { const c = agentOf(a.name); const m = modFor(a.name); return html`<li class="ag-c">
+    ${mark(a.name, 44)}
+    <p class="ag-n"><b>${c.name}</b></p>
     <p class="ag-now">${a.now}</p>
     ${a.ts ? html`<p class="ag-t">${ago(a.ts)}</p>` : ''}
+    ${m ? html`<a class="ag-go" href="#/w/${encodeURIComponent(ctx.wid)}/chat/${encodeURIComponent(m)}">Open #${m}</a>` : ''}
   </li>`; })}</ul>`;
   const peopleList = html`<ul class="ag-grid is-people">${people.map((p) => { const n = waitFor(p.name); return html`<li class="ag-c">
     ${face(ws, p.placeholder ? '' : p.name, 64)}
@@ -39,7 +42,7 @@ export function view(data, ctx, ui = {}) {
 export async function mount(root, ctx) {
   const ui = { tab: ctx.params?.[0] === 'people' ? 'people' : 'agents' };
   let data = null;
-  const load = async () => { const [state, feed] = await Promise.all([cosApi(ctx, 'GET', 'state'), cosApi(ctx, 'GET', 'feed')]); data = { state, feed }; };
+  const load = async () => { const [state, feed, th] = await Promise.all([cosApi(ctx, 'GET', 'state'), cosApi(ctx, 'GET', 'feed'), cosApi(ctx, 'GET', 'threads').catch(() => ({ threads: [] }))]); data = { state, feed, threads: th.threads }; };
   const paint = () => { root.innerHTML = String(view(data, ctx, ui)); };
   await load(); paint();
   root.addEventListener('click', (e) => { const b = e.target.closest('[data-ag]'); if (b) { ui.tab = b.dataset.ag; paint(); } });
