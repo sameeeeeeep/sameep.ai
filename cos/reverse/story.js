@@ -790,7 +790,7 @@
       t.classList.toggle('is-done', reached && m.id !== active);
       t.classList.toggle('is-idle', !reached && m.id !== active);
       t.disabled = !mine.some(function (j) { return j <= maxSeen; });
-      t._status.textContent = m.id === active ? 'Open now' : reached ? (later ? 'Back later' : '✓ Done') : 'Next';
+      t._status.textContent = m.id === active ? 'Open now' : reached ? (later ? 'Back later' : 'Done') : 'Next';
       t._agent.textContent = str(m.agent) + (m.id === active ? ' · on it' : '');
       t._pvFace.innerHTML = '';
       if (last) tilePreview(m.id, last); else t._pv.textContent = m.next || m.about || '';
@@ -800,7 +800,7 @@
     each(ui.strip.children, function (b, j) {
       b.classList.toggle('is-on', j === i); b.classList.toggle('is-past', j < i); b.disabled = j > maxSeen;
       var d = dayOf(j); b._sub.textContent = modOf(stops[j].module).name + (d != null ? ' · Day ' + d : '');
-      b.querySelector('.sx-st-n').textContent = j < i ? '✓' : String(j + 1);
+      b.querySelector('.sx-st-n').textContent = j < i ? '' : String(j + 1);
     });
     var on = ui.strip.children[i]; if (on && ui.strip.scrollWidth > ui.strip.clientWidth) ui.strip.scrollTo({ left: on.offsetLeft - 16, behavior: REDUCED ? 'auto' : 'smooth' });
   }
@@ -819,7 +819,7 @@
     var o = it.options[c] || {};
     r._opts.forEach(function (b, j) { b.disabled = true; b.classList.toggle('is-chosen', j === c); b.classList.toggle('is-not', j !== c); });
     var lb = String(o.label || '').replace(/^["“]|["”]$/g, '');
-    r._by.textContent = '✓ ' + first(it.who) + ' chose “' + lb + '”' + (o.ai ? '' : ', not the AI pick');
+    r._by.textContent = first(it.who) + ' chose “' + lb + '”' + (o.ai ? '' : ', not the AI pick');
     r.classList.add('is-answered');
     return o;
   }
@@ -927,7 +927,7 @@
           CH[key(stop, k)] = c;
           var o = answer(r4, it, c); sfx('decision');
           DELAY[stop.id] = (DELAY[stop.id] || 0) + (o.delay || 0);
-          ckState(k, 'done', '✓ ' + shortName(it.who) + ' chose “' + String(o.label).replace(/^["“]|["”]$/g, '') + '”', c);
+          ckState(k, 'done', shortName(it.who) + ' chose “' + String(o.label).replace(/^["“]|["”]$/g, '') + '”', c);
           Object.keys(AG).forEach(function (n) { if (/^waiting/.test(AG[n].st.textContent)) agent(n, 'ready'); });
           if (o.land) land(o.land, false, o.note);
           if (o.line) listingLine(o.line);
@@ -998,7 +998,7 @@
       var grid = h('div', 'sx-su-team'); arr(cfg.team).forEach(function (m, i) { var p = h('div', 'sx-su-p'); p.style.transitionDelay = (300 + i * 220) + 'ms'; p.appendChild(faceEl(m.name, 'is-big')); p.appendChild(h('b', null, m.name)); p.appendChild(h('span', null, m.role)); grid.appendChild(p); });
       inv.appendChild(grid); var sent = h('span', 'sx-su-ok', ''); inv.appendChild(sent); c.appendChild(inv); body.appendChild(c);
       raf2(function () { grid.classList.add('is-on'); });
-      setTimeout(function () { sfx('done'); sent.textContent = '✓ Invites sent. Everyone gets their own login.'; ready('Next: connect your tools', function () { stepTo(1); }); }, 600 + arr(cfg.team).length * 220);
+      setTimeout(function () { sfx('done'); sent.textContent = 'Invites sent. Everyone gets their own login.'; ready('Next: connect your tools', function () { stepTo(1); }); }, 600 + arr(cfg.team).length * 220);
     }
     function connectors() {
       var c = h('div', 'sx-su-cn');
@@ -1057,7 +1057,7 @@
     var ml = h('div', 'sx-hub-mods'); mods.forEach(function (m) { var r = h('div', 'sx-hub-m'); r.style.setProperty('--tint', look(m.id).tint); r.appendChild(iconEl(m.id)); var tx = h('div'); tx.appendChild(h('b', null, m.name)); tx.appendChild(h('span', null, (end && m.done_line) || m.about || '')); r.appendChild(tx); var pp = h('span', 'sx-people'); owners(m).forEach(function (p) { pp.appendChild(faceEl(p, 'is-xs')); }); r.appendChild(pp); ml.appendChild(r); }); mb.appendChild(ml); g.appendChild(mb);
     var side = h('div', 'sx-hub-side');
     var sb = h('section', 'sx-hub-box'); sb.appendChild(h('b', 'sx-side-h', 'Connected'));
-    var sl = h('div', 'sx-hub-src'); arr(S.connectors).forEach(function (x) { var m = srcMark(x[0]); m.appendChild(h('em', null, x[3].replace(/^✓\s*/, ''))); sl.appendChild(m); }); sb.appendChild(sl); side.appendChild(sb);
+    var sl = h('div', 'sx-hub-src'); arr(S.connectors).forEach(function (x) { var m = srcMark(x[0]); m.appendChild(h('em', null, x[3].replace(/^\u2713\s*/, ''))); sl.appendChild(m); }); sb.appendChild(sl); side.appendChild(sb);
     var ab = h('section', 'sx-hub-box'); ab.appendChild(h('b', 'sx-side-h', arr(S.agents).length + ' agents on'));
     var al = h('div', 'sx-hub-ag'); arr(S.agents).forEach(function (a) { var c = h('span'); c.appendChild(faceEl(a[0], 'is-xs')); c.appendChild(h('span', null, a[0])); al.appendChild(c); }); ab.appendChild(al); side.appendChild(ab);
     var pb = h('section', 'sx-hub-box'); pb.appendChild(h('b', 'sx-side-h', 'Products'));

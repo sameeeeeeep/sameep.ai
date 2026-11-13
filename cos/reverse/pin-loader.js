@@ -93,6 +93,7 @@
     '.pl-alt:hover,.pl-alt:focus-visible{background:rgba(255,255,255,.26);outline:none}',
     '@media (prefers-reduced-motion:reduce){.pl-face,.pl-face.is-on i{animation:none;transform:none}.pl{transition:none}}',
     /* scope + pricing, on the page's light paper */
+    '.pl-load-t{display:block}.pl-load-b{display:block;width:min(240px,70vw);height:3px;margin:10px auto 0;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden}.pl-load-b i{display:block;height:100%;background:#fff;transform-origin:0 50%;transform:scaleX(0);transition:transform .3s ease}',
     '#scope{background:#f3f1ec;color:#1d1c1a;font-family:"Bricolage Grotesque",system-ui,sans-serif;padding:96px 16px 120px}',
     '#scope .sc{max-width:1040px;margin:0 auto}',
     '#scope h2{margin:0 0 12px;font-weight:600;font-size:clamp(32px,5vw,56px);line-height:1;letter-spacing:-.03em}',
@@ -163,10 +164,10 @@
   /* faces take turns around the edges, clear of the clock and the form */
   function faces(field) {
     /* spots keep clear of the clock (top) and the sign-in (bottom middle); size = depth (near ones bigger) */
-    var N = 9, phone = innerWidth < 600;
+    var N = 5, phone = innerWidth < 600;   /* gate/f1..f5: faces only, no names anywhere */
     var spots = phone
       ? [[.16, .33, 72], [.84, .31, 64], [.5, .42, 84], [.14, .55, 60], [.86, .56, 76], [.32, .66, 56], [.7, .67, 66]]
-      : [[.1, .3, 76], [.9, .27, 68], [.24, .5, 92], [.78, .48, 84], [.08, .74, 64], [.92, .76, 72], [.38, .34, 58], [.62, .33, 62], [.3, .74, 70], [.7, .74, 66], [.5, .52, 100]];
+      : [[.12, .32, 80], [.88, .3, 74], [.26, .56, 96], [.74, .55, 90], [.09, .76, 68], [.91, .77, 72], [.5, .5, 104]];
     var els = spots.map(function (p, i) {
       var f = h('span', 'pl-face'), w = h('i'), im = h('img'); im.alt = ''; im.decoding = 'async';
       im.src = base + 'gate/f' + ((i % N) + 1) + '.webp';
@@ -266,6 +267,14 @@
       return next();
     });
   }
+  /* a calm progress line while the workspace's files load: a bar and a count, never a raw '3 of 59' */
+  function progress(n, total) {
+    if (!msg) return;
+    if (!msg._bar) { msg.textContent = ''; msg._t = document.createElement('span'); msg._t.className = 'pl-load-t'; msg.appendChild(msg._t);
+      var b = document.createElement('span'); b.className = 'pl-load-b'; msg._bar = document.createElement('i'); b.appendChild(msg._bar); msg.appendChild(b); }
+    msg._t.textContent = n >= total ? 'Opening the workspace' : 'Opening the workspace · ' + Math.round(100 * n / Math.max(1, total)) + '%';
+    msg._bar.style.transform = 'scaleX(' + (n / Math.max(1, total)).toFixed(3) + ')';
+  }
   function load(wid) {
     return findShow(wid).then(function (r) {
       var refs = {};
@@ -275,6 +284,9 @@
         if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { walk(v[k], media || MEDIA.test(k)); });
       })(r.cfg, false);
       var list = Object.keys(refs), done = 0, urls = {};
+      /* images first, so the bar moves quickly; the bigger audio clips come last */
+      list.sort(function (a, b) { return (/\.mp3$/i.test(a) ? 1 : 0) - (/\.mp3$/i.test(b) ? 1 : 0); });
+      progress(0, list.length);
       var auth = { authorization: 'Bearer ' + token() };
       function one(ref) {
         var path = ref.slice(1).split('/').map(encodeURIComponent).join('/');
@@ -285,7 +297,7 @@
             if (!type || (b.type && b.type !== type)) throw new Error('type');
             urls[ref] = URL.createObjectURL(new Blob([b], { type: type }));
           }).catch(function () { urls[ref] = ''; })
-          .then(function () { done++; msg.textContent = 'Loading ' + done + ' of ' + list.length; });
+          .then(function () { done++; progress(done, list.length); });
       }
       var q2 = list.slice(), workers = [];
       for (var k = 0; k < 6; k++) workers.push((function run() { var ref = q2.shift(); return ref ? one(ref).then(run) : null; })());
