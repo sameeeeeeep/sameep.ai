@@ -500,8 +500,41 @@ export function createApp(cfg, host, env) {
     if (b.pop === 'item' && lastRow) { lift(lastRow); await wait(TM.pop); if (!live()) return; unlift(); await wait(TM.popBack); }
     if (b.pop === 'tray') { await wait(800); if (!live()) return; unlift(); await wait(TM.popBack); }
   }
+  /* every picture the product beats will put on screen, for the loader (sb.js): the frame (products, team, module owners),
+     then for each board beat its opening visual, the faces and option pictures of the thread items it plays (history
+     included), the artefacts they land, and the stop's canvas */
+  function assets() {
+    const out = new Set(), add = (u) => { if (u) out.add(u); }, who = (w) => { if (w && !isAgent(w)) add(faceSrc(w)); };
+    const p0 = () => (S.products || [{}])[0].img;
+    const pic = (o) => {
+      if (!o) return;
+      if (o.listings) o.listings.forEach((x) => add(asset((x.listing || {}).src || p0())));
+      if (o.media || (o.src && !o.doc)) add(asset(o.media ? o.media.src : o.src));
+      arr(o.quotes).forEach((q) => { if (q.img) add(asset(q.img)); });
+      if (o.list) arr(o.list.rows).forEach((r) => who(r.who));
+    };
+    if (prod.img) add(asset(prod.img));
+    arr(S.products).forEach((p) => { if (p.img) add(asset(p.img)); });
+    arr(cfg.team).slice(0, 6).forEach((m) => who(m.name));
+    mods.forEach((m) => owners(m).forEach(who));
+    arr(SB.beats).forEach((b) => {
+      if (b.kind !== 'board') return;
+      if (b.open && env.img) add(env.img(b.open));
+      const stop = byStop(b.stop); if (!stop) return;
+      const th = arr(stop.thread), to = b.to == null ? th.length - 1 : b.to;
+      th.slice(0, to + 1).forEach((it) => {
+        who(it.k === 'cos' ? str(it.agent, 'Chief of staff') : it.who); who(it.owner);
+        arr(it.options).forEach((o) => { if (o.img) add(asset(o.img)); });
+        pic(landObj(stop, it));
+      });
+      const objs = arr(stop.scene && stop.scene.objs);
+      pic(objs.filter((o) => o.slot === 'hero' && OK(o))[0] || objs.filter(OK)[0]);
+      owners(modOf(stop.module)).forEach(who);
+    });
+    return Array.from(out);
+  }
   function stop() { clearT(); unlift(true); ui.lift.innerHTML = ''; }
   function pick(label) { const r = ui.thread.querySelector('.ca-dec:not(.is-done)'); if (r) choose(r, label, !!label); }
   function reset() { stop(); cur = { mod: null, stop: null, k: -1 }; }
-  return { el: root, play, estimate, stop, pick, reset, get lifted() { return !!ui.lifted; } };
+  return { el: root, play, estimate, stop, pick, reset, assets, get lifted() { return !!ui.lifted; } };
 }

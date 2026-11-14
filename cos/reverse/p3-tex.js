@@ -2,7 +2,7 @@
    The one image used is the founder's sketch, keyed down to its ink so it can be drawn onto the inside of the carton board. */
 
 const rng = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
-export const cv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+export const cv = (w, h) => { if (typeof document === 'undefined') return new OffscreenCanvas(w, h); const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };   /* OffscreenCanvas in the surface workers */
 
 /* value noise for canvas work (tileable at period p) */
 function vnoise(p, seed) {
@@ -34,7 +34,7 @@ const css = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a == null ? 1 
 /* ---------------- corrugated kraft ----------------
    one tile = TILE metres; flutes telegraph through the liner as faint vertical bands (an exact count per tile so it repeats) */
 export const KRAFT_TILE = 0.25, FLUTES = 34;
-export function kraft(px, { base = '#b48855', inner = false, seed = 3 } = {}) {
+function kraft_(px, { base = '#b48855', inner = false, seed = 3 } = {}) {
   const c = cv(px, px), B = hex(base), dark = mix(B, [70, 45, 20], 0.4), light = mix(B, [240, 214, 170], 0.32);
   const fl = px / FLUTES, r = rng(seed + 99);
   /* soft mottle (low contrast) + per-pixel grain */
@@ -61,7 +61,7 @@ export function kraft(px, { base = '#b48855', inner = false, seed = 3 } = {}) {
   return c;
 }
 /* bump for the liner: flute ridges + grain */
-export function kraftBump(px, seed = 5) {
+function kraftBump_(px, seed = 5) {
   const c = cv(px, px), fl = px / FLUTES;
   field(c, 4, 8, seed, (v, x) => { const b = 0.5 + 0.5 * Math.cos((x / fl) * Math.PI * 2); const t = 128 + b * 22 + (v - 0.5) * 60; return [t, t, t]; });
   return c;
@@ -235,7 +235,7 @@ export function cartonPrint(cfg, ppm = 12) {
   return { print: c, foil: f, dl };
 }
 /* inside of the board: unprinted, greyish white; the sketch ink goes on a separate layer */
-export function cartonInside(ppm = 6) {
+function cartonInside_(ppm = 6) {
   const dl = dieline(), W = Math.round(dl.w * ppm), H = Math.round(dl.h * ppm), c = cv(W, H);
   field(c, 4, 8, 31, (v) => { const t = 216 + (v - 0.5) * 14; return [t - 1, t - 3, t - 9]; });
   return c;
@@ -263,13 +263,13 @@ export function sketchInk(img, ppm = 12) {
 }
 
 /* ---------------- the doorstep ---------------- */
-export function plaster(px = 512) {
+function plaster_(px = 512) {
   const c = cv(px, px), r = rng(4);
   const g = field(c, 5, 4, 21, (v) => { const t = 228 + (v - 0.5) * 22; return [t + 2, t - 2, t - 12]; });
   for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(${r() < 0.5 ? '120,105,90' : '255,250,240'},${0.04 + r() * 0.06})`; g.fillRect(r() * px, r() * px, 1 + r() * 2, 1 + r() * 2); }
   return c;
 }
-export function terrazzo(px = 1024) {
+function terrazzo_(px = 1024) {
   /* kota-like stone tiles, 600 mm, with grout; the tile spans 1.2 m */
   const c = cv(px, px), r = rng(8);
   const g = field(c, 5, 4, 33, (v) => { const t = 168 + (v - 0.5) * 26; return [t + 10, t + 3, t - 8]; });
@@ -279,7 +279,7 @@ export function terrazzo(px = 1024) {
   g.fillStyle = 'rgba(80,70,60,.55)'; g.fillRect(0, 0, px, 2.5); g.fillRect(0, px / 2, px, 2.5); g.fillRect(0, 0, 2.5, px); g.fillRect(px / 2, 0, 2.5, px);
   return c;
 }
-export function wood(px = 512, base = '#5b3a26') {
+function wood_(px = 512, base = '#5b3a26') {
   const c = cv(px, px), B = hex(base), r = rng(14);
   const g = field(c, 3, 2, 17, (v) => mix(B, mix(B, [20, 10, 5], 0.5), v * 0.6));
   for (let i = 0; i < 220; i++) {
@@ -288,7 +288,7 @@ export function wood(px = 512, base = '#5b3a26') {
   }
   return c;
 }
-export function coir(px = 512) {
+function coir_(px = 512) {
   /* coconut fibre: dense short strands, a darker border woven in */
   const c = cv(px, px), r = rng(19);
   const g = field(c, 4, 8, 44, (v) => mix([118, 82, 42], [168, 122, 66], v));
@@ -299,13 +299,13 @@ export function coir(px = 512) {
   }
   return c;
 }
-export function coirBump(px = 256) {
+function coirBump_(px = 256) {
   const c = cv(px, px), r = rng(23), g = c.getContext('2d');
   g.fillStyle = '#808080'; g.fillRect(0, 0, px, px);
   for (let i = 0; i < px * 30; i++) { const x = r() * px, y = r() * px, a = r() * Math.PI; g.strokeStyle = r() < 0.5 ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.35)'; g.lineWidth = 0.8; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 4, y + Math.sin(a) * 4); g.stroke(); }
   return c;
 }
-export function terracotta(px = 256) {
+function terracotta_(px = 256) {
   const c = cv(px, px), r = rng(29);
   const g = field(c, 5, 4, 51, (v) => mix([140, 78, 54], [178, 108, 78], v));
   for (let i = 0; i < 200; i++) { g.fillStyle = `rgba(240,220,200,${0.05 + r() * 0.1})`; g.fillRect(r() * px, r() * px, 1 + r() * 4, 1); }
@@ -334,3 +334,93 @@ export function plate(text, cfg) {
   g.fillStyle = '#2a211b'; g.font = `600 64px ${cfg.sansFont}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 128, 68);
   return c;
 }
+
+/* ---------------- kept surfaces ----------------
+   The seeded surfaces below (board, grain, floor, wall, wood, coir, pot) come out the same on every visit and cost ~1 s of
+   main thread to draw. The first visit keeps them in Cache Storage as lossless PNG (encoded off the main thread by a small
+   worker); a return visit decodes them off-thread in prime() and draws the bitmap back. Bump TEXC when any of them changes. */
+const TEXC = 'p3tex-v4', KEPT = new Map(), TODO = [];
+let saveT = 0, wk = null;
+const keyOf = (name, a) => new URL('/__p3tex/' + encodeURIComponent(name + JSON.stringify(a)), location.origin).href;
+/* the kept surfaces parcel3d asks for, with its exact arguments (mirror its calls when they change; one that isn't listed
+   is simply drawn on the main thread the first time) */
+const MOBILE = () => matchMedia('(max-width: 767px)').matches || (matchMedia('(pointer: coarse)').matches && Math.min(innerWidth, innerHeight) < 900);
+export function plan(mobile) {
+  const K = mobile ? 512 : 1024;
+  const m = mobile ? 0.25 : 1;   /* the third item: rough cost (ms on an M1), for sharing the work evenly between workers */
+  return [['kraft', [K, { base: '#b58855', seed: 3 }], 550 * m], ['kraft', [K / 2, { base: '#caa676', inner: true, seed: 9 }], 150 * m], ['kraftBump', [K / 2], 70 * m], ['cartonInside', [6], 100],
+    ['terrazzo', [mobile ? 512 : 1024], 150 * m], ['plaster', [512], 25], ['wood', [512, '#6a4128'], 55], ['wood', [256, '#4e2f1c'], 15], ['coir', [mobile ? 256 : 512], 60 * m], ['coirBump', [256], 2], ['terracotta', [], 12]];
+}
+/* fill the in-memory map before init(): from the cache on a return visit, otherwise drawn in parallel by module workers
+   (this same file), off the main thread. Resolves within `ms` whatever happens; anything missing is drawn by init(). */
+let primed = null;
+export function prime(ms = 4000) {
+  if (primed) return primed;
+  const P = plan(MOBILE()).map(([n, a, w]) => [n, a, keyOf(n, a), w]);
+  const fromCache = (async () => {
+    if (!self.caches || !self.createImageBitmap) return;
+    const c = await caches.open(TEXC);
+    await Promise.all(P.map(async ([, , k]) => {
+      const r = await c.match(k); if (!r) return;
+      KEPT.set(k, await createImageBitmap(await r.blob(), { colorSpaceConversion: 'none', premultiplyAlpha: 'none' }));
+    }));
+  })().catch(() => {});
+  const draw = fromCache.then(() => {
+    const todo = P.filter(([, , k]) => !KEPT.has(k));
+    if (!todo.length || !self.Worker || !self.OffscreenCanvas) return;
+    const n = Math.max(1, Math.min(4, (navigator.hardwareConcurrency || 4) - 1, todo.length)), lanes = Array.from({ length: n }, () => []), load = new Array(n).fill(0);
+    todo.slice().sort((a, b) => b[3] - a[3]).forEach((j) => { const i = load.indexOf(Math.min(...load)); lanes[i].push(j.slice(0, 3)); load[i] += j[3]; });   /* biggest first, each to the lightest lane */
+    return Promise.all(lanes.map((jobs) => new Promise((res) => {
+      let w; try { w = new Worker(import.meta.url, { type: 'module' }); } catch (e) { return res(); }
+      let left = jobs.length;
+      w.onmessage = (e) => { if (e.data && e.data.b) KEPT.set(e.data.k, e.data.b); if (--left <= 0) res(); };
+      w.onerror = () => res();
+      w.postMessage({ jobs, n: TEXC });
+      setTimeout(res, ms);
+    }).then(() => { /* the workers finish their saves, then close themselves */ })));
+  });
+  primed = Promise.race([draw.then(() => KEPT.size), new Promise((r) => setTimeout(() => r(-1), ms))]);
+  return primed;
+}
+function save() {
+  saveT = 0;
+  if (!self.caches || !self.OffscreenCanvas || !self.Worker) return;
+  try {
+    if (!wk) {
+      const src = 'onmessage=async(e)=>{const d=e.data;try{const o=new OffscreenCanvas(d.b.width,d.b.height);o.getContext("2d").drawImage(d.b,0,0);'
+        + 'const bl=await o.convertToBlob({type:"image/png"});const c=await caches.open(d.n);await c.put(d.k,new Response(bl,{headers:{"content-type":"image/png"}}));}catch(x){}};';
+      wk = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+    }
+    TODO.splice(0).forEach(([k, c]) => createImageBitmap(c).then((b) => wk.postMessage({ k, b, n: TEXC }, [b])).catch(() => {}));
+  } catch (e) { /* no cache: draw them again next time */ }
+}
+const kept = (name, fn) => (...a) => {
+  const k = keyOf(name, a), b = KEPT.get(k);
+  if (b) { const c = cv(b.width, b.height); c.getContext('2d').drawImage(b, 0, 0); return c; }
+  const c = fn(...a); TODO.push([k, c]); if (!saveT) saveT = setTimeout(save, 60); return c;
+};
+/* a surface worker: draw the jobs, hand each bitmap back at once, keep it in the cache, then close */
+if (typeof document === 'undefined' && typeof self !== 'undefined' && typeof self.postMessage === 'function') {
+  self.onmessage = async (e) => {
+    const { jobs, n } = e.data || {}, cache = self.caches ? await caches.open(n).catch(() => null) : null;
+    const GEN = { kraft: kraft_, kraftBump: kraftBump_, cartonInside: cartonInside_, plaster: plaster_, terrazzo: terrazzo_, wood: wood_, coir: coir_, coirBump: coirBump_, terracotta: terracotta_ };
+    const saves = [];
+    for (const [name, a, k] of jobs || []) {
+      try {
+        const c = GEN[name](...a), b = await createImageBitmap(c);
+        self.postMessage({ k, b }, [b]);
+        if (cache) saves.push(c.convertToBlob({ type: 'image/png' }).then((bl) => cache.put(k, new Response(bl, { headers: { 'content-type': 'image/png' } }))).catch(() => {}));
+      } catch (x) { self.postMessage({ k }); }
+    }
+    await Promise.all(saves); self.close();
+  };
+}
+export const kraft = kept('kraft', kraft_);
+export const kraftBump = kept('kraftBump', kraftBump_);
+export const cartonInside = kept('cartonInside', cartonInside_);
+export const plaster = kept('plaster', plaster_);
+export const terrazzo = kept('terrazzo', terrazzo_);
+export const wood = kept('wood', wood_);
+export const coir = kept('coir', coir_);
+export const coirBump = kept('coirBump', coirBump_);
+export const terracotta = kept('terracotta', terracotta_);

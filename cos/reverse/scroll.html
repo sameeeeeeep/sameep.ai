@@ -10,21 +10,58 @@
 <meta property="og:site_name" content="sameep.ai">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#f3f1ec">
+<script>
+/* the loader's boot (sb.js has the rest): it runs before the stylesheets, so the parcel's modules (and, on the public route,
+   the brand config) are on their way at once. Every file is counted as it arrives, for the loader's line: plain bodies
+   byte by byte, compressed ones when they finish. A visitor back within 30 days sees plain paper for up to 1 s before
+   the loader shows: a warm load cuts straight to the story inside that, so the loader never flashes. Keep the module list in step with sb.js and parcel3d.js. */
+(function () {
+  'use strict';
+  var L = window.__SBL = { items: [] }, q = new URLSearchParams(location.search);
+  L.priv = /^#pin$/i.test(location.hash) || q.has('pin') || !!q.get('version');
+  try { var s = JSON.parse(localStorage.getItem('sb.ld') || 'null'); if (s && s.v === 'sb19' && Date.now() - s.t < 2592e6) { document.documentElement.classList.add('sbl-q'); setTimeout(function () { document.documentElement.classList.remove('sbl-q'); }, L.QUIET = 1000); } } catch (e) { /* */ }
+  L.get = function (url, o) {
+    o = o || {};
+    for (var k = 0; k < L.items.length; k++) if (L.items[k].url === url) return L.items[k].p;
+    var it = { url: url, kind: o.kind || 'js', size: 0, got: 0, done: false, ok: false };
+    L.items.push(it);
+    it.p = fetch(url, { priority: o.low ? 'low' : 'high' }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      var n = +r.headers.get('content-length') || 0, enc = !!r.headers.get('content-encoding');
+      it.size = n;
+      if (!r.body || !r.body.getReader) return r.arrayBuffer().then(function (b) { it.size = it.got = n || b.byteLength; });
+      var rd = r.body.getReader(), raw = 0;
+      return (function pump() {
+        return rd.read().then(function (x) {
+          if (x.done) { it.size = it.got = enc && n ? n : raw; return; }
+          raw += x.value.byteLength; if (!enc) { it.got = raw; if (raw > it.size) it.size = raw; }
+          return pump();
+        });
+      })();
+    }).then(function () { it.done = it.ok = true; return it; }, function (e) { it.done = true; it.err = String((e && e.message) || e); return it; });
+    return it.p;
+  };
+  /* the wordmark shows in its own font or not at all (1.5 s cap) */
+  var fonted = function () { var T = window.__T = window.__T || {}; if (!T.lv) T.lv = Math.round(performance.now()); document.documentElement.classList.add('sbl-f'); };   /* __T: timing marks, read only by the load check */
+  L.font = function () { if (L.font.on) return; L.font.on = 1; (document.fonts && document.fonts.load ? document.fonts.load('700 40px "Bricolage Grotesque"') : Promise.resolve()).then(fonted, fonted); };
+  setTimeout(fonted, 1500);
+  /* the parcel's seeded surfaces start at once (workers on a first visit, the cache after); so do its print fonts */
+  L.prime = import('./p3-tex.js?v=p3v4').then(function (t) { return t.prime(); }).then(function (k) { (window.__T = window.__T || {}).primed = Math.round(performance.now()); return k; }, function () { return 0; });
+  L.font3d = function () { if (document.fonts && document.fonts.load) ['500 40px "Fraunces"', '500 20px "Inter"', '700 20px "Inter"', '500 20px "Spline Sans Mono"'].forEach(function (f) { document.fonts.load(f).catch(function () {}); }); };
+  ['./vendor/three.module.min.js', './parcel3d.js?v=p3v4', './p3-tex.js?v=p3v4', './p3-geo.js?v=p3v2', './p3-post.js?v=p3v2', './sb-app.js?v=sb19', './sb.js?v=sb19'].forEach(function (u) { L.get(u); });
+  if (!L.priv) {
+    var id = (q.get('brand') || 'ohra').replace(/[^a-z0-9_-]/gi, '');
+    L.cfgP = fetch('./brands/' + id + '.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+    L.cfgP.catch(function () { /* scroll.js asks again and reports it */ });
+  }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Spline+Sans+Mono:wght@400;500&display=swap">
-<link rel="preload" as="image" href="./sb/poster-1440.webp" media="(min-width: 761px)" fetchpriority="high">
-<link rel="preload" as="image" href="./sb/poster-390.webp" media="(max-width: 760px)" fetchpriority="high">
-<link rel="modulepreload" href="./sb-app.js?v=sb17">
-<link rel="modulepreload" href="./vendor/three.module.min.js">
-<link rel="modulepreload" href="./parcel3d.js?v=p3v3">
-<link rel="modulepreload" href="./p3-tex.js?v=p3v2">
-<link rel="modulepreload" href="./p3-geo.js?v=p3v2">
-<link rel="modulepreload" href="./p3-post.js?v=p3v2">
-<link rel="preload" as="image" href="./sb/sketch.webp">
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Spline+Sans+Mono:wght@400;500&display=swap" onload="__SBL.font()" onerror="__SBL.font()">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" data-p3fonts="1" media="print" onload="this.media='all';__SBL.font3d()">
 <link rel="stylesheet" href="./scroll.css?v=20261113nocats">
 <link rel="stylesheet" href="./ending.css?v=20261113nocats">
-<link rel="stylesheet" href="./sb.css?v=sb18">
+<link rel="stylesheet" href="./sb.css?v=sb19">
 <link rel="stylesheet" href="./sb-app.css?v=sb17">
 <link rel="stylesheet" href="./sb-offer.css?v=sb16">
 </head>
@@ -33,16 +70,14 @@
   <div id="track"><div id="stage"></div></div>
   <section id="end"></section>
 </main>
-<div class="sb sb-pre is-3d" data-kind="scene" aria-hidden="true">
-  <div class="sb-3d"><picture><source media="(max-width: 760px)" srcset="./sb/poster-390.webp"><img class="sb-poster" src="./sb/poster-1440.webp" alt="" fetchpriority="high" data-brand="ohra"></picture></div>
-  <p class="sb-wm"><b>Coco</b><span>by sameep.ai</span></p>
-  <h1 class="sb-lead is-on"><span>Every delivered product…</span></h1>
+<div class="sbl" role="progressbar" aria-label="Loading Coco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="sbl-in"><p class="sbl-wm"><b>Coco</b><span>by sameep.ai</span></p><span class="sbl-bar"><i></i></span></div>
 </div>
+<template id="sb-poster"><picture><source media="(max-width: 760px)" srcset="./sb/poster-390.webp"><img class="sb-poster" src="./sb/poster-1440.webp" alt="" data-brand="ohra"></picture></template>
 <script src="./ending.js?v=20261113nocats" defer></script>
-<script type="module">import { init } from './box3d.js?v=20261113nocats'; window.__box3d = init; dispatchEvent(new Event('box3d'));</script>
 <script src="./sb-offer.js?v=sb16" defer></script>
-<script type="module" src="./sb.js?v=sb18c"></script>
-<script src="./pin-loader.js?v=2eccd4f6"></script>
-<script src="./scroll.js?v=20261115v15" defer></script>
+<script type="module" src="./sb.js?v=sb19"></script>
+<script src="./pin-loader.js?v=b29fb3f2"></script>
+<script src="./scroll.js?v=20261115v16" defer></script>
 </body>
 </html>

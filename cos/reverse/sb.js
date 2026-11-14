@@ -4,8 +4,7 @@
    No header strip and no footer bar: the line is a subtitle-style caption, the controls a floating pill that fades
    when idle, and a 2px progress line runs along the bottom edge. The Chief of staff dock arrives once the note is
    sent. Everything comes from config.storyboard (names live in the private config). */
-import { init as initDoor } from './door3d.js?v=sb2';
-import { createApp } from './sb-app.js?v=sb17';
+import { createApp } from './sb-app.js?v=sb19';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -19,9 +18,9 @@ const arr = (v) => (Array.isArray(v) ? v : []);
 const PHONE = () => innerWidth < 760;
 /* parcel3d (built in brandcos/parcel3d/, copied here) plays beats 1, 14, 15: the parcel opens at her door, the carton
    unfolds into the sketch, and at the end it closes and goes back out. ?door3d falls back to the old low-poly scene. */
-const P3_DEFAULT = true, P3_URL = './parcel3d.js?v=p3v3';
+const P3_DEFAULT = true, P3_URL = './parcel3d.js?v=p3v4', P3_TEX = './p3-tex.js?v=p3v4', DOOR_URL = './door3d.js?v=sb2';   /* keep in step with the boot list in scroll.html */
 const P3 = (P3_DEFAULT || Q.has('p3')) && !Q.has('door3d');   /* ?door3d falls back to the old scene */
-let initP3 = null, p3Failed = false;
+let initP3 = null, p3Failed = false, initDoor = null, boxReady = false;   /* boxReady: built and warmed; until then nothing draws */
 
 let cfg, SB, B = [], i = -1, playing = true, timer = 0, msgT = 0, raf = 0, prevKind = '';
 const ui = {};
@@ -64,17 +63,20 @@ function ensureBox() {
     const src = IMG('product');
     if (P3 && !initP3 && !p3Failed) return null;   /* still loading: never fall back to the old scene by accident */
     if (P3 && initP3) {
-      box = initP3({ brand: cfg.brand || {}, box: SB.box || {}, palette: cfg.palette || {}, shipping: cfg.shipping || {} }, (k) => (k === 'sketch' ? IMG('sketch') : src), { paper: PAPER });
+      box = initP3(p3cfg(), (k) => (k === 'sketch' ? IMG('sketch') : src), { paper: PAPER, fontsIn: p3fonts, lazy: true });
       ui.d3.appendChild(box.el); sizeBox();
       if (box.on) box.on('hero', (r) => onHero(r));
       if (box.on) box.on('*', (name) => { if (name === 'land' || name === 'settle') tone(180, 0.18, 0.08); else if (/flap|carton/.test(name)) tone(300, 0.08, 0.04); else if (/tape|peel|label/.test(name)) tone(900, 0.05, 0.03, 'triangle'); });
       return box;
     }
+    if (!initDoor) return null;   /* the old scene loads only when the parcel fails */
     box = initDoor({ brand: { name: str((SB.box || {}).name), product: str((SB.box || {}).product) }, palette: cfg.palette || {}, shipping: cfg.shipping || {}, charmSrc: src }, () => src);
     ui.d3.appendChild(box.el); sizeBox();
   } catch (e) { box = null; }
   return box;
 }
+function p3cfg() { return { brand: cfg.brand || {}, box: SB.box || {}, palette: cfg.palette || {}, shipping: cfg.shipping || {} }; }
+let p3fonts = false;   /* the carton's fonts were in before init(), so it prints once */
 function sizeBox() {
   if (!box) return;
   const w = ui.d3.clientWidth || innerWidth, hh = ui.d3.clientHeight || innerHeight;
@@ -82,7 +84,7 @@ function sizeBox() {
   else box.size(w, hh, w * 0.5, hh * 0.5, Math.min(w * 0.34, hh * 0.5));
 }
 function runBox(fn, dur) {
-  cancelAnimationFrame(raf); if (!ensureBox()) return;
+  cancelAnimationFrame(raf); if (!boxReady || !ensureBox()) return;
   const t0 = performance.now();
   (function f(now) {
     const t = REDUCED ? 1 : clamp((now - t0) / dur, 0, 1);
@@ -316,6 +318,7 @@ function show(k) {
   if (fly) ui.root.appendChild(fly);
   skHand = null;
   ui.scene.innerHTML = ''; ui.scene.dataset.k = b.kind;
+  if (!is3d && b.kind !== 'sketch' && box && box.warm && boxReady && !ui.warmedEnd) { ui.warmedEnd = 1; box.warm({ rest: true }); }   /* the canvas is off screen until the ending */
   const built = BUILD[b.kind] ? BUILD[b.kind](b) : null;
   ui.scene.className = 'sb-scene' + (built ? ' is-on' : '');
   const still = b.kind === 'sketch' || fly || (b.kind === 'send' && prevBeat === 'record');
@@ -408,21 +411,6 @@ const ICONS = {
 };
 function btn(cls, label, svgHtml) { const b = h('button', 'sb-b ' + cls); b.type = 'button'; b.setAttribute('aria-label', label); b.innerHTML = svgHtml; return b; }
 
-/* ---------- the first screen ----------
-   scroll.html paints the opening before any script runs: the wordmark, the first headline line and a poster of the 3D
-   parcel's first frame (sb/poster-*.webp, rendered from parcel3d at that camera pose). Here the real chrome takes over:
-   the headline element is adopted as is, and the poster stays above the canvas until the parcel draws its first frame
-   (runBox). A poster rendered for another brand is dropped at once. */
-function adoptPre() {
-  const pre = document.querySelector('.sb-pre'); if (!pre) return;
-  const pic = pre.querySelector('picture'), im = pic && pic.querySelector('img');
-  const mine = im && (im.dataset.brand || '') === str(cfg.id) && /^(box-open)$/.test((B[0] || {}).kind) && !/[?&]step=/.test(location.search);
-  if (mine) { pic.classList.add('sb-poster-w'); ui.d3.insertBefore(pic, ui.d3.firstChild); ui.poster = pic; ui.root.classList.add('is-3d'); }
-  const L = pre.querySelector('.sb-lead');
-  if (L && mine) { L.querySelectorAll('span').forEach((e) => e.classList.remove('is-new')); L.setAttribute('aria-live', 'polite'); ui.root.replaceChild(L, ui.lead); ui.lead = L; }
-  pre.remove();
-}
-
 /* ---------- build ---------- */
 function build() {
   document.documentElement.classList.add('is-sb');
@@ -446,7 +434,6 @@ function build() {
   const pg = h('div', 'sb-prog'); ui.prog = h('i'); pg.appendChild(ui.prog); r.appendChild(pg);
   ui.offer = h('div', 'sb-offer'); r.appendChild(ui.offer);
   mount.appendChild(r);
-  adoptPre();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });
   ui.play.addEventListener('click', (e) => { e.stopPropagation(); unlock(); setPlay(!playing); });
   ui.sound.addEventListener('click', (e) => { e.stopPropagation(); if (SOUND) { SOUND = false; stopClip(); setSound(); } else unlock(); });
@@ -460,26 +447,134 @@ function build() {
   setSound(); setPlayBtn(); idle();
 }
 
+/* ---------- the loader ----------
+   scroll.html paints the loader before any script runs: the wordmark on paper and a 2px line, and its boot script has already
+   started on the parcel's modules (and, on the public route, the brand config). Here the rest of the story's files come
+   from the config (so the private brand's pictures are its gated, unlocked ones, and a public brand uses its own), every
+   picture is decoded, and the parcel is built and warmed. The line follows real bytes, decodes and the 3D steps. When all
+   of it is in, the loader is cut away and beat 1 is already running. Nothing waits past 12 s: what is missing is logged and
+   the story starts with what it has (the poster or the old scene stand in for a 3D that isn't ready or failed). */
+const LD = window.__SBL || null;
+/* the parcel's seeded surfaces are drawn (in workers) or decoded (from the cache) from the start, before the config */
+const PRIME = !P3 ? null : LD && LD.prime ? LD.prime : import(P3_TEX).then((t) => t.prime()).catch(() => 0);   /* the boot script usually started it */
+const LOAD_MAX = 12000;
+const HOLD = [];   /* decoded pictures stay referenced, so the beats reuse them as they are */
+const now = () => Math.round(performance.now());
+const frame = () => new Promise((r) => requestAnimationFrame(() => r()));
+function getFile(url, o) {
+  if (LD && LD.get) return LD.get(url, o);
+  return fetch(url).then((r) => r.blob()).then(() => ({ url, ok: true }), () => ({ url, ok: false }));
+}
+function decodeImg(u) {
+  const im = new Image(); im.decoding = 'async'; im.src = u; HOLD.push(im);
+  return (im.decode ? im.decode() : new Promise((res, rej) => { im.onload = res; im.onerror = rej; })).then(() => true, () => false);
+}
+/* everything the story shows, from the config: the opening's pictures, the product beats' pictures (sb-app), and the voice
+   clip (only with sound on; it never holds the story, since it plays only after a tap) */
+function manifest() {
+  const imgs = new Set(), add = (u) => { if (u && typeof u === 'string') imgs.add(u); };
+  ['product', 'sketch', 'sketch_ink'].forEach((k) => add(IMG(k)));
+  B.forEach((b) => { if (b.open) add(IMG(b.open)); });
+  if (app && app.assets) app.assets().forEach(add);
+  const audio = MUTED ? [] : Array.from(new Set(B.map((b) => b.voice && (cfg.audio || {})[b.voice]).filter(Boolean)));
+  return { imgs: Array.from(imgs), audio };
+}
+const FONTS = ['600 40px "Bricolage Grotesque"', '700 20px "Bricolage Grotesque"', '500 15px "Bricolage Grotesque"', '400 15px "Bricolage Grotesque"', '400 13px "Spline Sans Mono"', '500 13px "Spline Sans Mono"'];
+function loadThen(k0) {
+  const T = window.__T = window.__T || {}; T.start = now();
+  const el = document.querySelector('.sbl'), bar = el && el.querySelector('.sbl-bar i');
+  const t0 = LD && !LD.priv ? 0 : performance.now();   /* the private route's clock starts at the unlock */
+  ensureApp();
+  const M = manifest(); T.files = M.imgs.length;
+  const st = { dec: 0, init: 0, warm: 0, fonts: 0 }, miss = [];
+  /* pictures: fetched (counted), then decoded */
+  const pics = M.imgs.map((u) => getFile(u, { kind: 'img', low: true }).then((it) => {
+    if (it && it.ok === false) { miss.push(u); return false; }
+    return decodeImg(u).then((ok) => { st.dec++; if (!ok) miss.push(u + ' (decode)'); return ok; });
+  }));
+  const fonts = (document.fonts && document.fonts.load ? Promise.all(FONTS.map((f) => document.fonts.load(f).catch(() => null))) : Promise.resolve()).then(() => { st.fonts = 1; });
+  /* the 3D: parcel3d imported, its kept surfaces decoded, then init() and warm() */
+  const d3 = (async () => {
+    if (!P3) { initDoor = (await import(DOOR_URL)).init; boxReady = !!ensureBox(); st.init = st.warm = 1; return; }
+    try {
+      const m = await import(P3_URL);
+      T.imported = now();
+      const [kept, fin] = await Promise.all([PRIME, m.fonts ? Promise.race([m.fonts(p3cfg()), new Promise((r) => setTimeout(() => r(false), 2500))]) : false]);
+      T.kept = kept; T.fonts3d = now(); p3fonts = !!fin;
+      initP3 = m.init;
+      await frame();   /* the line paints before init() takes the main thread */
+      if (!ensureBox()) throw new Error('init() failed');
+      T.init = now(); st.init = 1;
+      await frame();
+      if (box.warm) await box.warm({ open: true });   /* the ending's draws wait for an off-screen beat (show) */
+      T.warmed = now(); st.warm = 1; boxReady = true;
+    } catch (e) {
+      console.warn('[coco] the 3D parcel failed, using the fallback scene:', e && e.message);
+      p3Failed = true; initP3 = null; if (box) { try { box.el.remove(); } catch (x) { /* */ } box = null; }
+      try { initDoor = (await import(DOOR_URL)).init; boxReady = !!ensureBox(); } catch (x) { /* the poster stands in */ }
+      st.init = st.warm = 1;
+    }
+  })();
+  /* the line: 60% bytes, 10% decodes and fonts, 20% init, 10% warm */
+  let shown = 0, live = true;
+  const tick = () => {
+    if (!live) return;
+    let sz = 0, got = 0;
+    (LD ? LD.items : []).forEach((it) => { const n = it.size || 40000; sz += n; got += it.done ? n : Math.min(it.got || 0, n); });
+    const files = sz ? got / sz : 1, dec = M.imgs.length ? st.dec / M.imgs.length : 1;
+    const p = 0.6 * files + 0.08 * dec + 0.02 * st.fonts + 0.2 * st.init + 0.1 * st.warm;
+    shown = Math.max(shown, shown + (p - shown) * 0.3);
+    if (bar) bar.style.transform = 'scaleX(' + shown.toFixed(4) + ')';
+    if (el) el.setAttribute('aria-valuenow', String(Math.round(shown * 100)));
+    requestAnimationFrame(tick);
+  };
+  if (bar) tick();
+  const ready = Promise.all([Promise.all(pics), fonts, d3]);
+  const late = new Promise((r) => setTimeout(() => r('late'), Math.max(0, t0 + LOAD_MAX - performance.now())));
+  Promise.race([ready.then(() => 'ready'), late]).then(async (how) => {
+    T.ready = now();
+    if (how === 'late') {
+      const lost = (LD ? LD.items : []).filter((it) => !it.done).map((it) => it.url).concat(miss);
+      if (!st.init) lost.push('3D init'); else if (!st.warm) lost.push('3D warm');
+      console.warn('[coco] started after 12 s without:', lost);
+    } else if (miss.length) console.warn('[coco] started without:', miss);
+    /* the line fills, then the cut */
+    live = false; if (bar) { bar.style.transform = 'none'; await frame(); await frame(); }
+    const first3d = /^(box-open|held|box-close)$/.test((B[k0] || {}).kind);
+    if (first3d && !boxReady) poster();   /* the 3D isn't ready: its first frame stands in, and the beat restarts once it is */
+    show(k0);
+    if (k0 === 0) Array.prototype.forEach.call(ui.lead.children, (e) => e.classList.remove('is-new'));   /* beat 1 is already running */
+    if (el) el.remove();
+    document.documentElement.classList.remove('sbl-q');
+    T.cut = now();
+    if (how === 'ready') { try { localStorage.setItem('sb.ld', JSON.stringify({ v: 'sb19', t: Date.now() })); } catch (e) { /* */ } }
+    if (first3d && !boxReady) d3.then(() => { if (boxReady && i === k0 && playing) show(k0); });
+    M.audio.forEach((u) => getFile(u, { kind: 'audio', low: true }));
+  });
+}
+/* the 3D's first frame as a still (rendered for one public brand), only when the 3D is late or failed */
+function poster() {
+  const t = document.getElementById('sb-poster'), pic = t && t.content && t.content.firstElementChild;
+  const im = pic && pic.querySelector('img');
+  if (!im || (im.dataset.brand || '') !== str(cfg.id)) return;
+  const p = pic.cloneNode(true); p.classList.add('sb-poster-w'); ui.d3.insertBefore(p, ui.d3.firstChild); ui.poster = p;
+}
+
 function start(raw) {
-  cfg = raw || {}; SB = cfg.storyboard || {}; B = arr(SB.beats);
-  if (!B.length) return false;
+  if (cfg) return true;   /* the loader already has the config (scroll.js hands it over a second time) */
+  const c = raw || {}, b0 = arr((c.storyboard || {}).beats);
+  if (!b0.length) return false;
+  cfg = c; SB = cfg.storyboard || {}; B = b0;
   document.title = str((cfg.page || {}).title, 'Coco') + ' · ' + str(SB.tagline, 'the chief of staff OS for consumer brands, by sameep.ai');
   build();
-  ['product', 'sketch_ink'].forEach((k) => { const u = IMG(k); if (u) { const im = new Image(); im.src = u; if (im.decode) im.decode().catch(() => {}); } });
   const st = /[?&]step=(\d+)/.exec(location.search);
   playing = !Q.has('still'); setPlayBtn();
-  const k0 = st ? +st[1] - 1 : 0;
-  /* a deep link into the product beats replays the board from the first product beat, quietly, so the thread has its history */
-  /* the parcel warms up before a 3D beat needs it; any other first beat shows at once while it warms behind */
-  const first3d = /^(box-open|held|box-close)$/.test((B[clamp(k0, 0, B.length - 1)] || {}).kind);
-  if (P3) {
-    const T = window.__T || {}; T.start = Math.round(performance.now());   /* timing marks: only read by the cold-start check */
-    const ready = import(P3_URL).then((m) => { T.imported = Math.round(performance.now()); initP3 = m.init; ensureBox(); T.init = Math.round(performance.now()); if (box && box.warm) return box.warm(); }).then(() => { T.warmed = Math.round(performance.now()); }).catch(() => { initP3 = null; p3Failed = true; });
-    if (first3d) ready.then(() => show(k0)); else show(k0);
-  } else show(k0);
+  loadThen(clamp(st ? +st[1] - 1 : 0, 0, B.length - 1));
   if (Q.has('offer')) offer();
   window.__sb = { show, next, prev, get i() { return i; }, get beat() { return B[i]; }, offer, n: B.length, get app() { return app; } };
   return true;
 }
 window.cosSB = start;
+/* the public route: the boot script fetched the config already, so the story doesn't wait for scroll.js */
+if (LD && LD.cfgP) LD.cfgP.then((raw) => { if (raw && raw.storyboard && raw.storyboard.beats) start(raw); }, () => { /* scroll.js reports it */ });
 dispatchEvent(new Event('cosSB'));

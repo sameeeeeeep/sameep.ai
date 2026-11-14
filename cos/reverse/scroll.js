@@ -1823,6 +1823,7 @@
       if (window.cosSB) window.cosSB(raw); else addEventListener('cosSB', function () { window.cosSB(raw); }, { once: true });
       return;
     }
+    var sbl = document.querySelector('.sbl'); if (sbl) sbl.remove();   /* the storyboard's loader isn't for this engine */
     if (raw && raw.story) document.documentElement.classList.add('has-story');   /* the story's own UI replaces the old dark app panel */
     /* a config with a `story` block plays as three chapters (story.js); this engine steps aside */
     /* ?step=N, a reload part-way down, or reduced motion go straight to the board */
@@ -1850,6 +1851,7 @@
       try { box3d = window.__box3d(cfg, kitSrc); box3d.el.style.zIndex = 0; objEl.appendChild(box3d.el); render(); } catch (e) { box3d = null; }
     }
     mount3d(); addEventListener('box3d', mount3d);
+    if (!window.__box3d) import('./box3d.js?v=20261113nocats').then(function (m) { window.__box3d = m.init; dispatchEvent(new Event('box3d')); }).catch(function () { /* no 3D box */ });   /* the old engine's box, only for a config without a storyboard */
     /* video moves: a clip cut into frames, drawn by scroll position (both directions) */
     Object.keys(cfg.sequences || {}).forEach(function (key) {
       var q = cfg.sequences[key], a = ORDER.indexOf(q.from), b = ORDER.indexOf(q.to);
@@ -1883,5 +1885,5 @@
   fetch('./brands/' + brandId + '.json', { cache: 'no-cache' })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(init)
-    .catch(function (e) { console.error(e && e.stack); document.getElementById('stage').textContent = 'Could not load brands/' + brandId + '.json (' + e.message + ')'; });
+    .catch(function (e) { console.error(e && e.stack); var sbl = document.querySelector('.sbl'); if (sbl) sbl.remove(); document.getElementById('stage').textContent = 'Could not load brands/' + brandId + '.json (' + e.message + ')'; });
 })();

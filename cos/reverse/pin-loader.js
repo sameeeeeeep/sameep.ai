@@ -171,7 +171,7 @@
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var REF = /^@(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.[a-z0-9]+$/i;
-  var MEDIA = /^(assets|audio|faces|images|media)$/;
+  var MEDIA = /^(assets|audio|faces|images|media|img|src)$/;   /* img/src: product pictures and decision options name files directly */
   var TYPES = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', mp3: 'audio/mpeg' };
   function safeHref(v) {
     if (typeof v !== 'string' || !v) return '';
@@ -371,7 +371,7 @@
   function load(wid) {
     return findShow(wid).then(function (r) {
       var refs = {};
-      /* only media fields take files: kit images, faces, product pictures, chat photos, audio clips */
+      /* only media fields take files: kit images, faces, product pictures, option pictures, chat photos, audio clips */
       (function walk(v, media) {
         if (typeof v === 'string') { if (media && REF.test(v)) refs[v] = 1; return; }
         if (v && typeof v === 'object') Object.keys(v).forEach(function (k) { walk(v[k], media || MEDIA.test(k)); });

@@ -9,7 +9,7 @@
    plus  scrub(t) (the opening, 0..1), ending(t) (0..1), on(name, fn) (sound cues, and 'hero' with the product's rect when the opening
    settles on the hero pose, t >= HERO_T), heroRect() (that rect, live), warm() (compile + upload ahead of the beat), still(name), stats(), dispose().  All strings come from the config; nothing brand-specific lives here. */
 import * as THREE from './vendor/three.module.min.js';
-import * as TX from './p3-tex.js?v=p3v2';
+import * as TX from './p3-tex.js?v=p3v4';
 import { boxRing, slab, labelGrid, tapeStrip, crinkle, panelGeo, rectShape, flapShape, roundSlab, fastNormals } from './p3-geo.js?v=p3v2';
 import { Post } from './p3-post.js?v=p3v2';
 
@@ -71,6 +71,15 @@ function resolve(cfg) {
   };
 }
 const FONTS_CSS = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap';
+/* the print's fonts, loaded ahead of init(): true when all of them are in, and then init({ fontsIn: true }) skips the redraw */
+export function fonts(cfg) {
+  const P = resolve(cfg || {}), FF = [`${P.wordWeight} 40px ${P.wordFont}`, `500 20px ${P.sansFont}`, `700 20px ${P.sansFont}`, `500 20px ${P.monoFont}`];
+  if (!document.fonts || !document.fonts.load) return Promise.resolve(false);
+  let l = document.querySelector('link[data-p3fonts]');
+  if (!l) { l = document.createElement('link'); l.rel = 'stylesheet'; l.href = FONTS_CSS; l.dataset.p3fonts = '1'; document.head.appendChild(l); }
+  const sheet = l.sheet && l.media !== 'print' ? Promise.resolve() : new Promise((r) => { l.addEventListener('load', () => setTimeout(r), { once: true }); l.addEventListener('error', r, { once: true }); });
+  return sheet.then(() => Promise.all(FF.map((f) => document.fonts.load(f).catch(() => [])))).then((r) => r.every((x) => x && x.length > 0)).catch(() => false);
+}
 
 /* ---------------- dimensions (metres) ---------------- */
 const BX = { W: 0.26, D: 0.23, H: 0.13, T: 0.004 };      /* the shipping box: 260 x 230 x 130 mm, 4 mm board */
@@ -749,7 +758,9 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   let frames = 0, lastT = 0, last = { kind: '', v: -1 }, qAcc = 0, qN = 0, qSlow = 0, qFast = 0;
   const qMax = 2;
   const ft = [];
+  let held = !!opts.lazy;   /* lazy: nothing draws until warm(), which compiles the programs in parallel first */
   function render() {
+    if (held) return;
     const now = performance.now();
     if (lastT) { ft.push(now - lastT); if (ft.length > 240) ft.shift(); }
     /* adaptive resolution (sameep.ai's rule): step down after two slow windows, up after three fast ones */
@@ -875,7 +886,7 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     pose();
   };
   const fontsReady = (document.fonts && document.fonts.load) ? Promise.race([Promise.all([`${P.wordWeight} 40px ${P.wordFont}`, `500 20px ${P.sansFont}`, `700 20px ${P.sansFont}`, `500 20px ${P.monoFont}`].map((f) => document.fonts.load(f).catch(() => {}))), new Promise((r) => setTimeout(r, 2500))]) : Promise.resolve();
-  fontsReady.then(redrawText);
+  if (!opts.fontsIn) fontsReady.then(redrawText);   /* fontsIn: fonts() resolved first, so the first print is already the final one */
   const sketchSrc = (kitSrc && kitSrc('sketch')) || cfg.sketchSrc;
   const sketchReady = new Promise((res) => {
     if (!sketchSrc) return res();
@@ -885,18 +896,25 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   });
 
   /* warm: compile every program and upload every texture before the beat (no hitch on the first frame) */
-  async function warm() {
+  /* between warm-up draws the main thread is handed back (a task, not a frame): the loader keeps painting, and no frame time is spent idle */
+  const turn = () => new Promise((r) => { const ch = new MessageChannel(); ch.port1.onmessage = () => r(); ch.port2.postMessage(0); });
+  /* warm({ open: true }) leaves out the ending's draws, and warm({ rest: true }) is only those: the landing warms the opening
+     before beat 1 and the ending while the canvas is off screen */
+  async function warm(o = {}) {
     await Promise.all([fontsReady, sketchReady]);
     const keep = [lastOpen, lastEnd];
+    if (o.rest) { for (const e of [0.1, 0.3, 0.5, 0.6, 0.75, 1]) { ending(e); await turn(); } ft.length = 0; lastT = 0; lastOpen = keep[0]; lastEnd = keep[1]; pose(); return; }
     for (const t of [0, 0.3, 0.5, 0.7, 0.8, 0.95]) { openState(t); apply(0); placeCamera(); }
+    if (held && renderer.compileAsync) { try { await renderer.compileAsync(scene, camera); } catch (e) { /* the draws below compile them */ } }
+    held = false;
     renderer.compile(scene, camera);
     scene.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; ms.forEach((m) => { for (const kk in m) { const v = m[kk]; if (v && v.isTexture) renderer.initTexture(v); } }); });
     [labelBackT, foilT, insideT, inkT].forEach((t) => renderer.initTexture(t));
     /* draw every phase once (programs incl. shadow-depth variants, instance buffers, the label's dynamic upload) */
-    for (const t of [0, 0.15, 0.3, 0.38, 0.45, 0.55, 0.65, 0.75, 0.8, 0.86, 0.92, 1]) { scrub(t); await new Promise((r) => requestAnimationFrame(r)); }
-    for (const e of [0.1, 0.3, 0.5, 0.6, 0.75, 1]) { ending(e); await new Promise((r) => requestAnimationFrame(r)); }
+    for (const t of [0, 0.15, 0.3, 0.38, 0.45, 0.55, 0.65, 0.75, 0.8, 0.86, 0.92, 1]) { scrub(t); await turn(); }
+    if (!o.open) for (const e of [0.1, 0.3, 0.5, 0.6, 0.75, 1]) { ending(e); await turn(); }
     /* every quality level's render targets drawn once, so a quality step never hitches */
-    const q0 = quality; for (let q = 0; q <= 2; q++) { setQuality(q); scrub(0.62); await new Promise((r) => requestAnimationFrame(r)); } setQuality(q0);
+    const q0 = quality; for (let q = 0; q <= 2; q++) { setQuality(q); scrub(0.62); await turn(); } setQuality(q0);
     ft.length = 0; lastT = 0;
     lastOpen = keep[0]; lastEnd = keep[1]; pose();
   }
