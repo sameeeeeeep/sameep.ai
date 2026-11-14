@@ -386,15 +386,15 @@ export function createApp(cfg, host, env) {
     const bw = maxW, bh = Math.min(big.offsetHeight || maxH, maxH);
     const x = W.left + (W.width - bw) / 2, y = W.top + (W.height - bh) / 2;
     big.style.left = x + 'px'; big.style.top = y + 'px';
-    big.animate([{ opacity: 0, transform: 'translateY(24px) scale(.94)' }, { opacity: 1, transform: 'none' }], { duration: REDUCED ? 1 : 620, easing: EZ, fill: 'both' });
+    big.animate([{ clipPath: 'inset(46% 46% 46% 46% round 14px)', transform: 'scale(.9)' }, { clipPath: 'inset(0 0 0 0 round 14px)', transform: 'none' }], { duration: REDUCED ? 1 : 560, easing: EZ, fill: 'both' });
     if (env.sfx) env.sfx('pop');
-    later(1700, () => {
+    later(1350, () => {
       /* settle: the canvas keeps it at rest, the thread gets the attachment */
       canvasShow(o.img ? null : o, cur.stop); if (o.img) canvasShow(ui.cvObj, cur.stop);
       const a = att(o); a.classList.add('is-in'); if (intoEl) { (intoEl._c || intoEl).appendChild(a); scrollEnd(false); }
       const t = intoEl ? rel(a) : rel(ui.cv);
       const s = Math.max(0.08, t.width / bw);
-      const anim = big.animate([{ transform: 'none', opacity: 1 }, { transform: 'translate(' + (t.left - x) + 'px,' + (t.top - y) + 'px) scale(' + s + ')', opacity: 0.2 }], { duration: REDUCED ? 1 : 760, easing: EZ, fill: 'forwards' });
+      const anim = big.animate([{ transform: 'none' }, { transform: 'translate(' + (t.left - x) + 'px,' + (t.top - y) + 'px) scale(' + s + ')' }], { duration: REDUCED ? 1 : 700, easing: EZ, fill: 'forwards' });
       big.style.transformOrigin = '0 0';
       anim.onfinish = () => { big.remove(); a.classList.remove('is-in'); if (then) then(); };
     });
@@ -416,7 +416,6 @@ export function createApp(cfg, host, env) {
     box.style.transformOrigin = '0 0';
     ui.dim.classList.add('is-on'); root.classList.add('is-lift');
     box.animate([{ transform: 'none' }, { transform: 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')' }], { duration: REDUCED ? 1 : 700, easing: EZ, fill: 'forwards' });
-    if (hidden) box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, fill: 'both' });
     ui.lifted = { el, ph, box, hidden };
     if (env.sfx) env.sfx('pop');
   }
@@ -424,7 +423,7 @@ export function createApp(cfg, host, env) {
     const L = ui.lifted; if (!L) return; ui.lifted = null;
     ui.dim.classList.remove('is-on'); root.classList.remove('is-lift');
     const done = () => { if (L.ph.parentNode) { L.ph.parentNode.insertBefore(L.el, L.ph); L.ph.remove(); } L.box.remove(); scrollEnd(false); };
-    if (instant || REDUCED || L.hidden || !L.ph.isConnected) { if (L.hidden && !instant) { const a = L.box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }); a.onfinish = done; } else done(); return; }
+    if (instant || REDUCED || L.hidden || !L.ph.isConnected) { done(); return; }
     L.ph.style.height = L.el.offsetHeight + 'px';
     const t = rel(L.ph), b = L.box.style;
     const a = L.box.animate([{ transform: getComputedStyle(L.box).transform }, { transform: 'translate(' + (t.left - parseFloat(b.left)) + 'px,' + (t.top - parseFloat(b.top)) + 'px) scale(1)' }], { duration: 650, easing: EZ, fill: 'forwards' });
@@ -432,7 +431,7 @@ export function createApp(cfg, host, env) {
   }
 
   /* ---------- play a beat: one sequential timeline, so every beat gets the time its content needs ---------- */
-  const TM = { start: 650, open: 2700, typing: 560, line: 1200, visual: 2700, task: 1300, taskEnd: 750, decIn: 700, decide: 3800, chose: 1400, back: 800, autopick: 2000, pop: 2800, popBack: 900 };
+  const TM = { start: 420, open: 2100, typing: 420, line: 1050, visual: 2300, task: 950, taskEnd: 550, decIn: 500, decide: 3400, chose: 1150, back: 650, autopick: 1500, pop: 2100, popBack: 700 };
   function plan(b) {
     const stop = byStop(b.stop); if (!stop) return [];
     const from = b.from || 0, to = b.to == null ? arr(stop.thread).length - 1 : b.to, steps = [];
@@ -440,14 +439,14 @@ export function createApp(cfg, host, env) {
     return steps;
   }
   function estimate(b) {
-    let t = TM.start + (b.open ? TM.open : 0) + (b.pop === 'tray' ? 900 : 0);
+    let t = TM.start + (b.open ? TM.open : 0) + (b.pop === 'tray' ? 700 : 0);
     plan(b).forEach((s) => {
       if (s.it.k === 'task') t += TM.task + (s.o && b.pop !== 'tray' ? TM.visual : TM.taskEnd);
       else if (s.it.k === 'decision') t += TM.decIn + (b.pop === 'decision' ? TM.decide + TM.chose + TM.back : b.autopick ? TM.autopick + TM.chose : TM.line);
       else t += TM.typing + (s.o ? TM.visual : TM.line);
     });
     if (b.pop === 'item') t += TM.pop + TM.popBack;
-    if (b.pop === 'tray') t += 1000 + TM.popBack;
+    if (b.pop === 'tray') t += 800 + TM.popBack;
     return t;
   }
   async function play(b) {
@@ -466,7 +465,7 @@ export function createApp(cfg, host, env) {
       openBig({ img: env.img(b.open), caption: str(b.open_caption) }, ui.thread.querySelector('[data-k="' + (b.into || 0) + '"]'));
       await wait(TM.open); if (!live()) return;
     }
-    if (b.pop === 'tray') { lift(ui.tasks); await wait(900); if (!live()) return; }
+    if (b.pop === 'tray') { lift(ui.tasks); await wait(700); if (!live()) return; }
     let lastRow = null;
     for (const s of plan(b)) {
       const { k, it, o } = s;
@@ -499,7 +498,7 @@ export function createApp(cfg, host, env) {
       if (!live()) return;
     }
     if (b.pop === 'item' && lastRow) { lift(lastRow); await wait(TM.pop); if (!live()) return; unlift(); await wait(TM.popBack); }
-    if (b.pop === 'tray') { await wait(1000); if (!live()) return; unlift(); await wait(TM.popBack); }
+    if (b.pop === 'tray') { await wait(800); if (!live()) return; unlift(); await wait(TM.popBack); }
   }
   function stop() { clearT(); unlift(true); ui.lift.innerHTML = ''; }
   function pick(label) { const r = ui.thread.querySelector('.ca-dec:not(.is-done)'); if (r) choose(r, label, !!label); }

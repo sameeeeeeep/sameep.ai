@@ -4919,7 +4919,8 @@
    "app_launch": "sb/app-launch.webp",
    "app_today_m": "sb/app-today-m.webp",
    "app_thread_m": "sb/app-thread-m.webp",
-   "app_launch_m": "sb/app-launch-m.webp"
+   "app_launch_m": "sb/app-launch-m.webp",
+   "sketch_ink": "sb/sketch-ink.webp"
   },
   "app": {
    "base": "../app/",
@@ -4933,42 +4934,32 @@
    {
     "m": "scene",
     "kind": "box-open",
-    "when": "Today",
-    "hl": "Every parcel at a door started as a late-night idea.",
+    "hl": "Every delivered product…",
     "dur": 8200
    },
    {
     "m": "scene",
     "kind": "sketch",
-    "when": "3 months earlier",
-    "hl": "Before it was a product, it was a rough sketch.",
-    "scrawl": "wait, what if...",
-    "notes": [
-     "clips on a bag?",
-     "no dipping!!",
-     "under 1k"
-    ],
-    "dur": 4600
+    "hl": "…was once an idea…",
+    "dur": 3800
    },
    {
     "m": "scene",
     "kind": "record",
-    "when": "14 Aug · 1:14 am",
-    "hl": "Aditi can't sleep. She records a voice note.",
+    "hl": "…that started as a late-night voice note.",
     "voice": "voice-note",
     "who": "Aditi",
     "len": "0:42",
-    "dur": 4800
+    "dur": 3000
    },
    {
     "m": "scene",
     "kind": "send",
-    "when": "1:14 am",
-    "hl": "She hits send.",
+    "hl": "…that started as a late-night voice note.",
     "len": "0:42",
     "cos": "Got it. Listening now.",
     "st": "on it",
-    "dur": 4800
+    "dur": 3000
    },
    {
     "m": "focus",
@@ -4994,23 +4985,10 @@
     "to": 3,
     "pop": "tray",
     "pop_at": 1200,
-    "when": "Overnight",
-    "hl": "While she sleeps, the agents get to work.",
+    "hl": "Overnight, the agents get to work.",
     "cos": "Tanvi has the heat test on all five ratios; Research is holding the van spec.",
     "st": "working",
     "dur": 7600
-   },
-   {
-    "m": "panel",
-    "kind": "board",
-    "stop": "vendors",
-    "from": 0,
-    "to": 2,
-    "when": "Day 40 · 10:00 am",
-    "hl": "Standup.",
-    "cos": "Morning, team. Aditi said go, so I'm assigning the work now.",
-    "st": "standup",
-    "dur": 9000
    },
    {
     "m": "focus",
@@ -5030,19 +5008,6 @@
     "m": "panel",
     "kind": "board",
     "stop": "listing",
-    "from": 3,
-    "to": 4,
-    "autopick": 7800,
-    "when": "Day 165",
-    "hl": "Decisions land in the thread.",
-    "cos": "29 of 41 reviews say never sticky. Naina's call on the hero line.",
-    "st": "needs you",
-    "dur": 10000
-   },
-   {
-    "m": "panel",
-    "kind": "board",
-    "stop": "listing",
     "from": 5,
     "to": 5,
     "when": "Day 165",
@@ -5050,18 +5015,6 @@
     "cos": "All five listings are live.",
     "st": "done",
     "dur": 6500
-   },
-   {
-    "m": "panel",
-    "kind": "board",
-    "stop": "marketing",
-    "from": 0,
-    "to": 1,
-    "when": "Day 166",
-    "hl": "The shoot: on a bag, in daylight.",
-    "cos": "Kavya's shoot is booked for Saturday, north-light studio.",
-    "st": "booked",
-    "dur": 7500
    },
    {
     "m": "focus",
@@ -5096,14 +5049,14 @@
     "hl": "Delivered. A real thing, at her door.",
     "cos": "Delivered. She says it's perfect.",
     "st": "done",
-    "dur": 5200
+    "dur": 4400
    },
    {
     "m": "scene",
     "kind": "box-close",
     "when": "Today",
     "hl": "Back in its parcel, at her door.",
-    "dur": 5600
+    "dur": 4800
    },
    {
     "m": "scene",

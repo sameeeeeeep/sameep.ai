@@ -1,16 +1,17 @@
 /* parcel3d.js: the Coco landing's opening and ending, in real-time 3D (the sameep.ai hero's approach: real geometry, posed by scroll).
    A corrugated shipping box on her doormat. Opening: the label peels off and flutters away, the tape is slit, the flaps open,
-   the brand's mono carton rises out of the crinkle fill and turns to show its front, then unfolds into its flat dieline:
-   the inside of the board carries the founder's sketch ("3 months earlier"). Ending: the carton goes back in, the flaps close,
-   fresh tape runs across, a fresh label prints and presses on, and the parcel sits at the door.
+   the brand's mono carton lies face up in the crinkle fill and is lifted out lying down, its tuck flap opens and the product
+   (the charm lip oil) slides out, tips upright, and the scene cuts to the product alone on paper: the hero pose, where the page
+   takes over (on('hero', rect) / heroRect()). Ending: the carton goes back in lying down, the flaps close, fresh tape runs across,
+   a fresh label prints and presses on, and the parcel sits at the door.
 
    Drop-in for door3d.js:  init(cfg, kitSrc) -> { el, size(w,h,cx,cy,B), pose(), doorPose({drop,open,rise,cam,unfold,end}), lipRect() }
-   plus  scrub(t) (the opening, 0..1), ending(t) (0..1), on(name, fn) (sound cues), warm() (compile + upload ahead of the beat),
-   still(name), stats(), dispose().  All strings come from the config; nothing brand-specific lives here. */
+   plus  scrub(t) (the opening, 0..1), ending(t) (0..1), on(name, fn) (sound cues, and 'hero' with the product's rect when the opening
+   settles on the hero pose, t >= HERO_T), heroRect() (that rect, live), warm() (compile + upload ahead of the beat), still(name), stats(), dispose().  All strings come from the config; nothing brand-specific lives here. */
 import * as THREE from './vendor/three.module.min.js';
-import * as TX from './p3-tex.js';
-import { boxRing, slab, labelGrid, tapeStrip, crinkle, panelGeo, rectShape, flapShape, roundSlab, fastNormals } from './p3-geo.js';
-import { Post } from './p3-post.js';
+import * as TX from './p3-tex.js?v=p3v2';
+import { boxRing, slab, labelGrid, tapeStrip, crinkle, panelGeo, rectShape, flapShape, roundSlab, fastNormals } from './p3-geo.js?v=p3v2';
+import { Post } from './p3-post.js?v=p3v2';
 
 const clamp = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -29,15 +30,17 @@ const dropShut = (p) => { if (p <= 0) return 1; if (p >= 1) return 0; const q = 
 export const OPEN_CUES = [
   { t: 0.075, name: 'peel' }, { t: 0.255, name: 'label-off' }, { t: 0.315, name: 'tape-slit' },
   { t: 0.445, name: 'flap', i: 0 }, { t: 0.49, name: 'flap', i: 1 }, { t: 0.535, name: 'flap', i: 2 }, { t: 0.565, name: 'flap', i: 3 },
-  { t: 0.615, name: 'carton-rise' }, { t: 0.815, name: 'unfold' }, { t: 0.9, name: 'sketch' },
+  { t: 0.605, name: 'carton-rise' }, { t: 0.718, name: 'tuck-open' }, { t: 0.775, name: 'slide-out' }, { t: 0.9, name: 'cut' },
 ];
+/* the hero pose is settled from here on; 'hero' fires (with the product's screen rect) when the opening crosses it */
+export const HERO_T = 0.97;
 export const END_CUES = [
   { t: 0.02, name: 'carton-in' }, { t: 0.165, name: 'carton-down' },
   { t: 0.255, name: 'flap', i: 3 }, { t: 0.295, name: 'flap', i: 2 }, { t: 0.345, name: 'flap', i: 1 }, { t: 0.39, name: 'flap', i: 0 },
   { t: 0.42, name: 'tape-run' }, { t: 0.56, name: 'label-print' }, { t: 0.7, name: 'label-press' }, { t: 0.84, name: 'settle' },
 ];
 /* the stills reduced motion shows (opening t / ending t) */
-export const STILLS = { open: [0, 0.41, 0.6, 0.78, 1], end: [0, 0.42, 1] };
+export const STILLS = { open: [0, 0.41, 0.6, 0.76, 1], end: [0, 0.42, 1] };
 
 /* doorstep light by time of day (same rule as door3d.js) */
 const DOOR_LIGHT = {
@@ -58,6 +61,7 @@ function resolve(cfg) {
     productLine: box.line || product, shade: box.shade || '', net: box.size ? 'Net ' + box.size : '',
     board: box.board || dark(accent, 0.48), wave: box.wave || '#e8a9ad', foil: box.foil || '#d2aa63', cream: box.cream || '#f2e7d6',
     fill: box.fill || ['#c9a271', '#b58955', '#dbbd8f'],
+    productColor: box.productColor || '#6a2035', metal: box.metal || '#dcae68',
     tapeText: box.tape === false ? '' : (box.tapeText || name), tapeInk: box.tapeInk,
     backCopy: box.back || [[product, box.shade].filter(Boolean).join(' · '), 'Apply to bare lips. Wear alone or over colour.', 'Store below 30°C, away from direct sun.', 'Made in India' + (brand.city ? ' · ' + brand.city : ''), 'Mfd 08/2026 · Batch 0142'],
     ean: box.ean || '8 906147 ' + String(1000 + (name.length * 977) % 9000) + '6',
@@ -76,7 +80,9 @@ const PARCEL = { x: 0.02, z: -0.15, yaw: 0.06 };
 const TAPE_W = 0.048, TAPE_TAIL = 0.055, TAPE_E = 0.0006;
 const LB = { w: TX.LABEL_MM[0] / 1000, h: TX.LABEL_MM[1] / 1000, x: -0.112, z: -0.0028, rot: -1.0 * D2R };
 const CT = { W: TX.CARTON.W / 1000, D: TX.CARTON.D / 1000, H: TX.CARTON.H / 1000, tb: 0.00045 };
-const RISE_Y = 0.15, UNF_LIFT = 0.09;   /* the carton lifts clear of the box as it unfolds */   /* the carton's centre above the box top at the top of its rise */
+const RISE_Y = 0.15, UNF_LIFT = 0.09;
+const HS = 0.052;                                          /* the product: 52 mm tall (cap top), 24 mm across, a charm on a chain */
+const LIFT = { y: 0.1, z: 0.035, tilt: 52 * D2R };         /* the carton held up out of the box, still lying, face tipped to the lens */   /* the carton lifts clear of the box as it unfolds */   /* the carton's centre above the box top at the top of its rise */
 
 export function init(cfg, kitSrc, opts = {}) {
   cfg = cfg || {};
@@ -369,9 +375,11 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     let s = 17; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
     const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), v = new THREE.Vector3(), sc = new THREE.Vector3(1, 1, 1), c = new THREE.Color();
     for (let i = 0; i < NC; i++) {
-      let x, z; do { x = (r() - 0.5) * (W - 0.125); z = (r() - 0.5) * (D - 0.115); } while (Math.abs(x) < CT.W * 0.7 && Math.abs(z) < CT.D * 0.7);
-      const y = 0.066 + Math.pow(r(), 0.45) * 0.04;
-      e.set((r() - 0.5) * 0.6, r() * Math.PI * 2, (r() - 0.5) * 0.6); q.setFromEuler(e); sc.setScalar(0.7 + r() * 0.35);
+      let x, z; do { x = (r() - 0.5) * (W - 0.03); z = (r() - 0.5) * (D - 0.03); } while (Math.abs(x) < CT.H * 0.56 && Math.abs(z - 0.004) < CT.W * 0.64);
+      const near = Math.abs(x) < CT.H / 2 + 0.05 && Math.abs(z - 0.004) < CT.W / 2 + 0.045;   /* strands nestle flat round the carton, below its face */
+      const y = near ? 0.064 + r() * 0.007 : 0.066 + Math.pow(r(), 0.45) * 0.04;
+      const tilt = near ? 0.1 : 0.6;
+      e.set((r() - 0.5) * tilt, r() * Math.PI * 2, (r() - 0.5) * tilt); q.setFromEuler(e); sc.setScalar(0.7 + r() * 0.35);
       m4.compose(v.set(x, y, z), q, sc); crinkles.setMatrixAt(i, m4);
       c.set(P.fill[i % P.fill.length]).offsetHSL(0, 0, (r() - 0.5) * 0.06); crinkles.setColorAt(i, c);
     }
@@ -380,7 +388,8 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
 
   /* ---------------- the mono carton: a folding chain of real panels (dieline in mm) ---------------- */
   const MM = 0.001, tb = CT.tb, dl = cp.dl, R = dl.r;
-  const cart = new THREE.Group(); scene.add(cart);          /* the carton, front facing +z, origin at its centre */
+  const cartL = new THREE.Group(); scene.add(cartL);        /* the carton's own frame: front +z, top end +y, origin at its centre */
+  const cart = new THREE.Group(); cart.rotation.y = Math.PI; cartL.add(cart);   /* the chain prints on -z: turn it to face front */
   const chain = new THREE.Group(); cart.add(chain);          /* the dieline's frame: the back panel's bottom-left at the origin */
   const nodes = {};
   function node(name, parent, px, py, pz, shape, ox, oy, axis, sign) {
@@ -418,23 +427,87 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     const flat = 1 - ease(seg(u, 0, 0.46));
     chain.position.copy(C_ASM).lerp(C_FLAT, flat).negate();
   }
-  cart.rotation.order = 'YXZ';
-  /* the inside of the carton, in the box: standing on the fill */
-  const CART_IN = new THREE.Vector3(0.004, 0.012 + ch / 2, 0.002);
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  /* ---------------- the product: the charm lip oil (capsule body, squishy two-lobe cap, gold split ring, chain, lobster clasp) ---------------- */
+  const prodCol = new THREE.Color(P.productColor);
+  const siliM = new THREE.MeshPhysicalMaterial({ color: prodCol, roughness: 0.66, sheen: 0.35, sheenRoughness: 0.55, sheenColor: prodCol.clone().lerp(new THREE.Color(0xffffff), 0.3), envMapIntensity: 0.7 });
+  const goldM = new THREE.MeshStandardMaterial({ color: new THREE.Color(P.metal), metalness: 1, roughness: 0.22, envMapIntensity: 1.6 });
+  const prod = new THREE.Group(); scene.add(prod);            /* origin at the base, +y to the cap, the charm on its +x side, front +z */
+  const pm = new THREE.Group(); pm.scale.setScalar(HS); prod.add(pm);   /* built in units of the product's height */
+  const V2 = (x, y) => new THREE.Vector2(x, y);
+  const LSEG = MOBILE ? 40 : 64;
+  const pmesh = (geo, mat, parent = pm) => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; parent.add(m); return m; };
+  {
+    /* body: a rounded U, near-straight sides, the seam groove under the cap */
+    const bp = [];
+    for (let i = 0; i <= 14; i++) { const a = -Math.PI / 2 + (i / 14) * Math.PI / 2; bp.push(V2(Math.max(0.0005, 0.236 * Math.cos(a)), 0.18 + 0.18 * Math.sin(a))); }
+    bp.push(V2(0.233, 0.34), V2(0.227, 0.515), V2(0.222, 0.527), V2(0.206, 0.532), V2(0.2, 0.545));
+    pmesh(new THREE.LatheGeometry(bp, LSEG), siliM);
+    /* cap: two soft lobes and a domed top */
+    const cpts = new THREE.SplineCurve([[0.216, 0.533], [0.243, 0.55], [0.26, 0.6], [0.264, 0.652], [0.25, 0.71], [0.218, 0.762], [0.236, 0.808], [0.254, 0.862], [0.247, 0.915], [0.214, 0.958], [0.15, 0.988], [0.07, 0.999], [0.0005, 1.0]].map(([x, y]) => V2(x, y))).getPoints(MOBILE ? 48 : 72);
+    pmesh(new THREE.LatheGeometry([V2(0.2, 0.533), ...cpts], LSEG), siliM);
+    /* the moulded loop on top (hole along x, the ring threads it) */
+    const loop = pmesh(new THREE.TorusGeometry(0.056, 0.027, 12, 28), siliM); loop.position.set(0, 1.04, 0); loop.scale.set(1, 1.05, 0.8);
+  }
+  /* the charm hangs from the loop: a pivot there so it can swing and hang true when the product tips */
+  const charmG = new THREE.Group(); charmG.position.set(0, 1.07, 0); pm.add(charmG);
+  const chainG = new THREE.Group(); charmG.add(chainG);
+  {
+    const rc = V(0.1, 1.075, 0.0).sub(charmG.position);        /* the split ring: thin, gold, tipped back and turned */
+    const ring = pmesh(new THREE.TorusGeometry(0.112, 0.0115, 8, 56), goldM, charmG); ring.position.copy(rc); ring.rotation.set(-0.5, -0.62, 0.08);
+    const ring2 = pmesh(new THREE.TorusGeometry(0.112, 0.0115, 8, 56, 1.1), goldM, charmG); ring2.position.copy(rc); ring2.rotation.set(-0.5, -0.62, 0.08 + 0.12); ring2.scale.setScalar(1.0); ring2.position.z += 0.012;   /* the split ring's doubled turn */
+    /* where the chain hooks on: the ring's lower right */
+    ring.updateMatrix(); const anchor = V(0.112 * Math.cos(-0.75), 0.112 * Math.sin(-0.75), 0).applyMatrix4(ring.matrix);
+    chainG.position.copy(anchor);
+    const linkG = new THREE.TorusGeometry(0.029, 0.0075, 6, 16);
+    const N = 6, dir = V(0.5, -0.865, 0.06).normalize(), up = V(0, 1, 0);
+    let p = V(0, 0, 0);
+    for (let i = 0; i < N; i++) {
+      const d = dir.clone().lerp(V(0.12, -1, 0.05).normalize(), i / (N - 1)).normalize();   /* the chain drapes: steeper further down */
+      const L = pmesh(linkG, goldM, chainG); L.scale.set(1, 1.6, 1);
+      L.quaternion.setFromUnitVectors(up, d); if (i % 2) L.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(up, Math.PI / 2));
+      L.position.copy(p).addScaledVector(d, 0.03); p.addScaledVector(d, 0.058);
+    }
+    /* the lobster clasp hangs under the last link: a jump ring, a swivel stem, the teardrop hook with its lever across the gap */
+    const cl = new THREE.Group(); cl.position.copy(p); cl.scale.setScalar(1.5); chainG.add(cl);
+    const jr = pmesh(new THREE.TorusGeometry(0.02, 0.006, 6, 16), goldM, cl); jr.position.set(0, -0.012, 0); jr.rotation.y = Math.PI / 2;
+    const stem = pmesh(new THREE.CylinderGeometry(0.009, 0.013, 0.034, 10), goldM, cl); stem.position.set(0, -0.045, 0);
+    const hook = pmesh(new THREE.TorusGeometry(0.056, 0.019, 10, 32, Math.PI * 1.72), goldM, cl); hook.scale.set(0.78, 1.34, 1); hook.position.set(0, -0.135, 0); hook.rotation.z = Math.PI * 0.62;
+    const lever = pmesh(new THREE.CylinderGeometry(0.009, 0.009, 0.06, 8), goldM, cl); lever.position.set(-0.036, -0.093, 0.004); lever.rotation.z = -0.55;
+    const trig = pmesh(new THREE.BoxGeometry(0.02, 0.012, 0.014), goldM, cl); trig.position.set(-0.048, -0.135, 0); trig.rotation.z = 0.3;
+  }
+  /* the product's own bounds (the rect the page gets), measured once at rest */
+  prod.updateMatrixWorld(true);
+  const PROD_BOX = new THREE.Box3().setFromObject(prod);
 
   /* ---------------- state + poses ---------------- */
-  const V = (x, y, z) => new THREE.Vector3(x, y, z);
   const PW = (v) => v.clone().applyAxisAngle(V(0, 1, 0), PARCEL.yaw).add(V(PARCEL.x, MAT_H, PARCEL.z));   /* parcel-local -> world */
   const TOPW = PW(V(0, H + TB, 0)), RISEW = PW(V(0, H + TB + RISE_Y, 0));
+  const QE = (x, y, z) => new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z, 'YXZ'));
+  /* the carton lying on its back in the fill (top end toward +x), and held up out of the box, face tipped toward the lens */
+  const CART_LIE = PW(V(0.004, 0.062 + CT.D / 2 - 0.0025, 0.004));
+  const HELD = PW(V(0.006, H + TB + LIFT.y, LIFT.z));
   /* camera keys: [pos, target] */
   const CAM = {
     door: [V(0.78, 1.18, 1.2), V(0.1, 0.24, -0.3)],
     label: [V(TOPW.x + 0.17, TOPW.y + 0.47, TOPW.z + 0.43), V(TOPW.x - 0.02, TOPW.y - 0.01, TOPW.z + 0.035)],
     flaps: [V(TOPW.x + 0.2, TOPW.y + 0.5, TOPW.z + 0.46), V(TOPW.x, TOPW.y - 0.035, TOPW.z)],
-    rise: [V(RISEW.x + 0.12, RISEW.y + 0.07, RISEW.z + 0.27), V(RISEW.x, RISEW.y - 0.065, RISEW.z)],
-    carton: [V(RISEW.x + 0.08, RISEW.y + 0.035, RISEW.z + 0.255), V(RISEW.x, RISEW.y + 0.004, RISEW.z)],
-    flat: [V(RISEW.x, RISEW.y + 0.004, RISEW.z + 0.315), V(RISEW.x, RISEW.y, RISEW.z)],
+    lift: [V(HELD.x + 0.085, HELD.y + 0.07, HELD.z + 0.25), HELD.clone()],
   };
+  const LIFT_YAW = Math.atan2(CAM.lift[0].x - HELD.x, CAM.lift[0].z - HELD.z);
+  const Q_LIE = QE(-Math.PI / 2, PARCEL.yaw + 0.1, -Math.PI / 2), Q_HELD = QE(-Math.PI / 2 + LIFT.tilt, LIFT_YAW, -Math.PI / 2);
+  /* the product in the carton: base toward the open (top) end, cap toward the closed end; it slides out base first */
+  const P_IN_Y = CT.H / 2 - 0.004, SLIDE = HS + 0.026;
+  const Q_PIN = new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), Math.PI);
+  /* the hero: where the slid-out product stands up (its middle stays put), turned to the lens */
+  const HERO_P = (() => {
+    const m = new THREE.Matrix4().compose(HELD, Q_HELD, V(1, 1, 1));
+    const mid = V(0, P_IN_Y + SLIDE - HS * 0.5, 0).applyMatrix4(m);
+    return mid.add(V(-0.004, -HS * 0.5 + 0.012, 0.01));
+  })();
+  const HERO_YAW = LIFT_YAW, HERO_EL = 0.1;
+  const HERO_C = HERO_P.clone().add(V(0.003, HS * 0.6, 0));
+  CAM.hero = [HERO_C.clone().add(V(Math.sin(HERO_YAW) * Math.cos(HERO_EL), Math.sin(HERO_EL), Math.cos(HERO_YAW) * Math.cos(HERO_EL)).multiplyScalar(0.3)), HERO_C.clone()];
   let k = 1, vw = 10, vh = 10, OX = 0, OY = 0, offW = 1, phone = false;
   const camPos = V(0, 0, 0), camTgt = V(0, 0, 0);
   /* piecewise blend through a list of [t, key] stops, eased per segment */
@@ -444,8 +517,8 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     camPos.copy(CAM[a][0]).lerp(CAM[b][0], f); camTgt.copy(CAM[a][1]).lerp(CAM[b][1], f);
     return f;
   }
-  const OPEN_TRACK = [[0, 'door'], [0.08, 'label'], [0.3, 'label'], [0.42, 'flaps'], [0.6, 'flaps'], [0.7, 'rise'], [0.78, 'carton'], [0.815, 'carton'], [0.95, 'flat'], [1, 'flat']];
-  const END_TRACK = [[0, 'rise'], [0.18, 'flaps'], [0.4, 'flaps'], [0.5, 'label'], [0.78, 'label'], [1, 'door']];
+  const OPEN_TRACK = [[0, 'door'], [0.08, 'label'], [0.3, 'label'], [0.42, 'flaps'], [0.6, 'flaps'], [0.7, 'lift'], [0.8, 'lift'], [0.895, 'hero'], [1, 'hero']];
+  const END_TRACK = [[0, 'lift'], [0.18, 'flaps'], [0.4, 'flaps'], [0.5, 'label'], [0.78, 'label'], [1, 'door']];
 
   /* the label: peel (s 0..1 across), release (0..1 off and away); press is peel backwards */
   const PEEL_N = (() => { const nx = -LB.w, nz = -LB.h * 0.72, l = Math.hypot(nx, nz); return [nx / l, nz / l]; })();
@@ -504,7 +577,22 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   function setFlap(i, f) { flaps[i].rotation.x = f * FLAP_OPEN[i]; }
 
   /* everything in one place: the state record -> the scene */
-  const S = { hold: 0, hover: 0, drop: 1, peel: 0, release: 0, slit: 0, split: false, flaps: [0, 0, 0, 0], rise: 0, turn: 0, fold: 1, ink: 0, print: 1, run: -1, residue: 0, fade: 0, cam: null, inBox: true };
+  const S = { hover: 0, drop: 1, peel: 0, release: 0, slit: 0, split: false, flaps: [0, 0, 0, 0], rise: 0, lid: 0, slide: 0, up: 0, cdrop: 0, settle: 1, sway: 0, paper: false, fold: 1, ink: 0, print: 1, run: -1, residue: 0, inBox: true };
+  const qA = new THREE.Quaternion(), qB = new THREE.Quaternion(), vA = V(0, 0, 0), vB = V(0, 0, 0), mA = new THREE.Matrix4(), UP = V(0, 1, 0);
+  const PAPER_IN = (() => {   /* the paper colour that comes out of the post's shoulder as exactly PAPER (the page's own ground) */
+    const k = 0.72, f = (y) => (y <= k ? y : k - (1 - k) * Math.log(1 - Math.min(0.999, (y - k) / (1 - k))));
+    return new THREE.Color(f(PAPER.r), f(PAPER.g), f(PAPER.b));
+  })();
+  /* the product's soft shadow on the paper */
+  const heroShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: T(TX.contact(256, 1), { wrap: false }), color: 0x3b2318, transparent: true, opacity: 0.3, depthWrite: false }));
+  heroShadow.rotation.x = -Math.PI / 2; heroShadow.visible = false; scene.add(heroShadow);
+  let paperOn = null;
+  function setPaper(on) {
+    if (paperOn === on) return; paperOn = on;
+    set.visible = parcel.visible = contactS.visible = !on; heroShadow.visible = on;
+    scene.background = on ? PAPER_IN : BG;
+    PP.uVignette.value = on ? 0 : 0.42; PP.uGrain.value = on ? 0 : 0.026; PP.uCA.value = on ? 0 : 0.35; PP.uFade.value = 0;
+  }
   function apply(time) {
     /* parcel drop (the opening's landing) */
     const dropY = (() => {
@@ -516,6 +604,7 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     parcel.position.y = MAT_H + dropY;
     parcel.rotation.z = S.drop < 1 ? (S.drop > 0.62 ? Math.sin((S.drop - 0.62) * 40) * 0.015 * (1 - (S.drop - 0.62) / 0.38) : (1 - clamp(S.drop / 0.62)) * 0.08) : 0;
     contactS.material.opacity = 0.5 * clamp(1 - dropY / 0.4);
+    setPaper(S.paper);
     /* label */
     labelG.visible = (S.peel < 1 || S.release < 1) && S.hover >= 0;
     if (labelG.visible) labelShape(S.peel, S.release, time);
@@ -531,25 +620,54 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     tapeU.uLen.value = S.run * (RUN_LEN + 0.03); tapeU.uLift.value = S.run > 0 && S.run < 1 ? 0.004 : 0;
     /* flaps */
     S.flaps.forEach((f, i) => setFlap(i, f));
-    /* the carton: in the box, rising, turning to the lens, unfolding */
+
+    /* the carton: lying face up in the fill, lifted out still lying (the top end leads up, then levels), held face to the lens */
     foldCarton(S.fold);
+    const lid = S.lid;   /* the tuck end opens: the closing panel swings out past flat with its tongue, then the dust flaps flare */
+    if (lid > 0) {
+      setFold('topC', lerp(1, -0.22, springOpen(seg(lid, 0, 0.75))));
+      setFold('topT', lerp(1, 0.18, ease(seg(lid, 0.05, 0.6))));
+      const dust = ease(seg(lid, 0.35, 1)); setFold('d1T', lerp(1, 0.08, dust)); setFold('d2T', lerp(1, 0.08, dust));
+    }
     const r = S.rise;
-    const inW = PW(CART_IN);
-    const peak = RISEW.clone();
-    cart.position.copy(inW).lerp(peak, ease(r));
-    cart.position.y += Math.sin(Math.PI * clamp(r)) * 0.015 + UNF_LIFT * liftK * ease(1 - S.fold);
-    /* facing: the box's own yaw in the box, then square to the camera's side as it comes up */
-    const faceYaw = Math.atan2(CAM.flat[0].x - peak.x, CAM.flat[0].z - peak.z);
-    const threeQ = faceYaw - 0.62 + 0.24 * S.hold;
-    cart.rotation.y = lerp(PARCEL.yaw + 0.35, lerp(threeQ, faceYaw, 1 - S.fold), smooth(S.turn)) + Math.sin(r * Math.PI) * 0.12 * (1 - S.turn);
-    cart.rotation.x = -0.1 * Math.sin(Math.PI * clamp(r)) * (1 - S.turn * 0.7) + lerp(0, -0.04, S.turn) * (1 - (1 - S.fold));
-    cart.rotation.z = 0.05 * Math.sin(Math.PI * r) * (1 - S.turn);
-    /* the chain hangs with the back panel toward the lens when flat: turn it so the inside (the sketch) faces the camera */
-    cart.rotation.y += Math.PI;   /* the chain's print side faces -z when folded round; the carton's front is the chain's front panel */
-    cartonU.uInkAmt.value = S.ink;
-    cart.visible = S.inBox ? (S.flaps[0] > 0.02 || S.rise > 0) : true;
+    vA.copy(CART_LIE).lerp(HELD, ease(r)); vA.y = lerp(CART_LIE.y, HELD.y, 0.55 * easeOut(r) + 0.45 * smooth(r));
+    qA.slerpQuaternions(Q_LIE, Q_HELD, smooth(seg(r, 0.08, 1)));
+    /* the top end leads up out of the fill and levels off; while the product slides it tips down a touch; then it drops away */
+    const lead = 0.3 * Math.sin(Math.PI * clamp(r * 1.12)) * (1 - 0.5 * r) - 0.13 * smooth(seg(S.slide, 0, 0.5)) * (1 - S.cdrop);
+    vB.set(0, 1, 0).applyQuaternion(qA); const ax = vB.clone().cross(UP); if (ax.lengthSq() > 1e-6) qA.premultiply(qB.setFromAxisAngle(ax.normalize(), lead));
+    if (S.cdrop > 0) { const c = easeIn(S.cdrop); vA.y -= 0.32 * c; vA.x -= 0.03 * c; qA.premultiply(qB.setFromAxisAngle(V(0, 0, 1), 0.5 * c)); }
+    cartL.position.copy(vA); cartL.quaternion.copy(qA);
+    cartonU.uInkAmt.value = 0;
+    cartL.visible = !S.paper && S.cdrop < 1 && (S.inBox ? (S.flaps[0] > 0.02 || S.rise > 0) : true);
     fillGroup.visible = S.flaps[0] > 0.02 || S.flaps[2] > 0.02 || S.rise > 0;
-    PP.uFade.value = S.fade; PP.uBg.value.copy(BG).lerp(PAPER, S.fade > 0 ? 1 : 0);
+
+    /* the product: in the carton's frame while it slides, then it tips upright into the hero pose */
+    prod.visible = S.paper || (cartL.visible && S.lid > 0.05) || S.up > 0;
+    if (prod.visible) {
+      cartL.updateMatrixWorld(true);
+      vA.set(0, P_IN_Y + SLIDE * ease(S.slide), 0).applyMatrix4(cartL.matrixWorld);
+      qA.copy(cartL.quaternion).multiply(Q_PIN);
+      /* stand up: the middle stays put, the base swings down, a small lift */
+      const u = ease(S.up), hy = HERO_YAW + 0.55 * (1 - smooth(S.settle));
+      qB.setFromAxisAngle(UP, hy);
+      if (u > 0) {
+        /* the base point of a product whose middle is held: base = mid - up * HS/2 */
+        const midA = V(0, HS / 2, 0).applyQuaternion(qA).add(vA);   /* the product's +y runs base -> cap: mid = base + up * HS/2 */
+        const midH = V(0, HS / 2, 0).applyQuaternion(qB).add(HERO_P);
+        const mid = midA.lerp(midH, u); mid.y += Math.sin(Math.PI * u) * 0.012;
+        qA.slerp(qB, u);
+        vA.copy(mid).sub(V(0, HS / 2, 0).applyQuaternion(qA));
+      }
+      if (S.paper) { vA.copy(HERO_P); qA.copy(qB); }
+      prod.position.copy(vA); prod.quaternion.copy(qA);
+      /* the charm hangs true once it is out of the carton, and swings a little as the product moves */
+      const out = S.paper ? 1 : smooth(seg(S.slide, 0.85, 1));
+      vB.set(0, -1, 0).applyQuaternion(qB.copy(qA).invert());
+      const hang = Math.atan2(vB.x, -vB.y);
+      charmG.rotation.set(0.25 * S.sway * 0.6, 0, hang * out * 0.92 + S.sway);
+      chainG.rotation.z = -S.sway * 0.7;
+      heroShadow.position.set(HERO_P.x, HERO_P.y + 0.0003, HERO_P.z); heroShadow.scale.set(HS * 0.95, HS * 0.6, 1);
+    }
   }
 
   /* the opening: t 0..1 */
@@ -559,24 +677,28 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     S.print = 1; S.run = -1;
     S.split = t > 0.31; S.slit = ease(seg(t, 0.315, 0.41));
     S.flaps = [springOpen(seg(t, 0.415, 0.5)), springOpen(seg(t, 0.455, 0.54)), springOpen(seg(t, 0.505, 0.58)), springOpen(seg(t, 0.53, 0.6))];
-    S.rise = seg(t, 0.6, 0.77); S.turn = smooth(seg(t, 0.66, 0.8)); S.hold = smooth(seg(t, 0.74, 0.86)); S.hover = 0;
-    S.fold = 1 - seg(t, 0.81, 0.95);
-    S.ink = smooth(seg(t, 0.88, 0.99));
-    S.fade = opts.handoffFade === false ? 0 : smooth(seg(t, 0.975, 1));
+    S.rise = seg(t, 0.6, 0.715); S.hover = 0;
+    S.lid = seg(t, 0.715, 0.785);
+    S.slide = seg(t, 0.77, 0.845);
+    S.up = seg(t, 0.835, 0.9); S.cdrop = seg(t, 0.85, 0.9);
+    S.paper = t >= 0.9;
+    S.settle = seg(t, 0.9, HERO_T);
+    const sx = seg(t, 0.835, HERO_T);
+    S.sway = (0.4 * Math.exp(-3.6 * sx) * Math.sin(sx * 15) + 0.05 * Math.sin(seg(t, 0.8, 0.85) * Math.PI)) * (1 - smooth(seg(t, 0.93, HERO_T)));
+    S.fold = 1; S.ink = 0;
     S.inBox = true;
     camTrack(t, OPEN_TRACK);
-    /* the camera rides up with the carton as it unfolds */
-    const lift = UNF_LIFT * liftK * ease(1 - S.fold); camPos.y += lift; camTgt.y += lift;
   }
-  /* the ending: e 0..1 (the carton comes from where the opening left it risen; it goes back in assembled) */
+  /* the ending: e 0..1 (the carton comes from where the opening held it, closed, and goes back in lying down) */
   function endState(e) {
-    S.drop = 1; S.fold = 1; S.ink = 0; S.fade = 0; S.inBox = true;
-    S.rise = 1 - ease(seg(e, 0.0, 0.17)); S.turn = 1 - smooth(seg(e, 0.0, 0.14));
+    S.drop = 1; S.fold = 1; S.ink = 0; S.inBox = true; S.paper = false;
+    S.lid = 0; S.slide = 0; S.up = 0; S.cdrop = 0; S.sway = 0; S.settle = 1;
+    S.rise = 1 - ease(seg(e, 0.0, 0.17));
     S.flaps = [dropShut(seg(e, 0.34, 0.41)), dropShut(seg(e, 0.29, 0.36)), dropShut(seg(e, 0.24, 0.3)), dropShut(seg(e, 0.2, 0.26))];
     /* the old cut tape stays under the new run; the old label is long gone */
     S.split = true; S.slit = 1;
     S.run = e < 0.42 ? -1 : ease(seg(e, 0.42, 0.55));
-    S.hold = 1; S.release = 0; S.residue = 0;
+    S.release = 0; S.residue = 0;
     S.print = smooth(seg(e, 0.5, 0.64));
     S.hover = e < 0.48 ? -1 : lerp(3.2, 1, easeOut(seg(e, 0.48, 0.56))) * (1 - ease(seg(e, 0.64, 0.72)));
     S.peel = 0.3 * (1 - ease(seg(e, 0.69, 0.81)));
@@ -585,15 +707,28 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
 
   /* ---------------- render ---------------- */
   const tmpV = V(0, 0, 0);
-  /* from the rise to the flat sheet the camera frames the carton itself: its bounds, centred, with room around it, at any aspect */
-  const FB = new THREE.Box3(), FS = new THREE.Sphere(), FD = V(0, 0, 0), FC = V(0, 0, 0);
-  let fitW = 0, liftK = 1;   /* portrait frames back off further to fit the width, so the sheet lifts higher to leave the box out of shot */
-  function fitCam(w) {
+  /* from the lift on the camera frames what the shot is about: the carton, then carton + product, then the product's hero bounds */
+  const FB = new THREE.Box3(), FB2 = new THREE.Box3(), FS = new THREE.Sphere(), FS2 = new THREE.Sphere(), FD = V(0, 0, 0), FC = V(0, 0, 0);
+  let fitW = 0, liftK = 1, HERO_S = null;
+  function heroSphere() {
+    if (HERO_S) return HERO_S;
+    const keep = [prod.position.clone(), prod.quaternion.clone(), charmG.rotation.clone(), chainG.rotation.z];
+    prod.position.copy(HERO_P); prod.quaternion.setFromAxisAngle(UP, HERO_YAW); charmG.rotation.set(0, 0, 0); chainG.rotation.z = 0;
+    prod.updateMatrixWorld(true); HERO_S = new THREE.Box3().setFromObject(prod).getBoundingSphere(new THREE.Sphere());
+    prod.position.copy(keep[0]); prod.quaternion.copy(keep[1]); charmG.rotation.copy(keep[2]); chainG.rotation.z = keep[3]; prod.updateMatrixWorld(true);
+    return HERO_S;
+  }
+  function fitCam(w, toProd = 0, toHero = 0, prodOnly = 0) {
     fitW = w; if (w <= 0) return;
-    cart.updateMatrixWorld(true); FB.setFromObject(cart); FB.getBoundingSphere(FS);
+    cartL.updateMatrixWorld(true);
+    if (toHero < 1) { FB.setFromObject(cart); if (toProd > 0 && prod.visible) { prod.updateMatrixWorld(true); FB.union(FB2.setFromObject(prod)); } FB.getBoundingSphere(FS); }
+    else FS.copy(heroSphere());
+    if (toProd > 0 && toHero < 1) { FB.setFromObject(cart).getBoundingSphere(FS2); FS2.center.lerp(FS.center, toProd); FS2.radius = lerp(FS2.radius, FS.radius, toProd); FS.copy(FS2); }
+    if (prodOnly > 0 && toHero < 1) { prod.updateMatrixWorld(true); FB2.setFromObject(prod).getBoundingSphere(FS2); FS.center.lerp(FS2.center, prodOnly); FS.radius = lerp(FS.radius, FS2.radius * 1.15, prodOnly); }
+    if (toHero > 0 && toHero < 1) { const hs = heroSphere(); FS.center.lerp(hs.center, toHero); FS.radius = lerp(FS.radius, hs.radius, toHero); }
     FD.copy(camPos).sub(camTgt).normalize();
     const vf = camera.fov * D2R / 2, hf = Math.atan(Math.tan(vf) * camera.aspect);
-    const d = FS.radius * 1.3 / Math.sin(Math.min(vf, hf));
+    const d = FS.radius * lerp(1.3, camera.aspect < 1 ? 1.12 : 1.62, toHero) / Math.sin(Math.min(vf, hf));   /* portrait is width-bound: less room */
     FC.copy(FS.center).addScaledVector(FD, d);
     camTgt.lerp(FS.center, w); camPos.lerp(FC, w);
   }
@@ -605,7 +740,7 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     camera.setViewOffset(vw, vh, ox, oy, vw, vh); camera.updateProjectionMatrix();
     /* focus on what the shot is about; the wider the shot, the shallower the blur */
     const dist = camera.position.distanceTo(camTgt);
-    PP.uFocus.value = dist; PP.uAperture.value = lerp(1.05, 0.6, clamp((dist - 0.25) / 1.3)) * (1 - 0.55 * (1 - S.fold));
+    PP.uFocus.value = dist; PP.uAperture.value = lerp(1.05, 0.6, clamp((dist - 0.25) / 1.3));
   }
   let frames = 0, lastT = 0, last = { kind: '', v: -1 }, qAcc = 0, qN = 0, qSlow = 0, qFast = 0;
   const qMax = 2;
@@ -641,12 +776,16 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   let lastOpen = -1, lastEnd = -1, time = 0;
   function scrub(t) {
     t = clamp(t); if (REDUCED) t = snap(t, STILLS.open);
+    const prev = lastOpen;
     crossed('open', lastOpen, t, OPEN_CUES); lastOpen = t; lastEnd = -1;
     openState(t); time = t * 40; apply(time);
-    fitCam(smooth(seg(t, 0.62, 0.72)));
-    offW = 1 - smooth(seg(t, 0.04, 0.3));
+    openFit(t);
     placeCamera(); render();
+    heroCheck(prev, t);
   }
+  const openFit = (t) => { fitCam(smooth(seg(t, 0.62, 0.7)), smooth(seg(t, 0.77, 0.83)), t >= 0.9 ? 1 : smooth(seg(t, 0.855, 0.9)), smooth(seg(t, 0.825, 0.86))); offW = 1 - smooth(seg(t, 0.04, 0.3)); };
+  /* the hero pose is settled: hand the page the product's rectangle */
+  function heroCheck(prev, t) { if (t >= HERO_T && prev < HERO_T) emit('hero', heroRect()); }
   function ending(e) {
     e = clamp(e); if (REDUCED) e = snap(e, STILLS.end);
     crossed('end', lastEnd, e, END_CUES); lastEnd = e; lastOpen = -1;
@@ -660,21 +799,22 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     s = s || {};
     if (s.end != null) { ending(s.end); return; }
     const open = clamp(s.open || 0), rise = clamp(s.rise || 0), unfold = clamp(s.unfold || 0);
-    /* open 0..1 -> peel, slit, flaps (t 0.07..0.6); rise -> 0.6..0.8; unfold -> 0.8..1 */
+    /* open 0..1 -> peel, slit, flaps (t 0.07..0.6); rise -> 0.6..0.8 (lift, tuck opens); unfold -> 0.8..1 (the product out, the hero) */
     let t = open * 0.6; if (rise > 0) t = 0.6 + rise * 0.2; if (unfold > 0) t = 0.8 + unfold * 0.2;
     if (REDUCED) t = snap(t, STILLS.open);
-    crossed('open', lastOpen, t, OPEN_CUES); lastOpen = t;
+    const prev = lastOpen;
+    crossed('open', lastOpen, t, OPEN_CUES); lastOpen = t; lastEnd = -1;
     openState(t);
     S.drop = s.drop == null ? 1 : clamp(s.drop);
     if (S.drop < 1 && last.kind !== 'landed' && S.drop > 0.62) { last.kind = 'landed'; emit('land', { kind: 'open' }); }
     if (S.drop < 0.5) last.kind = '';
     apply(t * 40);
-    fitCam(smooth(seg(t, 0.62, 0.72)));
-    offW = 1 - smooth(seg(t, 0.04, 0.3));
+    openFit(t);
     placeCamera(); render();
+    heroCheck(prev, t);
   }
   function pose() { if (lastEnd >= 0) ending(lastEnd); else scrub(Math.max(0, lastOpen)); }
-  function still(name) { const m = { closed: 0, slit: 0.41, open: 0.6, carton: 0.78, sketch: 1 }; if (name === 'shut') return ending(1); scrub(m[name] != null ? m[name] : 0); }
+  function still(name) { const m = { closed: 0, slit: 0.41, open: 0.6, carton: 0.76, product: 0.86, hero: 1, sketch: 1 }; if (name === 'shut') return ending(1); scrub(m[name] != null ? m[name] : 0); }
 
   /* size: the canvas fills the stage; (cx, cy) is where the parcel sits while the shot is wide (door3d's contract) */
   function size(w, h, cx, cy, B) {
@@ -703,6 +843,26 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     return { x: (c.x * 0.5 + 0.5) * vw, y: (-c.y * 0.5 + 0.5) * vh, h: Math.max(...ys) - Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) };
   }
 
+  /* the product's rectangle on screen in the canvas's CSS pixels: x, y (top left), w, h, and its centre cx, cy.
+     It covers the body, cap and the charm on its chain. Valid at any pose; the 'hero' event carries it at the settled hero pose. */
+  const hv = V(0, 0, 0);
+  function heroRect() {
+    prod.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    /* tight: every vertex of the body, cap, ring, chain and clasp, projected */
+    prod.traverse((o) => {
+      if (!o.isMesh) return; const pa = o.geometry.attributes.position;
+      for (let i = 0; i < pa.count; i++) {
+        hv.fromBufferAttribute(pa, i).applyMatrix4(o.matrixWorld).project(camera);
+        const x = (hv.x * 0.5 + 0.5) * vw, y = (-hv.y * 0.5 + 0.5) * vh;
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    });
+    const r = { x: +x0.toFixed(1), y: +y0.toFixed(1), w: +(x1 - x0).toFixed(1), h: +(y1 - y0).toFixed(1), angle: 0 };
+    Object.assign(r, { left: r.x, top: r.y, width: r.w, height: r.h, cx: r.x + r.w / 2, cy: r.y + r.h / 2, vw, vh });
+    return r;
+  }
+
   /* text redraws once the web fonts land; the sketch ink once its image loads */
   const redrawText = () => {
     const c2 = TX.cartonPrint(P, CPPM); printT.image = c2.print; foilT.image = c2.foil; printT.needsUpdate = foilT.needsUpdate = true;
@@ -724,12 +884,12 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   async function warm() {
     await Promise.all([fontsReady, sketchReady]);
     const keep = [lastOpen, lastEnd];
-    for (const t of [0, 0.3, 0.5, 0.7, 0.9]) { openState(t); apply(0); placeCamera(); }
+    for (const t of [0, 0.3, 0.5, 0.7, 0.8, 0.95]) { openState(t); apply(0); placeCamera(); }
     renderer.compile(scene, camera);
     scene.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; ms.forEach((m) => { for (const kk in m) { const v = m[kk]; if (v && v.isTexture) renderer.initTexture(v); } }); });
     [labelBackT, foilT, insideT, inkT].forEach((t) => renderer.initTexture(t));
     /* draw every phase once (programs incl. shadow-depth variants, instance buffers, the label's dynamic upload) */
-    for (const t of [0, 0.15, 0.3, 0.38, 0.45, 0.55, 0.65, 0.75, 0.85, 0.92, 1]) { scrub(t); await new Promise((r) => requestAnimationFrame(r)); }
+    for (const t of [0, 0.15, 0.3, 0.38, 0.45, 0.55, 0.65, 0.75, 0.8, 0.86, 0.92, 1]) { scrub(t); await new Promise((r) => requestAnimationFrame(r)); }
     for (const e of [0.1, 0.3, 0.5, 0.6, 0.75, 1]) { ending(e); await new Promise((r) => requestAnimationFrame(r)); }
     /* every quality level's render targets drawn once, so a quality step never hitches */
     const q0 = quality; for (let q = 0; q <= 2; q++) { setQuality(q); scrub(0.62); await new Promise((r) => requestAnimationFrame(r)); } setQuality(q0);
@@ -744,6 +904,6 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
 
   /* first frame: the parcel shut on the mat */
   size(innerWidth, innerHeight);
-  if (/[?&]debug3d\b/.test(location.search)) window.__p3 = { scene, THREE, camera, renderer, S, apply, CAM, nodes, cart, parcel, post };
-  return { el, size, pose, doorPose, scrub, ending, still, lipRect, on, warm, ready: Promise.all([fontsReady, sketchReady]), stats, setQuality, dispose, cues: { open: OPEN_CUES, end: END_CUES }, reduced: REDUCED };
+  if (/[?&]debug3d\b/.test(location.search)) window.__p3 = { scene, THREE, camera, renderer, S, apply, CAM, nodes, cart, cartL, prod, charmG, parcel, post, heroRect };
+  return { el, size, pose, doorPose, scrub, ending, still, lipRect, heroRect, on, warm, ready: Promise.all([fontsReady, sketchReady]), stats, setQuality, dispose, cues: { open: OPEN_CUES, end: END_CUES }, reduced: REDUCED };
 }
