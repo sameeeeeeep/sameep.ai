@@ -4334,6 +4334,15 @@
        "layout": "quad",
        "objs": [
         {
+         "id": "shot",
+         "media": {
+          "src": "hero",
+          "caption": "Test shot: the ring light turns the gloss to glare"
+         },
+         "slot": "d",
+         "at": "cue"
+        },
+        {
          "id": "cal",
          "slot": "hero",
          "calendar": {
@@ -4463,7 +4472,8 @@
         "who": "Kavya",
         "text": "test shot attached. bhai the gloss is just white glare",
         "via": "whatsapp",
-        "where": "Content"
+        "where": "Content",
+        "land": "shot"
        },
        {
         "k": "cos",
@@ -4925,7 +4935,7 @@
     "kind": "box-open",
     "when": "Today",
     "hl": "Every parcel at a door started as a late-night idea.",
-    "dur": 6200
+    "dur": 8200
    },
    {
     "m": "scene",
@@ -4962,153 +4972,122 @@
    },
    {
     "m": "focus",
-    "kind": "project",
+    "kind": "board",
+    "stop": "ideas",
+    "from": 6,
+    "to": 6,
+    "pop": "item",
+    "pop_at": 1800,
     "when": "1:16 am",
     "hl": "It becomes a project.",
-    "done": "Project added to the board · #npd",
-    "app": "today",
-    "kicker": "New project · #npd",
-    "title": "Charm lip oil",
-    "owner": "Naina",
-    "cos": "Opened it as a project. 212 people have asked us for a lip like this.",
+    "cos": "Opened it as a project. 64 people have asked us for a lip oil like this.",
     "st": "done",
-    "dur": 5200
+    "dur": 8200,
+    "open": "sketch",
+    "into": 0
    },
    {
     "m": "focus",
-    "kind": "agents",
+    "kind": "board",
+    "stop": "concept",
+    "from": 2,
+    "to": 3,
+    "pop": "tray",
+    "pop_at": 1200,
     "when": "Overnight",
     "hl": "While she sleeps, the agents get to work.",
-    "done": "Agents running · options by standup",
-    "app": "today",
-    "agents": [
-     [
-      "Research agent",
-      1,
-      "Suppliers and prices"
-     ],
-     [
-      "Design agent",
-      0.8,
-      "Three shade directions"
-     ],
-     [
-      "Vendor agent",
-      0.6,
-      "Quotes for the charm body"
-     ]
-    ],
-    "cos": "Research, Design and Vendor agents are on it. Options by standup.",
+    "cos": "Tanvi has the heat test on all five ratios; Research is holding the van spec.",
     "st": "working",
-    "dur": 5200
+    "dur": 7600
    },
    {
     "m": "panel",
-    "kind": "app",
-    "app": "today",
-    "when": "10:00 am",
+    "kind": "board",
+    "stop": "vendors",
+    "from": 0,
+    "to": 2,
+    "when": "Day 40 · 10:00 am",
     "hl": "Standup.",
     "cos": "Morning, team. Aditi said go, so I'm assigning the work now.",
     "st": "standup",
-    "dur": 6000
+    "dur": 9000
    },
    {
     "m": "focus",
-    "kind": "decide",
-    "app": "thread",
-    "when": "Day 14",
-    "hl": "Your call: charm or glass?",
-    "done": "Decided · __PICK__",
-    "q": "Which one do we make?",
-    "options": [
-     {
-      "label": "Charm, clip-on cap",
-      "ai": true,
-      "pic": "charm"
-     },
-     {
-      "label": "Glass, dip wand",
-      "sub": "the usual"
-     }
-    ],
-    "cos": "Your call. I'd go charm: it clips on a bag and there's no dipping.",
+    "kind": "board",
+    "stop": "vendors",
+    "from": 3,
+    "to": 3,
+    "pop": "decision",
+    "pop_at": 1400,
+    "when": "Day 40",
+    "hl": "Your call: which maker?",
+    "cos": "Your call. I'd go Sethi: on time, and the cap clips on a bag.",
     "st": "needs you",
-    "dur": 7000
+    "dur": 7600
    },
    {
     "m": "panel",
-    "kind": "app",
-    "app": "thread",
-    "when": "Day 40",
+    "kind": "board",
+    "stop": "listing",
+    "from": 3,
+    "to": 4,
+    "autopick": 7800,
+    "when": "Day 165",
     "hl": "Decisions land in the thread.",
-    "cos": "Two names for the shade. Most of the waitlist picked Brick Dust. Your call.",
+    "cos": "29 of 41 reviews say never sticky. Naina's call on the hero line.",
     "st": "needs you",
-    "dur": 6000
+    "dur": 10000
    },
    {
-    "m": "scene",
-    "kind": "shoot",
-    "when": "Day 120",
-    "hl": "The shoot: on a bag, in daylight.",
-    "cos": "Naina's shoot is booked for Saturday, daylight studio.",
-    "st": "booked",
-    "dur": 5200
-   },
-   {
-    "m": "scene",
-    "kind": "listing",
+    "m": "panel",
+    "kind": "board",
+    "stop": "listing",
+    "from": 5,
+    "to": 5,
     "when": "Day 165",
     "hl": "Live on the site and four marketplaces.",
-    "channels": [
-     "Site",
-     "Zepto",
-     "Blinkit",
-     "Nykaa",
-     "Amazon"
-    ],
-    "price": "₹999",
     "cos": "All five listings are live.",
     "st": "done",
-    "dur": 5200
-   },
-   {
-    "m": "focus",
-    "kind": "decide",
-    "app": "launch",
-    "when": "Launch week",
-    "hl": "Ads go out. Your call: which cut do we scale?",
-    "done": "Decided · scale __PICK__",
-    "q": "Three cuts are running",
-    "options": [
-     {
-      "label": "A · GRWM",
-      "pic": "adA",
-      "sub": "creator"
-     },
-     {
-      "label": "B · on the bag",
-      "ai": true,
-      "pic": "adB"
-     },
-     {
-      "label": "C · swatch",
-      "pic": "adC",
-      "sub": "three skin tones"
-     }
-    ],
-    "cos": "Cut B is winning. Scale it?",
-    "st": "needs you",
-    "dur": 7000
+    "dur": 6500
    },
    {
     "m": "panel",
-    "kind": "app",
-    "app": "launch",
-    "when": "Launch hour",
+    "kind": "board",
+    "stop": "marketing",
+    "from": 0,
+    "to": 1,
+    "when": "Day 166",
+    "hl": "The shoot: on a bag, in daylight.",
+    "cos": "Kavya's shoot is booked for Saturday, north-light studio.",
+    "st": "booked",
+    "dur": 7500
+   },
+   {
+    "m": "focus",
+    "kind": "board",
+    "stop": "marketing",
+    "from": 6,
+    "to": 6,
+    "pop": "decision",
+    "pop_at": 1400,
+    "when": "Launch week",
+    "hl": "Ads go out. Your call: which cut do we scale?",
+    "cos": "Cut B is winning. Scale it?",
+    "st": "needs you",
+    "dur": 7600
+   },
+   {
+    "m": "panel",
+    "kind": "board",
+    "stop": "buy",
+    "from": 0,
+    "to": 1,
+    "when": "Day 167 · 6 pm",
     "hl": "Launch hour.",
-    "cos": "112 orders in the first hour. Arjun, the morning batch is yours.",
+    "cos": "86 orders in the first hour. Arjun, the morning batch is yours.",
     "st": "live",
-    "dur": 5600
+    "dur": 8500
    },
    {
     "m": "scene",

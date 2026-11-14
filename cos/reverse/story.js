@@ -40,10 +40,12 @@
 
   /* ---------- waits that Next can cut short ---------- */
   var W = null;
+  /* the board, driven from outside (sb.js): seek(stop, from, to) plays items from..to live, fast-forwards before, holds after */
+  var BD = { on: false, fast: false, from: 0, to: 999, k: -1, resume: null, held: false };
   function wait(ms, t) {
     return new Promise(function (res, rej) {
       var w = { done: function () { if (W === w) W = null; clearTimeout(w.timer); t === tok ? res() : rej('stale'); } };
-      w.timer = setTimeout(function tick() { if (Date.now() < HOLDT) { w.timer = setTimeout(tick, 400); return; } w.done(); }, REDUCED ? Math.min(ms, 300) : ms); W = w;
+      w.timer = setTimeout(function tick() { if (Date.now() < HOLDT) { w.timer = setTimeout(tick, 400); return; } w.done(); }, BD.fast ? 0 : REDUCED ? Math.min(ms, 300) : ms); W = w;
     });
   }
   function skip() { if (NOW) stopVoice(); if (W) W.done(); }
@@ -216,9 +218,9 @@
   function svgIcon(d) { return '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="' + d + '" fill="none" stroke="currentColor" stroke-width="2"/></svg>'; }
   function build(keep) {
     document.documentElement.classList.add('is-story');
-    var track = document.getElementById('track');
+    var track = ui.host || document.getElementById('track');
     if (!keep) track.innerHTML = '';
-    track.className = 'sx-track'; track.style.height = '';
+    if (!ui.host) { track.className = 'sx-track'; track.style.height = ''; }
     var stage = h('div', 'sx-stage'); ui.stage = stage;
     if (keep) { stage.classList.add('is-under'); track.insertBefore(stage, track.firstChild); } else track.appendChild(stage);
 
@@ -991,6 +993,7 @@
       var d = divider(stop); ui.thread.appendChild(d); raf2(function () { d.classList.add('is-in'); scrollTo(d); });
       return wait(300, t);
     }).then(function () { return runBeats(stop, t); }).then(function () {
+      if (BD.on) { BD.k = 999; BD.held = true; BD.fast = false; BD.resume = null; setState('done'); if (BD.onHold) BD.onHold(); return; }
       if (SCN && BOARD_AT[stop.id]) { setMode(sceneMode(stop)); sceneTo(stop, 9); }
       setState('done'); clearPop(); lightSource(null);
       Object.keys(AG).forEach(function (n) { agent(n, 'done', 'Handed over'); });
@@ -1008,6 +1011,12 @@
       (function step() {
         if (t !== tok) return reject('stale');
         var its = itemsOf(stop); if (k >= its.length) return resolve();
+        if (BD.on) {
+          BD.k = k;
+          if (k > BD.to) { BD.held = true; BD.fast = false; BD.resume = step; if (BD.onHold) BD.onHold(); return; }
+          BD.held = false; BD.fast = k < BD.from;
+          if (!BD.fast && BD.onLive) BD.onLive(k);
+        }
         if (SCN && MODE === 'scene' && scenesOf(stop).length > 1 && k === Math.ceil(its.length / 2)) sceneTo(stop, 1);
         var x = its[k++];
         beat(stop, x.it, x.k, t).then(step, reject);
@@ -1022,7 +1031,7 @@
     if (it.via) lightSource(it.via);
     if (it.k === 'msg' || it.k === 'record') {
       var r = row(it); add(r); sfx('msg'); tilePreview(mid, it); sourcePop(it); nudgeTab('chat');
-      var go = r._voice && SOUND ? new Promise(function (res, rej) {
+      var go = r._voice && SOUND && !BD.fast ? new Promise(function (res, rej) {
         var ok = playVoice(r._voice.url, r._voice.btn, function () { if (W) W.done(); else res(); });
         if (!ok) return wait(read, t).then(res, rej);
         wait(30000, t).then(res, rej);
@@ -1070,7 +1079,8 @@
         }
         ui.pick = pick;
         r4._opts.forEach(function (b, j) { b.disabled = false; b.addEventListener('click', function () { unlock(); pick(j); }); });
-        if (AUTO) setTimeout(function () { if (AUTO && ui.pick === pick) pick(null); }, 2600);
+        if (BD.fast) setTimeout(function () { if (ui.pick === pick) pick(null); }, 0);
+        else if (AUTO) setTimeout(function () { if (AUTO && ui.pick === pick) pick(null); }, 2600);
       });
     }
     return Promise.resolve();
@@ -1430,6 +1440,34 @@
     setTimeout(function () { b.focus({ preventScroll: true }); }, 50);
   }
 
+  /* the real board inside the storyboard landing: built into a host, driven beat by beat */
+  window.cosBoard = function (raw, host) {
+    cfg = raw || {}; stops = []; ui.host = host;
+    if (!cfg.story) return null;
+    arr(cfg.story.chapters).forEach(function (c) { arr(c.stops).forEach(function (st) { var s2 = typeof st === 'string' ? stageStop(st) : st; if (s2) stops.push(s2); }); });
+    mods = arr(cfg.story.modules).length ? cfg.story.modules : DEFAULT_MODS.filter(function (m) { return stops.some(function (s3) { return s3.module === m.id; }); });
+    build(null); BD.on = true; preload(0); preload(1);
+    ui.stage.classList.add('is-boardonly');
+    function idx(id) { for (var n = 0; n < stops.length; n++) if (stops[n].id === id) return n; return 0; }
+    return {
+      el: ui.stage,
+      seek: function (id, from, to) {
+        var i2 = idx(id);
+        BD.from = from || 0; BD.to = to == null ? 999 : to;
+        if (i2 === si && BD.k >= 0 && BD.k <= BD.from) {
+          if (BD.held && BD.resume) { var r = BD.resume; BD.resume = null; BD.held = false; BD.fast = BD.k < BD.from; r(); }
+          else { BD.fast = BD.k < BD.from; if (BD.fast) skip(); }
+          return;
+        }
+        BD.k = -1; BD.held = false; BD.resume = null; BD.fast = BD.from > 0;
+        open(i2, 1);
+      },
+      pick: function (c) { if (ui.pick) ui.pick(c == null ? null : c); },
+      tab: function (k, hold) { tab(k, !!hold); },
+      get k() { return BD.k; }, get held() { return BD.held; },
+      set onHold(f) { BD.onHold = f; }, set onLive(f) { BD.onLive = f; }
+    };
+  };
   /* the Coco offer pages on their own (the storyboard landing ends here) */
   window.cosOffer = function (raw, host) {
     cfg = raw || {}; mods = arr((cfg.story || {}).modules); ui.stage = host;
