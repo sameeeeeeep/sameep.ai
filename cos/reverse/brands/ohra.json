@@ -4885,5 +4885,308 @@
     ]
    }
   ]
+ },
+ "storyboard": {
+  "title": "Coco",
+  "tagline": "the chief of staff OS for consumer brands, by sameep.ai",
+  "box": {
+   "name": "Ohra",
+   "product": "Charm lip oil",
+   "shade": "No. 04",
+   "size": "4.5 ml"
+  },
+  "images": {
+   "product": "sb/charm.webp",
+   "sketch": "sb/sketch.webp",
+   "charm": "sb/charm.webp",
+   "shoot": "sb/charm_open.webp",
+   "listing": "sb/charm.webp",
+   "adA": "sb/charm_open.webp",
+   "adB": "sb/charm.webp",
+   "adC": "sb/charm_open.webp",
+   "app_today": "sb/app-today.webp",
+   "app_thread": "sb/app-thread.webp",
+   "app_launch": "sb/app-launch.webp",
+   "app_today_m": "sb/app-today-m.webp",
+   "app_thread_m": "sb/app-thread-m.webp",
+   "app_launch_m": "sb/app-launch-m.webp"
+  },
+  "app": {
+   "base": "../app/",
+   "views": {
+    "today": "#demo?brand=ohra",
+    "thread": "#demo?brand=ohra",
+    "launch": "#demo?brand=ohra"
+   }
+  },
+  "beats": [
+   {
+    "m": "scene",
+    "kind": "box-open",
+    "when": "Today",
+    "hl": "Every parcel at a door started as a late-night idea.",
+    "dur": 6200
+   },
+   {
+    "m": "scene",
+    "kind": "sketch",
+    "when": "3 months earlier",
+    "hl": "Before it was a product, it was a rough sketch.",
+    "scrawl": "wait, what if...",
+    "notes": [
+     "clips on a bag?",
+     "no dipping!!",
+     "under 1k"
+    ],
+    "dur": 4600
+   },
+   {
+    "m": "scene",
+    "kind": "record",
+    "when": "14 Aug · 1:14 am",
+    "hl": "Aditi can't sleep. She records a voice note.",
+    "voice": "voice-note",
+    "who": "Aditi",
+    "len": "0:42",
+    "dur": 4800
+   },
+   {
+    "m": "scene",
+    "kind": "send",
+    "when": "1:14 am",
+    "hl": "She hits send.",
+    "len": "0:42",
+    "cos": "Got it. Listening now.",
+    "st": "on it",
+    "dur": 4800
+   },
+   {
+    "m": "focus",
+    "kind": "project",
+    "when": "1:16 am",
+    "hl": "It becomes a project.",
+    "done": "Project added to the board · #npd",
+    "app": "today",
+    "kicker": "New project · #npd",
+    "title": "Charm lip oil",
+    "owner": "Naina",
+    "cos": "Opened it as a project. 212 people have asked us for a lip like this.",
+    "st": "done",
+    "dur": 5200
+   },
+   {
+    "m": "focus",
+    "kind": "agents",
+    "when": "Overnight",
+    "hl": "While she sleeps, the agents get to work.",
+    "done": "Agents running · options by standup",
+    "app": "today",
+    "agents": [
+     [
+      "Research agent",
+      1,
+      "Suppliers and prices"
+     ],
+     [
+      "Design agent",
+      0.8,
+      "Three shade directions"
+     ],
+     [
+      "Vendor agent",
+      0.6,
+      "Quotes for the charm body"
+     ]
+    ],
+    "cos": "Research, Design and Vendor agents are on it. Options by standup.",
+    "st": "working",
+    "dur": 5200
+   },
+   {
+    "m": "panel",
+    "kind": "app",
+    "app": "today",
+    "when": "10:00 am",
+    "hl": "Standup.",
+    "cos": "Morning, team. Aditi said go, so I'm assigning the work now.",
+    "st": "standup",
+    "dur": 6000
+   },
+   {
+    "m": "focus",
+    "kind": "decide",
+    "app": "thread",
+    "when": "Day 14",
+    "hl": "Your call: charm or glass?",
+    "done": "Decided · __PICK__",
+    "q": "Which one do we make?",
+    "options": [
+     {
+      "label": "Charm, clip-on cap",
+      "ai": true,
+      "pic": "charm"
+     },
+     {
+      "label": "Glass, dip wand",
+      "sub": "the usual"
+     }
+    ],
+    "cos": "Your call. I'd go charm: it clips on a bag and there's no dipping.",
+    "st": "needs you",
+    "dur": 7000
+   },
+   {
+    "m": "panel",
+    "kind": "app",
+    "app": "thread",
+    "when": "Day 40",
+    "hl": "Decisions land in the thread.",
+    "cos": "Two names for the shade. Most of the waitlist picked Brick Dust. Your call.",
+    "st": "needs you",
+    "dur": 6000
+   },
+   {
+    "m": "scene",
+    "kind": "shoot",
+    "when": "Day 120",
+    "hl": "The shoot: on a bag, in daylight.",
+    "cos": "Naina's shoot is booked for Saturday, daylight studio.",
+    "st": "booked",
+    "dur": 5200
+   },
+   {
+    "m": "scene",
+    "kind": "listing",
+    "when": "Day 165",
+    "hl": "Live on the site and four marketplaces.",
+    "channels": [
+     "Site",
+     "Zepto",
+     "Blinkit",
+     "Nykaa",
+     "Amazon"
+    ],
+    "price": "₹999",
+    "cos": "All five listings are live.",
+    "st": "done",
+    "dur": 5200
+   },
+   {
+    "m": "focus",
+    "kind": "decide",
+    "app": "launch",
+    "when": "Launch week",
+    "hl": "Ads go out. Your call: which cut do we scale?",
+    "done": "Decided · scale __PICK__",
+    "q": "Three cuts are running",
+    "options": [
+     {
+      "label": "A · GRWM",
+      "pic": "adA",
+      "sub": "creator"
+     },
+     {
+      "label": "B · on the bag",
+      "ai": true,
+      "pic": "adB"
+     },
+     {
+      "label": "C · swatch",
+      "pic": "adC",
+      "sub": "three skin tones"
+     }
+    ],
+    "cos": "Cut B is winning. Scale it?",
+    "st": "needs you",
+    "dur": 7000
+   },
+   {
+    "m": "panel",
+    "kind": "app",
+    "app": "launch",
+    "when": "Launch hour",
+    "hl": "Launch hour.",
+    "cos": "112 orders in the first hour. Arjun, the morning batch is yours.",
+    "st": "live",
+    "dur": 5600
+   },
+   {
+    "m": "scene",
+    "kind": "held",
+    "when": "Day 169 · 6:14 pm",
+    "hl": "Delivered. A real thing, at her door.",
+    "cos": "Delivered. She says it's perfect.",
+    "st": "done",
+    "dur": 5200
+   },
+   {
+    "m": "scene",
+    "kind": "box-close",
+    "when": "Today",
+    "hl": "Back in its parcel, at her door.",
+    "dur": 5600
+   },
+   {
+    "m": "scene",
+    "kind": "coco",
+    "when": "Today",
+    "hl": "Coco. The chief of staff OS for consumer brands.",
+    "line": "From a thought to a thing, with your team tapping only where it matters.",
+    "parts": [
+     [
+      "Chief of staff",
+      "The lead agent: hears every note, runs standup, assigns the work."
+     ],
+     [
+      "Projects and products",
+      "Every idea becomes a project; every launch, a product."
+     ],
+     [
+      "Modules",
+      "#ideas, #npd, #listing, #marketing, each with its people and agents."
+     ],
+     [
+      "Tasks across modules",
+      "One list, with people and agents working it together."
+     ],
+     [
+      "Chat",
+      "WhatsApp, email and meetings in one thread."
+     ],
+     [
+      "Canvas",
+      "Briefs, boards and decisions, side by side."
+     ],
+     [
+      "Dashboard",
+      "The numbers that matter today, and what needs you."
+     ]
+    ],
+    "cta": "See the scope and pricing",
+    "cos": "I'm Coco's lead agent. Your team only taps where it matters.",
+    "dur": 6000
+   }
+  ],
+  "cta_href": "../plans/",
+  "phone": {
+   "chip": "Today",
+   "earlier": [
+    [
+     "can't sleep",
+     "12:50 am"
+    ],
+    [
+     "ok wait. an idea",
+     "12:51 am"
+    ]
+   ]
+  }
+ },
+ "faces": {
+  "Aditi": "sb/f1.webp",
+  "Naina": "sb/f2.webp",
+  "Tanvi": "sb/f3.webp",
+  "Arjun": "sb/f4.webp",
+  "Vikram": "sb/f5.webp"
  }
 }

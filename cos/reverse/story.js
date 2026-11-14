@@ -1430,6 +1430,11 @@
     setTimeout(function () { b.focus({ preventScroll: true }); }, 50);
   }
 
+  /* the Coco offer pages on their own (the storyboard landing ends here) */
+  window.cosOffer = function (raw, host) {
+    cfg = raw || {}; mods = arr((cfg.story || {}).modules); ui.stage = host;
+    if (cfg.offer) offerPage();
+  };
   window.cosStory = function (raw, opts) {
     cfg = raw || {};
     if (!cfg.story || !arr(cfg.story.chapters).length) return false;

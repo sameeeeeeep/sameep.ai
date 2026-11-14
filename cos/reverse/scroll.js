@@ -1818,6 +1818,11 @@
     (function after() { if (!INTRO.done) return setTimeout(after, 120); setTimeout(function () { if (cfg.story) return handToStory(); if (scrollY < 20 && !PLAY.on) startPlay(); }, cfg.story ? 2200 : 1500); })();
   }
   function init(raw) {
+    /* a storyboard config plays as the storyboard landing (sb.js); this engine and the board story step aside */
+    if (raw && raw.storyboard && raw.storyboard.beats) {
+      if (window.cosSB) window.cosSB(raw); else addEventListener('cosSB', function () { window.cosSB(raw); }, { once: true });
+      return;
+    }
     if (raw && raw.story) document.documentElement.classList.add('has-story');   /* the story's own UI replaces the old dark app panel */
     /* a config with a `story` block plays as three chapters (story.js); this engine steps aside */
     /* ?step=N, a reload part-way down, or reduced motion go straight to the board */
