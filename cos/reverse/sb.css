@@ -13,6 +13,10 @@ html.is-sb, html.is-sb body { margin: 0; height: 100%; overflow: hidden; backgro
 .sb-3d { position: absolute; inset: 0; opacity: 0; }
 .sb-3d canvas { display: block; width: 100%; height: 100%; }
 .sb.is-3d .sb-3d { opacity: 1; }
+/* the poster of the parcel's first frame, above the canvas until the canvas draws (sb.js adoptPre / runBox) */
+.sb-poster-w, .sb-pre picture { position: absolute; inset: 0; z-index: 1; display: block; }
+.sb-poster { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sb-pre { z-index: 50; }
 
 /* the app: full viewport, true scale */
 .sb-app { position: absolute; inset: 0; z-index: 1; visibility: hidden; }

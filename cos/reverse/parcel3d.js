@@ -438,43 +438,47 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   const LSEG = MOBILE ? 40 : 64;
   const pmesh = (geo, mat, parent = pm) => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; parent.add(m); return m; };
   {
-    /* body: a rounded U, near-straight sides, the seam groove under the cap */
-    const bp = [];
-    for (let i = 0; i <= 14; i++) { const a = -Math.PI / 2 + (i / 14) * Math.PI / 2; bp.push(V2(Math.max(0.0005, 0.236 * Math.cos(a)), 0.18 + 0.18 * Math.sin(a))); }
-    bp.push(V2(0.233, 0.34), V2(0.227, 0.515), V2(0.222, 0.527), V2(0.206, 0.532), V2(0.2, 0.545));
+    /* the silhouette is measured off the kit photo (sb/charm.webp), in units of the product's height: body, seam, cap lobes, dome */
+    const BODY = [[0.0005, 0], [0.06, 0.002], [0.096, 0.011], [0.122, 0.024], [0.14, 0.037], [0.153, 0.05], [0.163, 0.062], [0.171, 0.075], [0.186, 0.1], [0.197, 0.126], [0.205, 0.151], [0.21, 0.177], [0.213, 0.202], [0.216, 0.253], [0.216, 0.316], [0.214, 0.38], [0.212, 0.45], [0.209, 0.525], [0.205, 0.541]];
+    const bp = BODY.map(([x, y]) => V2(x, y)); bp.push(V2(0.196, 0.548), V2(0.19, 0.556));
     pmesh(new THREE.LatheGeometry(bp, LSEG), siliM);
-    /* cap: two soft lobes and a domed top */
-    const cpts = new THREE.SplineCurve([[0.216, 0.533], [0.243, 0.55], [0.26, 0.6], [0.264, 0.652], [0.25, 0.71], [0.218, 0.762], [0.236, 0.808], [0.254, 0.862], [0.247, 0.915], [0.214, 0.958], [0.15, 0.988], [0.07, 0.999], [0.0005, 1.0]].map(([x, y]) => V2(x, y))).getPoints(MOBILE ? 48 : 72);
-    pmesh(new THREE.LatheGeometry([V2(0.2, 0.533), ...cpts], LSEG), siliM);
-    /* the moulded loop on top (hole along x, the ring threads it) */
-    const loop = pmesh(new THREE.TorusGeometry(0.056, 0.027, 12, 28), siliM); loop.position.set(0, 1.04, 0); loop.scale.set(1, 1.05, 0.8);
+    const CAP = [[0.192, 0.55], [0.2, 0.556], [0.209, 0.57], [0.216, 0.583], [0.226, 0.609], [0.231, 0.634], [0.232, 0.659], [0.231, 0.685], [0.222, 0.71], [0.211, 0.735], [0.2, 0.759], [0.201, 0.774], [0.206, 0.786], [0.216, 0.812], [0.227, 0.837], [0.229, 0.863], [0.225, 0.888], [0.217, 0.913], [0.202, 0.939], [0.176, 0.964], [0.156, 0.977], [0.118, 0.99], [0.06, 0.998], [0.0005, 1.0]];
+    const cpts = new THREE.SplineCurve(CAP.map(([x, y]) => V2(x, y))).getPoints(MOBILE ? 56 : 84);
+    pmesh(new THREE.LatheGeometry([V2(0.186, 0.552), ...cpts], LSEG), siliM);
+    /* the moulded loop on top (the ring threads it) */
+    const loop = pmesh(new THREE.TorusGeometry(0.034, 0.018, 12, 28), siliM); loop.position.set(0, 1.025, 0); loop.scale.set(1, 1.05, 0.8);
   }
-  /* the charm hangs from the loop: a pivot there so it can swing and hang true when the product tips */
-  const charmG = new THREE.Group(); charmG.position.set(0, 1.07, 0); pm.add(charmG);
+  /* the charm hangs from the loop: a pivot there so it can swing and hang true when the product tips. Placed off the photo:
+     a large split ring tipped back ~50 deg, a short chain dropping almost straight, a tall lobster clasp beside the cap */
+  const charmG = new THREE.Group(); charmG.position.set(0, 1.04, 0); pm.add(charmG);
   const chainG = new THREE.Group(); charmG.add(chainG);
   {
-    const rc = V(0.1, 1.075, 0.0).sub(charmG.position);        /* the split ring: thin, gold, tipped back and turned */
-    const ring = pmesh(new THREE.TorusGeometry(0.112, 0.0115, 8, 56), goldM, charmG); ring.position.copy(rc); ring.rotation.set(-0.5, -0.62, 0.08);
-    const ring2 = pmesh(new THREE.TorusGeometry(0.112, 0.0115, 8, 56, 1.1), goldM, charmG); ring2.position.copy(rc); ring2.rotation.set(-0.5, -0.62, 0.08 + 0.12); ring2.scale.setScalar(1.0); ring2.position.z += 0.012;   /* the split ring's doubled turn */
-    /* where the chain hooks on: the ring's lower right */
-    ring.updateMatrix(); const anchor = V(0.112 * Math.cos(-0.75), 0.112 * Math.sin(-0.75), 0).applyMatrix4(ring.matrix);
+    const rc = V(0.097, 1.05, -0.02).sub(charmG.position);
+    const ring = pmesh(new THREE.TorusGeometry(0.137, 0.011, 8, 64), goldM, charmG); ring.position.copy(rc); ring.rotation.set(-0.9, 0.05, 0);
+    const ring2 = pmesh(new THREE.TorusGeometry(0.137, 0.011, 8, 64, 1.2), goldM, charmG); ring2.position.copy(rc).add(V(0, 0.008, 0.006)); ring2.rotation.set(-0.9, 0.05, 0.25);   /* the split ring's doubled turn */
+    ring.updateMatrix(); const anchor = V(0.137 * Math.cos(-0.42), 0.137 * Math.sin(-0.42), 0).applyMatrix4(ring.matrix);
     chainG.position.copy(anchor);
-    const linkG = new THREE.TorusGeometry(0.029, 0.0075, 6, 16);
-    const N = 6, dir = V(0.5, -0.865, 0.06).normalize(), up = V(0, 1, 0);
+    const linkG = new THREE.TorusGeometry(0.029, 0.0078, 6, 16);
+    const N = 4, dir = V(0.3, -1, 0.02).normalize(), up = V(0, 1, 0);
     let p = V(0, 0, 0);
     for (let i = 0; i < N; i++) {
-      const d = dir.clone().lerp(V(0.12, -1, 0.05).normalize(), i / (N - 1)).normalize();   /* the chain drapes: steeper further down */
-      const L = pmesh(linkG, goldM, chainG); L.scale.set(1, 1.6, 1);
-      L.quaternion.setFromUnitVectors(up, d); if (i % 2) L.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(up, Math.PI / 2));
-      L.position.copy(p).addScaledVector(d, 0.03); p.addScaledVector(d, 0.058);
+      const L = pmesh(linkG, goldM, chainG); L.scale.set(1, 1.65, 1);
+      L.quaternion.setFromUnitVectors(up, dir); if (i % 2) L.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(up, Math.PI / 2));
+      L.position.copy(p).addScaledVector(dir, 0.029); p.addScaledVector(dir, 0.052);
     }
-    /* the lobster clasp hangs under the last link: a jump ring, a swivel stem, the teardrop hook with its lever across the gap */
-    const cl = new THREE.Group(); cl.position.copy(p); cl.scale.setScalar(1.5); chainG.add(cl);
-    const jr = pmesh(new THREE.TorusGeometry(0.02, 0.006, 6, 16), goldM, cl); jr.position.set(0, -0.012, 0); jr.rotation.y = Math.PI / 2;
-    const stem = pmesh(new THREE.CylinderGeometry(0.009, 0.013, 0.034, 10), goldM, cl); stem.position.set(0, -0.045, 0);
-    const hook = pmesh(new THREE.TorusGeometry(0.056, 0.019, 10, 32, Math.PI * 1.72), goldM, cl); hook.scale.set(0.78, 1.34, 1); hook.position.set(0, -0.135, 0); hook.rotation.z = Math.PI * 0.62;
-    const lever = pmesh(new THREE.CylinderGeometry(0.009, 0.009, 0.06, 8), goldM, cl); lever.position.set(-0.036, -0.093, 0.004); lever.rotation.z = -0.55;
-    const trig = pmesh(new THREE.BoxGeometry(0.02, 0.012, 0.014), goldM, cl); trig.position.set(-0.048, -0.135, 0); trig.rotation.z = 0.3;
+    /* the lobster clasp: jump ring, swivel stem, the teardrop body with its hooked tip, the lever across the gap, the thumb trigger */
+    const cl = new THREE.Group(); cl.position.copy(p).add(V(0.022, 0.004, 0)); cl.rotation.z = 0.16; cl.scale.setScalar(1.7); chainG.add(cl);
+    const jr = pmesh(new THREE.TorusGeometry(0.018, 0.0055, 6, 16), goldM, cl); jr.position.set(0, -0.01, 0); jr.rotation.y = Math.PI / 2;
+    const stem = pmesh(new THREE.CylinderGeometry(0.009, 0.012, 0.03, 10), goldM, cl); stem.position.set(0, -0.04, 0);
+    /* the lobster body: a solid teardrop claw with its eye, extruded and bevelled; the spring gate along the inner left; the thumb trigger */
+    const tear = (R, cy, k, n = 40) => { const pts = []; for (let i = 0; i <= n; i++) { const t = (i / n) * Math.PI * 2; pts.push(V2(R * 0.78 * Math.sin(t) * Math.pow(Math.abs(Math.sin(t / 2)), 0.85), cy + R * Math.cos(t) * k)); } return pts; };
+    const outer = new THREE.Shape(tear(0.074, -0.112, 1, MOBILE ? 32 : 48));
+    outer.holes.push(new THREE.Path(tear(0.04, -0.128, 1.05, MOBILE ? 24 : 36).reverse()));
+    const bodyGeo = new THREE.ExtrudeGeometry(outer, { depth: 0.012, bevelEnabled: true, bevelThickness: 0.007, bevelSize: 0.006, bevelSegments: 3, curveSegments: 8 }); bodyGeo.translate(0, 0, -0.006);
+    const lob = pmesh(bodyGeo, goldM, cl); lob.position.set(0.004, 0, 0);
+    const gate = pmesh(new THREE.CylinderGeometry(0.0055, 0.0055, 0.06, 8), goldM, cl); gate.position.set(-0.012, -0.112, 0.012); gate.rotation.z = -0.22;
+    const beak = pmesh(new THREE.BoxGeometry(0.03, 0.011, 0.016), goldM, cl); beak.position.set(0.04, -0.07, 0); beak.rotation.z = 0.55;   /* the claw's tip */
+    const trig = pmesh(new THREE.BoxGeometry(0.02, 0.012, 0.014), goldM, cl); trig.position.set(-0.036, -0.088, 0); trig.rotation.z = 0.6;
   }
   /* the product's own bounds (the rect the page gets), measured once at rest */
   prod.updateMatrixWorld(true);
@@ -505,7 +509,7 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
     const mid = V(0, P_IN_Y + SLIDE - HS * 0.5, 0).applyMatrix4(m);
     return mid.add(V(-0.004, -HS * 0.5 + 0.012, 0.01));
   })();
-  const HERO_YAW = LIFT_YAW, HERO_EL = 0.1;
+  const HERO_YAW = LIFT_YAW, HERO_EL = 0.035;   /* near eye level, like the kit photo */
   const HERO_C = HERO_P.clone().add(V(0.003, HS * 0.6, 0));
   CAM.hero = [HERO_C.clone().add(V(Math.sin(HERO_YAW) * Math.cos(HERO_EL), Math.sin(HERO_EL), Math.cos(HERO_YAW) * Math.cos(HERO_EL)).multiplyScalar(0.3)), HERO_C.clone()];
   let k = 1, vw = 10, vh = 10, OX = 0, OY = 0, offW = 1, phone = false;

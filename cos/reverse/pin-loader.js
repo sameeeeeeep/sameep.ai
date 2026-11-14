@@ -111,6 +111,11 @@
     '.pl-user.is-in .pl-av{animation:pl-pop .75s cubic-bezier(.2,1.6,.4,1) both,pl-bob var(--d,5s) ease-in-out .75s infinite;transform:none}',
     '.pl-name{font-weight:600;font-size:13.5px;line-height:1.2;text-align:center;text-shadow:0 1px 6px rgba(0,0,0,.45);opacity:0;transition:opacity .4s .3s}',
     '.pl-user.is-in .pl-name{opacity:1}',
+    '.pl-first{font-weight:700;font-size:16px;line-height:1.1;text-align:center;text-shadow:0 1px 6px rgba(0,0,0,.45);opacity:0;transition:opacity .4s .3s}',
+    '.pl-user.is-in .pl-first{opacity:1}',
+    '.pl-user.has-first{gap:4px}',
+    '.pl-user.has-first .pl-name{font-weight:500;font-size:12.5px;margin-top:-2px}',
+    '.pl-user.is-picked .pl-first{color:#3ddc84}',
     '.pl-user:hover .pl-av,.pl-user:focus-visible .pl-av{scale:1.08;box-shadow:0 6px 22px rgba(0,0,0,.35),0 0 0 3px #fff}',
     '.pl-user:focus-visible{outline:none}',
     '.pl-user.is-picked .pl-av{animation-play-state:paused;box-shadow:0 0 0 4px #3ddc84,0 0 28px rgba(61,220,132,.75);scale:1.12}',
@@ -181,12 +186,30 @@
   /* the lobby, as on the sameep.ai lock screen: a dark blurred room, the big clock, everyone as a round face
      in loose rows (each bobbing on its own beat), "Find your face" at the bottom. Tap your face: it goes green
      and the PIN box opens. Any face works, so someone not on the team still gets in with the PIN.
-     Faces only (gate/f1..f5); each is labelled by role, never by name. */
+     Faces only (gate/f1..f5), labelled by role. First names are not in this file: the Worker serves them
+     (GET /d2c-api/lock, the private lobby only) and they go above the roles; if that fails, roles only. */
   var PEOPLE = [
     { f: 1, role: 'Founder' }, { f: 2, role: 'Chief of Staff' }, { f: 3, role: 'Founder’s office' },
     { f: 4, role: 'Content and social' }, { f: 5, role: 'Product analyst' }, { ini: 'H', role: 'Influencer marketing', hue: 330 }
   ];
   var field, top, users = [], picked = null, R = 50;
+  /* the first names, from the Worker (never stored here): matched by face, or by initial for someone without one */
+  function firstNames() {
+    realFetch(API + '/lock', { headers: { accept: 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var list = d && Array.isArray(d.people) ? d.people : [];
+        users.forEach(function (u) {
+          var m = u._m, p = null;
+          list.forEach(function (x) { if (!p && x && x.first && (m.f ? x.face === 'f' + m.f : !x.face && String(x.first).charAt(0).toUpperCase() === m.ini)) p = x; });
+          if (!p || u.querySelector('.pl-first')) return;
+          u.insertBefore(h('span', 'pl-first', String(p.first).slice(0, 24)), u.querySelector('.pl-name'));
+          u.classList.add('has-first'); u.setAttribute('aria-label', p.first + ', ' + m.role);
+        });
+        if (list.length) place();
+      })
+      .catch(function () { /* roles only, as before */ });
+  }
   function buildLock() {
     lock = h('div', 'pl pl-lobby'); lock.setAttribute('role', 'dialog'); lock.setAttribute('aria-label', 'Sign in');
     top = h('div', 'pl-top');
@@ -204,13 +227,14 @@
       var fc = h('span', 'pl-av');
       if (m.f) { var im = h('img'); im.alt = ''; im.decoding = 'async'; im.width = im.height = 120; im.src = base + 'gate/f' + m.f + '.webp'; fc.appendChild(im); }
       else { fc.classList.add('is-ini'); fc.style.setProperty('--hue', m.hue); fc.appendChild(h('span', 'pl-glyph', m.ini)); }
-      u.appendChild(fc); u.appendChild(h('span', 'pl-name', m.role));
+      u.appendChild(fc); u.appendChild(h('span', 'pl-name', m.role)); u._m = m;
       u.style.setProperty('--d', (4.2 + ((i * 7) % 30) / 10) + 's'); u.style.setProperty('--dl', (-((i * 13) % 50) / 10) + 's');
       u.addEventListener('click', function () { choose(u); });
       field.appendChild(u); users.push(u);
       (function (e, d) { setTimeout(function () { e.classList.add('is-in'); }, d); })(u, 150 + i * 110);
     });
     askFace();
+    firstNames();
     place();
     addEventListener('resize', place);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);

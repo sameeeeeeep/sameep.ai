@@ -19,7 +19,7 @@ const arr = (v) => (Array.isArray(v) ? v : []);
 const PHONE = () => innerWidth < 760;
 /* parcel3d (built in brandcos/parcel3d/, copied here) plays beats 1, 14, 15: the parcel opens at her door, the carton
    unfolds into the sketch, and at the end it closes and goes back out. ?door3d falls back to the old low-poly scene. */
-const P3_DEFAULT = true, P3_URL = './parcel3d.js?v=p3v2';
+const P3_DEFAULT = true, P3_URL = './parcel3d.js?v=p3v3';
 const P3 = (P3_DEFAULT || Q.has('p3')) && !Q.has('door3d');   /* ?door3d falls back to the old scene */
 let initP3 = null, p3Failed = false;
 
@@ -87,6 +87,7 @@ function runBox(fn, dur) {
   (function f(now) {
     const t = REDUCED ? 1 : clamp((now - t0) / dur, 0, 1);
     box.doorPose(fn(t));
+    if (ui.poster) { ui.poster.remove(); ui.poster = null; if (window.__T) window.__T.p3first = Math.round(performance.now()); }   /* the canvas has this frame: cut to it */
     if (boxOn) raf = requestAnimationFrame(f);
   })(t0);
 }
@@ -102,7 +103,7 @@ if (P3) { const o = POSE.open; POSE.open = (t) => Object.assign(o(t), { unfold: 
    in CSS px of the 3D layer, with an optional angle (deg, or rad when |a| <= 3.2). Without it the cut uses a centred rect. */
 let HERO = null;
 const PROD_BOX = { l: 201 / 900, w: 498 / 900, t: 0, h: 1 };   /* the product photo's alpha bounds (sb/charm.webp, 900 square) */
-const BOT3D = { cx: 0.366, t: 0.185, b: 0.951, w: 0.669 };   /* parcel3d's bottle (cap top to base, body width) inside heroRect, measured at 1440 and 390 */
+const BOT3D = { cx: 0.33, t: 0.155, b: 0.952, w: 0.615 };   /* parcel3d's bottle (cap top to base, body width) inside heroRect, measured at 1440 and 390 */
 const SK_MAP = { l: -0.165, t: -0.178, s: 1.272 };              /* the doodle's 800 square over the photo box: bottles line up */
 function onHero(r) {
   if (!r) return;
@@ -407,6 +408,21 @@ const ICONS = {
 };
 function btn(cls, label, svgHtml) { const b = h('button', 'sb-b ' + cls); b.type = 'button'; b.setAttribute('aria-label', label); b.innerHTML = svgHtml; return b; }
 
+/* ---------- the first screen ----------
+   scroll.html paints the opening before any script runs: the wordmark, the first headline line and a poster of the 3D
+   parcel's first frame (sb/poster-*.webp, rendered from parcel3d at that camera pose). Here the real chrome takes over:
+   the headline element is adopted as is, and the poster stays above the canvas until the parcel draws its first frame
+   (runBox). A poster rendered for another brand is dropped at once. */
+function adoptPre() {
+  const pre = document.querySelector('.sb-pre'); if (!pre) return;
+  const pic = pre.querySelector('picture'), im = pic && pic.querySelector('img');
+  const mine = im && (im.dataset.brand || '') === str(cfg.id) && /^(box-open)$/.test((B[0] || {}).kind) && !/[?&]step=/.test(location.search);
+  if (mine) { pic.classList.add('sb-poster-w'); ui.d3.insertBefore(pic, ui.d3.firstChild); ui.poster = pic; ui.root.classList.add('is-3d'); }
+  const L = pre.querySelector('.sb-lead');
+  if (L && mine) { L.querySelectorAll('span').forEach((e) => e.classList.remove('is-new')); L.setAttribute('aria-live', 'polite'); ui.root.replaceChild(L, ui.lead); ui.lead = L; }
+  pre.remove();
+}
+
 /* ---------- build ---------- */
 function build() {
   document.documentElement.classList.add('is-sb');
@@ -430,6 +446,7 @@ function build() {
   const pg = h('div', 'sb-prog'); ui.prog = h('i'); pg.appendChild(ui.prog); r.appendChild(pg);
   ui.offer = h('div', 'sb-offer'); r.appendChild(ui.offer);
   mount.appendChild(r);
+  adoptPre();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });
   ui.play.addEventListener('click', (e) => { e.stopPropagation(); unlock(); setPlay(!playing); });
   ui.sound.addEventListener('click', (e) => { e.stopPropagation(); if (SOUND) { SOUND = false; stopClip(); setSound(); } else unlock(); });
@@ -456,7 +473,8 @@ function start(raw) {
   /* the parcel warms up before a 3D beat needs it; any other first beat shows at once while it warms behind */
   const first3d = /^(box-open|held|box-close)$/.test((B[clamp(k0, 0, B.length - 1)] || {}).kind);
   if (P3) {
-    const ready = import(P3_URL).then((m) => { initP3 = m.init; ensureBox(); if (box && box.warm) return box.warm(); }).catch(() => { initP3 = null; p3Failed = true; });
+    const T = window.__T || {}; T.start = Math.round(performance.now());   /* timing marks: only read by the cold-start check */
+    const ready = import(P3_URL).then((m) => { T.imported = Math.round(performance.now()); initP3 = m.init; ensureBox(); T.init = Math.round(performance.now()); if (box && box.warm) return box.warm(); }).then(() => { T.warmed = Math.round(performance.now()); }).catch(() => { initP3 = null; p3Failed = true; });
     if (first3d) ready.then(() => show(k0)); else show(k0);
   } else show(k0);
   if (Q.has('offer')) offer();
