@@ -217,8 +217,8 @@
     /* no headline: the opening is the parcel and her phone */
 
     var top = h('header', 'top');
-    top.appendChild(h('p', 'top-name', 'COS'));
-    top.appendChild(h('p', 'top-for', str((cfg.page || {}).title, 'Company OS for consumer brands').replace(/^(COS|Chief of Staff)\s*/i, '')));
+    top.appendChild(h('p', 'top-name', 'Coco'));
+    top.appendChild(h('p', 'top-for', str((cfg.page || {}).title, 'by sameep.ai').replace(/^(Coco|COS|Chief of Staff)\s*/i, '')));
     var dl = h('a', 'top-demo', 'Try the demo'); dl.href = '/cos/app/#demo?brand=' + brandId; top.appendChild(dl);
     stage.appendChild(top); ui.top = top;
     /* phone: the caption sheet (solid page colour, full width) and a probe that reads the safe-area insets */
@@ -691,7 +691,7 @@
       c.appendChild(authorRow(faceEl(b.who), personName(b.who), 'voice note'));
       c.appendChild(body());
     } else if (kind === 'dm') {
-      var db = h('p', 'k-bar'); db.appendChild(h('span', 'k-ch', 'Direct message')); db.appendChild(h('span', 'k-app', 'COS')); c.appendChild(db);
+      var db = h('p', 'k-bar'); db.appendChild(h('span', 'k-ch', 'Direct message')); db.appendChild(h('span', 'k-app', 'Coco')); c.appendChild(db);
       var qa = h('div', 'k-dm k-dm-q'); qa.appendChild(faceEl(b.who)); qa.appendChild(h('p', 'b-q', b.text)); c.appendChild(qa);
       var an = h('div', 'k-dm k-dm-a'); an.appendChild(markEl(sid)); an.appendChild(h('p', 'b-a', b.answer)); c.appendChild(an);
     } else if (kind === 'agent') {
@@ -1807,6 +1807,7 @@
   function dropIt(e) {
     if (!HOVER.on || (e && e.target && e.target.closest && e.target.closest('.ctl'))) return;
     endHover();
+    if (!MUTED && cfg.story && window.cosPrime) window.cosPrime(cfg);   /* the story's clips play later: unlock them inside this tap */
     if (!MUTED && Object.keys(cfg.audio || {}).length) {   /* this tap is the gesture the browser needs for sound */
       SOUND = true;
       if (ui.soundBtn) { ui.soundBtn.textContent = 'Sound on'; ui.soundBtn.setAttribute('aria-pressed', 'true'); }
@@ -1833,7 +1834,7 @@
         cards[id] = { state: 'pending', choice: rec };
       }
     });
-    document.title = 'COS for ' + str((cfg.brand || {}).name, 'consumer brands') + ' · Company OS for consumer brands';
+    document.title = 'Coco for ' + str((cfg.brand || {}).name, 'consumer brands') + ' · the chief of staff OS for consumer brands, by sameep.ai';
     total = buildSegments();
     document.getElementById('track').style.height = ((total + 1) * 100) + 'vh';
     var g0 = h('i', 'groove'); g0.style.top = '0'; document.getElementById('track').appendChild(g0);   /* the opening shot */

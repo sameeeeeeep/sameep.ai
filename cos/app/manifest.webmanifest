@@ -1,0 +1,10 @@
+{
+  "name": "Coco",
+  "short_name": "Coco",
+  "description": "The chief of staff OS for consumer brands, by sameep.ai",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f3ef",
+  "theme_color": "#f4f3ef",
+  "icons": [{ "src": "./assets/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
