@@ -13,7 +13,7 @@ export function view(data, ctx, ui = {}) {
   const tab = ui.tab || 'agents';
   const open = Object.values(feed.decisions || {}).filter((d) => d.status === 'open' || d.status === 'to_check');
   const waitFor = (name) => open.filter((d) => (d.status === 'open' ? d.decider?.name : d.checker?.name) === name).length;
-  // the Chief of staff is COS's lead agent: it runs the room, assigns, chases and relays what people said. It leads.
+  // the Chief of staff is Coco's lead agent: it runs the room, assigns, chases and relays what people said. It leads.
   const lead = (a) => /^chief of staff$/i.test(a.name);
   const agents = (s?.presence?.running?.agents || []).slice().sort((a, b) => (lead(b) ? 1 : 0) - (lead(a) ? 1 : 0));
   const people = Object.values(s?.people || {});

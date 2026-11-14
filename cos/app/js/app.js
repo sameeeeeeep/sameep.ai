@@ -17,10 +17,10 @@ import { api, apiBase, token, ApiError } from './api.js';
 import { html, esc, ROLE_NAMES, ICONS, can } from './ui.js';
 import { MODS } from './journey.js';
 import { askView, runAsk } from './ask.js';
-import { useWs, setPackFaces, faceSrc } from './look.js';
+import { useWs, setPackFaces, faceSrc, setAssistant, assistantOf } from './look.js';
 import './steps.js'; // human steps: any [data-step-open] row opens its sheet
 
-// COS, a company OS for consumer brands. The sidebar shows the OS: Products (each product listed), Modules (#ideas ...
+// Coco, a company OS for consumer brands. The sidebar shows the OS: Products (each product listed), Modules (#ideas ...
 // #crm, each opening its tasks), then Tasks (one list across every module), Chat, Canvas and the Dashboard. The Chief of
 // staff is the lead agent inside it (Agents, and every thread). The rest sits under More.
 export const NAV = [
@@ -41,8 +41,9 @@ export const NAV = [
   { section: 'hiring',  label: 'Hiring',  page: '../pages/hiring.js', more: true },
   { section: 'billing', label: 'Billing', page: '../pages/billing.js', more: true },
 ];
-export const PRODUCT = 'COS';
-export const TAGLINE = 'Company OS for consumer brands';
+export const PRODUCT = 'Coco';
+export const TAGLINE = 'The chief of staff OS for consumer brands';
+export const MAKER = 'by sameep.ai';
 export const MODULES = ['ideas', 'npd', 'logistics', 'warehouse', 'listing', 'marketing', 'crm'];
 
 // Pure: the sidebar. r = the route, prods = [{id, name, color}] (empty while they load), icons = { module: svg }
@@ -166,7 +167,7 @@ function boot() {
 
   function showPin() {
     $('shell').hidden = true; $('signin').hidden = false;
-    $('signin').innerHTML = String(html`<div class="si"><a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span><span>COS<small>Company OS for consumer brands</small></span></a>
+    $('signin').innerHTML = String(html`<div class="si"><a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span><span>Coco<small>The chief of staff OS for consumer brands, by sameep.ai</small></span></a>
       <h1>Enter the PIN</h1>
       <form id="pin-form" class="si-form" novalidate>
         <label class="field"><span>PIN</span><input id="pin-in" name="pin" type="password" inputmode="numeric" autocomplete="off" pattern="[0-9]*" maxlength="12" required autofocus></label>
@@ -230,7 +231,9 @@ function boot() {
   function paintAsk(ws, section) {
     const viewer = !can(ws.role, 'member');
     const q = $('ask-q');
-    q.placeholder = viewer ? 'Viewers can read everything here; a member can ask the chief of staff.' : `Ask about ${ws.name}, or say what to do`;
+    const who = assistantOf(ws);
+    $('ask-label').textContent = `Ask ${who}`;
+    q.placeholder = viewer ? `Viewers can read everything here; a member can ask ${who}.` : `Ask ${who} about ${ws.name}, or say what to do`;
     q.disabled = viewer; $('ask-send').disabled = viewer;
     $('ask-chips').innerHTML = viewer ? '' : (ASKS[section] || []).map((a) => `<button type="button" data-q="${esc(a)}">${esc(a)}</button>`).join('');
     const ans = $('ask-ans');
@@ -260,7 +263,7 @@ function boot() {
   const closeAsk = () => { askRun++; ask = null; if (cur) paintAsk(cur, parseHash(location.hash).section); };
 
   // A private workspace's own brand (logo, colours) comes from the Worker, members only (GET /w/:wid/brandpack);
-  // every other workspace answers 404 and keeps the COS look. Nothing brand-specific is in this file.
+  // every other workspace answers 404 and keeps the Coco look. Nothing brand-specific is in this file.
   // Its pack may also name the team's faces (and pages read its product journey: ctx.pack()); the faces are fetched
   // with the session from the members-only landing assets into object URLs before the page paints (js/look.js).
   const packs = new Map(), packFaces = new Map();
@@ -294,6 +297,7 @@ function boot() {
   };
   async function paintBrand(ws, mine) {
     const p = await packOf(ws);
+    if (p && typeof p.assistantName === 'string' && /^[\p{L}0-9 .'-]{1,24}$/u.test(p.assistantName.trim())) { setAssistant(ws.id, p.assistantName.trim()); if (mine === seq && cur) paintAsk(cur, parseHash(location.hash).section); }
     if (mine !== seq) return;
     let st = document.getElementById('brand-pack');
     if (!p) { if (st) st.remove(); return; }

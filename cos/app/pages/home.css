@@ -1,4 +1,4 @@
-/* home.css: the COS workspace, one view (pages/home.js), laid out as Chhotu's product flow. The shell's sidebar, top bar
+/* home.css: the Coco workspace, one view (pages/home.js), laid out as Chhotu's product flow. The shell's sidebar, top bar
    and ask bar step aside here: the view carries its own header, and the thread has its own composer. White cards with
    one hairline on the paper ground, rows divided by hairlines, one accent (the primary button, the current stage). */
 body[data-section="home"] .shell { grid-template-columns: minmax(0, 1fr); }

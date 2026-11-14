@@ -1,4 +1,4 @@
-/* mobile.css: the phone shell (js/mobile.js) and phone layouts for the COS surfaces. Everything
+/* mobile.css: the phone shell (js/mobile.js) and phone layouts for the Coco surfaces. Everything
    here sits under max-width 760px except the rules that keep the phone-only pieces hidden on a desk. Loads last.
    House rules: Bricolage Grotesque + Spline Sans Mono, the blue accent only on the primary button, no glow, no letterspaced kickers.
    Every tap target is at least 44 px; the one decision's main button sits pinned at the bottom of the sheet. */

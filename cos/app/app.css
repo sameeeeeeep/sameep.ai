@@ -55,7 +55,7 @@ button { font: inherit; color: inherit; }
 
 /* ---------- shell ---------- */
 .shell { display: grid; grid-template-columns: var(--rail-w) minmax(0, 1fr); min-height: 100vh; }
-/* the sidebar: the OS at a glance. The COS wordmark, Products (each listed), Modules, then Tasks, Chat, Canvas and the
+/* the sidebar: the OS at a glance. The Coco wordmark, Products (each listed), Modules, then Tasks, Chat, Canvas and the
    Dashboard, with More folded at the bottom. Plain rows, one hairline, the accent only on where you are. */
 .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; padding: 16px 12px 12px; border-right: 1px solid var(--line); background: var(--rail); scrollbar-width: thin; }
 .rail-brand { display: flex; flex-direction: column; gap: 2px; padding: 2px 8px 14px; color: var(--ink); text-decoration: none; }

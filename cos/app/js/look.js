@@ -12,6 +12,17 @@ const A = './assets';
 // the workspace in view (js/app.js sets it on every route), for the shared pieces that do not get a ctx
 let cur = null;
 export const useWs = (ws) => { cur = ws || null; };
+// The assistant's name. Every brand's Coco can carry its own name (assistantName in the brand data: a private brand's
+// pack, or a sample brand's entry below); "Coco" when none is set. The Chief of staff stays the lead agent inside it.
+export const ASSISTANT = 'Coco';
+const SAMPLE_ASSISTANT = {}; // e.g. { ohra: 'Ohra Coco' } to rename a sample brand's
+const named = new Map();
+export const setAssistant = (wid, name) => { if (wid && name) named.set(wid, name); };
+export function assistantOf(ws) {
+  if (ws?.id && named.has(ws.id)) return named.get(ws.id);
+  const b = String(ws?.name || '').trim().toLowerCase();
+  return SAMPLE_ASSISTANT[b] || ASSISTANT;
+}
 export const curWs = () => cur;
 // Agents are plain named roles ("Ops agent", "Finance agent", "Chief of staff") with a neutral monogram mark.
 // agentOf(agentName) -> { name: 'Ops agent', role: 'Ops', mark: 'O' }

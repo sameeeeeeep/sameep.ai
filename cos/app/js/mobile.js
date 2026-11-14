@@ -1,4 +1,4 @@
-// mobile.js: the phone shell for COS. Loads after app.js and only adds things; the desktop
+// mobile.js: the phone shell for Coco. Loads after app.js and only adds things; the desktop
 // shell is untouched (mobile.css shows all of this at 760 px and below, and hides the icon rail there).
 //
 //   The bottom tab bar   Dashboard, Chat (badged with the cards waiting for a tap or a check), Agents, More
@@ -10,7 +10,7 @@
 // Pure pieces (tabsView, needsView, mainAction, waiting) take plain data and return strings, so Node can test them.
 import { html, raw, ICONS } from './ui.js';
 
-export const TABS = [['home', 'COS'], ['tasks', 'Tasks'], ['chat', 'Chat']];
+export const TABS = [['home', 'Coco'], ['tasks', 'Tasks'], ['chat', 'Chat']];
 const BADGED = 'chat'; // where the work lives: each module's To do, and All modules
 // what the More sheet lists (every other section)
 export const MORE = [['dash', 'Dashboard'], ['products', 'Products'], ['canvas', 'Canvas'], ['agents', 'Agents'], ['hub', 'Hub'], ['today', 'Today'], ['standup', 'Standup'], ['company', 'Company'], ['inbox', 'Inbox'],

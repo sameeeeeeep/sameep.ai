@@ -1,5 +1,5 @@
-// home.js: the COS workspace, one view (laid out as Chhotu's product flow). The landing screen after sign-in.
-//   top      the COS wordmark, the product chip with its switcher, the team's faces, Prev / Play demo / Next
+// home.js: the Coco workspace, one view (laid out as Chhotu's product flow). The landing screen after sign-in.
+//   top      the Coco wordmark, the product chip with its switcher, the team's faces, Prev / Play demo / Next
 //   strip    the 10 stages, numbered circles on one line, "#module, day N" under each
 //   left     the products, then the modules (#ideas ... #crm): faces, how many agents, the latest line or what waits
 //   centre   THE view: the selected module's thread. Stage posts with their checklists (an owner on every row), agent
@@ -17,7 +17,7 @@ import { loadJourney, stripView, nowView, osView, pic, checkRow, icon } from './
 import { rows as taskRows, pick as taskPick, MOD_ORDER } from './tasks.js';
 import { overnight } from './dash.js';
 
-export const title = 'COS';
+export const title = 'Coco';
 // which module a world function's work belongs to
 export const FN_MOD = { brand: 'npd', npd: 'npd', procurement: 'npd', packaging: 'logistics', qc: 'logistics', finance: 'logistics',
   warehouse: 'warehouse', logistics: 'logistics', channels: 'listing', website: 'listing', performance: 'marketing', influencer: 'marketing',
@@ -185,7 +185,7 @@ export function view(data, ctx, ui = {}) {
   const agentsN = (s.presence?.running?.agents || []).length;
 
   const top = html`<header class="hv-top">
-    <a class="hv-brand" href="${go(null)}" data-hv-go=""><b>COS</b><span>Company OS for consumer brands</span></a>
+    <a class="hv-brand" href="${go(null)}" data-hv-go=""><b>Coco</b><span>by sameep.ai</span></a>
     <label class="hv-chip">${pic(p, data, 'is-chip')}<span class="sr">Product</span>
       <select data-hv-prod>${products.map((x) => html`<option value="${x.id}"${raw(x.id === p.id ? ' selected' : '')}>${x.name}</option>`)}</select>
       <span class="hv-chip-s">${STAGES[p.stage].label}, day ${p.today}</span></label>

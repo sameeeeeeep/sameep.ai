@@ -10,7 +10,7 @@ export const title = 'Sign in';
 // Pure views (Node-testable). step: 'email' | 'code' | 'link'. invited: the address came from an invite link.
 // resent: a fresh code was just sent from the code step.
 export function view({ step = 'email', email = '', error = '', note = '', busy = false, invited = false, resent = false } = {}) {
-  const head = html`<a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span><span>COS<small>Company OS for consumer brands</small></span></a>`;
+  const head = html`<a class="si-brand" href="../"><span class="si-mark" aria-hidden="true">C</span><span>Coco<small>The chief of staff OS for consumer brands, by sameep.ai</small></span></a>`;
   const foot = html`<p class="si-foot muted">No passwords. Codes work once, for 15 minutes, and only a scrambled copy (a hash) is ever stored.</p>`;
   if (step === 'link') {
     return html`<div class="si">${head}

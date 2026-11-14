@@ -14,6 +14,7 @@
 // [{text, source_labels, unverified}] and gaps. A demo state carries replies [{author_name, body}] and offline (the
 // reason). Either can carry error. Nothing here touches the DOM.
 import { html } from './ui.js';
+import { assistantOf, curWs } from './look.js';
 
 export const POLL_WAIT = 20;          // seconds per long-poll (the Worker caps it at 25)
 export const MAX_MS = 6 * 60_000;     // past this, stop waiting (the runner's own timeout is 4 min a try)
@@ -100,7 +101,7 @@ export function askView(s, wid) {
   if (!s) return '';
   const demo = s.mode === 'demo';
   const close = html`<button class="ask-x" type="button" data-ask="close">Close</button>`;
-  const head = html`<div class="ask-ans-h"><b>${demo ? 'Demo answer' : 'Chief of staff'}</b>${close}</div>
+  const head = html`<div class="ask-ans-h"><b>${demo ? 'Demo answer' : assistantOf(curWs())}</b>${close}</div>
     <p class="ask-ans-q">You asked: ${s.q}</p>${demo ? html`<p class="ask-off">${OFFLINE_NOTE}</p>` : ''}`;
   let body;
   if (s.busy) {
@@ -111,7 +112,7 @@ export function askView(s, wid) {
   } else if (demo) {
     body = (s.replies || []).length
       ? s.replies.map((r) => html`<p class="ask-ans-b">${r.body}</p>${r.source ? html`<p class="ask-ans-q">Source: ${r.source}</p>` : ''}`)
-      : html`<p class="ask-ans-b">Sent to All hands. The chief of staff answers there, and the team sees it too.</p>`;
+      : html`<p class="ask-ans-b">Sent to All hands. The Chief of staff answers there, and the team sees it too.</p>`;
   } else {
     body = html`<ol class="ask-lines">${(s.lines || []).map(brainLine)}</ol>${s.gaps ? html`<p class="ask-gap">Not in the records: ${s.gaps}</p>` : ''}`;
   }

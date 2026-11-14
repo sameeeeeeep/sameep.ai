@@ -1,4 +1,4 @@
-// cos.js: what COS's surfaces (Feed, Chat, OS, Hub) share, around its lead agent, the Chief of staff. The worker side is
+// cos.js: what Coco's surfaces (Feed, Chat, OS, Hub) share, around its lead agent, the Chief of staff. The worker side is
 // d2c-clone-app/src/modules/cos.js (section `cos`).
 //
 //   decisionCard(d, s)   THE decision card. Every surface renders a card with this one function, from the same
