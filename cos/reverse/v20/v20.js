@@ -1,0 +1,625 @@
+/* v20.js: the v20 Coco landing. A film letterbox frames the story: the top bar holds the wordmark and the chapters,
+   the bottom bar the line being said, the when, and a 2px progress line. The picture plays between them.
+   Six chapters, each scene -> element -> panel: a scene from the real world, then ONE element travels out of it and
+   lands on the panel's canvas, then the panel (v20-app.js) works on it. That travel is the one deliberate move per
+   chapter; everything else is a hard cut. Slow autoplay paced by reading time, pause and next always there, and every
+   artefact and task opens when clicked (autoplay pauses while it's open).
+   Everything comes from config.v20 (names live in the private config). */
+import { createPanel, EZ, read } from './v20-app.js?v=v20b';
+
+const Q = new URLSearchParams(location.search);
+const MUTED = Q.has('mute');
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+const h = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const str = (v, d) => (v == null || v === '' ? (d == null ? '' : d) : String(v));
+const arr = (v) => (Array.isArray(v) ? v : []);
+const PHONE = () => innerWidth < 760;
+const PAPER = '#F2F0EB';
+const P3_URL = '../p20-parcel.js?v=p20b', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
+const P3 = !Q.has('door3d');
+
+let cfg, V, B = [], CH = [], i = -1, playing = true, timer = 0, raf = 0;
+const ui = {};
+let box = null, boxOn = false, boxReady = false, initP3 = null, p3Failed = false, initDoor = null, p3fonts = false, panel = null;
+let viewOpen = false, wasPlaying = false;
+
+/* ---------- images: config keys -> the first path that exists (a missing file falls through to the next) ---------- */
+const GOOD = {};
+function IMG(k) {
+  if (!k) return '';
+  const I = Object.assign({}, (cfg.storyboard || {}).images || {}, V.images || {});
+  const v = I[k] != null ? I[k] : k;
+  const L = arr(v).length ? v : [v];
+  if (GOOD[k] !== undefined) return GOOD[k];
+  return str(L[0]);
+}
+function candidates(k) {
+  const I = Object.assign({}, (cfg.storyboard || {}).images || {}, V.images || {});
+  const v = I[k]; if (v == null) return /\.(webp|png|jpe?g)|^blob:|^data:/.test(k) ? [k] : [];
+  return (Array.isArray(v) ? v : [v]).filter(Boolean);
+}
+
+/* ---------- sound: off until a tap; the voice note plays on the midnight scene ---------- */
+let AC = null, SOUND = false; const CLIPS = {}; let NOW = null;
+function clip(url) { if (!CLIPS[url]) { const a = new Audio(); a.preload = 'auto'; a.src = url; CLIPS[url] = a; } return CLIPS[url]; }
+function unlock() {
+  if (MUTED || SOUND) return;
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { AC = null; }
+  SOUND = true;
+  Object.values(cfg.audio || {}).forEach((u) => { if (!u) return; const a = clip(u); a.muted = true; const p = a.play(); if (p && p.then) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; }); });
+  setSound();
+}
+function tone(f, d, v, type, to) {
+  if (!SOUND || !AC) return;
+  const n = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+  o.type = type || 'sine'; o.frequency.setValueAtTime(f, n); if (to) o.frequency.exponentialRampToValueAtTime(to, n + d);
+  g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(v, n + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, n + d);
+  o.connect(g); g.connect(AC.destination); o.start(n); o.stop(n + d + 0.05);
+}
+const SFX = { sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06) };
+function playClip(key) {
+  stopClip(); const u = (cfg.audio || {})[key]; if (!u || MUTED || !SOUND) return false;
+  const a = clip(u); try { a.currentTime = 0; } catch (e) { /* */ }
+  NOW = a; const p = a.play(); if (p && p.catch) p.catch(() => { if (NOW === a) NOW = null; });
+  return true;
+}
+function stopClip() { if (NOW) { try { NOW.pause(); } catch (e) { /* */ } NOW = null; } }
+
+/* ---------- the 3D parcel (chapter 1, 5 and 6). parcel3d today; v20-3d adds the rewind and the packing line ----------
+   Feature-detected: box.rewind(t) / box.pack(t) / box.arrive(t), or box.caps.{rewind,pack,arrive} meaning doorPose({rewind:t}) etc.
+   Until they land, the door pose and a labelled placeholder stand in. */
+/* p20 (v20-3d): box.play('open' | 'pack' | 'door', t). Chapter 1 is one take: t 0..0.3 is the parcel lifting off her mat and
+   flying back to the packing station, 0.3..1 is parcel3d's opening there (label peel, open, product out, hero on paper). */
+const P20 = () => !!box && typeof box.play === 'function';
+const OPEN_SPLIT = 0.3;
+const cap = (k) => !!box && (P20() ? /^(rewind|pack|arrive)$/.test(k) : (typeof box[k] === 'function' || !!(box.caps && box.caps[k])));
+const poseOf = (k) => (t) => { if (typeof box[k] === 'function') { box[k](t); return null; } const o = {}; o[k] = t; return o; };
+function p3cfg() { return { brand: cfg.brand || {}, box: (cfg.storyboard || {}).box || {}, palette: cfg.palette || {}, shipping: cfg.shipping || {} }; }
+function ensureBox() {
+  if (box) return box;
+  try {
+    const src = IMG('product');
+    if (P3 && !initP3 && !p3Failed) return null;
+    if (P3 && initP3) {
+      box = initP3(Object.assign(p3cfg(), { station: V.station || {} }), (k) => (k === 'sketch' ? IMG('sketch') : src), { paper: PAPER, fontsIn: p3fonts, lazy: true });
+      ui.d3.appendChild(box.el); sizeBox();
+      if (box.on) box.on('hero', (r) => onHero(r));
+      if (box.on) box.on('*', (name) => { if (name === 'land' || name === 'settle') tone(180, 0.18, 0.07); else if (/flap|carton/.test(name)) tone(300, 0.08, 0.035); else if (/tape|peel|label/.test(name)) tone(900, 0.05, 0.025, 'triangle'); });
+      if (box.on) box.on('label', (r) => onLabel(r));
+      return box;
+    }
+    if (!initDoor) return null;
+    box = initDoor({ brand: { name: str(((cfg.storyboard || {}).box || {}).name), product: str(((cfg.storyboard || {}).box || {}).product) }, palette: cfg.palette || {}, shipping: cfg.shipping || {}, charmSrc: src }, () => src);
+    ui.d3.appendChild(box.el); sizeBox();
+  } catch (e) { box = null; }
+  return box;
+}
+function sizeBox() {
+  if (!box) return;
+  const w = ui.d3.clientWidth || innerWidth, hh = ui.d3.clientHeight || innerHeight;
+  if (P20()) { box.size(w, hh, w * 0.5, hh * (PHONE() ? 0.52 : 0.5)); return; }
+  if (PHONE()) box.size(w, hh, w * 0.5, hh * 0.52, Math.min(w * 0.78, hh * 0.42));
+  else box.size(w, hh, w * 0.5, hh * 0.5, Math.min(w * 0.34, hh * 0.5));
+}
+function runBox(fn, dur) {
+  cancelAnimationFrame(raf); if (!boxReady || !ensureBox()) return false;
+  const t0 = performance.now();
+  (function f(now) {
+    const t = REDUCED ? 1 : clamp((now - t0) / dur, 0, 1);
+    const p = fn(t); if (p) box.doorPose(p);
+    if (boxOn && t < 1) raf = requestAnimationFrame(f);
+  })(t0);
+  return true;
+}
+const POSE = {
+  door: () => ({ drop: 1, open: 0, rise: 0, cam: 0 }),
+  open: (t) => ({ drop: 1, open: seg(t, 0.12, 0.55), rise: seg(t, 0.52, 0.9), cam: seg(t, 0.45, 1) * 0.55, unfold: seg(t, 0.78, 1) }),
+  arrive: (t) => ({ drop: ease(seg(t, 0, 0.35)), open: 0, rise: 0, cam: 0 })
+};
+
+/* ---------- the match cut (chapter 1): the 3D product at its hero pose -> its own pixels -> the doodle draws over ---------- */
+let HERO = null;
+const PROD_BOX = { l: 201 / 900, w: 498 / 900, t: 0, h: 1 };
+const BOT3D = { cx: 0.33, t: 0.155, b: 0.952, w: 0.615 };
+const SK_MAP = { l: -0.165, t: -0.178, s: 1.272 };
+function onHero(r) {
+  if (!r) return;
+  const x = r.x != null ? r.x : r.left, y = r.y != null ? r.y : r.top, w = r.w != null ? r.w : r.width, hh = r.h != null ? r.h : r.height;
+  if (!(w > 4 && hh > 4)) return;
+  const o = ui.d3.getBoundingClientRect(), R = ui.pic.getBoundingClientRect();
+  HERO = { x: x + o.left - R.left, y: y + o.top - R.top, w, h: hh, a: 0 };
+  try {
+    const cv = box && box.el, k = cv && cv.clientWidth ? cv.width / cv.clientWidth : 0;
+    if (k > 0) {
+      const x0 = Math.max(0, x - w * 0.25), y0 = Math.max(0, y - hh * 0.1), x1 = Math.min(cv.clientWidth, x + w * 1.25), y1 = Math.min(cv.clientHeight, y + hh * 1.16);
+      const c = document.createElement('canvas'); c.width = Math.round((x1 - x0) * k); c.height = Math.round((y1 - y0) * k);
+      c.getContext('2d').drawImage(cv, x0 * k, y0 * k, c.width, c.height, 0, 0, c.width, c.height);
+      c.className = 'mc-ph'; HERO.snap = { el: c, x: x0 + o.left - R.left, y: y0 + o.top - R.top, w: x1 - x0, h: y1 - y0 };
+    }
+  } catch (e) { /* tainted: the product photo stands in */ }
+  if (B[i] && B[i].scene === 'open' && B[i + 1] && B[i + 1].scene === 'sketch' && playing && !viewOpen) { clearTimeout(timer); show(i + 1); }
+}
+function heroRect() {
+  if (HERO) return HERO;
+  const W = ui.pic.clientWidth, H = ui.pic.clientHeight, hh = Math.min(PHONE() ? H * 0.42 : Math.min(H * 0.62, 520), (W - 24) / SK_MAP.s);
+  return { x: W / 2 - hh * PROD_BOX.w / 2, y: H * 0.52 - hh / 2, w: hh * PROD_BOX.w, h: hh, a: 0 };
+}
+const STROKES = [
+  { w: 46, at: 0, d: 650, p: 'M365 175C300 170 250 200 250 255C250 300 268 310 268 318C248 330 245 360 250 390C255 410 262 415 262 420L262 700C265 760 300 775 370 775C440 775 480 760 488 700L488 420C490 410 495 400 495 385C495 340 480 325 470 318C482 300 490 280 488 250C480 200 440 170 390 175Z' },
+  { w: 50, at: 420, d: 520, p: 'M360 150C350 60 470 35 482 108C486 150 440 165 418 150M482 150L520 220L540 290L560 340C605 360 605 425 560 432C515 430 518 360 556 330' },
+  { w: 74, at: 640, d: 640, p: 'M270 230L470 260L270 300L470 340L270 380L470 420L280 470L480 520L280 580L480 640L280 700L470 750' },
+  { w: 52, at: 1050, d: 420, p: 'M100 90L240 75L110 130L230 120L140 170L262 192' },
+  { w: 56, at: 1250, d: 420, p: 'M590 140L770 110L600 190L770 170L670 225L745 215M672 250C682 300 650 322 608 332' },
+  { w: 56, at: 1450, d: 420, p: 'M110 230L190 240L110 300L190 310L115 350L190 360L115 410L198 430L115 470L202 470L115 515' },
+  { w: 52, at: 1650, d: 380, p: 'M60 600L252 580L90 640L242 640L110 690L262 680' },
+  { w: 52, at: 1830, d: 380, p: 'M620 490L722 480L620 540L722 530M590 640L702 620L600 680L702 670L600 712L722 705' }
+];
+let skN = 0;
+function doodle(src) {
+  const id = 'vsk' + (++skN), NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 800 800'); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('class', 'mc-ink'); svg.setAttribute('aria-hidden', 'true');
+  const mask = document.createElementNS(NS, 'mask'); mask.id = id; mask.setAttribute('maskUnits', 'userSpaceOnUse'); ['x', 'y'].forEach((k) => mask.setAttribute(k, 0)); mask.setAttribute('width', 800); mask.setAttribute('height', 800);
+  const paths = STROKES.map((st) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', st.p); p.setAttribute('pathLength', '1'); p.setAttribute('fill', 'none'); p.setAttribute('stroke', '#fff'); p.setAttribute('stroke-width', st.w); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('stroke-linejoin', 'round'); p.style.strokeDasharray = '1 1'; p.style.strokeDashoffset = '1'; mask.appendChild(p); return p; });
+  const defs = document.createElementNS(NS, 'defs'); defs.appendChild(mask); svg.appendChild(defs);
+  const im = document.createElementNS(NS, 'image'); im.setAttribute('href', src); im.setAttribute('width', 800); im.setAttribute('height', 800); im.setAttribute('mask', 'url(#' + id + ')'); svg.appendChild(im);
+  svg.draw = (t0, full) => paths.forEach((p, k) => { const st = STROKES[k]; if (REDUCED || full) { p.style.strokeDashoffset = '0'; return; } p.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: st.d, delay: (t0 || 0) + st.at, easing: 'cubic-bezier(.45,.05,.55,.95)', fill: 'both' }); });
+  return svg;
+}
+function placeAt(el, x, y, w, hh) { el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.width = w + 'px'; el.style.height = hh + 'px'; }
+function img(src, cls, alt) { const e = h('img', cls); e.alt = alt || ''; e.decoding = 'async'; if (src) e.src = src; return e; }
+
+/* ---------- scenes ---------- */
+/* a labelled hole where a still or a 3D shot will go, so the story runs before every piece has landed */
+function hole(t, s) { const d = h('div', 'sc-hole'); d.appendChild(h('b', null, t)); if (s) d.appendChild(h('span', null, s)); return d; }
+function still(k, ph) {
+  const src = IMG(k), w = h('div', 'sc-still');
+  if (src) { const im = img(src); im.onerror = () => { im.remove(); w.appendChild(hole(ph || k)); }; w.appendChild(im); } else w.appendChild(hole(ph || k));
+  return w;
+}
+/* the element sitting in its scene, at a rect given as fractions of the picture */
+function element(b, host) {
+  const E = b.el || {}, at = arr(E.at).length === 4 ? E.at : [0.42, 0.3, 0.16, 0.4];
+  const P = ui.pic.getBoundingClientRect(), W = P.width, H = P.height;
+  let x = at[0] * W, y = at[1] * H, w = at[2] * W, hh = at[3] * H;
+  if (PHONE() && arr(E.at_m).length === 4) { x = E.at_m[0] * W; y = E.at_m[1] * H; w = E.at_m[2] * W; hh = E.at_m[3] * H; }
+  const n = h('div', 'el');
+  if (E.label) { n.classList.add('is-label'); n.appendChild(panel.shipLabel()); }
+  else { n.classList.add(E.fit === 'cover' ? 'is-cover' : 'is-cut'); n.appendChild(img(IMG(E.img))); }
+  placeAt(n, x, y, w, hh); host.appendChild(n); ui.elNode = n;
+  return n;
+}
+const play3 = (ch, a, z) => (t) => { box.play(ch, a + (z - a) * t); return null; };
+const SCENE = {
+  door: () => { boxOn = true; if (P20()) runBox(play3('open', 0, 0), 1); else if (cap('rewind')) runBox(() => poseOf('rewind')(0), 1); else runBox(POSE.door, 1); return null; },
+  rewind: (b) => {
+    if (P20()) { boxOn = true; runBox(play3('open', 0, OPEN_SPLIT), b.dur * 0.97); return null; }
+    if (cap('rewind')) { boxOn = true; runBox(poseOf('rewind'), b.dur * 0.92); return null; }
+    boxOn = false; return hole(str(b.ph, 'The packing station'), 'the 3D rewind (v20-3d) plays here');
+  },
+  open: (b) => { boxOn = true; if (P20()) runBox(play3('open', OPEN_SPLIT, 1), b.dur * 0.97); else runBox(POSE.open, b.dur * 0.94); return null; },
+  sketch: (b) => {
+    const r = heroRect(), wrap = h('div', 'mc');
+    let ph, sk = h('div', 'mc-sk');
+    if (HERO && HERO.snap) {
+      const S = HERO.snap; ph = S.el; placeAt(ph, S.x, S.y, S.w, S.h); HERO.snap = null;
+      const sy = (BOT3D.b - BOT3D.t) * r.h / 515, sx = BOT3D.w * r.w / 219;
+      placeAt(sk, r.x + BOT3D.cx * r.w - 367 * sx, r.y + BOT3D.t * r.h - 196 * sy, 800 * sx, 800 * sy);
+    } else {
+      const pw = r.h, px = r.x - PROD_BOX.l * pw - (pw * PROD_BOX.w - r.w) / 2;
+      ph = img(IMG('product'), 'mc-ph'); placeAt(ph, px, r.y, pw, pw);
+      placeAt(sk, px + pw * SK_MAP.l, r.y + pw * SK_MAP.t, pw * SK_MAP.s, pw * SK_MAP.s);
+    }
+    wrap.appendChild(ph);
+    const ink = doodle(str(IMG('sketch_ink'), IMG('sketch'))); sk.appendChild(ink); wrap.appendChild(sk);
+    const seek = ui.seek;
+    ink.draw(seek ? 0 : 120, seek);
+    if (REDUCED || seek) ph.remove(); else setTimeout(() => ph.remove(), 120 + STROKES[0].at + STROKES[0].d);
+    return wrap;
+  },
+  phone: (b) => {
+    const w = h('div', 'sc-night'), p = h('div', 'ph');
+    const hd = h('div', 'ph-hd'); hd.appendChild(panel.face('Chief of staff')); const ht = h('div'); ht.appendChild(h('b', null, 'Chief of staff')); ht.appendChild(h('span', null, str(V.wordmark, 'Coco'))); hd.appendChild(ht); p.appendChild(hd);
+    const body = h('div', 'ph-body'), P = (cfg.storyboard || {}).phone || {};
+    if (P.chip) body.appendChild(h('span', 'ph-chip', P.chip));
+    arr(P.earlier).forEach((m) => { const e = h('div', 'ph-b is-text'); e.appendChild(h('span', null, m[0])); e.appendChild(h('span', 'ph-t', m[1])); body.appendChild(e); });
+    const sk = h('div', 'ph-b is-photo'); sk.appendChild(img(str(IMG('sketch_ink'), IMG('sketch')))); sk.appendChild(h('span', 'ph-t', str(b.photo_at, '12:51 am'))); body.appendChild(sk);
+    const sent = h('div', 'ph-b is-voice'); const vb = panel.voiceBubble(b.len); sent.appendChild(vb); sent.appendChild(h('span', 'ph-t', str(b.at, '12:52 am'))); body.appendChild(sent);
+    p.appendChild(body);
+    const rec = h('div', 'ph-rec'); rec.appendChild(h('span', 'ph-dot')); const tm = h('span', 'ph-rt', '0:00'); rec.appendChild(tm); const live = h('span', 'ph-rw'); rec.appendChild(live); p.appendChild(rec);
+    const inp = h('div', 'ph-in', 'Message'); p.appendChild(inp);
+    w.appendChild(p);
+    /* she records, then it sends: the bubble appears where the recording bar was */
+    sent.hidden = true; inp.hidden = true;
+    const dur = b.dur || 9000, sendAt = ui.seek ? 0 : Math.max(2600, dur * 0.62);
+    let n = 0; clearInterval(ui.recI);
+    if (!ui.seek) ui.recI = setInterval(() => {
+      if (!live.isConnected) return clearInterval(ui.recI);
+      n++; const s = Math.min(n * 0.16, 59); tm.textContent = '0:' + String(Math.floor(s)).padStart(2, '0');
+      if (live.children.length < 30) { const bar = h('i'); bar.style.height = Math.round(20 + 70 * Math.abs(Math.sin(n * 1.3) * Math.cos(n * 0.4))) + '%'; live.appendChild(bar); }
+    }, 160);
+    const send = () => { clearInterval(ui.recI); rec.hidden = true; sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
+    if (sendAt) ui.sceneT = setTimeout(send, sendAt); else send();
+    if (b.voice && !ui.seek) playClip(b.voice);
+    return w;
+  },
+  still: (b) => { const w = still(PHONE() && b.img_m ? b.img_m : b.img, b.ph); if (b.el) placeEl(b, w); return w; },
+  pack: (b) => {
+    if (P20()) { boxOn = true; ui.labelHost = h('div', 'sc-over'); runBox(play3('pack', 0, 1), b.p3dur || b.dur * 0.9); return ui.labelHost; }
+    if (cap('pack')) { boxOn = true; runBox(poseOf('pack'), b.dur * 0.8); const w = h('div', 'sc-over'); if (b.el) ui.sceneT = setTimeout(() => element(b, w), ui.seek ? 0 : b.dur * 0.55); return w; }
+    boxOn = false; const w = still(b.img, b.ph); if (b.el) setTimeout(() => element(b, w), 0); return w;
+  },
+  arrive: (b) => { boxOn = true; if (P20()) runBox(play3('door', 0, 1), Math.min(b.dur * 0.9, 4200)); else if (cap('arrive')) runBox(poseOf('arrive'), b.dur * 0.9); else runBox(POSE.arrive, b.dur * 0.9); return null; },
+  end: () => { boxOn = true; if (P20()) runBox(play3('door', 1, 1), 1); else runBox(POSE.door, 1); return null; }
+};
+const IS3D = (b) => b.type === 'scene' && (/^(door|open|arrive|end)$/.test(b.scene) || (b.scene === 'rewind' && cap('rewind')) || (b.scene === 'pack' && cap('pack')));
+
+/* a still drawn object-fit: cover; its element sits at the image-fraction rect, mapped through the crop (exact pixels) */
+function placeEl(b, host) {
+  const im = host.querySelector('img'), E = b.el || {}, ph = PHONE();
+  const fr = (ph && arr(E.frac_m).length === 4 ? E.frac_m : E.frac);
+  const go = () => {
+    if (!host.isConnected && !ui.scene.contains(host)) return;
+    if (!im || !fr || !im.naturalWidth) { element(b, host); return; }
+    const W = ui.pic.clientWidth, H = ui.pic.clientHeight, iw = im.naturalWidth, ih = im.naturalHeight, k = Math.max(W / iw, H / ih), ox = (W - iw * k) / 2, oy = (H - ih * k) / 2;
+    const n = h('div', 'el ' + (E.fit === 'cover' ? 'is-cover is-print' : 'is-cut'));
+    n.appendChild(img(IMG(ph && E.img_m ? E.img_m : E.img)));
+    placeAt(n, ox + fr[0] * iw * k, oy + fr[1] * ih * k, fr[2] * iw * k, fr[3] * ih * k);
+    const show = () => { host.appendChild(n); ui.elNode = n; };
+    if (E.appear && !ui.seek) ui.sceneT = setTimeout(show, E.appear); else show();
+  };
+  if (im && !im.complete) im.addEventListener('load', go, { once: true }); else setTimeout(go, 0);
+}
+/* the pressed label on the 3D box (p20 'label' event): a flat copy laid exactly over it, which then lifts out */
+function onLabel(r) {
+  const host = ui.labelHost; if (!host || !host.isConnected || !r) return;
+  const C = r.corners, d = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+  const w = C ? d(C.tl, C.tr) : r.w, hh = C ? d(C.tl, C.bl) : r.h, cx = r.cx != null ? r.cx : r.x + r.w / 2, cy = r.cy != null ? r.cy : r.y + r.h / 2;
+  const o = ui.d3.getBoundingClientRect(), P = ui.pic.getBoundingClientRect();
+  const n = h('div', 'el is-label is-on3d'), L = panel.shipLabel(); n.appendChild(L); host.appendChild(n);
+  const nw = L.offsetWidth, nh = L.offsetHeight;
+  n.style.left = '0px'; n.style.top = '0px'; n.style.width = nw + 'px'; n.style.height = nh + 'px';
+  const x = cx + o.left - P.left, y = cy + o.top - P.top;
+  n._geo = { cx: x, cy: y, sx: w / nw, sy: hh / nh, a: +(r.angle || 0), nw, nh };
+  n.style.transformOrigin = '50% 50%';
+  n.style.transform = 'translate(' + (x - nw / 2) + 'px,' + (y - nh / 2) + 'px) rotate(' + n._geo.a + 'deg) scale(' + n._geo.sx + ',' + n._geo.sy + ')';
+  ui.elNode = n;
+}
+/* ---------- the element travels out of its scene and lands on the canvas ---------- */
+function rectIn(el, P) { const a = el.getBoundingClientRect(); return { x: a.left - P.left, y: a.top - P.top, w: a.width, h: a.height }; }
+function contained(imgEl, r) {   /* the visible picture inside an object-fit: contain box */
+  const nw = imgEl.naturalWidth, nh = imgEl.naturalHeight; if (!nw || !nh) return r;
+  const s = Math.min(r.w / nw, r.h / nh), w = nw * s, hh = nh * s; return { x: r.x + (r.w - w) / 2, y: r.y + (r.h - hh) / 2, w, h: hh };
+}
+function travel(src, card) {
+  return new Promise((done) => {
+    const P = ui.pic.getBoundingClientRect(), M = panel.mediaOf(card);
+    if (!src || !M || REDUCED) { done(); return; }
+    const kind = src.kind, tgt = kind === 'voice' ? M.querySelector('.vb') : kind === 'label' ? M.querySelector('.sl') : M.querySelector('img');
+    if (!tgt) { done(); return; }
+    let to = rectIn(tgt, P); if (kind === 'img' && !M.classList.contains('is-cover')) to = contained(tgt, to);
+    if (!src.r && !src.g) { done(); return; }
+    const fly = src.node; fly.classList.add('fly'); ui.fly.appendChild(fly);
+    tgt.style.visibility = 'hidden';
+    const fin = () => { tgt.style.visibility = ''; fly.remove(); SFX.land(); done(); };
+    let an;
+    if (kind === 'img') {
+      placeAt(fly, src.r.x, src.r.y, src.r.w, src.r.h);
+      if (M.classList.contains('is-cover')) fly.classList.add('is-cover');
+      an = fly.animate([{ left: src.r.x + 'px', top: src.r.y + 'px', width: src.r.w + 'px', height: src.r.h + 'px' }, { left: to.x + 'px', top: to.y + 'px', width: to.w + 'px', height: to.h + 'px' }], { duration: 1300, easing: EZ, fill: 'forwards' });
+    } else {   /* the same component, natural size, moved and scaled from one rect to the other */
+      const nw = src.nw, nh = src.nh; fly.style.width = nw + 'px'; fly.style.height = nh + 'px'; fly.style.left = '0px'; fly.style.top = '0px'; fly.style.transformOrigin = '50% 50%';
+      const geo = (r) => ({ cx: r.x + r.w / 2, cy: r.y + r.h / 2, sx: r.w / nw, sy: r.h / nh, a: 0 });
+      const tf = (g) => 'translate(' + (g.cx - nw / 2) + 'px,' + (g.cy - nh / 2) + 'px) rotate(' + g.a + 'deg) scale(' + g.sx + ',' + g.sy + ')';
+      const g0 = src.g || geo(src.r), g1 = geo(to);
+      an = fly.animate([{ transform: tf(g0) }, { transform: tf(g1) }], { duration: 1300, easing: EZ, fill: 'forwards' });
+    }
+    an.onfinish = fin; an.oncancel = fin;
+  });
+}
+/* take the element out of the scene before the cut (its rect, and a copy at natural size) */
+function grab() {
+  const n = ui.elNode; if (!n || !n.isConnected) return null;
+  const P = ui.pic.getBoundingClientRect(), r = rectIn(n, P);
+  if (n.classList.contains('vb')) { const c = n.cloneNode(true); return { kind: 'voice', r, node: wrapFly(c), nw: n.offsetWidth, nh: n.offsetHeight }; }
+  if (n._geo) { const g = n._geo, c = n.querySelector('.sl').cloneNode(true); return { kind: 'label', g, node: wrapFly(c), nw: g.nw, nh: g.nh }; }
+  if (n.classList.contains('is-label')) { const s = n.querySelector('.sl'); const c = s.cloneNode(true); return { kind: 'label', r: rectIn(s, P), node: wrapFly(c), nw: s.offsetWidth, nh: s.offsetHeight }; }
+  const im = n.querySelector('img'); if (!im) return null;
+  const node = h('div', 'el-fly'); node.appendChild(img(im.currentSrc || im.src));
+  return { kind: 'img', r: n.classList.contains('is-cover') ? r : contained(im, r), node };
+}
+function wrapFly(c) { const d = h('div', 'el-fly is-dom'); d.appendChild(c); return d; }
+
+/* ---------- show a beat ---------- */
+function show(k, how) {
+  k = clamp(k, 0, B.length - 1);
+  const b = B[k], from = i, seq = k === from + 1 && how !== 'seek';
+  i = k; ui.seek = !seq && how !== 'first';
+  clearTimeout(timer); clearTimeout(ui.sceneT); clearInterval(ui.recI); stopClip();
+  closeView(true);
+  const ch = b.ch;
+  ui.root.dataset.ch = CH[ch].id; ui.root.dataset.type = b.type; ui.root.dataset.scene = b.scene || '';
+  chapters(ch);
+  if (b.type !== 'panel' || !seq) setLine(b);   /* a panel beat played in order changes the line with its first artefact (onCue) */
+  const dur = durOf(b);
+  if (b.type === 'panel') {
+    /* the element (if this beat is entered from its scene) is taken before the hard cut */
+    const src = seq && B[from] && B[from].type === 'scene' && b.enter ? grab() : null;
+    boxOn = false; cancelAnimationFrame(raf);
+    ui.root.classList.remove('is-3d');
+    ui.scene.innerHTML = ''; ui.scene.className = 'v-scene';
+    ui.panelHost.classList.add('is-on');
+    panel.fit();
+    if (!seq || from < 0 || B[from].type !== 'panel') {
+      /* rebuild the thread from history when we jumped in, or arrive from a scene (the thread keeps everything) */
+      const H = panel.history(B.slice(0, k).filter((x) => x.type === 'panel'));
+      if (!seq) { panel.label(b.label); if (H.art && !b.art && !b.enter) panel.show(H.art); }
+    }
+    const po = { onCue: () => { if (B[i] === b) setLine(b); } }; if (src) po.landing = (card) => travel(src, card);
+    panel.play(b, po);
+  } else {
+    panel.stop(); ui.panelHost.classList.remove('is-on');
+    const is3d = IS3D(b);
+    boxOn = is3d; if (!is3d) cancelAnimationFrame(raf);
+    ui.root.classList.toggle('is-3d', is3d);
+    ui.scene.innerHTML = ''; ui.elNode = null;
+    b.dur = dur;
+    const built = SCENE[b.scene] ? SCENE[b.scene](b) : null;
+    ui.scene.className = 'v-scene' + (built ? ' is-on' : '');
+    if (built) ui.scene.appendChild(built);
+    if (b.scene === 'end') endCard(b);
+  }
+  ui.next.disabled = k === B.length - 1;
+  window.__beatT0 = performance.now();
+  if (playing && k < B.length - 1) { timer = setTimeout(() => next(), dur); runProgress(dur); } else runProgress(0);
+}
+function durOf(b) {
+  if (b.type === 'panel') return panel.estimate(b) + (b.enter ? 2200 : 0);
+  return b.hold || 7000;
+}
+/* the progress line: the whole story's clock, beat by beat */
+let CUM = [], TOTAL = 1;
+function timeline() { CUM = []; let t = 0; B.forEach((b) => { CUM.push(t); t += durOf(b); }); TOTAL = t || 1; }
+function runProgress(ms) {
+  const a = CUM[i] / TOTAL, z = (CUM[i] + durOf(B[i])) / TOTAL, bar = ui.prog;
+  bar.getAnimations().forEach((x) => x.cancel());
+  if (!ms || !playing) { bar.style.transform = 'scaleX(' + a.toFixed(4) + ')'; return; }
+  bar.style.transform = 'scaleX(' + z.toFixed(4) + ')';
+  bar.animate([{ transform: 'scaleX(' + a.toFixed(4) + ')' }, { transform: 'scaleX(' + z.toFixed(4) + ')' }], { duration: ms, easing: 'linear' });
+}
+function setLine(b) {
+  const L = ui.line; L.innerHTML = '';
+  L.appendChild(document.createTextNode(str(b.line)));
+  if (b.line2) { L.appendChild(document.createTextNode(' ')); L.appendChild(h('span', null, b.line2)); }
+  ui.when.textContent = str(b.when);
+}
+function chapters(ch) {
+  ui.chs.forEach((e, j) => { e.classList.toggle('is-on', j === ch && !CH[j].quiet); e.classList.toggle('is-done', j < ch); e.setAttribute('aria-current', j === ch ? 'step' : 'false'); });
+  ui.chNow.textContent = str(CH[ch].name);
+}
+function endCard(b) {
+  const a = h('div', 'v-end');
+  const go = h('button', 'v-go', str(b.cta, 'See the scope and pricing')); go.type = 'button';
+  go.addEventListener('click', (e) => { e.stopPropagation(); unlock(); offer(); });
+  const again = h('button', 'v-again', 'Watch again'); again.type = 'button';
+  again.addEventListener('click', (e) => { e.stopPropagation(); setPlay(true); show(0, 'seek'); });
+  a.appendChild(go); a.appendChild(again); ui.scene.appendChild(a); ui.scene.classList.add('is-on');
+}
+
+function next() { if (i < B.length - 1) show(i + 1); }
+function prev() { if (i > 0) show(i - 1, 'seek'); }
+function setPlay(on) {
+  playing = on; setPlayBtn();
+  if (on) { if (viewOpen) closeView(true); show(i, 'seek'); } else { clearTimeout(timer); runProgress(0); }
+}
+/* resume after a pause on a panel beat restarts the beat from its history (nothing replays twice) */
+function setPlayBtn() { ui.play.classList.toggle('is-paused', !playing); ui.play.setAttribute('aria-label', playing ? 'Pause' : 'Play'); }
+function setSound() { if (!ui.sound) return; ui.sound.classList.toggle('is-off', !SOUND); ui.sound.setAttribute('aria-label', SOUND ? 'Mute' : 'Sound on'); }
+
+/* ---------- open anything: an artefact or a task, big, over the panel; autoplay pauses while it's open ---------- */
+function openView(o) {
+  if (!o) return;
+  wasPlaying = viewOpen ? wasPlaying : playing;
+  playing = false; clearTimeout(timer); setPlayBtn(); runProgress(0);
+  panel.stop();
+  viewOpen = true; ui.view.innerHTML = ''; ui.view.classList.add('is-on');
+  const x = h('button', 'v-x', 'Close'); x.type = 'button'; x.addEventListener('click', (e) => { e.stopPropagation(); closeView(); });
+  const body = h('div', 'v-vb');
+  if (o.task) {
+    const t = o.task, c = h('div', 'v-task');
+    const top = h('div', 'v-task-o'); top.appendChild(panel.face(t.who)); const nm = h('div'); nm.appendChild(h('b', null, str(t.who))); nm.appendChild(h('span', null, str(t.role, /agent$/i.test(str(t.who)) ? 'Agent' : 'Owner'))); top.appendChild(nm); c.appendChild(top);
+    c.appendChild(h('h4', null, str(t.text)));
+    const dl = h('dl'); [['Status', o.st === 'done' ? (/^done$/i.test(str(t.done)) ? 'Done' : 'Done, ' + str(t.done)) : o.st === 'work' ? 'Working on it' : 'Assigned'], ['Due', t.due], ['From', o.art && o.art.title]].forEach((r) => { if (r[1]) { dl.appendChild(h('dt', null, r[0])); dl.appendChild(h('dd', null, r[1])); } }); c.appendChild(dl);
+    if (t.note) c.appendChild(h('p', null, t.note));
+    body.appendChild(c);
+  } else {
+    const w = h('div', 'p-fit'); w.appendChild(panel.art(o.art, { done: true })); body.appendChild(w);
+  }
+  ui.view.appendChild(body); ui.view.appendChild(x);
+  const W = ui.view.clientWidth, H = ui.view.clientHeight;
+  if (!PHONE()) ui.view.style.setProperty('--sk', Math.max(0.5, Math.min(1.25, (W - 120) / 860, (H - 140) / 500)).toFixed(4));
+  if (!REDUCED) body.animate([{ translate: '0 16px' }, { translate: '0 0' }], { duration: 460, easing: EZ });
+  x.focus({ preventScroll: true });
+}
+function closeView(silent) {
+  if (!viewOpen) return; viewOpen = false; ui.view.classList.remove('is-on'); ui.view.innerHTML = '';
+  if (!silent && wasPlaying) { playing = true; setPlayBtn(); show(i, 'seek'); }
+}
+
+/* ---------- the offer (sb-offer.js), or the CTA link ---------- */
+function offer() {
+  playing = false; clearTimeout(timer); setPlayBtn(); runProgress(0);
+  ui.root.classList.add('is-offer');
+  const close = () => { ui.root.classList.remove('is-offer'); ui.offer.innerHTML = ''; };
+  const href = str(V.cta_href, (cfg.storyboard || {}).cta_href);
+  if (cfg.offer && window.cocoOffer) window.cocoOffer(cfg, ui.offer, { onClose: close });
+  else if (href) location.href = href;
+  else ui.root.classList.remove('is-offer');
+}
+
+/* ---------- build ---------- */
+const ICONS = {
+  play: '<svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="3" width="2.6" height="10" rx=".8"/><rect x="9.4" y="3" width="2.6" height="10" rx=".8"/></svg><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6a.6.6 0 0 0 .9.5l7.4-4.8a.6.6 0 0 0 0-1L5.9 2.7a.6.6 0 0 0-.9.5z"/></svg>',
+  next: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 3.3v9.4a.6.6 0 0 0 .9.5l6.8-4.7a.6.6 0 0 0 0-1L4.3 2.8a.6.6 0 0 0-.9.5z"/><rect x="11.4" y="3" width="1.9" height="10" rx=".8"/></svg>',
+  sound: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6v4h2.6L8.5 13V3L4.6 6z"/><path class="i-wave" d="M10.6 5.6a3.4 3.4 0 0 1 0 4.8M12.4 3.8a6 6 0 0 1 0 8.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path class="i-x" d="M10.5 6l4 4M14.5 6l-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'
+};
+function btn(cls, label, svg) { const b = h('button', 'v-b ' + cls); b.type = 'button'; b.setAttribute('aria-label', label); b.innerHTML = svg; return b; }
+function build() {
+  document.documentElement.classList.add('is-v20');
+  const mount = document.getElementById('app') || document.body; mount.innerHTML = '';
+  const r = h('section', 'v'); r.setAttribute('aria-label', str(V.title, 'Coco')); ui.root = r;
+  /* top bar */
+  const top = h('header', 'v-top');
+  const wm = h('p', 'v-wm'); wm.appendChild(h('i', 'mk')); wm.appendChild(h('b', null, str(V.wordmark, 'Coco'))); wm.appendChild(h('span', null, str(V.lockup, 'chief of staff OS'))); top.appendChild(wm);
+  const nav = h('nav', 'v-chs'); nav.setAttribute('aria-label', 'Chapters'); ui.chs = [];
+  CH.forEach((c, j) => { const e = h('button', 'v-ch', c.name); e.type = 'button'; if (c.quiet) e.hidden = true; e.addEventListener('click', (ev) => { ev.stopPropagation(); unlock(); show(c.first, 'seek'); }); nav.appendChild(e); ui.chs.push(e); });
+  top.appendChild(nav); ui.chNow = h('span', 'v-chnow'); top.appendChild(ui.chNow);
+  r.appendChild(top);
+  /* the picture */
+  const pic = h('div', 'v-pic'); ui.pic = pic;
+  ui.d3 = h('div', 'v-3d'); pic.appendChild(ui.d3);
+  ui.panelHost = h('div', 'v-panel'); pic.appendChild(ui.panelHost);
+  ui.scene = h('div', 'v-scene'); pic.appendChild(ui.scene);
+  ui.fly = h('div', 'v-fly'); pic.appendChild(ui.fly);
+  ui.view = h('div', 'v-view'); ui.view.setAttribute('role', 'dialog'); ui.view.setAttribute('aria-label', 'Opened'); pic.appendChild(ui.view);
+  ui.view.addEventListener('click', (e) => { if (e.target === ui.view) closeView(); });
+  r.appendChild(pic);
+  /* bottom bar */
+  const bot = h('footer', 'v-bot');
+  ui.line = h('p', 'v-line'); ui.line.setAttribute('aria-live', 'polite'); bot.appendChild(ui.line);
+  const side = h('div', 'v-side'); ui.when = h('span', 'v-when'); side.appendChild(ui.when);
+  const ctl = h('div', 'v-ctl'); ui.play = btn('is-play', 'Pause', ICONS.play); ui.next = btn('is-next', 'Next', ICONS.next); ui.sound = btn('is-sound', 'Sound on', ICONS.sound);
+  [ui.play, ui.next, ui.sound].forEach((x) => ctl.appendChild(x)); if (MUTED) ui.sound.hidden = true;
+  side.appendChild(ctl); bot.appendChild(side);
+  const pg = h('div', 'v-prog'); ui.prog = h('i'); pg.appendChild(ui.prog); bot.appendChild(pg);
+  r.appendChild(bot);
+  ui.offer = h('div', 'v-offer'); r.appendChild(ui.offer);
+  mount.appendChild(r);
+  panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView });
+  ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });
+  ui.play.addEventListener('click', (e) => { e.stopPropagation(); unlock(); setPlay(!playing); });
+  ui.sound.addEventListener('click', (e) => { e.stopPropagation(); if (SOUND) { SOUND = false; stopClip(); setSound(); } else unlock(); });
+  addEventListener('pointerdown', () => unlock(), { once: true, capture: true });
+  addEventListener('keydown', (e) => {
+    if (ui.root.classList.contains('is-offer')) return;
+    if (e.key === 'Escape' && viewOpen) { closeView(); return; }
+    if (e.target.closest && e.target.closest('button, a, input')) return;
+    if (e.key === 'ArrowRight') { unlock(); next(); } else if (e.key === 'ArrowLeft') prev(); else if (e.key === ' ') { e.preventDefault(); unlock(); setPlay(!playing); }
+  });
+  let rz = 0; addEventListener('resize', () => { sizeBox(); clearTimeout(rz); rz = setTimeout(() => { panel.fit(); }, 120); });
+  setSound(); setPlayBtn();
+}
+
+/* the config's chapters -> one flat list of beats (each knows its chapter) */
+function flatten() {
+  B = []; CH = [];
+  arr(V.chapters).forEach((c, j) => {
+    CH.push({ id: str(c.id, 'c' + j), name: str(c.name), quiet: !!c.quiet, first: B.length });
+    let firstPanel = true;
+    arr(c.beats).forEach((b) => {
+      const x = Object.assign({}, b, { ch: j });
+      if (x.type === 'panel' && firstPanel) { x.div = str(c.div, c.name); firstPanel = false; }
+      B.push(x);
+    });
+  });
+}
+
+/* ---------- the loader ----------
+   scroll20.html paints the loader (black, the wordmark, a 2px line) before any script runs and has already started the
+   parcel's modules. Here every picture the story shows comes from the config (private: the unlocked blob URLs), each is
+   decoded, and the parcel is built and warmed. The line follows real bytes, decodes and the 3D steps; when it's full the
+   loader is cut away and beat 1 is already running. Nothing waits past 12 s. */
+const LD = window.__V20L || null;
+const PRIME = !P3 ? null : LD && LD.prime ? LD.prime : import(P3_URL).then((t) => t.prime()).catch(() => 0);
+const LOAD_MAX = 12000, HOLD = [];
+const now = () => Math.round(performance.now());
+const frame = () => new Promise((r) => { requestAnimationFrame(() => r()); setTimeout(r, 120); });   /* a background tab has no frames: never stall on one */
+function getFile(url, o) { if (LD && LD.get) return LD.get(url, o); return fetch(url).then((r) => { if (!r.ok) throw 0; return r.blob(); }).then(() => ({ url, ok: true }), () => ({ url, ok: false })); }
+function decodeImg(u) { const im = new Image(); im.decoding = 'async'; im.src = u; HOLD.push(im); return (im.decode ? im.decode() : new Promise((res, rej) => { im.onload = res; im.onerror = rej; })).then(() => true, () => false); }
+/* a key with several candidate paths settles on the first that loads (the v20 stills replace the stand-ins as they land) */
+function resolveKey(k) {
+  const L = candidates(k); if (!L.length) return Promise.resolve();
+  let p = Promise.resolve(false);
+  L.forEach((u) => { p = p.then((ok) => ok || getFile(u, { kind: 'img', low: true }).then((it) => (it && it.ok === false ? false : decodeImg(u))).then((d) => { if (d) GOOD[k] = u; return d; })); });
+  return p.then((ok) => { if (!ok) GOOD[k] = ''; return ok; });
+}
+const FONTS = ['500 46px "Clash Display"', '600 30px "Clash Display"', '400 17px "Clash Display"', '300 40px "Clash Display"', '400 30px "Gasoek One"'];
+function loadThen(k0) {
+  const T = window.__T = window.__T || {}; T.start = now();
+  const el = document.querySelector('.vl'), bar = el && el.querySelector('.vl-bar i');
+  const t0 = LD && !LD.priv ? 0 : performance.now();
+  const st = { dec: 0, init: 0, warm: 0, fonts: 0 }, miss = [];
+  const I = Object.assign({}, (cfg.storyboard || {}).images || {}, V.images || {});
+  const keys = Object.keys(I).filter((k) => !/^app_/.test(k));
+  const keyed = keys.map((k) => resolveKey(k).then((ok) => { st.dec++; if (!ok && candidates(k).length) miss.push(k); }));
+  const pics = Promise.all(keyed).then(() => Promise.all(panel.assets(B.filter((b) => b.type === 'panel')).map((u) => /^(blob:|data:)/.test(u) || keys.some((k) => GOOD[k] === u) ? true : getFile(u, { kind: 'img', low: true }).then((it) => (it && it.ok === false ? (miss.push(u), false) : decodeImg(u))))));
+  const fonts = (document.fonts && document.fonts.load ? Promise.all(FONTS.map((f) => document.fonts.load(f).catch(() => null))) : Promise.resolve()).then(() => { st.fonts = 1; });
+  const d3 = (async () => {
+    if (!P3) { initDoor = (await import(DOOR_URL)).init; boxReady = !!ensureBox(); st.init = st.warm = 1; return; }
+    try {
+      let m; try { m = await import(P3_URL); } catch (e) { m = await import('../parcel3d.js?v=p3v4'); }   /* p20, else parcel3d */
+      T.imported = now();
+      const [kept, fin] = await Promise.all([PRIME, m.fonts ? Promise.race([m.fonts(p3cfg()), new Promise((r) => setTimeout(() => r(false), 2500))]) : false]);
+      T.kept = kept; p3fonts = !!fin; initP3 = m.init;
+      await frame(); if (!ensureBox()) throw new Error('init() failed');
+      T.init = now(); st.init = 1; await frame();
+      if (box.warm) await box.warm({ open: true });
+      if (box.warm) box.warm({ rest: true });
+      T.warmed = now(); st.warm = 1; boxReady = true;
+    } catch (e) {
+      console.warn('[coco] the 3D parcel failed, using the fallback scene:', e && e.message);
+      p3Failed = true; initP3 = null; if (box) { try { box.el.remove(); } catch (x) { /* */ } box = null; }
+      try { initDoor = (await import(DOOR_URL)).init; boxReady = !!ensureBox(); } catch (x) { /* a hole stands in */ }
+      st.init = st.warm = 1;
+    }
+  })();
+  let shown = 0, live = true;
+  const tick = () => {
+    if (!live) return;
+    let sz = 0, got = 0;
+    (LD ? LD.items : []).forEach((it) => { const n = it.size || 40000; sz += n; got += it.done ? n : Math.min(it.got || 0, n); });
+    const files = sz ? got / sz : 1, dec = keys.length ? st.dec / keys.length : 1;
+    const p = 0.6 * files + 0.08 * dec + 0.02 * st.fonts + 0.2 * st.init + 0.1 * st.warm;
+    shown = Math.max(shown, shown + (p - shown) * 0.3);
+    if (bar) bar.style.transform = 'scaleX(' + shown.toFixed(4) + ')';
+    if (el) el.setAttribute('aria-valuenow', String(Math.round(shown * 100)));
+    requestAnimationFrame(tick);
+  };
+  if (bar) tick();
+  const ready = Promise.all([pics, fonts, d3]);
+  const late = new Promise((r) => setTimeout(() => r('late'), Math.max(0, t0 + LOAD_MAX - performance.now())));
+  Promise.race([ready.then(() => 'ready'), late]).then(async (how) => {
+    T.ready = now();
+    if (how === 'late') console.warn('[coco] started after 12 s without:', (LD ? LD.items : []).filter((it) => !it.done).map((it) => it.url).concat(miss, st.init ? [] : ['3D init']));
+    else if (miss.length) console.warn('[coco] started without:', miss);
+    live = false; if (bar) { bar.style.transform = 'none'; await frame(); await frame(); }
+    timeline();
+    show(k0, k0 ? 'seek' : 'first');
+    if (el) el.remove();
+    document.documentElement.classList.remove('vl-q');
+    T.cut = now();
+    if (how === 'ready') { try { localStorage.setItem('v20.ld', JSON.stringify({ v: 'v20a', t: Date.now() })); } catch (e) { /* */ } }
+    if (!boxReady) d3.then(() => { if (boxReady && IS3D(B[i]) && playing) show(i, 'seek'); });
+  });
+}
+
+function start(raw) {
+  if (cfg) return true;
+  const c = raw || {}; if (!c.v20 || !arr(c.v20.chapters).length) return false;
+  cfg = c; V = cfg.v20;
+  flatten();
+  document.title = str(V.title, 'Coco') + ' · ' + str(V.tagline, 'the chief of staff OS for consumer brands, by sameep.ai');
+  build();
+  const st = /[?&]step=(\d+)/.exec(location.search);
+  playing = !Q.has('still'); setPlayBtn();
+  loadThen(clamp(st ? +st[1] - 1 : 0, 0, B.length - 1));
+  window.__v20 = { show: (k) => show(k, 'seek'), next, prev, get i() { return i; }, get beat() { return B[i]; }, n: B.length, B, get total() { return TOTAL; }, open: openView, close: closeView, setPlay, offer, get box() { return box; } };
+  return true;
+}
+window.cosV20 = start;
+/* the public route: the boot script fetched the config already. The private one asks for it after the lock (pin-loader
+   holds ./brands/*.json until sign-in, then answers with the unlocked config) */
+if (LD && LD.cfgP) LD.cfgP.then((raw) => { if (!start(raw)) console.warn('[coco] this config has no v20 block'); }, (e) => console.warn('[coco] config failed', e));
+else fetch('./brands/' + (Q.get('brand') || 'private').replace(/[^a-z0-9_-]/gi, '') + '.json').then((r) => r.json()).then((raw) => { if (!start(raw)) console.warn('[coco] this config has no v20 block'); }, (e) => console.warn('[coco] config failed', e));
