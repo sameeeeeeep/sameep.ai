@@ -166,3 +166,15 @@ textarea { resize: vertical; }
 #f-maint-w[hidden] { display: none; }
 h1, h2, h3, .sec-h, .big { font-weight: 600; letter-spacing: -.02em; }
 .plan ul { align-content: start; justify-content: flex-start; } .plan .btn { margin-top: auto; }
+
+/* the four cards line up row by row: name, who it is for, price, the small print, the list, the button */
+@media (min-width: 641px) {
+  .plans { grid-auto-rows: auto; row-gap: 12px; }
+  .plan { display: grid; grid-template-rows: subgrid; grid-row: span 6; row-gap: 14px; align-content: start; }
+  .plan h2, .plan .who, .plan .price, .plan .then { margin: 0; align-self: start; }
+  .plan .price { align-self: end; }
+  .plan ul { margin: 0; align-self: start; }
+  .plan .btn { align-self: end; margin-top: 0; }
+}
+.plan .big { font-size: clamp(30px, 2.5vw, 40px); }
+.plan .price .big { display: block; margin-bottom: 2px; }

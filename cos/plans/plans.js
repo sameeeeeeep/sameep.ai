@@ -12,16 +12,16 @@
 
   // ---------- the four options ----------
   var OPT = {
-    build: { name: 'Custom build', line: '$1,500 once. No product updates.' },
-    product: { name: 'Subscription', line: '$100 a month. Updates included.' },
-    setup: { name: 'Subscription + set-up', line: '$750 upfront, then $100 a month. Updates included.' },
-    all: { name: 'Everything, monthly', line: '$500 a month. Strategy support is billed separately.' }
+    build: { name: 'Custom build', line: '₹1,50,000 once. No product updates.' },
+    product: { name: 'Subscription', line: '₹10,000 a month. Updates included.' },
+    setup: { name: 'Subscription + set-up', line: '₹75,000 upfront, then ₹10,000 a month. Updates included.' },
+    all: { name: 'Everything, monthly', line: '₹50,000 a month. Strategy support is billed separately.' }
   };
   var lead = $('lead');
   var fbox = function (n) { return lead.elements[n]; };
   function chosen() { var r = lead.querySelector('input[name="option"]:checked'); return r ? r.value : 'setup'; }
   function formPlan() { var o = chosen(); return { option: o, maintenance: o === 'build' && fbox('f_maint').checked }; }
-  function describe(p) { var o = OPT[p.option] || OPT.setup; return o.name + ': ' + o.line + (p.maintenance ? ' Plus $100 a month for maintenance and support.' : ''); }
+  function describe(p) { var o = OPT[p.option] || OPT.setup; return o.name + ': ' + o.line + (p.maintenance ? ' Plus ₹10,000 a month for maintenance and support.' : ''); }
   function sync() { var p = formPlan(); $('f-maint-w').hidden = p.option !== 'build'; $('f-plan').textContent = describe(p); }
   lead.addEventListener('change', function (e) { if (e.target.name === 'option' || e.target.name === 'f_maint') sync(); });
   document.querySelectorAll('[data-choose]').forEach(function (b) {
