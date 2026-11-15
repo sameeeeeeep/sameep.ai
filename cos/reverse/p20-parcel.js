@@ -849,7 +849,10 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   }
   const gP0 = V(0, 0, 0), gQ0 = new THREE.Quaternion(), gP1 = V(0, 0, 0), gQ1 = new THREE.Quaternion();
   const arcTo = (pa, qa, pb, qb, f, hop) => { gun.position.copy(pa).lerp(pb, f); gun.position.y += Math.sin(Math.PI * f) * hop; gun.quaternion.copy(qa).slerp(qb, f); };
-  function poseGun(e) {
+  /* the roll hangs under the gun: keep it clear of the mat while it works low on the side of the box */
+  const gFloor = V(0, 0, 0);
+  function poseGun(e) { poseGun0(e); if (e >= PK.gunIn[0] && e < PK.gunOut[1]) { const y0 = parcel.getWorldPosition(gFloor).y + 0.128; if (gun.position.y < y0) gun.position.y = y0; } }
+  function poseGun0(e) {
     parcel.updateMatrixWorld(true);
     if (e < PK.gunIn[0] || e >= PK.gunOut[1]) { gun.position.copy(GUN_PARK.p); gun.quaternion.copy(GUN_PARK.q); return; }
     if (e < PK.gunIn[1]) {

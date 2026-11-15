@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21k';
+import { createPanel, EZ, read } from './v20-app.js?v=v21p';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -18,7 +18,7 @@ const str = (v, d) => (v == null || v === '' ? (d == null ? '' : d) : String(v))
 const arr = (v) => (Array.isArray(v) ? v : []);
 const PHONE = () => innerWidth < 760;
 const PAPER = '#F2F0EB';
-const P3_URL = '../p20-parcel.js?v=p20h', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
+const P3_URL = '../p20-parcel.js?v=p20k', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
 const P3 = !Q.has('door3d');
 const AUTO = !Q.has('manual');   /* the story plays itself once the viewer clicks to begin; it holds at the milestones (send the note, the decisions). ?manual = stepped */
 let started = !AUTO;
@@ -77,7 +77,7 @@ const BOXFX = {
   'carton-in': () => noise(0.35, 0.03, 800, 0.7), 'carton-down': () => { tone(140, 0.14, 0.05); noise(0.1, 0.04, 400, 0.8, 'lowpass'); }, 'tape-run': () => noise(0.9, 0.06, 2200, 2.4, 'bandpass', 3000), 'tape-cut': () => noise(0.08, 0.07, 5000, 1.5),
   'label-print': () => { tone(96, 0.7, 0.03, 'square'); noise(0.7, 0.02, 2600, 3); }, 'label-tear': () => noise(0.14, 0.05, 4600, 1.3), 'label-press': () => { tone(180, 0.1, 0.05); noise(0.08, 0.04, 600, 0.8, 'lowpass'); }, ready: () => { tone(660, 0.12, 0.04); setTimeout(() => tone(990, 0.2, 0.04), 110); }
 };
-const SFX = { rec: () => { tone(880, 0.09, 0.05); setTimeout(() => tone(880, 0.09, 0.05), 140); }, approve: () => { tone(523, 0.1, 0.06); setTimeout(() => tone(784, 0.2, 0.06), 90); noise(0.06, 0.03, 3000, 1); }, voice: () => tone(1040, 0.06, 0.03, 'triangle'), whoosh: () => noise(0.35, 0.04, 700, 0.8, 'bandpass', 2600), sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06), tick: () => tone(880, 0.07, 0.03, 'triangle'), done: () => { tone(620, 0.08, 0.04, 'triangle'); setTimeout(() => tone(930, 0.12, 0.04, 'triangle'), 70); }, chime: () => { tone(523, 0.22, 0.05); setTimeout(() => tone(659, 0.22, 0.05), 110); setTimeout(() => tone(784, 0.34, 0.05), 220); } };
+const SFX = { recv: () => tone(740, 0.07, 0.03, 'sine', 980), sendh: () => tone(560, 0.08, 0.035, 'sine', 420), type: () => { tone(1500, 0.02, 0.012, 'square'); setTimeout(() => tone(1700, 0.02, 0.01, 'square'), 120); setTimeout(() => tone(1400, 0.02, 0.01, 'square'), 260); }, ping: () => tone(1180, 0.09, 0.035, 'triangle', 1560), miss: () => tone(220, 0.16, 0.05, 'sawtooth', 160), tab: () => noise(0.07, 0.03, 2400, 1.2), ching: () => { tone(1320, 0.1, 0.05, 'triangle'); setTimeout(() => tone(1760, 0.24, 0.05, 'triangle'), 80); }, rec: () => { tone(880, 0.09, 0.05); setTimeout(() => tone(880, 0.09, 0.05), 140); }, approve: () => { tone(523, 0.1, 0.06); setTimeout(() => tone(784, 0.2, 0.06), 90); noise(0.06, 0.03, 3000, 1); }, voice: () => tone(1040, 0.06, 0.03, 'triangle'), whoosh: () => noise(0.35, 0.04, 700, 0.8, 'bandpass', 2600), sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06), tick: () => tone(880, 0.07, 0.03, 'triangle'), done: () => { tone(620, 0.08, 0.04, 'triangle'); setTimeout(() => tone(930, 0.12, 0.04, 'triangle'), 70); }, chime: () => { tone(523, 0.22, 0.05); setTimeout(() => tone(659, 0.22, 0.05), 110); setTimeout(() => tone(784, 0.34, 0.05), 220); } };
 function playClip(key) {
   stopClip(); const u = (cfg.audio || {})[key]; if (!u || MUTED || !SOUND) return false;
   const a = clip(u); try { a.currentTime = 0; } catch (e) { /* */ }
@@ -239,37 +239,40 @@ const SCENE = {
   },
   phone: (b) => {
     const w = h('div', 'sc-night'), p = h('div', 'ph');
-    const hd = h('div', 'ph-hd'); hd.appendChild(panel.face('Chief of staff')); const ht = h('div'); ht.appendChild(h('b', null, str(V.wordmark, 'Coco'))); ht.appendChild(h('span', null, 'chief of staff')); hd.appendChild(ht); p.appendChild(hd);
+    p.appendChild(h('i', 'ph-isl'));
+    const sb = h('div', 'ph-sb'); sb.appendChild(h('b', null, str(b.clock, '1:32'))); const sg = h('span', 'ph-sig'); sg.appendChild(h('i')); sg.appendChild(h('i')); sg.appendChild(h('i')); sg.appendChild(h('em')); sb.appendChild(sg); p.appendChild(sb);
+    const hd = h('div', 'ph-hd'); hd.appendChild(h('i', 'ph-back')); hd.appendChild(panel.face('Chief of staff')); const ht = h('div'); ht.appendChild(h('b', null, str(V.wordmark, 'Coco'))); ht.appendChild(h('span', null, 'chief of staff · online')); hd.appendChild(ht); p.appendChild(hd);
     const body = h('div', 'ph-body'), P = (cfg.storyboard || {}).phone || {};
     if (P.chip) body.appendChild(h('span', 'ph-chip', P.chip));
-    arr(P.earlier).forEach((m) => { const e = h('div', 'ph-b is-text'); e.appendChild(h('span', null, m[0])); e.appendChild(h('span', 'ph-t', m[1])); body.appendChild(e); });
-    const sk = h('div', 'ph-b is-photo'); sk.appendChild(img(str(IMG('sketch_ink'), IMG('sketch')))); sk.appendChild(h('span', 'ph-t', str(b.photo_at, '12:51 am'))); body.appendChild(sk);
-    const sent = h('div', 'ph-b is-voice'); const vb = panel.voiceBubble(b.len); sent.appendChild(vb); sent.appendChild(h('span', 'ph-t', str(b.at, '12:52 am'))); body.appendChild(sent);
+    const tick2 = () => { const t = h('i', 'ph-ck'); return t; };
+    arr(P.earlier).forEach((m) => { const e = h('div', 'ph-b is-text'); e.appendChild(h('span', null, m[0])); const t = h('span', 'ph-t', m[1]); t.appendChild(tick2()); e.appendChild(t); body.appendChild(e); });
+    const sk = h('div', 'ph-b is-photo'); sk.appendChild(img(str(IMG('sketch_ink'), IMG('sketch')))); { const t = h('span', 'ph-t', str(b.photo_at, '1:31 am')); t.appendChild(tick2()); sk.appendChild(t); } body.appendChild(sk);
+    const sent = h('div', 'ph-b is-voice'); const vb = panel.voiceBubble(b.len); sent.appendChild(vb); { const t = h('span', 'ph-t', str(b.at, '1:32 am')); t.appendChild(tick2()); sent.appendChild(t); } body.appendChild(sent);
     p.appendChild(body);
-    const rec = h('div', 'ph-rec'); rec.appendChild(h('span', 'ph-dot')); const tm = h('span', 'ph-rt', '0:00'); rec.appendChild(tm); const live = h('span', 'ph-rw'); rec.appendChild(live); p.appendChild(rec);
-    const inp = h('div', 'ph-in', 'Message'); p.appendChild(inp);
+    const recw = h('div', 'ph-recw'), tr = h('p', 'ph-tr'); recw.appendChild(tr);
+    const rec = h('div', 'ph-rec'); rec.appendChild(h('span', 'ph-dot')); const tm = h('span', 'ph-rt', '0:00'); rec.appendChild(tm); const live = h('span', 'ph-rw'); rec.appendChild(live); rec.appendChild(h('span', 'ph-mic')); recw.appendChild(rec); p.appendChild(recw);
+    const inp = h('div', 'ph-in'); inp.appendChild(h('span', null, 'Message')); inp.appendChild(h('i', 'ph-mic')); p.appendChild(inp);
     w.appendChild(p);
-    /* she records, then it sends: the bubble appears where the recording bar was */
     sent.hidden = true; inp.hidden = true;
-    const dur = b.dur || 9000, sendAt = ui.seek ? 0 : Math.max(2600, dur * 0.62);
-    let n = 0; clearInterval(ui.recI);
-    if (!ui.seek) ui.recI = setInterval(() => {
-      if (!live.isConnected) return clearInterval(ui.recI);
-      n++; const s = Math.min(n * 0.16, 59); tm.textContent = '0:' + String(Math.floor(s)).padStart(2, '0');
-      if (live.children.length < 30) { const bar = h('i'); bar.style.height = Math.round(20 + 70 * Math.abs(Math.sin(n * 1.3) * Math.cos(n * 0.4))) + '%'; live.appendChild(bar); }
-    }, 160);
-    const send = () => { if (!rec.isConnected || rec.hidden) return; ui.sceneAct = null; clearInterval(ui.recI); rec.hidden = true; if (AUTO && started && playing && !ui.seek) { clearTimeout(timer); timer = setTimeout(autoNext, 2600); } sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
-    /* her words appear above the waveform as she says them; when she stops, the note sends itself */
-    if (!sendAt) send();
-    else {
-      const W = str(b.words).split(/\s+/).filter(Boolean), tr = h('p', 'ph-tr'); p.insertBefore(tr, rec);
-      const total = (SOUND && !MUTED && (cfg.audio || {})[b.voice] && (cfg.audio_len || {})[b.voice]) ? cfg.audio_len[b.voice] * 1000 : Math.max(5200, W.length * 330);
-      const chars = W.reduce((a, x) => a + x.length + 1, 0) || 1; let at = 500;
-      W.forEach((x) => { const sp = h('span', null, x + ' '); sp.style.visibility = 'hidden'; tr.appendChild(sp); const t = at; at += (total - 900) * (x.length + 1) / chars; setTimeout(() => { if (sp.isConnected) sp.style.visibility = ''; }, t); });
-      if (!W.length) tr.hidden = true;
-      ui.sceneT = setTimeout(() => { tr.remove(); send(); }, total + 500);
-    }
-    if (b.voice && !ui.seek) { SFX.rec(); playClip(b.voice); }
+    const send = () => { if (!recw.isConnected || recw.hidden) return; ui.sceneAct = null; clearInterval(ui.recI); recw.hidden = true; if (AUTO && started && playing && !ui.seek) { clearTimeout(timer); timer = setTimeout(autoNext, 2400); } sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 14px', scale: '.96' }, { translate: '0 0', scale: '1' }], { duration: 380, easing: EZ }); } };
+    if (ui.seek) { send(); return w; }
+    /* every word has its moment: the cues are the spoken phrases with their start and end in the clip */
+    const cues = arr(b.cues).length ? arr(b.cues) : [[str(b.words), 0.3, Math.max(4, str(b.words).split(/\s+/).length * 0.33)]];
+    const W = []; cues.forEach((c) => { const ws = str(c[0]).split(/\s+/).filter(Boolean), tot = ws.reduce((a, x) => a + x.length + 1, 0) || 1; let acc = 0; ws.forEach((x) => { const sp = h('span', null, x + ' '); sp.style.visibility = 'hidden'; tr.appendChild(sp); W.push({ sp, t: c[1] + (c[2] - c[1]) * acc / tot }); acc += x.length + 1; }); });
+    const total = cues[cues.length - 1][2] + 0.5, useA = SOUND && !MUTED && !!(cfg.audio || {})[b.voice];
+    const t0 = performance.now(); let bars = 0, done = 0;
+    /* the clock is the clip's own time when it is playing, so the words can never run ahead of the voice */
+    const clock = () => { const el = (performance.now() - t0) / 1000; if (useA && NOW && !NOW.paused && !NOW.ended) return NOW.currentTime; if (useA && NOW && NOW.ended) return total; if (useA && el < 1.6) return 0; return useA ? el - 1.6 : el - 0.4; };
+    SFX.rec(); if (b.voice) setTimeout(() => { if (B[i] === b) playClip(b.voice); }, 380);
+    clearInterval(ui.recI);
+    ui.recI = setInterval(() => {
+      if (!rec.isConnected) return clearInterval(ui.recI);
+      const t = clock(); if (t <= 0) return;
+      tm.textContent = '0:' + String(Math.floor(t)).padStart(2, '0');
+      while (done < W.length && W[done].t <= t) { W[done].sp.style.visibility = ''; done++; }
+      const want = Math.min(34, Math.floor(t / 0.16)); while (bars < want) { const bar = h('i'); bar.style.height = Math.round(20 + 70 * Math.abs(Math.sin(bars * 1.3) * Math.cos(bars * 0.4))) + '%'; live.appendChild(bar); bars++; }
+      if (t >= total) { clearInterval(ui.recI); send(); }
+    }, 60);
     return w;
   },
   still: (b) => { const w = still(PHONE() && b.img_m ? b.img_m : b.img, b.ph); if (b.el) placeEl(b, w); const im = w.querySelector('img'); if (im && !REDUCED && !ui.seek) im.animate([{ transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 6500, easing: 'cubic-bezier(.2,.6,.2,1)' }); return w; },
@@ -301,7 +304,7 @@ function placeEl(b, host) {
 }
 /* the pressed label on the 3D box (p20 'label' event): a flat copy laid exactly over it, which then lifts out */
 function onLabel(r) {
-  const host = ui.labelHost; if (!host || !host.isConnected || !r) return;
+  const host = ui.labelHost; if (!host || !host.isConnected || !r || !(B[i] && B[i].el)) return;   /* only when the label is going to travel; otherwise the 3D label is the only one */
   const C = r.corners, d = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
   const w = C ? d(C.tl, C.tr) : r.w, hh = C ? d(C.tl, C.bl) : r.h, cx = r.cx != null ? r.cx : r.x + r.w / 2, cy = r.cy != null ? r.cy : r.y + r.h / 2;
   const o = ui.d3.getBoundingClientRect(), P = ui.pic.getBoundingClientRect();
@@ -362,7 +365,7 @@ function wrapFly(c) { const d = h('div', 'el-fly is-dom'); d.appendChild(c); ret
 /* ---------- show a beat ---------- */
 function show(k, how) {
   k = clamp(k, 0, B.length - 1);
-  const b = B[k], from = i, seq = k === from + 1 && how !== 'seek';
+  const b = B[k], from = i, seq = (k === from + 1 && how !== 'seek') || how === 'replay';
   i = k; ui.seek = !seq && how !== 'first';
   clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearInterval(ui.recI); stopClip(); ui.sceneAct = null;
   closeView(true);
@@ -380,7 +383,7 @@ function show(k, how) {
     ui.panelHost.classList.add('is-on');
     ui.root.classList.toggle('bd-build', !!src && !REDUCED);
     ui.root.dataset.focus = b.tasks ? 'tasks' : '';   /* on a phone, a beat that hands out tasks shows the task cards where the canvas is */
-    ui.workDone = seq ? 0 : 99; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
+    ui.workDone = seq ? 0 : 99; ui.workOn = !seq; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
     panel.fit();
     if (!seq || from < 0 || B[from].type !== 'panel') {
       /* rebuild the thread from history when we jumped in, or arrive from a scene (the thread keeps everything) */
@@ -426,19 +429,23 @@ function setLine(b) {
   L.appendChild(document.createTextNode(str(b.line)));
   if (b.line2) { L.appendChild(document.createTextNode(' ')); L.appendChild(h('span', null, b.line2)); }
   ui.when.textContent = str(b.when);
-  if (ui.hint) ui.hint.textContent = b.scene === 'end' ? '' : !started ? (PHONE() ? 'Tap to begin' : 'Click to begin') : AUTO ? '' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
+  if (ui.hint) ui.hint.textContent = AUTO || b.scene === 'end' ? '' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
 }
 function chapters(ch) {
   ui.chs.forEach((e, j) => { e.classList.toggle('is-on', j === ch && !CH[j].quiet); e.classList.toggle('is-done', j < ch); e.setAttribute('aria-current', j === ch ? 'step' : 'false'); });
   ui.chNow.textContent = str(CH[ch].name);
 }
 function endCard(b) {
-  const a = h('div', 'v-end');
-  const go = h('button', 'v-go', str(b.cta, 'See the scope and pricing')); go.type = 'button';
+  const a = h('div', 'v-end is-modal'), m = h('div', 'v-modal');
+  m.appendChild(h('b', 'v-mw', str(V.wordmark, 'Coco')));
+  m.appendChild(h('p', 'v-mt', str(b.tag, 'The chief of staff OS for consumer brands')));
+  const go = h('button', 'v-go', str(b.cta, 'View project scope')); go.type = 'button';
   go.addEventListener('click', (e) => { e.stopPropagation(); unlock(); offer(); });
-  const again = h('button', 'v-again', 'Start again'); again.type = 'button';
-  again.addEventListener('click', (e) => { e.stopPropagation(); setPlay(true); show(0, 'seek'); });
-  a.appendChild(go); a.appendChild(again); ui.scene.appendChild(a); ui.scene.classList.add('is-on');
+  const again = h('button', 'v-again', 'Watch again'); again.type = 'button';
+  again.addEventListener('click', (e) => { e.stopPropagation(); playing = true; setPlayBtn(); show(0, 'seek'); started = false; begin(); });
+  m.appendChild(go); m.appendChild(again); a.appendChild(m); ui.scene.appendChild(a); ui.scene.classList.add('is-on');
+  if (!REDUCED) m.animate([{ translate: '0 30px', scale: '.94' }, { translate: '0 0', scale: '1' }], { duration: 620, easing: 'cubic-bezier(.22,.8,.24,1)' });
+  SFX.chime(); setTimeout(() => panel && panel.sheen(m), 420);
 }
 
 
@@ -478,7 +485,7 @@ function lightStage(si) {
   const e = ui.bd && ui.bd.stg[si]; if (!e || REDUCED) return;
   e.animate([{ backgroundSize: '0% 100%', color: '#0B0B0C' }, { backgroundSize: '100% 100%', color: '#0B0B0C', offset: 0.55 }, { backgroundSize: '100% 100%', color: '#FFFFFF' }], { duration: 760, easing: 'cubic-bezier(.22,.8,.24,1)', fill: 'backwards' });
   e.animate([{ scale: '1' }, { scale: '1.06', offset: 0.6 }, { scale: '1' }], { duration: 760, easing: 'cubic-bezier(.22,.8,.24,1)' });
-  setTimeout(() => SFX.stamp(), 380);
+  setTimeout(() => { SFX.stamp(); if (panel) panel.sheen(e); }, 380);
 }
 /* an element that arrives from a scene stays where it lands, and the board assembles around it: canvas, tasks, chat, channels, stages */
 function buildAround() {
@@ -527,19 +534,28 @@ function board(k, settled) {
   if (si !== was.stage && bd.stg[si] && live && !ui.root.classList.contains('bd-build')) lightStage(si);
   bd.stageChanged = si !== was.stage;
   bd.stg.forEach((e, n) => { e.classList.toggle('is-on', n === si); e.classList.toggle('is-done', n < si); if (n === si && e.scrollIntoView && bd.strip.scrollWidth > bd.strip.clientWidth) bd.strip.scrollTo({ left: e.offsetLeft - 24 }); });
-  /* channel tiles */
+  /* the sidebar, as in the app: projects, products, modules */
   bd.tiles.innerHTML = '';
+  const sec = (name) => { const s0 = h('div', 'sd-sec'); s0.appendChild(h('span', 'sd-h', name)); bd.tiles.appendChild(s0); return s0; };
+  const proj = (() => { let a0 = null; B.forEach((x) => arr(x.thread).forEach((it) => { if (!a0 && it.art && /new project/i.test(str(it.art.lab))) a0 = { art: it.art, at: B.indexOf(x) }; })); return a0; })();
+  const hasProj = proj && (k > proj.at || (k === proj.at && settled));
+  const liveAt = STG.findIndex((x) => /launch/i.test(x.name)), isLive = liveAt >= 0 && si >= liveAt;
+  const P1 = sec('Projects');
+  if (hasProj) { const r = h('div', 'sd-row is-on'); r.appendChild(h('b', null, str(proj.art.n) + ' ' + str(proj.art.title))); r.appendChild(h('span', null, str(b.stage) + (dayOf(b) != null ? ' · Day ' + dayOf(b) : ''))); P1.appendChild(r); if (!was.proj) { move(r, [{ translate: '-12px 0' }, { translate: '0 0' }], {}); if (live) SFX.pop(); } }
+  else P1.appendChild(h('p', 'sd-none', 'None yet'));
+  cur.proj = hasProj ? 1 : 0;
+  const P2 = sec('Products');
+  if (hasProj) { const r = h('div', 'sd-row' + (isLive ? ' is-live' : '')); const pi2 = IMG('product'); if (pi2 && day >= 10) r.appendChild(img(pi2, 'sd-pi')); const t2 = h('div'); t2.appendChild(h('b', null, str(proj.art.title))); const st2 = h('span', null, isLive ? 'Live' : 'In development'); t2.appendChild(st2); r.appendChild(t2); P2.appendChild(r); if (isLive && !was.live) { move(st2, [{ scale: '.6' }, { scale: '1' }], { easing: BACK }); if (live) SFX.done(); } }
+  else P2.appendChild(h('p', 'sd-none', 'None yet'));
+  cur.live = isLive ? 1 : 0;
+  const P3 = sec('Modules');
+  const MOD = { '#ideas': 'Ideas', '#team': 'Team', '#npd': 'New product', '#marketing': 'Marketing', '#orders': 'Orders' };
   CHN.forEach((cn) => {
-    const mine = past.filter((x) => x.chan === cn.name && (x !== b || settled)), open = b.chan === cn.name;
-    const t = h('div', 'bd-tile' + (open ? ' is-on' : mine.length ? ' is-done' : ''));
-    const hd = h('div', 'bd-th'); hd.appendChild(h('b', null, cn.name)); hd.appendChild(h('span', null, open ? 'Open now' : mine.length ? 'Done' : 'Next')); t.appendChild(hd);
-    let last = null; const who = [];
-    (mine.length ? mine : []).forEach((x) => arr(x.thread).forEach((it) => { if (it.text) last = it; if (it.who && who.indexOf(it.who) < 0) who.push(it.who); }));
-    if (!mine.length) B.filter((x) => x.chan === cn.name).forEach((x) => arr(x.thread).forEach((it) => { if (it.who && who.indexOf(it.who) < 0) who.push(it.who); }));
-    if (last) t.appendChild(h('p', null, clip2(nameOf(last.who) + ': ' + last.text, 74)));
-    const ft = h('div', 'bd-tf'); who.slice(0, 4).forEach((w) => ft.appendChild(panel.face(w))); t.appendChild(ft);
-    bd.tiles.appendChild(t);
+    const used = past.some((x) => x.chan === cn.name && x !== b), open = b.chan === cn.name;
+    const r = h('div', 'sd-mod' + (open ? ' is-on' : used ? ' is-done' : '')); r.appendChild(h('i')); r.appendChild(h('span', null, MOD[cn.name] || cn.name.replace(/^#/, '')));
+    P3.appendChild(r);
   });
+  { const r = h('div', 'sd-mod' + (b.dash ? ' is-on' : '')); r.appendChild(h('i')); r.appendChild(h('span', null, 'Dashboard')); P3.appendChild(r); }
   /* now */
   bd.mid.innerHTML = '';
   const now = h('div', 'bd-now');
@@ -551,7 +567,7 @@ function board(k, settled) {
   const stageDay = si >= 0 ? STG[si].day : null, stageBeats = past.filter((x) => x.stage === b.stage);
   const T = [];
   past.forEach((x) => {
-    if (x.work) T.push({ key: 'w:' + x.work.title, title: x.work.title, who: x.work.who, due: '', work: x.work, here: x === b });
+    if (x.work && (x !== b || ui.workOn)) T.push({ key: 'w:' + x.work.title, title: x.work.title, who: x.work.who, due: '', work: x.work, here: x === b });
     arr(x.tasks).forEach((r) => T.push({ key: r.text, title: r.text, who: r.who, due: r.due, dueDay: +(/Day (\d+)/.exec(str(r.due)) || [0, -1])[1] }));
   });
   const under = b.under || (stageBeats.find((x) => x.under) || {}).under;
@@ -570,7 +586,7 @@ function board(k, settled) {
       if (active && !done) {
         const seen = {};
         /* the agents on this task: each works, then reports its result (the beat's Coco line waits for them) */
-        stageBeats.forEach((x) => arr(x.agents).forEach((a, j) => { const fin = x !== b || j < (ui.workDone || 0); nest.push({ who: a.who, key: a.who + '|' + a.text, text: fin ? str(a.done, 'Done') : a.text, tag: fin ? 'done' : 'working', work: !fin }); }));
+        stageBeats.forEach((x) => { if (x === b && !ui.workOn) return; arr(x.agents).forEach((a, j) => { const fin = x !== b || j < (ui.workDone || 0); nest.push({ who: a.who, key: a.who + '|' + a.text, text: fin ? str(a.done, 'Done') : a.text, tag: fin ? 'done' : 'working', work: !fin }); }); });
         if (!nest.length) stageBeats.forEach((x) => arr(x.thread).forEach((it) => { if (isAg(it.who) && !/^chief of staff$/i.test(it.who)) { const lv = x === b && !settled; if (!seen[it.who]) { seen[it.who] = { who: it.who }; nest.push(seen[it.who]); } seen[it.who].text = it.text; seen[it.who].tag = lv ? 'working' : 'done'; seen[it.who].work = lv; } }));
       }
       active = active && !done;
@@ -600,7 +616,7 @@ function board(k, settled) {
     cur.tasks[t.key] = active ? 2 : 1; if (done) cur.done[t.key] = 1;
     if (!was.tasks[t.key]) { move(card, [{ translate: '0 18px', scale: '.97' }, { translate: '0 0', scale: '1' }], { delay: tlag }); if (live) setTimeout(() => SFX.pop(), tlag); tlag += 170; }
     else if (done && !was.done[t.key]) { move(chip, [{ scale: '.5' }, { scale: '1' }], { delay: 150, easing: BACK }); if (live) setTimeout(() => SFX.done(), 150); }
-    else if (active && was.tasks[t.key] === 1) { move(card, [{ scale: '1' }, { scale: '1.03', offset: 0.5 }, { scale: '1' }], { duration: 520 }); move(chip, [{ scale: '.5' }, { scale: '1' }], { easing: BACK }); if (live) SFX.tick(); }
+    else if (active && was.tasks[t.key] === 1) { move(card, [{ scale: '1' }, { scale: '1.03', offset: 0.5 }, { scale: '1' }], { duration: 520 }); move(chip, [{ scale: '.5' }, { scale: '1' }], { easing: BACK }); if (live) { SFX.tick(); panel.sheen(card); } }
     tk.appendChild(card);
   });
   bd.mid.appendChild(tk);
@@ -609,7 +625,7 @@ function board(k, settled) {
 
 /* autoplay never takes a decision or sends the note for the viewer: it holds until they do */
 function autoNext() { if (!playing || viewOpen) return; if ((panel && panel.asking) || ui.sceneAct) { timer = setTimeout(autoNext, 600); return; } if (i < B.length - 1) show(i + 1); }
-function begin() { if (started) return false; started = true; ui.root.classList.add('is-started'); unlock(); B.forEach((x) => arr(x.thread).forEach((it) => { const u = it.voice && (cfg.audio || {})[it.voice]; if (u && !MUTED) clip(u); })); if (i === 0) show(1); else show(i, 'seek'); return true; }
+function begin() { if (started) return false; started = true; playing = true; setPlayBtn(); ui.root.classList.add('is-started'); if (ui.startB) { ui.startB.remove(); ui.startB = null; } unlock(); B.forEach((x) => arr(x.thread).forEach((it) => { const u = it.voice && (cfg.audio || {})[it.voice]; if (u && !MUTED) clip(u); })); if (i === 0) show(1); else show(i, 'seek'); return true; }
 function next() {
   if (begin()) return;
   /* a waiting interaction comes first: Next and scroll take the decision or send the note, then the story moves */
@@ -619,8 +635,17 @@ function next() {
 }
 function prev() { if (i > 0) show(i - 1, 'seek'); }
 function setPlay(on) {
+  if (on && !started) { begin(); return; }
   playing = on; setPlayBtn();
-  if (on) { if (viewOpen) closeView(true); show(i, 'seek'); } else { clearTimeout(timer); runProgress(0); }
+  if (on) {
+    /* resume replays the beat that was interrupted, from its start, with everything before it in place */
+    if (viewOpen) closeView(true);
+    if (B[i] && B[i].type === 'panel') panel.history(B.slice(0, i).filter((x) => x.type === 'panel'));
+    show(i, 'replay');
+  } else {
+    /* pause stops everything: the timers, the chat, the voice, the scene */
+    clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearTimeout(ui.bdT); clearInterval(ui.recI); cancelAnimationFrame(raf); stopClip(); if (panel) panel.stop(); runProgress(0);
+  }
 }
 /* resume after a pause on a panel beat restarts the beat from its history (nothing replays twice) */
 function setPlayBtn() { ui.play.classList.toggle('is-paused', !playing); ui.play.setAttribute('aria-label', playing ? 'Pause' : 'Play'); }
@@ -708,7 +733,15 @@ function build() {
   panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView,
     voice: (k) => { const len = +((cfg.audio_len || {})[k] || 0) * 1000; SFX.voice(); playClip(k); return len; },
     peek: () => { if (AUTO && playing) setPlay(false); },
-    work: () => new Promise((res) => { const k = i, b = B[k], n = arr(b && ((b.work && b.work.agents) || b.agents)).length; if (!n || ui.seek || REDUCED) { ui.workDone = n; board(k, false); return res(); } let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 700); else setTimeout(tick, 1100); }; setTimeout(tick, 1600); }) });
+    work: () => new Promise((res) => {
+      const k = i, b = B[k], n = arr(b && ((b.work && b.work.agents) || b.agents)).length, wa = b && (b.workArt || (b.work && b.work.art));
+      ui.workOn = true;
+      if (!n || ui.seek || REDUCED) { ui.workDone = n; board(k, false); return res(); }
+      ui.workDone = 0; board(k, false);
+      if (wa) panel.showWork(wa, 1300 + n * 1100);
+      let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 800); else setTimeout(tick, 1100); };
+      setTimeout(tick, 1700);
+    }) });
   top.appendChild(ctl);   /* the controls live in the top bar: nothing sits under the picture */
   boardData(); buildBoard();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });
@@ -738,6 +771,7 @@ function build() {
   addEventListener('touchstart', (e) => { const t = e.touches[0]; ty = t.clientY; tx = t.clientX; }, { passive: true });
   addEventListener('touchend', (e) => { if (ty == null) return; const t = e.changedTouches[0], dy = ty - t.clientY, dx = tx - t.clientX; ty = null; if (e.target.closest && own(e.target, dy)) return; if (Math.abs(dy) > 48 && Math.abs(dy) > Math.abs(dx)) step(dy); else if (Math.abs(dx) > 60) step(dx); }, { passive: true });
   let rz = 0; addEventListener('resize', () => { sizeBox(); clearTimeout(rz); rz = setTimeout(() => { panel.fit(); }, 120); });
+  if (AUTO) { playing = false; const sbn = h('button', 'v-start'); sbn.type = 'button'; sbn.setAttribute('aria-label', 'Play'); sbn.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M5 3.2v9.6a.6.6 0 0 0 .9.5l7.4-4.8a.6.6 0 0 0 0-1L5.9 2.7a.6.6 0 0 0-.9.5z"/></svg>'; sbn.addEventListener('click', (e) => { e.stopPropagation(); begin(); }); pic.appendChild(sbn); ui.startB = sbn; }
   setSound(); setPlayBtn();
 }
 
@@ -845,7 +879,7 @@ function start(raw) {
   document.title = str(V.title, 'Coco') + ' · ' + str(V.tagline, 'the chief of staff OS for consumer brands, by sameep.ai');
   build();
   const st = /[?&]step=(\d+)/.exec(location.search);
-  playing = !Q.has('still'); setPlayBtn();
+  playing = !Q.has('still') && !AUTO; setPlayBtn();
   loadThen(clamp(st ? +st[1] - 1 : 0, 0, B.length - 1));
   window.__v20 = { show: (k) => show(k, 'seek'), next, prev, get i() { return i; }, get beat() { return B[i]; }, n: B.length, B, get total() { return TOTAL; }, open: openView, close: closeView, setPlay, offer, get box() { return box; } };
   return true;

@@ -314,13 +314,13 @@
      "text": "OH-20418 packed, 118 g. 110017, who picks up?",
      "via": "whatsapp",
      "where": "Ohra warehouse",
-     "who": "Arjun"
+     "who": "Anjali"
     },
     {
      "t": "assign",
      "s": "feed",
      "text": "Comparing 3 couriers in 110017, last 90 days",
-     "caught": "From Arjun in the warehouse group"
+     "caught": "From Anjali in the warehouse group"
     },
     {
      "t": "auto",
@@ -416,7 +416,7 @@
       ],
       [
        "Answered from",
-       "Arjun's 9:52 am scan"
+       "Anjali's 9:52 am scan"
       ],
       [
        "First reply",
@@ -453,7 +453,7 @@
    },
    "presence": {
     "running": [
-     "Read off Arjun's 9:52 scan",
+     "Read off Anjali's 9:52 scan",
      "Answered in 40 sec. Nobody looked it up"
     ],
     "managing": [
@@ -478,7 +478,7 @@
     {
      "t": "assign",
      "s": "feed",
-     "text": "Read off Arjun's 9:52 scan",
+     "text": "Read off Anjali's 9:52 scan",
      "caught": "From her WhatsApp to the support line"
     },
     {
@@ -513,7 +513,7 @@
    "object": "parcel_top",
    "line": "Packed OH-20418 first in Okhla's morning batch at 118 g, saw six days of Brick Dust tint left at this pace, and drafted repeat PO-0151 on Sethi's terms under Aditi's standing approval.",
    "tap": {
-    "who": "Arjun",
+    "who": "Anjali",
     "what": "scanned the packed box",
     "cost": "1 tap, 2 sec"
    },
@@ -540,10 +540,10 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "9:50 am",
-      "text": "Morning batch released to Okhla, OH-20418 first. Packed at 118 g, the kit is 118 g. Arjun, scan to close it."
+      "text": "Morning batch released to Okhla, OH-20418 first. Packed at 118 g, the kit is 118 g. Anjali, scan to close it."
      },
      {
-      "who": "Arjun",
+      "who": "Anjali",
       "time": "9:52 am",
       "text": "Scanned."
      },
@@ -613,7 +613,7 @@
      "PO-0151 drafted · Sethi · repeat"
     ],
     "managing": [
-     "Waiting on Arjun: 1 tap"
+     "Waiting on Anjali: 1 tap"
     ],
     "monitoring": [
      "Packed weight vs kit, every scan",
@@ -633,7 +633,7 @@
       "label": "Hold it and re-weigh"
      }
     ],
-    "by": "Arjun",
+    "by": "Anjali",
     "checker": "Tanvi",
     "action": "Scan the box",
     "signal": "Packed weight vs kit, every scan",
@@ -648,7 +648,7 @@
      "via": "meeting",
      "where": "9:30 warehouse huddle",
      "at": "09:34",
-     "who": "Arjun"
+     "who": "Anjali"
     },
     {
      "t": "assign",
@@ -660,7 +660,7 @@
      "t": "ask",
      "s": "chat",
      "text": "OH-20418: 118 g, kit is 118 g. Scan to close?",
-     "who": "Arjun",
+     "who": "Anjali",
      "options": [
       "scanned",
       "re-weigh"
@@ -743,7 +743,7 @@
       "text": "New order from ad cut B. Brick Dust lip oil tint, ₹899, prepaid. Address matches 110017. First in the morning batch."
      },
      {
-      "who": "Arjun",
+      "who": "Anjali",
       "time": "8:40 am",
       "text": "Seen. Printing labels now."
      }
@@ -1546,7 +1546,7 @@
       "text": "Three quotes for 5,000 glass tubes with doe-foot wands. Sethi isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, leaky wands replaced free."
      },
      {
-      "who": "Arjun",
+      "who": "Anjali",
       "time": "2:02 pm",
       "text": "Their wand didn't leak in my bag test either."
      },
@@ -1615,7 +1615,7 @@
    },
    "presence": {
     "running": [
-     "@Arjun dock 2 held for the landing",
+     "@Anjali dock 2 held for the landing",
      "PO-0142 sent · Sethi · ₹1.9L"
     ],
     "managing": [
@@ -1643,7 +1643,7 @@
      }
     ],
     "by": "Aditi",
-    "checker": "Arjun",
+    "checker": "Anjali",
     "action": "Approve the PO",
     "signal": "Filling booked in 3 weeks. Only Sethi lands in time: 18 days.",
     "osRow": 1
@@ -1662,7 +1662,7 @@
     {
      "t": "assign",
      "s": "chat",
-     "text": "PO drafted. @Arjun dock 2 held for the landing",
+     "text": "PO drafted. @Anjali dock 2 held for the landing",
      "ch": "purchasing",
      "caught": "Picked up from the 11 am Sethi call"
     },
@@ -1731,7 +1731,7 @@
       "text": "Carton proof v3 is missing one required line: net quantity. It should read Net 4 ml."
      },
      {
-      "who": "Arjun",
+      "who": "Anjali",
       "time": "11:24 am",
       "text": "Printer says they'll fix it today."
      },
@@ -1915,7 +1915,7 @@
       "text": "Three quotes for 5,000 glass tubes with doe-foot wands. Sethi isn't the cheapest at ₹38, but it's the only one that lands before filling: 18 days. 45 days to pay, leaky wands replaced free."
      },
      {
-      "who": "Arjun",
+      "who": "Anjali",
       "time": "2:02 pm",
       "text": "Their wand didn't leak in my bag test either."
      },
@@ -2215,7 +2215,7 @@
    },
    "presence": {
     "running": [
-     "@Tanvi heat + wear on all 5. Arjun's van spec: 45°C",
+     "@Tanvi heat + wear on all 5. Anjali's van spec: 45°C",
      "Ratio 2: 9/20 split at 45°C",
      "Sent back to Kesar Labs with the log"
     ],
@@ -2240,7 +2240,7 @@
     {
      "t": "assign",
      "s": "chat",
-     "text": "@Tanvi heat + wear on all 5. Arjun's van spec: 45°C",
+     "text": "@Tanvi heat + wear on all 5. Anjali's van spec: 45°C",
      "ch": "npd",
      "caught": "Picked up from Ritika's 4 pm lab review"
     },
@@ -2264,7 +2264,7 @@
      "t": "raised",
      "s": "chat",
      "text": "told you. delhi june",
-     "who": "Arjun",
+     "who": "Anjali",
      "ch": "npd"
     },
     {
@@ -2287,7 +2287,7 @@
      }
     }
    ],
-   "summary": "Arjun's van test, run on day one. Ratio 2 splits in the heat and never reaches a customer.",
+   "summary": "Anjali's van test, run on day one. Ratio 2 splits in the heat and never reaches a customer.",
    "live": [
     {
      "beat": 2,
@@ -2330,7 +2330,7 @@
    "object": "maker_tool",
    "line": "Wrote the role for a chemist who has shipped oil-based tints, screened 37 applicants to four, and booked interviews around Aditi's and the lab's calendars.",
    "tap": {
-    "who": "Vikram",
+    "who": "Vidhi",
     "what": "made the offer to Ritika",
     "cost": "1 tap, 5 sec"
    },
@@ -2353,7 +2353,7 @@
       "text": "Chemist role: 37 applicants in nine days. Four have shipped oil-based tints, pigment that stays put in an oil."
      },
      {
-      "who": "Vikram",
+      "who": "Vidhi",
       "time": "10:20 am",
       "text": "Get all four in this week."
      },
@@ -2434,7 +2434,7 @@
      "37 applied → 4 shortlisted. Interviews thu/fri"
     ],
     "managing": [
-     "Waiting on Vikram: 1 tap"
+     "Waiting on Vidhi: 1 tap"
     ],
     "monitoring": [
      "New applicants on Naukri, hourly",
@@ -2454,7 +2454,7 @@
       "label": "Farhan Q., 4.2 / 5"
      }
     ],
-    "by": "Vikram",
+    "by": "Vidhi",
     "checker": "Aditi",
     "action": "Make the offer",
     "signal": "4 interviews done, scorecards in",
@@ -2465,16 +2465,16 @@
      "t": "raised",
      "s": "os",
      "text": "need an oil-tint chemist in 4 wks. can u start?",
-     "desc": "Owner: Vikram · due in 4 wks",
+     "desc": "Owner: Vidhi · due in 4 wks",
      "via": "whatsapp",
      "where": "Ohra hiring",
-     "who": "Vikram"
+     "who": "Vidhi"
     },
     {
      "t": "assign",
      "s": "feed",
      "text": "Role posted on Naukri, LinkedIn, IIM Jobs",
-     "caught": "From Vikram in the hiring group"
+     "caught": "From Vidhi in the hiring group"
     },
     {
      "t": "auto",
@@ -2491,7 +2491,7 @@
      "t": "ask",
      "s": "chat",
      "text": "Ritika 4.5/5, made 3 lip oil tints at a Baddi lab. Send offer?",
-     "who": "Vikram",
+     "who": "Vidhi",
      "options": [
       "send offer",
       "see Farhan, 4.2"
@@ -2525,7 +2525,7 @@
    "when": "7 months before, 10:00 am",
    "mode": "wire",
    "object": "wireframe",
-   "line": "Played Aditi's voice note as item 1 at standup, took Naina's search numbers and Arjun's heat warning, and shaped it into one product: liquid lipstick colour with a lip oil feel.",
+   "line": "Played Aditi's voice note as item 1 at standup, took Naina's search numbers and Anjali's heat warning, and shaped it into one product: liquid lipstick colour with a lip oil feel.",
    "tap": {
     "who": "Aditi",
     "what": "said go on the hybrid",
@@ -2564,7 +2564,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "4:05 pm",
-      "text": "So not an oil. A hybrid: liquid lipstick colour, lip oil feel. Project opened: Brick Dust lip oil tint. Step one, a chemist. Vikram has it."
+      "text": "So not an oil. A hybrid: liquid lipstick colour, lip oil feel. Project opened: Brick Dust lip oil tint. Step one, a chemist. Vidhi has it."
      }
     ],
     "os": {
@@ -2578,7 +2578,7 @@
      "rows": [
       [
        "Hire an oil-tint chemist",
-       "Vikram",
+       "Vidhi",
        "In 4 weeks",
        "Open"
       ],
@@ -2590,7 +2590,7 @@
       ],
       [
        "Tube and wand suppliers",
-       "Arjun",
+       "Anjali",
        "In 8 weeks",
        "Not started"
       ]
@@ -2660,7 +2660,7 @@
      "t": "raised",
      "s": "chat",
      "text": "bhai oil leaks in a june van. 45° inside. needs a proper tube",
-     "who": "Arjun",
+     "who": "Anjali",
      "ch": "standup",
      "via": "meeting",
      "where": "10:00 standup",
@@ -2872,7 +2872,7 @@
    "waiting": "1 ad cut, 1 line of copy"
   },
   {
-   "name": "Arjun",
+   "name": "Anjali",
    "role": "Warehouse",
    "initial": "A",
    "waiting": "9 boxes to scan"
@@ -2884,7 +2884,7 @@
    "waiting": "1 batch to check"
   },
   {
-   "name": "Vikram",
+   "name": "Vidhi",
    "role": "People",
    "initial": "V",
    "waiting": "1 offer to make"
@@ -2965,7 +2965,13 @@
   "cv-carton": "assets/ohra/audio/cv-carton.mp3",
   "cv-launch": "assets/ohra/audio/cv-launch.mp3",
   "cv-ads": "assets/ohra/audio/cv-ads.mp3",
-  "cv-orders": "assets/ohra/audio/cv-orders.mp3"
+  "cv-orders": "assets/ohra/audio/cv-orders.mp3",
+  "hv-samples": "assets/ohra/audio/hv-samples.mp3",
+  "hv-form": "assets/ohra/audio/hv-form.mp3",
+  "hv-approve": "assets/ohra/audio/hv-approve.mp3",
+  "hv-hero": "assets/ohra/audio/hv-hero.mp3",
+  "hv-packed": "assets/ohra/audio/hv-packed.mp3",
+  "vn-founder": "assets/ohra/audio/vn-founder.mp3"
  },
  "channels": {
   "voice": "aditi-notes",
@@ -3174,7 +3180,7 @@
     "status": "Live · restock moving",
     "pct": 0.85,
     "module": "warehouse",
-    "owner": "Arjun",
+    "owner": "Anjali",
     "now": "Dock 1 restock today, 1,200 units.",
     "next": "Nykaa top-up on Friday"
    },
@@ -3215,7 +3221,7 @@
     "id": "logistics",
     "name": "#logistics",
     "owners": [
-     "Arjun"
+     "Anjali"
     ],
     "agent": "Ops agent",
     "about": "Inbound and outbound",
@@ -3225,7 +3231,7 @@
     "id": "warehouse",
     "name": "#warehouse",
     "owners": [
-     "Arjun"
+     "Anjali"
     ],
     "agent": "Ops agent",
     "about": "Receiving, QC, dispatch",
@@ -3454,7 +3460,7 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "Idea #41 is open in #npd. @Aditi you own it. @Arjun @Tanvi your comments by Friday.",
+        "text": "Idea #41 is open in #npd. @Aditi you own it. @Anjali @Tanvi your comments by Friday.",
         "desc": "Announcement"
        }
       ]
@@ -3563,12 +3569,12 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "Concept v1 is up. @Arjun @Tanvi comments, please.",
+        "text": "Concept v1 is up. @Anjali @Tanvi comments, please.",
         "desc": "Opened from idea #41"
        },
        {
         "k": "msg",
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "bhai oil leaks in a june van. 45° inside. needs a proper tube",
         "via": "meeting",
         "voice": "standup-3",
@@ -3577,7 +3583,7 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "@Tanvi heat and wear on all 5 ratios. @Research agent hold Arjun's van spec: 45°C.",
+        "text": "@Tanvi heat and wear on all 5 ratios. @Research agent hold Anjali's van spec: 45°C.",
         "desc": "Assigned",
         "land": "ratios"
        },
@@ -3590,7 +3596,7 @@
        },
        {
         "k": "msg",
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "told you. delhi june",
         "via": "whatsapp",
         "where": "Warehouse group"
@@ -3905,7 +3911,7 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "@Vendor agent draft PO-0142 on Sethi's 45 days. @Arjun dock 2 is yours for the landing.",
+        "text": "@Vendor agent draft PO-0142 on Sethi's 45 days. @Anjali dock 2 is yours for the landing.",
         "desc": "Assigned"
        },
        {
@@ -4033,12 +4039,12 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "@Arjun dock 2 at 4 pm, not 2. Two people on unloading.",
+        "text": "@Anjali dock 2 at 4 pm, not 2. Two people on unloading.",
         "desc": "Announcement"
        },
        {
         "k": "msg",
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "done, dock 2 at 4",
         "via": "whatsapp",
         "where": "Warehouse group"
@@ -4046,7 +4052,7 @@
        {
         "k": "task",
         "text": "Unload and sign for 50 cartons",
-        "owner": "Arjun",
+        "owner": "Anjali",
         "done": "Arrived 3:52 pm. 50 of 50",
         "land": "stack",
         "os": {
@@ -4130,7 +4136,7 @@
        },
        {
         "k": "msg",
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "86 in the Okhla batch today. tint ones first",
         "via": "meeting",
         "where": "9:30 huddle"
@@ -4138,13 +4144,13 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "@Arjun kits are tube, carton, care card. @Ops agent weigh every box against the kit.",
+        "text": "@Anjali kits are tube, carton, care card. @Ops agent weigh every box against the kit.",
         "desc": "Assigned"
        },
        {
         "k": "task",
         "text": "Kit: tube, carton, care card",
-        "owner": "Arjun",
+        "owner": "Anjali",
         "done": "Ready for dispatch",
         "land": "kit"
        }
@@ -4699,7 +4705,7 @@
        },
        {
         "k": "msg",
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "all 86 packed for the morning batch. who picks up?",
         "via": "whatsapp",
         "where": "Warehouse group"
@@ -4707,7 +4713,7 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "@Ops agent book Delhivery: 2.1% failed in Delhi vs 4.8 and 6.3. @Arjun pickup 11:20.",
+        "text": "@Ops agent book Delhivery: 2.1% failed in Delhi vs 4.8 and 6.3. @Anjali pickup 11:20.",
         "desc": "Assigned"
        },
        {
@@ -4897,7 +4903,7 @@
        {
         "k": "cos",
         "agent": "Chief of staff",
-        "text": "Thank you @Arjun @Tanvi @Naina @Kavya. @Research agent open idea #42: a second shade, darker.",
+        "text": "Thank you @Anjali @Tanvi @Naina @Kavya. @Research agent open idea #42: a second shade, darker.",
         "desc": "Announcement"
        }
       ]
@@ -5048,7 +5054,7 @@
     "to": 1,
     "when": "Day 167 · 6 pm",
     "hl": "Launch hour.",
-    "cos": "86 orders in the first hour. Arjun, the morning batch is yours.",
+    "cos": "86 orders in the first hour. Anjali, the morning batch is yours.",
     "st": "live",
     "dur": 8500
    },
@@ -5128,8 +5134,8 @@
   "Aditi": "sb/f1.webp",
   "Naina": "sb/f2.webp",
   "Tanvi": "sb/f3.webp",
-  "Arjun": "sb/f4.webp",
-  "Vikram": "sb/f5.webp"
+  "Anjali": "sb/f4.webp",
+  "Vidhi": "sb/f5.webp"
  },
  "v20": {
   "title": "Coco",
@@ -5207,13 +5213,40 @@
      {
       "type": "scene",
       "scene": "phone",
-      "voice": "voice-note",
-      "len": "0:22",
+      "voice": "vn-founder",
+      "len": "0:09",
       "at": "1:32 am",
       "photo_at": "1:31 am",
       "line": "",
       "when": "Day 0 · 1:32 am",
-      "words": "Fourth girl in our DMs today asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
+      "words": "Fourth girl in our DMs today, asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs.",
+      "cues": [
+       [
+        "Fourth girl in our DMs today,",
+        0.15,
+        1.82
+       ],
+       [
+        "asking for a lip oil.",
+        2.33,
+        3.42
+       ],
+       [
+        "Not lipstick.",
+        3.77,
+        4.39
+       ],
+       [
+        "But real colour.",
+        5.0,
+        5.91
+       ],
+       [
+        "Check if it's just my DMs.",
+        6.38,
+        7.9
+       ]
+      ]
      },
      {
       "type": "panel",
@@ -5229,8 +5262,8 @@
         "art": {
          "kind": "card",
          "media": {
-          "voice": "0:22",
-          "words": "Fourth girl in our DMs today asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
+          "voice": "0:09",
+          "words": "Fourth girl in our DMs today, asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
          },
          "lab": "Voice note",
          "title": "Aditi, 1:32 am"
@@ -5242,8 +5275,8 @@
         "art": {
          "kind": "card",
          "media": {
-          "voice": "0:22",
-          "words": "Fourth girl in our DMs today asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
+          "voice": "0:09",
+          "words": "Fourth girl in our DMs today, asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
          },
          "lab": "New project",
          "title": "Charm lip oil",
@@ -5318,7 +5351,60 @@
          "text": "Studying every lip oil under ₹1,500",
          "done": "31 found"
         }
-       ]
+       ],
+       "art": {
+        "kind": "scan",
+        "lab": "Research agent",
+        "title": "Searching six months of DMs",
+        "count": {
+         "to": 64,
+         "label": "people asked for a lip oil"
+        },
+        "rows": [
+         {
+          "t": "\"when is the blush back in stock?\"",
+          "tag": "DM · May"
+         },
+         {
+          "t": "\"do you have a lip oil??\"",
+          "tag": "DM · Jun",
+          "hit": true
+         },
+         {
+          "t": "\"my order hasn't shipped\"",
+          "tag": "DM · Jun"
+         },
+         {
+          "t": "\"lip oil but with actual colour pls\"",
+          "tag": "DM · Jul",
+          "hit": true
+         },
+         {
+          "t": "\"not a lipstick, an oil. make it\"",
+          "tag": "DM · Aug",
+          "hit": true
+         },
+         {
+          "t": "\"collab?\"",
+          "tag": "DM · Aug"
+         },
+         {
+          "t": "\"any tinted lip oil coming?\"",
+          "tag": "DM · Sep",
+          "hit": true
+         },
+         {
+          "t": "\"need a lip oil that shows up\"",
+          "tag": "DM · Oct",
+          "hit": true
+         },
+         {
+          "t": "\"lip oil. real colour. please.\"",
+          "tag": "DM · today",
+          "hit": true
+         }
+        ]
+       }
       }
      },
      {
@@ -5348,7 +5434,7 @@
         "due": "Day 18"
        },
        {
-        "who": "Vikram",
+        "who": "Vidhi",
         "text": "Approve sample, pricing and the PO",
         "due": "Day 30"
        },
@@ -5358,7 +5444,7 @@
         "due": "Day 52"
        },
        {
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "Packing and shipping",
         "due": "Day 58"
        }
@@ -5384,8 +5470,8 @@
           "Aditi",
           "Tanvi",
           "Naina",
-          "Arjun",
-          "Vikram"
+          "Anjali",
+          "Vidhi"
          ]
         },
         "voice": "coco-agents",
@@ -5466,6 +5552,15 @@
       "chan": "#npd",
       "thread": [
        {
+        "who": "Tanvi",
+        "text": "Find me suppliers who can make this charm shape. Get samples."
+       },
+       {
+        "who": "Tanvi's agent",
+        "text": "Six suppliers found. Three have sent samples.",
+        "after": "work"
+       },
+       {
         "who": "Chief of staff",
         "text": "The suppliers replied. Samples are in. Check sample 3.",
         "voice": "cv-samples",
@@ -5480,12 +5575,13 @@
          "title": "Kapoor, Vapi",
          "n": "₹46",
          "sub": "a unit · can make the charm body · samples in 10 days"
-        },
-        "after": "work"
+        }
        },
        {
         "who": "Tanvi",
-        "text": "This one is the doodle, for real.",
+        "text": "Sample 3 is it. Just like the doodle.",
+        "voice": "hv-samples",
+        "vlen": "0:03",
         "art": {
          "kind": "photo",
          "img": "firstsample",
@@ -5500,7 +5596,45 @@
         "text": "Finding suppliers for a charm body",
         "done": "6 found, 3 sampled"
        }
-      ]
+      ],
+      "workArt": {
+       "kind": "scan",
+       "lab": "Tanvi's agent",
+       "title": "Finding suppliers for a charm body",
+       "count": {
+        "to": 3,
+        "label": "of 6 have sent samples"
+       },
+       "rows": [
+        {
+         "t": "Mehra Labs, Baddi",
+         "tag": "no charm mould"
+        },
+        {
+         "t": "Kapoor, Vapi",
+         "tag": "sample sent",
+         "hit": true
+        },
+        {
+         "t": "Sunrise Cosmetics, Daman",
+         "tag": "min 50,000"
+        },
+        {
+         "t": "Lumen Fill, Thane",
+         "tag": "sample sent",
+         "hit": true
+        },
+        {
+         "t": "Orchid Pack, Noida",
+         "tag": "no reply"
+        },
+        {
+         "t": "Verma & Sons, Vapi",
+         "tag": "sample sent",
+         "hit": true
+        }
+       ]
+      }
      },
      {
       "type": "panel",
@@ -5510,6 +5644,15 @@
       "stage": "Form and shades",
       "chan": "#npd",
       "thread": [
+       {
+        "who": "Aditi",
+        "text": "Mock up both forms and put it to the team."
+       },
+       {
+        "who": "Aditi's agent",
+        "text": "Two forms mocked up. The team voted 4 to 1.",
+        "after": "work"
+       },
        {
         "who": "Chief of staff",
         "text": "The team has voted. I need your call on this one.",
@@ -5536,18 +5679,18 @@
            "votes": 1
           }
          ]
-        },
-        "after": "work"
+        }
        },
        {
         "who": "Aditi",
-        "text": "Soft lobes. It squishes, and it looks like a charm on a bag.",
-        "decide": true,
-        "call": "Pick soft lobes"
+        "text": "Soft lobes. That's the one.",
+        "voice": "hv-form",
+        "vlen": "0:02",
+        "decide": true
        },
        {
-        "who": "Tanvi",
-        "text": "And the shade is Brick Dust. Six hours on all three skin tones.",
+        "who": "Tanvi's agent",
+        "text": "Shade test done. Brick Dust holds six hours on all three skin tones.",
         "art": {
          "kind": "card",
          "media": {
@@ -5571,7 +5714,42 @@
         "text": "Testing shades on three skin tones",
         "done": "1 shade holds 6 h"
        }
-      ]
+      ],
+      "workArt": {
+       "kind": "scan",
+       "lab": "Aditi's agent",
+       "title": "Two forms, put to the team",
+       "count": {
+        "to": 4,
+        "label": "of 5 chose soft lobes"
+       },
+       "rows": [
+        {
+         "t": "Tanvi",
+         "tag": "Soft lobes",
+         "hit": true
+        },
+        {
+         "t": "Vidhi",
+         "tag": "Soft lobes",
+         "hit": true
+        },
+        {
+         "t": "Anjali",
+         "tag": "Smooth body"
+        },
+        {
+         "t": "Naina",
+         "tag": "Soft lobes",
+         "hit": true
+        },
+        {
+         "t": "Aditi",
+         "tag": "Soft lobes",
+         "hit": true
+        }
+       ]
+      }
      },
      {
       "type": "panel",
@@ -5581,6 +5759,15 @@
       "stage": "Approvals",
       "chan": "#npd",
       "thread": [
+       {
+        "who": "Vidhi",
+        "text": "Check the carton proof before it goes to print."
+       },
+       {
+        "who": "Vidhi's agent",
+        "text": "Carton proof checked against 14 label rules. Net quantity was missing.",
+        "after": "work"
+       },
        {
         "who": "Chief of staff",
         "text": "The carton had a gap. I got it fixed. Check the proof.",
@@ -5612,12 +5799,11 @@
            "missing"
           ]
          ]
-        },
-        "after": "work"
+        }
        },
        {
-        "who": "Chief of staff",
-        "text": "Pricing is in: ₹46 a unit for the product, ₹6 for the carton. The PO is ready for you.",
+        "who": "Vidhi's agent",
+        "text": "Pricing is in: ₹46 a unit, ₹6 a carton. The PO is drafted.",
         "art": {
          "kind": "table",
          "lab": "Purchase order",
@@ -5657,24 +5843,76 @@
         }
        },
        {
-        "who": "Aditi",
-        "text": "Approved. Sample, pricing and the PO.",
-        "decide": true,
-        "call": "Approve all three"
+        "who": "Vidhi",
+        "text": "Approved. Send the PO.",
+        "voice": "hv-approve",
+        "vlen": "0:03",
+        "decide": true
        }
       ],
       "agents": [
        {
-        "who": "Vikram's agent",
+        "who": "Vidhi's agent",
         "text": "Checking the carton against 14 label rules",
         "done": "1 gap caught and fixed"
        },
        {
-        "who": "Vikram's agent",
+        "who": "Vidhi's agent",
         "text": "Getting pricing, drafting the PO",
         "done": "PO drafted"
        }
-      ]
+      ],
+      "workArt": {
+       "kind": "scan",
+       "lab": "Vidhi's agent",
+       "title": "Checking the carton proof",
+       "count": {
+        "to": 13,
+        "label": "of 14 label rules pass"
+       },
+       "rows": [
+        {
+         "t": "Brand and product name",
+         "tag": "ok",
+         "hit": true
+        },
+        {
+         "t": "Shade name",
+         "tag": "ok",
+         "hit": true
+        },
+        {
+         "t": "Ingredients list",
+         "tag": "ok",
+         "hit": true
+        },
+        {
+         "t": "MRP, inclusive of taxes",
+         "tag": "ok",
+         "hit": true
+        },
+        {
+         "t": "Batch and expiry",
+         "tag": "ok",
+         "hit": true
+        },
+        {
+         "t": "Manufacturer address",
+         "tag": "ok",
+         "hit": true
+        },
+        {
+         "t": "Net quantity",
+         "tag": "missing",
+         "miss": true
+        },
+        {
+         "t": "Customer care details",
+         "tag": "ok",
+         "hit": true
+        }
+       ]
+      }
      },
      {
       "type": "panel",
@@ -5853,7 +6091,7 @@
         }
        },
        {
-        "who": "Vikram",
+        "who": "Vidhi",
         "text": "add Net 4 ml under the name pls"
        },
        {
@@ -5901,7 +6139,7 @@
       "thread": [
        {
         "who": "Vendor agent",
-        "text": "PO-0142 is drafted on Kapoor's 45-day terms. Arjun has dock 2 for the landing.",
+        "text": "PO-0142 is drafted on Kapoor's 45-day terms. Anjali has dock 2 for the landing.",
         "art": {
          "kind": "table",
          "lab": "Purchase order",
@@ -5978,7 +6216,9 @@
        },
        {
         "who": "Naina",
-        "text": "This one's the hero. Frame 38.",
+        "text": "Frame 38 is the hero.",
+        "voice": "hv-hero",
+        "vlen": "0:03",
         "art": {
          "kind": "card",
          "media": {
@@ -5989,6 +6229,41 @@
          "title": "Frame 38",
          "sub": "Shot on a bag, daylight, no retouching.",
          "n": "1 of 214"
+        }
+       },
+       {
+        "who": "Naina",
+        "text": "Hero is locked. List it everywhere."
+       },
+       {
+        "who": "Website agent",
+        "text": "Product page is up on ohra.in.",
+        "after": "work",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "list_site",
+          "fit": "cover"
+         },
+         "lab": "Product page · ohra.in",
+         "title": "Brick Dust lip oil",
+         "n": "₹899",
+         "sub": "Hero photo, 5 pictures, shade story, reviews switched on"
+        }
+       },
+       {
+        "who": "Marketplace agent",
+        "text": "Nykaa, Amazon, Zepto and Blinkit are live too.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "list_nykaa",
+          "fit": "cover"
+         },
+         "lab": "Marketplace · Nykaa",
+         "title": "Brick Dust lip oil",
+         "n": "₹899",
+         "sub": "Approved in 40 minutes · in stock"
         }
        },
        {
@@ -6018,25 +6293,75 @@
            "₹899"
           ],
           [
-           "Myntra",
+           "Zepto",
            "₹899"
           ],
           [
-           "Purplle",
+           "Blinkit",
            "₹899"
           ]
          ]
-        },
-        "after": "work"
+        }
        }
       ],
       "agents": [
        {
+        "who": "Website agent",
+        "text": "Building the product page",
+        "done": "Page live"
+       },
+       {
+        "who": "Marketplace agent",
+        "text": "Listing on four marketplaces",
+        "done": "4 live"
+       },
+       {
         "who": "Naina's agent",
-        "text": "Listing the product in five places",
-        "done": "Live in 5"
+        "text": "Writing titles and bullets",
+        "done": "5 listings written"
        }
-      ]
+      ],
+      "workArt": {
+       "kind": "scan",
+       "lab": "Listing agents",
+       "title": "Publishing the listing",
+       "count": {
+        "to": 5,
+        "label": "places live"
+       },
+       "rows": [
+        {
+         "t": "ohra.in · product page",
+         "tag": "Live",
+         "img": "list_site",
+         "hit": true
+        },
+        {
+         "t": "Nykaa",
+         "tag": "Live",
+         "img": "list_nykaa",
+         "hit": true
+        },
+        {
+         "t": "Amazon",
+         "tag": "Live",
+         "img": "list_amazon",
+         "hit": true
+        },
+        {
+         "t": "Zepto",
+         "tag": "Live",
+         "img": "list_zepto",
+         "hit": true
+        },
+        {
+         "t": "Blinkit",
+         "tag": "Live",
+         "img": "list_blinkit",
+         "hit": true
+        }
+       ]
+      }
      },
      {
       "type": "panel",
@@ -6046,6 +6371,15 @@
       "stage": "Launch",
       "chan": "#marketing",
       "thread": [
+       {
+        "who": "Naina",
+        "text": "Run the three cuts tonight. Small budget."
+       },
+       {
+        "who": "Naina's agent",
+        "text": "Three cuts are live. I paused the one returning under 1.",
+        "after": "work"
+       },
        {
         "who": "Chief of staff",
         "text": "The ads ran overnight. Cut B is winning. Check this.",
@@ -6074,8 +6408,7 @@
            "st": "paused"
           }
          ]
-        },
-        "after": "work"
+        }
        }
       ],
       "agents": [
@@ -6084,7 +6417,45 @@
         "text": "Running three ad cuts overnight",
         "done": "1 paused, 1 winning"
        }
-      ]
+      ],
+      "workArt": {
+       "kind": "scan",
+       "lab": "Naina's agent",
+       "title": "Running three cuts overnight",
+       "count": {
+        "to": 2,
+        "label": "cuts still running"
+       },
+       "rows": [
+        {
+         "t": "Cut A, clip on",
+         "tag": "live"
+        },
+        {
+         "t": "Cut B, bag swing",
+         "tag": "live"
+        },
+        {
+         "t": "Cut C, applicator",
+         "tag": "live"
+        },
+        {
+         "t": "Cut A · ₹1 returns ₹1.60",
+         "tag": "keep",
+         "hit": true
+        },
+        {
+         "t": "Cut B · ₹1 returns ₹2.80",
+         "tag": "winning",
+         "hit": true
+        },
+        {
+         "t": "Cut C · ₹1 returns ₹0.90",
+         "tag": "paused",
+         "miss": true
+        }
+       ]
+      }
      },
      {
       "type": "scene",
@@ -6223,6 +6594,11 @@
       "chan": "#orders",
       "thread": [
        {
+        "who": "Anjali's agent",
+        "text": "Order OH-20418 is in from the site. Label printed.",
+        "after": "work"
+       },
+       {
         "who": "Chief of staff",
         "text": "First order just came in.",
         "voice": "cv-orders",
@@ -6237,8 +6613,7 @@
          "title": "Brick Dust lip oil",
          "n": "₹899",
          "sub": "Order OH-20418 · Saket, New Delhi · paid"
-        },
-        "after": "work"
+        }
        },
        {
         "who": "Chief of staff",
@@ -6255,26 +6630,122 @@
         }
        },
        {
-        "who": "Arjun",
-        "text": "all 86 packed for the morning batch"
+        "who": "Anjali",
+        "text": "All packed for the morning batch.",
+        "voice": "hv-packed",
+        "vlen": "0:02"
        }
       ],
       "agents": [
        {
-        "who": "Arjun's agent",
+        "who": "Anjali's agent",
         "text": "Printing labels as orders come in",
         "done": "86 labels printed"
+       }
+      ],
+      "workArt": {
+       "kind": "scan",
+       "lab": "Anjali's agent",
+       "title": "Orders coming in",
+       "count": {
+        "to": 86,
+        "label": "orders in the launch hour"
+       },
+       "rows": [
+        {
+         "t": "Saket, New Delhi",
+         "tag": "₹899",
+         "hit": true
+        },
+        {
+         "t": "Indiranagar, Bengaluru",
+         "tag": "₹899",
+         "hit": true
+        },
+        {
+         "t": "Koregaon Park, Pune",
+         "tag": "₹1,798",
+         "hit": true
+        },
+        {
+         "t": "Banjara Hills, Hyderabad",
+         "tag": "₹899",
+         "hit": true
+        },
+        {
+         "t": "Salt Lake, Kolkata",
+         "tag": "₹899",
+         "hit": true
+        },
+        {
+         "t": "Adyar, Chennai",
+         "tag": "₹899",
+         "hit": true
+        },
+        {
+         "t": "Powai, Mumbai",
+         "tag": "₹1,798",
+         "hit": true
+        },
+        {
+         "t": "Sector 17, Chandigarh",
+         "tag": "₹899",
+         "hit": true
+        }
+       ]
+      }
+     },
+     {
+      "type": "panel",
+      "label": "Dashboard · Day 58",
+      "line": "",
+      "when": "Day 58, 9 pm",
+      "stage": "Orders",
+      "chan": "#orders",
+      "dash": true,
+      "thread": [
+       {
+        "who": "Chief of staff",
+        "text": "Launch day, on the dashboard.",
+        "art": {
+         "kind": "dash",
+         "lab": "Dashboard",
+         "title": "Launch day",
+         "nums": [
+          [
+           "86",
+           "orders in the launch hour"
+          ],
+          [
+           "₹77,314",
+           "sales in the launch hour"
+          ],
+          [
+           "58",
+           "days from idea to launch"
+          ],
+          [
+           "6",
+           "tasks, 5 done"
+          ],
+          [
+           "8",
+           "agents on the project"
+          ],
+          [
+           "2",
+           "calls the team had to make"
+          ]
+         ]
+        }
        }
       ]
      },
      {
       "type": "scene",
       "scene": "pack",
-      "line": "",
+      "line": "From an idea at 1:32 am on Day 0…",
       "when": "Day 58",
-      "el": {
-       "label": true
-      },
       "hold": 14200,
       "p3dur": 13000
      },
@@ -6299,7 +6770,7 @@
         }
        },
        {
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "all 86 packed for the morning batch. who picks up?"
        }
       ],
@@ -6315,7 +6786,7 @@
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "@Ops agent book Delhivery: fewest failed deliveries in Delhi. @Arjun pickup at 11:20.",
+        "text": "@Ops agent book Delhivery: fewest failed deliveries in Delhi. @Anjali pickup at 11:20.",
         "art": {
          "kind": "card",
          "media": {
@@ -6345,7 +6816,7 @@
         }
        },
        {
-        "who": "Arjun",
+        "who": "Anjali",
         "text": "picked up. tracking sent on whatsapp"
        }
       ],
@@ -6425,7 +6896,7 @@
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "Week one: 233 orders, 4.6 stars. Thank you @Arjun @Tanvi @Naina. @Research agent open idea #42: a darker shade.",
+        "text": "Week one: 233 orders, 4.6 stars. Thank you @Anjali @Tanvi @Naina. @Research agent open idea #42: a darker shade.",
         "art": {
          "kind": "stats",
          "lab": "Week one",
@@ -6462,18 +6933,18 @@
      {
       "type": "scene",
       "scene": "arrive",
-      "line": "",
+      "line": "…to her door on Day 60, and everything in between.",
       "when": "Day 60",
       "hold": 5600
      },
      {
       "type": "scene",
       "scene": "end",
-      "line": "From an idea at 1:32 am on Day 0 to her door on Day 60, and everything in between.",
+      "line": "",
       "when": "",
-      "cta": "See the scope and pricing",
+      "cta": "View project scope",
       "hold": 9000,
-      "line2": "Coco, the chief of staff OS for consumer brands."
+      "tag": "The chief of staff OS for consumer brands"
      }
     ]
    }
@@ -6490,6 +6961,12 @@
   "cv-carton": 3.34,
   "cv-launch": 2.65,
   "cv-ads": 3.34,
-  "cv-orders": 1.81
+  "cv-orders": 1.81,
+  "hv-samples": 2.69,
+  "hv-form": 2.18,
+  "hv-approve": 3.39,
+  "hv-hero": 2.74,
+  "hv-packed": 2.37,
+  "vn-founder": 8.82
  }
 }

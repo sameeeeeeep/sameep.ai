@@ -69,6 +69,7 @@ export function createPanel(cfg, host, env) {
     return L;
   }
 
+  function sheen(el) { if (REDUCED || !el) return; const sh = h('i', 'sheen'); el.appendChild(sh); const an = sh.animate([{ transform: 'translateX(-130%) skewX(-18deg)' }, { transform: 'translateX(330%) skewX(-18deg)' }], { duration: 1000, easing: 'cubic-bezier(.3,.6,.3,1)' }); an.onfinish = () => sh.remove(); if (env.sfx) env.sfx('whoosh'); }
   /* ---------- artefacts: one design system, six layouts ---------- */
   function media(m) {
     const d = h('div', 'a-media');
@@ -122,6 +123,22 @@ export function createPanel(cfg, host, env) {
         G.appendChild(c); e._opts.push(c);
       });
       e.appendChild(G); if (o.done) e.classList.add('is-decided');
+      return e;
+    }
+    if (a.kind === 'scan') {
+      const L = h('div', 'a-l'); head(L, a); const C = a.count || {}; const big = h('span', 'a-n', o.done ? str(C.to, '') : '0'); L.appendChild(big); if (C.label) L.appendChild(h('span', 'a-sub', C.label)); e.appendChild(L);
+      const Rw = h('div', 'a-scan'), rows = arr(a.rows).map((r) => {
+        const row = h('div', 'a-sr' + (r.hit ? ' is-hit' : r.miss ? ' is-miss' : '')); if (r.img && pic(r.img)) { const im = h('img'); im.alt = ''; im.src = pic(r.img); row.appendChild(im); }
+        row.appendChild(h('span', null, r.t)); if (r.tag) row.appendChild(h('em', null, r.tag)); if (!o.done) row.style.visibility = 'hidden'; Rw.appendChild(row); return { el: row, r };
+      });
+      e.appendChild(Rw);
+      const hits = rows.filter((x) => x.r.hit).length || 1, to = +C.to || hits;
+      e._run = (ms, at) => { let got = 0; rows.forEach((x, j) => at(ms * (j + 0.6) / (rows.length + 0.6), () => { x.el.style.visibility = ''; if (!REDUCED) x.el.animate([{ translate: '14px 0' }, { translate: '0 0' }], { duration: 300, easing: EZ }); if (x.r.hit) { got++; big.textContent = String(Math.round(to * got / hits)); if (env.sfx) env.sfx('ping'); } else if (env.sfx) env.sfx(x.r.miss ? 'miss' : 'tick'); Rw.scrollTop = Rw.scrollHeight; })); at(ms, () => { big.textContent = String(to); }); };
+      return e;
+    }
+    if (a.kind === 'dash') {   /* the dashboard: the project's numbers on one screen */
+      const T = h('div', 'a-hd'); head(T, a); e.appendChild(T);
+      const G = h('div', 'a-dash'); arr(a.nums).forEach((x) => { const c = h('div', 'a-dn'); c.appendChild(h('b', null, x[0])); c.appendChild(h('span', null, x[1])); G.appendChild(c); }); e.appendChild(G);
       return e;
     }
     if (a.kind === 'photo') {   /* a photograph fills the card; a caption sits under it */
@@ -232,6 +249,7 @@ export function createPanel(cfg, host, env) {
   ui.thr = h('section', 'p-thr'); ui.thr.setAttribute('aria-label', 'Thread'); ui.list = h('div', 'p-list'); ui.thr.appendChild(ui.list); root.appendChild(ui.thr);
   ui.cv = h('section', 'p-cv'); ui.cv.setAttribute('aria-label', 'Canvas');
   ui.lab = h('span', 'p-lab'); ui.cv.appendChild(ui.lab);
+  ui.tabs = h('div', 'p-tabs'); ui.tabC = h('span', 'is-on', 'Canvas'); ui.tabD = h('span', null, 'Dashboard'); ui.tabs.appendChild(ui.tabC); ui.tabs.appendChild(ui.tabD); ui.cv.appendChild(ui.tabs);
   ui.stage = h('div', 'p-stage'); ui.cv.appendChild(ui.stage);
   root.appendChild(ui.cv);
   host.appendChild(root);
@@ -280,6 +298,7 @@ export function createPanel(cfg, host, env) {
     ui.stage.innerHTML = ''; cur = null;
     if (!a) return null;
     fit();
+    { const dash = a.kind === 'dash'; ui.tabC.classList.toggle('is-on', !dash); ui.tabD.classList.toggle('is-on', dash); }
     const w = h('div', 'p-fit'), e = art(a, o);
     e.addEventListener('click', (ev) => { if (ev.target.closest('.a-row')) return; if (env.open) env.open({ art: a }); });
     w.appendChild(e); ui.stage.appendChild(w); cur = e;
@@ -287,10 +306,17 @@ export function createPanel(cfg, host, env) {
       e.animate([{ translate: '0 46px', scale: '.94' }, { translate: '0 0', scale: '1' }], { duration: 620, easing: EZ });
       const big = e.querySelector('.a-n'); if (big) big.animate([{ scale: '.5' }, { scale: '1.12', offset: 0.7 }, { scale: '1' }], { duration: 700, delay: 260, easing: EZ, fill: 'backwards' });
       if (env.sfx) { env.sfx('land'); if (/new project/i.test(str(a.lab))) later(300, () => env.sfx('chime')); }
+      later(380, () => sheen(e));
     }
     return e;
   }
   function label(t) { ui.lab.textContent = str(t); }
+  function showWork(a, ms) {
+    if (!a) return null;
+    if (PHONE()) { const hst = h('div', 'p-inline'); ui.list.appendChild(hst); ui.inlineHost = hst; }
+    const e2 = show(a, { rise: true }); if (e2 && e2._run) e2._run(ms || 3000, later);
+    return e2;
+  }
 
   /* ---------- the thread ---------- */
   function attOf(a) {
@@ -311,14 +337,15 @@ export function createPanel(cfg, host, env) {
     const r = h('div', 'p-m'); r.appendChild(face(it.who));
     const c = h('div', 'p-mc'); c.appendChild(h('b', 'p-mn', isCos(it.who) ? str(V.wordmark, 'Coco') : str(it.who)));
     if (it.voice) { const vb = voiceBubble(it.vlen || '0:05'); vb.classList.add('is-msg'); c.appendChild(vb); r._vb = vb; }
-    if (it.text) c.appendChild(rich('p-mt' + (it.voice ? ' is-said' : ''), it.text));
+    if (it.text && it.voice) { const pt = h('p', 'p-mt is-said'); r._words = str(it.text).split(/\s+/).filter(Boolean).map((x) => { const sp = h('span', null, x + ' '); pt.appendChild(sp); return sp; }); c.appendChild(pt); }
+    else if (it.text) c.appendChild(rich('p-mt', it.text));
     if (it.art) c.appendChild(attOf(it.art));
     r.appendChild(c); return r;
   }
   function divider(t) { const d = h('div', 'p-div'); d.appendChild(h('span', null, t)); return d; }
   function typing(who) { const r = h('div', 'p-m is-typing'); r.appendChild(face(who)); const d = h('span', 'p-dots'); d.appendChild(h('i')); d.appendChild(h('i')); d.appendChild(h('i')); r.appendChild(d); ui.list.appendChild(r); toEnd(); return r; }
   function toEnd(smooth) { const t = ui.thr; try { t.scrollTo({ top: t.scrollHeight, behavior: smooth && !REDUCED ? 'smooth' : 'auto' }); } catch (e) { t.scrollTop = t.scrollHeight; } }
-  function add(it, quick) { const r = msg(it); ui.list.appendChild(r); ui.inlineHost = null; if (PHONE() && it.art) { const hst = h('div', 'p-inline'); ui.list.appendChild(hst); if (quick) hst.appendChild(art(it.art, { done: true })); else ui.inlineHost = hst; } if (!quick && !REDUCED) r.animate([{ translate: '0 12px' }, { translate: '0 0' }], { duration: 420, easing: EZ }); toEnd(!quick); return r; }
+  function add(it, quick) { const r = msg(it); ui.list.appendChild(r); ui.inlineHost = null; if (!quick && r._words) r._words.forEach((sp) => { sp.style.visibility = 'hidden'; }); if (PHONE() && it.art) { const hst = h('div', 'p-inline'); ui.list.appendChild(hst); if (quick) hst.appendChild(art(it.art, { done: true })); else ui.inlineHost = hst; } if (!quick && !REDUCED) r.animate([{ translate: '0 12px' }, { translate: '0 0' }], { duration: 420, easing: EZ }); toEnd(!quick); return r; }
 
   /* history: the thread as it stands before beat k (instant), and the canvas showing the last artefact */
   function history(beats) {
@@ -360,11 +387,12 @@ export function createPanel(cfg, host, env) {
     for (let j = 0; j < items.length; j++) {
       const it = items[j];
       if (it.after === 'work' && env.work) { await env.work(); if (!live()) return; }
-      if (it.decide) { await askCall(it); if (!live()) return; }
-      const ty = it.instant || it.decide ? null : typing(it.who);
-      await wait(it.instant || it.decide ? 0 : 650); if (!live()) return; if (ty) ty.remove();
-      const row = add(it);
+      const ty = it.instant ? null : typing(it.who); if (ty && env.sfx) env.sfx('type');
+      await wait(it.instant ? 0 : 650); if (!live()) return; if (ty) ty.remove();
+      const row = add(it); if (env.sfx) env.sfx(isAgent(it.who) ? 'recv' : 'sendh');
       let said = 0; if (it.voice && env.voice) { said = env.voice(it.voice) || 0; if (row._vb) { row._vb.classList.add('is-playing'); later(Math.max(said, 1200), () => row._vb.classList.remove('is-playing')); } }
+      if (row._words) { const W = row._words, tot = W.reduce((a, sp) => a + sp.textContent.length, 0) || 1, span = Math.max(600, (said || read(it.text)) - 250); let acc = 0; W.forEach((sp) => { const t = 120 + span * acc / tot; acc += sp.textContent.length; later(t, () => { sp.style.visibility = ''; }); }); }
+      if (it.voice && it.art) { await wait(said + 250); if (!live()) return; }
       if (it.art) {
         if (!(shown && shown._a === it.art)) { shown = show(it.art, { rise: true }); }
         ui.list.querySelectorAll('.p-att.is-shown').forEach((x) => x.classList.remove('is-shown')); { const at = row.querySelector('.p-att'); if (at) at.classList.add('is-shown'); }
@@ -373,8 +401,7 @@ export function createPanel(cfg, host, env) {
       }
       if (it.step != null && shown && shown._step) shown._step(it.step);
       if (it.decide && shown) decide(shown);
-      if (env.sfx) env.sfx('pop');
-      await wait(Math.max(read(it.text), said + 500) + (it.art ? 2400 : 0) + slack / Math.max(1, items.length)); if (!live()) return;
+      await wait((it.voice && it.art ? 500 : Math.max(read(it.text), said + 500)) + (it.art ? 2400 : 0) + slack / Math.max(1, items.length)); if (!live()) return;
     }
   }
   function estimateItems(items) { return 900 + items.reduce((t, it) => t + 650 + read(it.text) + (it.art ? 2400 : 0), 0); }
@@ -387,7 +414,7 @@ export function createPanel(cfg, host, env) {
     return Array.from(out);
   }
   return {
-    el: root, play, stop, show, label, history, estimate, assets, art, fit, voiceBubble, shipLabel, face,
+    el: root, play, stop, show, showWork, sheen, label, history, estimate, assets, art, fit, voiceBubble, shipLabel, face,
     get cur() { return cur; }, get asking() { return !!asking; }, answer: () => { if (asking) asking(); }, mediaOf: (e) => (e ? e.querySelector('.a-media') : null)
   };
 }
