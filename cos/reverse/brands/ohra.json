@@ -2956,10 +2956,16 @@
   "order-agency": "assets/ohra/audio/order-agency.mp3",
   "ad-agency": "assets/ohra/audio/ad-agency.mp3",
   "samples-agency": "assets/ohra/audio/samples-agency.mp3",
-  "coco-findings": "assets/ohra/audio/coco-findings.mp3",
-  "coco-heard": "assets/ohra/audio/coco-heard.mp3",
-  "coco-research": "assets/ohra/audio/coco-research.mp3",
-  "coco-morning2": "assets/ohra/audio/coco-morning2.mp3"
+  "cv-heard": "assets/ohra/audio/cv-heard.mp3",
+  "cv-research": "assets/ohra/audio/cv-research.mp3",
+  "cv-findings": "assets/ohra/audio/cv-findings.mp3",
+  "cv-morning": "assets/ohra/audio/cv-morning.mp3",
+  "cv-samples": "assets/ohra/audio/cv-samples.mp3",
+  "cv-form": "assets/ohra/audio/cv-form.mp3",
+  "cv-carton": "assets/ohra/audio/cv-carton.mp3",
+  "cv-launch": "assets/ohra/audio/cv-launch.mp3",
+  "cv-ads": "assets/ohra/audio/cv-ads.mp3",
+  "cv-orders": "assets/ohra/audio/cv-orders.mp3"
  },
  "channels": {
   "voice": "aditi-notes",
@@ -5154,8 +5160,8 @@
    "list_amazon": "sb/v20/a-list-amazon.webp?v=n15",
    "list_zepto": "sb/v20/a-list-zepto.webp?v=n15",
    "list_blinkit": "sb/v20/a-list-blinkit.webp?v=n15",
-   "firstsample": "sb/v20/ch3-first-sample.webp?v=n15",
-   "firstsample_m": "sb/v20/ch3-first-sample-390.webp?v=n15"
+   "firstsample": "sb/v20/ch3-sample-arrived.webp",
+   "mock_plain": "sb/v20/a-concept-plain.webp"
   },
   "chapters": [
    {
@@ -5232,7 +5238,7 @@
        },
        {
         "who": "Chief of staff",
-        "text": "Heard it. I've opened it as a project, with your note inside.",
+        "text": "Got it. I've opened a project for this.",
         "art": {
          "kind": "card",
          "media": {
@@ -5244,7 +5250,7 @@
          "n": "#41",
          "sub": "Owner Aditi · from her 1:32 am note"
         },
-        "voice": "coco-heard",
+        "voice": "cv-heard",
         "vlen": "0:03"
        }
       ],
@@ -5259,13 +5265,13 @@
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "I've started on it. Three agents are working overnight: reading our DMs, checking search trends, and studying what competitors charge.",
-        "voice": "coco-research",
-        "vlen": "0:08"
+        "text": "Looking into it now. You'll have an answer by morning.",
+        "voice": "cv-research",
+        "vlen": "0:03"
        },
        {
         "who": "Chief of staff",
-        "text": "It's not just your DMs. 64 people asked for a lip oil, searches are up 3x in a year, and nobody does real colour as an oil.",
+        "text": "Done. It's not just your DMs. Check this.",
         "art": {
          "kind": "stats",
          "lab": "Findings",
@@ -5287,8 +5293,8 @@
          "foot": "Sheer oils get one star for no colour. Nobody does real colour as an oil."
         },
         "after": "work",
-        "voice": "coco-findings",
-        "vlen": "0:08"
+        "voice": "cv-findings",
+        "vlen": "0:03"
        }
       ],
       "stage": "Idea",
@@ -5323,9 +5329,9 @@
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "Morning, team. New project: we're launching a lip oil. Here are the tasks, for all of you and your agents.",
-        "voice": "coco-morning2",
-        "vlen": "0:07"
+        "text": "Morning, team. New project. Your tasks are assigned, have a look.",
+        "voice": "cv-morning",
+        "vlen": "0:04"
        }
       ],
       "stage": "Project",
@@ -5334,27 +5340,27 @@
        {
         "who": "Tanvi",
         "text": "Find suppliers and get samples",
-        "due": "Day 21"
+        "due": "Day 10"
        },
        {
         "who": "Aditi",
         "text": "Finalise form factor and shades",
-        "due": "Day 30"
+        "due": "Day 18"
        },
        {
         "who": "Vikram",
         "text": "Approve sample, pricing and the PO",
-        "due": "Day 72"
+        "due": "Day 30"
        },
        {
         "who": "Naina",
         "text": "Photoshoot, listing and ads",
-        "due": "Day 165"
+        "due": "Day 52"
        },
        {
         "who": "Arjun",
         "text": "Packing and shipping",
-        "due": "Day 167"
+        "due": "Day 58"
        }
       ],
       "clones": true
@@ -5449,19 +5455,21 @@
    {
     "id": "npd",
     "name": "New product",
-    "div": "New product, Day 21",
+    "div": "New product, Day 10",
     "beats": [
      {
       "type": "panel",
-      "label": "#41 · Suppliers · Day 21",
+      "label": "#41 · Suppliers · Day 10",
       "line": "",
-      "when": "Day 21",
+      "when": "Day 10",
       "stage": "Suppliers",
       "chan": "#npd",
       "thread": [
        {
-        "who": "Tanvi's agent",
-        "text": "I found six suppliers who can make a charm body. Three are sending samples.",
+        "who": "Chief of staff",
+        "text": "The suppliers replied. Samples are in. Check sample 3.",
+        "voice": "cv-samples",
+        "vlen": "0:04",
         "art": {
          "kind": "card",
          "media": {
@@ -5472,32 +5480,41 @@
          "title": "Kapoor, Vapi",
          "n": "₹46",
          "sub": "a unit · can make the charm body · samples in 10 days"
-        }
+        },
+        "after": "work"
        },
        {
         "who": "Tanvi",
-        "text": "Samples are in. This one is the doodle, for real.",
+        "text": "This one is the doodle, for real.",
         "art": {
          "kind": "photo",
          "img": "firstsample",
-         "img_m": "firstsample_m",
-         "lab": "Day 21",
+         "lab": "Day 10 · from the supplier",
          "title": "The first sample"
         }
+       }
+      ],
+      "agents": [
+       {
+        "who": "Tanvi's agent",
+        "text": "Finding suppliers for a charm body",
+        "done": "6 found, 3 sampled"
        }
       ]
      },
      {
       "type": "panel",
-      "label": "#41 · Form and shades · Day 30",
+      "label": "#41 · Form and shades · Day 18",
       "line": "",
-      "when": "Day 30",
+      "when": "Day 18",
       "stage": "Form and shades",
       "chan": "#npd",
       "thread": [
        {
-        "who": "Aditi's agent",
-        "text": "Two forms from the samples. The team has voted.",
+        "who": "Chief of staff",
+        "text": "The team has voted. I need your call on this one.",
+        "voice": "cv-form",
+        "vlen": "0:03",
         "art": {
          "kind": "poll",
          "lab": "Form factor",
@@ -5507,29 +5524,30 @@
          "opts": [
           {
            "img": "mock_a",
-           "name": "Charm",
-           "sub": "clips on a bag",
+           "name": "Soft lobes",
+           "sub": "squishes, reads as a charm",
            "votes": 4,
            "ai": true
           },
           {
-           "img": "mock_b",
-           "name": "Tube and wand",
-           "sub": "the usual",
+           "img": "mock_plain",
+           "name": "Smooth body",
+           "sub": "as first drawn",
            "votes": 1
           }
          ]
-        }
+        },
+        "after": "work"
        },
        {
         "who": "Aditi",
-        "text": "Charm. It clips on a bag and there's no dipping.",
+        "text": "Soft lobes. It squishes, and it looks like a charm on a bag.",
         "decide": true,
-        "call": "Pick the charm"
+        "call": "Pick soft lobes"
        },
        {
-        "who": "Tanvi's agent",
-        "text": "Shades tested on three skin tones. Brick Dust holds for six hours.",
+        "who": "Tanvi",
+        "text": "And the shade is Brick Dust. Six hours on all three skin tones.",
         "art": {
          "kind": "card",
          "media": {
@@ -5541,27 +5559,41 @@
          "sub": "skin tones · holds six hours · no feathering"
         }
        }
+      ],
+      "agents": [
+       {
+        "who": "Aditi's agent",
+        "text": "Mocking up two forms of the charm",
+        "done": "2 forms, team voted"
+       },
+       {
+        "who": "Tanvi's agent",
+        "text": "Testing shades on three skin tones",
+        "done": "1 shade holds 6 h"
+       }
       ]
      },
      {
       "type": "panel",
-      "label": "#41 · Approvals · Day 72",
+      "label": "#41 · Approvals · Day 30",
       "line": "",
-      "when": "Day 72",
+      "when": "Day 30",
       "stage": "Approvals",
       "chan": "#npd",
       "thread": [
        {
-        "who": "Vikram's agent",
-        "text": "Carton v4 passes all 14 label rules. Cleared to print.",
+        "who": "Chief of staff",
+        "text": "The carton had a gap. I got it fixed. Check the proof.",
+        "voice": "cv-carton",
+        "vlen": "0:03",
         "art": {
          "kind": "card",
          "media": {
           "img": "carton",
           "fit": "cover"
          },
-         "lab": "Carton proof v4",
-         "title": "14 of 14 rules",
+         "lab": "Carton proof v3",
+         "title": "13 of 14 rules",
          "list": [
           [
            "Brand and shade",
@@ -5576,16 +5608,16 @@
            ""
           ],
           [
-           "Net 4 ml",
-           "added"
+           "Net quantity",
+           "missing"
           ]
-         ],
-         "pick": "Cleared to print"
-        }
+         ]
+        },
+        "after": "work"
        },
        {
-        "who": "Vikram's agent",
-        "text": "Pricing is in: ₹46 a unit for the product, ₹6 for the carton. The PO is drafted.",
+        "who": "Chief of staff",
+        "text": "Pricing is in: ₹46 a unit for the product, ₹6 for the carton. The PO is ready for you.",
         "art": {
          "kind": "table",
          "lab": "Purchase order",
@@ -5629,6 +5661,18 @@
         "text": "Approved. Sample, pricing and the PO.",
         "decide": true,
         "call": "Approve all three"
+       }
+      ],
+      "agents": [
+       {
+        "who": "Vikram's agent",
+        "text": "Checking the carton against 14 label rules",
+        "done": "1 gap caught and fixed"
+       },
+       {
+        "who": "Vikram's agent",
+        "text": "Getting pricing, drafting the PO",
+        "done": "PO drafted"
        }
       ]
      },
@@ -5681,16 +5725,16 @@
       "img": "firstsample",
       "ph": "The first sample, on the page it was drawn on",
       "line": "",
-      "when": "Day 21",
+      "when": "Day 10",
       "hold": 7200,
       "img_m": "firstsample_m",
       "skip": true
      },
      {
       "type": "panel",
-      "label": "#41 · Sample · Day 21",
+      "label": "#41 · Sample · Day 10",
       "line": "",
-      "when": "Day 21",
+      "when": "Day 10",
       "thread": [
        {
         "who": "Tanvi",
@@ -5698,8 +5742,7 @@
         "art": {
          "kind": "photo",
          "img": "firstsample",
-         "img_m": "firstsample_m",
-         "lab": "Day 21",
+         "lab": "Day 10",
          "title": "The first sample"
         }
        },
@@ -5852,9 +5895,9 @@
      },
      {
       "type": "panel",
-      "label": "#41 · Purchase order · Day 72",
+      "label": "#41 · Purchase order · Day 30",
       "line": "",
-      "when": "Day 72",
+      "when": "Day 30",
       "thread": [
        {
         "who": "Vendor agent",
@@ -5913,13 +5956,13 @@
    {
     "id": "shoot",
     "name": "Shoot",
-    "div": "Launch, Day 165",
+    "div": "Launch, Day 52",
     "beats": [
      {
       "type": "panel",
-      "label": "#41 · Launch · Day 165",
+      "label": "#41 · Launch · Day 52",
       "line": "",
-      "when": "Day 165",
+      "when": "Day 52",
       "stage": "Launch",
       "chan": "#marketing",
       "thread": [
@@ -5929,7 +5972,6 @@
         "art": {
          "kind": "photo",
          "img": "shoot",
-         "img_m": "shoot_m",
          "lab": "The shoot",
          "title": "On a bag, in daylight"
         }
@@ -5950,8 +5992,10 @@
         }
        },
        {
-        "who": "Naina's agent",
-        "text": "One listing, five places, one voice. All live.",
+        "who": "Chief of staff",
+        "text": "Done. The listing is live. Have a look.",
+        "voice": "cv-launch",
+        "vlen": "0:03",
         "art": {
          "kind": "card",
          "media": {
@@ -5982,7 +6026,15 @@
            "₹899"
           ]
          ]
-        }
+        },
+        "after": "work"
+       }
+      ],
+      "agents": [
+       {
+        "who": "Naina's agent",
+        "text": "Listing the product in five places",
+        "done": "Live in 5"
        }
       ]
      },
@@ -5990,13 +6042,15 @@
       "type": "panel",
       "label": "#41 · Ads · Launch week",
       "line": "",
-      "when": "Day 166, 12:50 am",
+      "when": "Day 53, 12:50 am",
       "stage": "Launch",
       "chan": "#marketing",
       "thread": [
        {
-        "who": "Naina's agent",
-        "text": "Three ad cuts are live. I'll pause anything under 1 overnight.",
+        "who": "Chief of staff",
+        "text": "The ads ran overnight. Cut B is winning. Check this.",
+        "voice": "cv-ads",
+        "vlen": "0:03",
         "art": {
          "kind": "ads",
          "lab": "Ads",
@@ -6020,7 +6074,15 @@
            "st": "paused"
           }
          ]
-        }
+        },
+        "after": "work"
+       }
+      ],
+      "agents": [
+       {
+        "who": "Naina's agent",
+        "text": "Running three ad cuts overnight",
+        "done": "1 paused, 1 winning"
        }
       ]
      },
@@ -6030,16 +6092,16 @@
       "img": "shoot",
       "ph": "The shoot: on a bag, in daylight",
       "line": "",
-      "when": "Day 150",
+      "when": "Day 50",
       "hold": 7600,
       "img_m": "shoot_m",
       "skip": true
      },
      {
       "type": "panel",
-      "label": "#41 · Listing · Day 165",
+      "label": "#41 · Listing · Day 52",
       "line": "",
-      "when": "Day 165",
+      "when": "Day 52",
       "thread": [
        {
         "who": "Naina",
@@ -6047,7 +6109,6 @@
         "art": {
          "kind": "photo",
          "img": "shoot",
-         "img_m": "shoot_m",
          "lab": "The shoot",
          "title": "On a bag, in daylight"
         }
@@ -6111,7 +6172,7 @@
       "type": "panel",
       "label": "#41 · Ads · Launch week",
       "line": "",
-      "when": "Day 166, 12:50 am",
+      "when": "Day 53, 12:50 am",
       "thread": [
        {
         "who": "Ads agent",
@@ -6151,19 +6212,21 @@
    {
     "id": "order",
     "name": "Order",
-    "div": "Orders, Day 167",
+    "div": "Orders, Day 58",
     "beats": [
      {
       "type": "panel",
-      "label": "#41 · Orders · Day 167",
+      "label": "#41 · Orders · Day 58",
       "line": "",
-      "when": "Day 167, 6 pm",
+      "when": "Day 58, 6 pm",
       "stage": "Orders",
       "chan": "#orders",
       "thread": [
        {
-        "who": "Arjun's agent",
-        "text": "First order, just now, from the site.",
+        "who": "Chief of staff",
+        "text": "First order just came in.",
+        "voice": "cv-orders",
+        "vlen": "0:02",
         "art": {
          "kind": "card",
          "media": {
@@ -6174,11 +6237,12 @@
          "title": "Brick Dust lip oil",
          "n": "₹899",
          "sub": "Order OH-20418 · Saket, New Delhi · paid"
-        }
+        },
+        "after": "work"
        },
        {
-        "who": "Arjun's agent",
-        "text": "Launch hour: 86 orders. Labels are printed.",
+        "who": "Chief of staff",
+        "text": "Launch hour: 86 orders. Every label is printed.",
         "art": {
          "kind": "card",
          "media": {
@@ -6194,13 +6258,20 @@
         "who": "Arjun",
         "text": "all 86 packed for the morning batch"
        }
+      ],
+      "agents": [
+       {
+        "who": "Arjun's agent",
+        "text": "Printing labels as orders come in",
+        "done": "86 labels printed"
+       }
       ]
      },
      {
       "type": "scene",
       "scene": "pack",
       "line": "",
-      "when": "Day 167",
+      "when": "Day 58",
       "el": {
        "label": true
       },
@@ -6211,7 +6282,7 @@
       "type": "panel",
       "label": "#41 · Orders · launch hour",
       "line": "",
-      "when": "Day 167, 6 pm",
+      "when": "Day 58, 6 pm",
       "thread": [
        {
         "who": "Ops agent",
@@ -6238,9 +6309,9 @@
      },
      {
       "type": "panel",
-      "label": "#41 · Shipments · Day 168",
+      "label": "#41 · Shipments · Day 59",
       "line": "",
-      "when": "Day 168, 11:20 am",
+      "when": "Day 59, 11:20 am",
       "thread": [
        {
         "who": "Chief of staff",
@@ -6264,11 +6335,11 @@
           ],
           [
            "In transit",
-           "Day 168"
+           "Day 59"
           ],
           [
            "Out for delivery",
-           "Day 169"
+           "Day 60"
           ]
          ]
         }
@@ -6284,9 +6355,9 @@
      },
      {
       "type": "panel",
-      "label": "#41 · Orders · Day 169",
+      "label": "#41 · Orders · Day 60",
       "line": "",
-      "when": "Day 169, 6:14 pm",
+      "when": "Day 60, 6:14 pm",
       "thread": [
        {
         "who": "Support agent",
@@ -6300,7 +6371,7 @@
          "lab": "Delivered",
          "title": "Saket, New Delhi",
          "n": "6:14 pm",
-         "sub": "Day 169 · care note sent at 7:20 pm"
+         "sub": "Day 60 · care note sent at 7:20 pm"
         }
        },
        {
@@ -6392,26 +6463,33 @@
       "type": "scene",
       "scene": "arrive",
       "line": "",
-      "when": "",
+      "when": "Day 60",
       "hold": 5600
      },
      {
       "type": "scene",
       "scene": "end",
-      "line": "From a thought at 1:32 am",
-      "when": "Today",
+      "line": "From an idea at 1:32 am on Day 0 to her door on Day 60, and everything in between.",
+      "when": "",
       "cta": "See the scope and pricing",
-      "hold": 9000
+      "hold": 9000,
+      "line2": "Coco, the chief of staff OS for consumer brands."
      }
     ]
    }
   ]
  },
  "audio_len": {
-  "coco-findings": 7.52,
-  "coco-heard": 3.48,
-  "coco-research": 7.89,
   "voice-note": 21.76,
-  "coco-morning2": 7.24
+  "cv-heard": 2.6,
+  "cv-research": 2.83,
+  "cv-findings": 2.55,
+  "cv-morning": 3.76,
+  "cv-samples": 3.62,
+  "cv-form": 2.88,
+  "cv-carton": 3.34,
+  "cv-launch": 2.65,
+  "cv-ads": 3.34,
+  "cv-orders": 1.81
  }
 }

@@ -482,6 +482,9 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
       const y = near ? 0.064 + r() * 0.007 : 0.066 + Math.pow(r(), 0.45) * 0.04;
       const tilt = near ? 0.1 : 0.6;
       e.set((r() - 0.5) * tilt, r() * Math.PI * 2, (r() - 0.5) * tilt); q.setFromEuler(e); sc.setScalar(0.7 + r() * 0.35);
+      /* a strand is ~85 mm long: keep its whole length inside the walls, whatever way it lies (none pokes through the box) */
+      { const half = 0.0425 * sc.x + 0.003, hx = Math.abs(Math.cos(e.y)) * half, hz = Math.abs(Math.sin(e.y)) * half, mx = Math.max(0.004, W / 2 - TB - hx - 0.003), mz = Math.max(0.004, D / 2 - TB - hz - 0.003);
+        x = Math.max(-mx, Math.min(mx, x)); z = Math.max(-mz, Math.min(mz, z)); }
       m4.compose(v.set(x, y, z), q, sc); crinkles.setMatrixAt(i, m4);
       c.set(P.fill[i % P.fill.length]).offsetHSL(0, 0, (r() - 0.5) * 0.06); crinkles.setColorAt(i, c);
     }

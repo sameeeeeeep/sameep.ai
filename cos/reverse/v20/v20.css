@@ -705,3 +705,79 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: "Clash Display", system-ui, 
 .bd-tc .bd-sum { font-size: 12px; color: var(--g2); }
 @media (max-width: 760px) { .bd-tasks { display: none; } }
 .bd-tco .p-av + .p-av { margin-left: -9px; box-shadow: 0 0 0 1.5px var(--w); }
+
+/* ---------- phone: the task being worked on sits above the canvas; a beat that hands out tasks shows all of them ---------- */
+@media (max-width: 760px) {
+  .bd-tasks { display: flex; flex: none; gap: 6px; overflow: visible; }
+  .bd-tasks > .bd-h, .bd-tasks > .bd-empty { display: none; }
+  .bd-tasks .bd-tc { display: none; padding: 9px 11px 10px; }
+  .bd-tasks .bd-tc.is-active { display: grid; }
+  .bd-tc .bd-nest { gap: 5px; } .bd-tc .bd-na { padding: 6px 8px; }
+  .v-panel .p > .bd-mid { gap: 8px; }
+  .v[data-focus="tasks"] .bd-tasks .bd-tc { display: grid; }
+  .v[data-focus="tasks"] .v-panel .p > .bd-mid { flex: 1 1 0; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .v[data-focus="tasks"] .v-panel .p > .p-cv { display: none; }
+  .bd-faces .is-clone { display: grid; width: 20px; height: 20px; margin-left: -9px; }
+  .bd-faces .p-av { width: 24px; height: 24px; }
+}
+@media (max-width: 760px) {
+  .bd-faces .is-clone { display: none; }
+  .bd-faces .p-av { width: 26px; height: 26px; }
+  .bd-tasks .bd-tc .bd-na:not(:last-child) { display: none; }
+}
+
+/* the play triangle is centred by geometry at every size, never by hand-set offsets */
+.vb-p::after, .p-att .vb-p::after, .p-mc .vb.is-msg .vb-p::after, .a-media .vb-p::after, .ph-b .vb-p::after { left: 50%; top: 50%; translate: -36% -50%; }
+.vb-l { flex: none; }
+@media (max-width: 760px) { .v-panel .p-cv:has(.p-call) .p-stage { padding-bottom: 70px; } }
+
+/* ---------- the close: the line and what Coco is, centred above the buttons ---------- */
+.v[data-scene="end"] .v-bot { bottom: 118px; height: auto; justify-content: center; text-align: center; }
+.v[data-scene="end"] .v-side { display: none; }
+.v[data-scene="end"] .v-line { flex: none; max-width: 1080px; font-size: 38px; line-height: 1.12; }
+.v[data-scene="end"] .v-line span { display: block; margin-top: 12px; font-size: 21px; font-weight: 500; letter-spacing: 0; color: var(--k); }
+@media (max-width: 760px) { .v[data-scene="end"] .v-bot { bottom: 132px; padding: 0 20px; display: flex; } .v[data-scene="end"] .v-line { font-size: 22px; } .v[data-scene="end"] .v-line span { font-size: 15px; margin-top: 8px; } }
+
+/* the close, laid out plainly: the lines bottom left, the buttons bottom right */
+.v[data-scene="end"] .v-scene { bottom: 0; }
+.v[data-scene="end"] .v-bot { bottom: 40px; height: auto; justify-content: flex-start; text-align: left; }
+.v[data-scene="end"] .v-line { max-width: 760px; font-size: 36px; }
+.v[data-scene="end"] .v-end { left: auto; right: var(--gut); bottom: 44px; translate: none; }
+.v[data-scene="end"] .v-prog { display: none; }
+@media (max-width: 760px) {
+  .v[data-scene="end"] .v-bot { bottom: 136px; padding: 0 16px; display: flex; }
+  .v[data-scene="end"] .v-line { font-size: 22px; max-width: none; }
+  .v[data-scene="end"] .v-end { left: 16px; right: 16px; bottom: 24px; width: auto; }
+}
+@media (max-width: 760px) { .v[data-scene="end"] .v-line { flex: 1 1 0; min-width: 0; white-space: normal; text-wrap: balance; } .v[data-scene="end"] .v-bot { bottom: 150px; } }
+
+/* ---------- the card in focus: the task being worked on is lit, the rest step back ---------- */
+.bd-tasks:has(.bd-tc.is-active) .bd-tc:not(.is-active) { opacity: .5; }
+.bd-tc.is-active { border-color: var(--ring); }
+.p-att.is-shown { outline: 2px solid var(--ring); outline-offset: 4px; }
+
+/* ================= phone: one conversation =================
+   The board is not shrunk. On a phone the story stays in the chat it started in: every message and voice note at full
+   width, each card and photo arriving inline under the message that brings it, the lit stage in a slim strip on top,
+   the task in focus pinned under it, and the decision as a button at the bottom. There is no separate canvas. */
+@media (max-width: 760px) {
+  .v-panel .p { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 12px; }
+  .v-panel .p > .p-cv { display: none !important; }
+  .v-panel .p > .bd-tiles { display: none; }
+  .bd-now { display: none; }
+  .v-panel .p > .bd-mid, .v[data-focus="tasks"] .v-panel .p > .bd-mid { order: 1; flex: none; max-height: 30%; overflow-y: auto; scrollbar-width: none; gap: 6px; }
+  .v[data-focus="tasks"] .v-panel .p > .bd-mid { max-height: 54%; }
+  .v-panel .p > .p-thr { order: 2; flex: 1 1 0; min-height: 0; overflow-y: auto; scrollbar-width: none; border: 1px solid var(--line); border-radius: 16px; background: var(--w); }
+  .v-panel .p-list { display: flex; flex-direction: column; gap: 14px; padding: 16px 14px 96px; }
+  .v-panel .p-list > .p-m { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; }
+  .v-panel .p-list > .p-div { display: flex; }
+  .v-panel .p-list > .p-inline { display: block; }
+  .v-panel .p-list > .p-m.is-typing { display: grid; }
+  .v-panel .p-mt { font-size: 15.5px; line-height: 1.4; } .v-panel .p-mt.is-said { font-size: 14px; }
+  .p-att { display: none; }
+  .p-inline .a { width: 100%; height: auto; max-height: none; border: 1px solid var(--line); border-radius: 16px; cursor: zoom-in; }
+  .p-inline .a.is-photo { aspect-ratio: 16 / 11; display: grid; }
+  .p-inline .a.is-card > .a-media { height: 210px; }
+  .p-inline .a.is-card > .a-media.is-voice { height: auto; }
+  .v-panel .p > .p-call { position: absolute; left: 12px; right: 12px; bottom: 16px; translate: none; justify-content: space-between; z-index: 6; padding: 8px 8px 8px 16px; border-color: var(--k); }
+}

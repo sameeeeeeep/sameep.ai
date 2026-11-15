@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v20x';
+import { createPanel, EZ, read } from './v20-app.js?v=v21k';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -18,7 +18,7 @@ const str = (v, d) => (v == null || v === '' ? (d == null ? '' : d) : String(v))
 const arr = (v) => (Array.isArray(v) ? v : []);
 const PHONE = () => innerWidth < 760;
 const PAPER = '#F2F0EB';
-const P3_URL = '../p20-parcel.js?v=p20g', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
+const P3_URL = '../p20-parcel.js?v=p20h', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
 const P3 = !Q.has('door3d');
 const AUTO = !Q.has('manual');   /* the story plays itself once the viewer clicks to begin; it holds at the milestones (send the note, the decisions). ?manual = stepped */
 let started = !AUTO;
@@ -61,7 +61,23 @@ function tone(f, d, v, type, to) {
   g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(v, n + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, n + d);
   o.connect(g); g.connect(AC.destination); o.start(n); o.stop(n + d + 0.05);
 }
-const SFX = { sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06), tick: () => tone(880, 0.07, 0.03, 'triangle'), done: () => { tone(620, 0.08, 0.04, 'triangle'); setTimeout(() => tone(930, 0.12, 0.04, 'triangle'), 70); }, chime: () => { tone(523, 0.22, 0.05); setTimeout(() => tone(659, 0.22, 0.05), 110); setTimeout(() => tone(784, 0.34, 0.05), 220); } };
+function noise(d, v, f, q, type, to) {
+  if (!SOUND || !AC) return;
+  const n = AC.currentTime, len = Math.max(1, Math.floor(AC.sampleRate * d)), buf = AC.createBuffer(1, len, AC.sampleRate), ch = buf.getChannelData(0);
+  for (let k = 0; k < len; k++) ch[k] = Math.random() * 2 - 1;
+  const src = AC.createBufferSource(); src.buffer = buf; const bq = AC.createBiquadFilter(); bq.type = type || 'bandpass'; bq.frequency.setValueAtTime(f, n); if (to) bq.frequency.exponentialRampToValueAtTime(to, n + d); bq.Q.value = q || 1;
+  const g = AC.createGain(); g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(v, n + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, n + d);
+  src.connect(bq); bq.connect(g); g.connect(AC.destination); src.start(n); src.stop(n + d + 0.02);
+}
+/* what the parcel does, heard: a lift, a landing, paper peeling, tape, card flaps, the printer */
+const BOXFX = {
+  lift: () => noise(0.5, 0.05, 500, 0.8, 'bandpass', 2400), land: () => { tone(120, 0.22, 0.09); noise(0.14, 0.06, 300, 0.7, 'lowpass'); }, settle: () => tone(150, 0.12, 0.04),
+  peel: () => noise(0.42, 0.045, 3200, 1.4, 'bandpass', 5200), 'label-off': () => noise(0.16, 0.04, 4200, 1.2), 'tape-slit': () => noise(0.5, 0.06, 2400, 2.2, 'bandpass', 3600),
+  flap: () => { noise(0.12, 0.06, 420, 0.8, 'lowpass'); tone(210, 0.07, 0.03); }, 'carton-rise': () => noise(0.4, 0.03, 900, 0.7, 'bandpass', 1800), 'tuck-open': () => noise(0.1, 0.04, 1200, 1), 'slide-out': () => noise(0.5, 0.03, 700, 0.7, 'bandpass', 2000),
+  'carton-in': () => noise(0.35, 0.03, 800, 0.7), 'carton-down': () => { tone(140, 0.14, 0.05); noise(0.1, 0.04, 400, 0.8, 'lowpass'); }, 'tape-run': () => noise(0.9, 0.06, 2200, 2.4, 'bandpass', 3000), 'tape-cut': () => noise(0.08, 0.07, 5000, 1.5),
+  'label-print': () => { tone(96, 0.7, 0.03, 'square'); noise(0.7, 0.02, 2600, 3); }, 'label-tear': () => noise(0.14, 0.05, 4600, 1.3), 'label-press': () => { tone(180, 0.1, 0.05); noise(0.08, 0.04, 600, 0.8, 'lowpass'); }, ready: () => { tone(660, 0.12, 0.04); setTimeout(() => tone(990, 0.2, 0.04), 110); }
+};
+const SFX = { rec: () => { tone(880, 0.09, 0.05); setTimeout(() => tone(880, 0.09, 0.05), 140); }, approve: () => { tone(523, 0.1, 0.06); setTimeout(() => tone(784, 0.2, 0.06), 90); noise(0.06, 0.03, 3000, 1); }, voice: () => tone(1040, 0.06, 0.03, 'triangle'), whoosh: () => noise(0.35, 0.04, 700, 0.8, 'bandpass', 2600), sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06), tick: () => tone(880, 0.07, 0.03, 'triangle'), done: () => { tone(620, 0.08, 0.04, 'triangle'); setTimeout(() => tone(930, 0.12, 0.04, 'triangle'), 70); }, chime: () => { tone(523, 0.22, 0.05); setTimeout(() => tone(659, 0.22, 0.05), 110); setTimeout(() => tone(784, 0.34, 0.05), 220); } };
 function playClip(key) {
   stopClip(); const u = (cfg.audio || {})[key]; if (!u || MUTED || !SOUND) return false;
   const a = clip(u); try { a.currentTime = 0; } catch (e) { /* */ }
@@ -89,7 +105,7 @@ function ensureBox() {
       box = initP3(Object.assign(p3cfg(), { station: V.station || {} }), (k) => (k === 'sketch' ? IMG('sketch') : src), { paper: PAPER, fontsIn: p3fonts, lazy: true });
       ui.d3.appendChild(box.el); sizeBox();
       if (box.on) box.on('hero', (r) => onHero(r));
-      if (box.on) box.on('*', (name) => { if (name === 'land' || name === 'settle') tone(180, 0.18, 0.07); else if (/flap|carton/.test(name)) tone(300, 0.08, 0.035); else if (/tape|peel|label/.test(name)) tone(900, 0.05, 0.025, 'triangle'); });
+      if (box.on) box.on('*', (name) => { if (BOXFX[name]) BOXFX[name](); });
       if (box.on) box.on('label', (r) => onLabel(r));
       return box;
     }
@@ -253,7 +269,7 @@ const SCENE = {
       if (!W.length) tr.hidden = true;
       ui.sceneT = setTimeout(() => { tr.remove(); send(); }, total + 500);
     }
-    if (b.voice && !ui.seek) playClip(b.voice);
+    if (b.voice && !ui.seek) { SFX.rec(); playClip(b.voice); }
     return w;
   },
   still: (b) => { const w = still(PHONE() && b.img_m ? b.img_m : b.img, b.ph); if (b.el) placeEl(b, w); const im = w.querySelector('img'); if (im && !REDUCED && !ui.seek) im.animate([{ transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 6500, easing: 'cubic-bezier(.2,.6,.2,1)' }); return w; },
@@ -357,12 +373,13 @@ function show(k, how) {
   const dur = durOf(b);
   if (b.type === 'panel') {
     /* the element (if this beat is entered from its scene) is taken before the hard cut */
-    const src = seq && B[from] && B[from].type === 'scene' && b.enter ? grab() : null;
+    const src = seq && B[from] && B[from].type === 'scene' && b.enter && !PHONE() ? grab() : null;
     boxOn = false; cancelAnimationFrame(raf);
     ui.root.classList.remove('is-3d');
     ui.scene.innerHTML = ''; ui.scene.className = 'v-scene';
     ui.panelHost.classList.add('is-on');
     ui.root.classList.toggle('bd-build', !!src && !REDUCED);
+    ui.root.dataset.focus = b.tasks ? 'tasks' : '';   /* on a phone, a beat that hands out tasks shows the task cards where the canvas is */
     ui.workDone = seq ? 0 : 99; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
     panel.fit();
     if (!seq || from < 0 || B[from].type !== 'panel') {
@@ -491,6 +508,7 @@ function board(k, settled) {
     const note = (w, text) => { if (!w) return; if (!isAg(w)) { spoke[w] = 1; return; } let a = agents.find((y) => y.who === w); if (!a) { a = { who: w }; agents.push(a); } if (text) a.last = text; a.live = here; };
     arr(x.thread).forEach((it) => { note(it.who, it.text); if (it.art && it.art.kind === 'list') arr(it.art.rows).forEach((r) => note(r.who, r.text)); });
     if (x.work) arr(x.work.agents).forEach((r) => note(r.who, r.text));
+    arr(x.agents).forEach((r) => note(r.who, r.text));
   });
   bd.team.innerHTML = '';
   const fs = h('span', 'bd-faces');
@@ -527,7 +545,7 @@ function board(k, settled) {
   const now = h('div', 'bd-now');
   const nh = h('div', 'bd-nh'); nh.appendChild(h('span', null, 'Now · ' + str(b.when))); nh.appendChild(h('span', null, 'Stage ' + (si + 1) + ' of ' + STG.length)); now.appendChild(nh);
   const nb = h('div', 'bd-nb'); const pi = IMG('product'); if (pi && day >= 21) nb.appendChild(img(pi, 'bd-np')); else if (IMG('sketch_ink') || IMG('sketch')) nb.appendChild(img(str(IMG('sketch_ink'), IMG('sketch')), 'bd-np is-sk'));
-  const nt = h('div'); nt.appendChild(h('b', null, str(b.stage) + ' · ' + str(b.chan))); nt.appendChild(h('p', null, str(b.label).replace(/^#\d+\s*·\s*/, ''))); nb.appendChild(nt); now.appendChild(nb);
+  const nt = h('div'); nt.appendChild(h('b', null, str(b.stage))); nt.appendChild(h('p', null, str(b.chan))); nb.appendChild(nt); now.appendChild(nb);   /* the stage once, and where it is happening */
   bd.mid.appendChild(now);
   /* one pane: the tasks, and inside the task being worked on, the agents working on it. Nothing here repeats on the canvas. */
   const stageDay = si >= 0 ? STG[si].day : null, stageBeats = past.filter((x) => x.stage === b.stage);
@@ -551,7 +569,9 @@ function board(k, settled) {
       done = t.dueDay >= 0 && (day > t.dueDay || (day === t.dueDay && !!settled && !B.slice(k + 1).some((x) => x.type === 'panel' && x.stage === b.stage)));
       if (active && !done) {
         const seen = {};
-        stageBeats.forEach((x) => arr(x.thread).forEach((it) => { if (isAg(it.who) && !/^chief of staff$/i.test(it.who)) { const lv = x === b && !settled; if (!seen[it.who]) { seen[it.who] = { who: it.who }; nest.push(seen[it.who]); } seen[it.who].text = it.text; seen[it.who].tag = lv ? 'working' : 'done'; seen[it.who].work = lv; } }));
+        /* the agents on this task: each works, then reports its result (the beat's Coco line waits for them) */
+        stageBeats.forEach((x) => arr(x.agents).forEach((a, j) => { const fin = x !== b || j < (ui.workDone || 0); nest.push({ who: a.who, key: a.who + '|' + a.text, text: fin ? str(a.done, 'Done') : a.text, tag: fin ? 'done' : 'working', work: !fin }); }));
+        if (!nest.length) stageBeats.forEach((x) => arr(x.thread).forEach((it) => { if (isAg(it.who) && !/^chief of staff$/i.test(it.who)) { const lv = x === b && !settled; if (!seen[it.who]) { seen[it.who] = { who: it.who }; nest.push(seen[it.who]); } seen[it.who].text = it.text; seen[it.who].tag = lv ? 'working' : 'done'; seen[it.who].work = lv; } }));
       }
       active = active && !done;
     }
@@ -569,7 +589,7 @@ function board(k, settled) {
           const ar = h('div', 'bd-na' + (a.work ? ' is-work' : '')); ar.appendChild(panel.face(a.who));
           const at = h('div'); at.appendChild(h('b', null, a.who)); at.appendChild(h('p', null, clip2(a.text, 46))); ar.appendChild(at);
           const tag = h('span', 'bd-tag' + (a.work ? ' is-work' : ''), a.work ? 'working' : 'done'); ar.appendChild(tag);
-          const ak = t.key + '>' + a.who; cur.agents[ak] = a.work ? 2 : 1;
+          const ak = t.key + '>' + (a.key || a.who); cur.agents[ak] = a.work ? 2 : 1;
           if (!was.agents[ak]) { move(ar, [{ translate: '-14px 0' }, { translate: '0 0' }], { delay: tlag + 250 + n * 220 }); if (live) setTimeout(() => SFX.tick(), tlag + 250 + n * 220); }
           else if (was.agents[ak] === 2 && !a.work) { move(tag, [{ scale: '.5' }, { scale: '1' }], { easing: BACK }); move(at, [{ translate: '0 6px' }, { translate: '0 0' }], {}); if (live) SFX.done(); }
           N.appendChild(ar);
@@ -686,9 +706,9 @@ function build() {
   ui.offer = h('div', 'v-offer'); r.appendChild(ui.offer);
   mount.appendChild(r);
   panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView,
-    voice: (k) => { const len = +((cfg.audio_len || {})[k] || 0) * 1000; playClip(k); return len; },
+    voice: (k) => { const len = +((cfg.audio_len || {})[k] || 0) * 1000; SFX.voice(); playClip(k); return len; },
     peek: () => { if (AUTO && playing) setPlay(false); },
-    work: () => new Promise((res) => { const k = i, b = B[k], n = arr(b && b.work && b.work.agents).length; if (!n || ui.seek || REDUCED) { ui.workDone = n; board(k, false); return res(); } let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 700); else setTimeout(tick, 1100); }; setTimeout(tick, 1600); }) });
+    work: () => new Promise((res) => { const k = i, b = B[k], n = arr(b && ((b.work && b.work.agents) || b.agents)).length; if (!n || ui.seek || REDUCED) { ui.workDone = n; board(k, false); return res(); } let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 700); else setTimeout(tick, 1100); }; setTimeout(tick, 1600); }) });
   top.appendChild(ctl);   /* the controls live in the top bar: nothing sits under the picture */
   boardData(); buildBoard();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });

@@ -125,7 +125,7 @@ export function createPanel(cfg, host, env) {
       return e;
     }
     if (a.kind === 'photo') {   /* a photograph fills the card; a caption sits under it */
-      const src = pic(PHONE() && a.img_m ? a.img_m : a.img), F = h('div', 'a-photo');
+      const src = pic(a.img), F = h('div', 'a-photo');   /* the wide picture: the card is wide on a phone too */
       if (src) { const im = h('img'); im.alt = str(a.title); im.decoding = 'async'; im.src = src; F.appendChild(im); } else F.appendChild(h('span', 'a-ph', str(a.title, a.img)));
       e.appendChild(F); const C = h('div', 'a-cap'); if (a.title) C.appendChild(h('b', null, a.title)); if (a.lab) C.appendChild(h('span', null, a.lab)); e.appendChild(C);
       return e;
@@ -250,16 +250,16 @@ export function createPanel(cfg, host, env) {
   const later = (ms, fn) => { const t = token; T.push(setTimeout(() => { if (t === token) fn(); }, REDUCED ? Math.min(ms, 40) : ms)); };
   const wait = (ms) => new Promise((r) => later(ms, r));
   let asking = null;
-  function stop() { T.forEach(clearTimeout); T = []; token++; asking = null; ui.list.querySelectorAll('.is-typing').forEach((e) => e.remove()); ui.cv.querySelectorAll('.p-call').forEach((e) => e.remove()); }
+  function stop() { T.forEach(clearTimeout); T = []; token++; asking = null; ui.list.querySelectorAll('.is-typing').forEach((e) => e.remove()); root.querySelectorAll('.p-call').forEach((e) => e.remove()); }
   /* a decision is the viewer's: the story holds on a button until they take it (Next and scroll take it too) */
   function askCall(it) {
     return new Promise((res) => {
       const my = token, bar = h('div', 'p-call');
       bar.appendChild(h('span', null, 'Your call, as ' + str(it.who)));
       const b = h('button', 'p-call-b', str(it.call, 'Approve')); b.type = 'button'; bar.appendChild(b);
-      ui.cv.appendChild(bar);
+      (PHONE() ? root : ui.cv).appendChild(bar);
       if (!REDUCED) bar.animate([{ translate: '0 14px' }, { translate: '0 0' }], { duration: 420, easing: EZ });
-      const done = () => { if (asking !== done) return; asking = null; bar.remove(); if (my === token) res(); };
+      const done = () => { if (asking !== done) return; asking = null; bar.remove(); if (env.sfx) env.sfx('approve'); if (my === token) res(); };
       asking = done;
       b.addEventListener('click', (ev) => { ev.stopPropagation(); done(); });
     });
@@ -268,6 +268,15 @@ export function createPanel(cfg, host, env) {
   /* the canvas shows exactly one artefact: a hard cut, then the card settles a few px (position only) */
   function show(a, o) {
     o = o || {};
+    /* on a phone there is no canvas: the story is one conversation, and a card or photo arrives in it, full width, under the message that brings it */
+    if (PHONE()) {
+      const hst = ui.inlineHost; ui.inlineHost = null; if (!a || !hst) return null;
+      const e0 = art(a, o); e0.addEventListener('click', (ev) => { if (ev.target.closest('.a-row')) return; if (env.open) env.open({ art: a }); });
+      hst.appendChild(e0); cur = e0;
+      if (o.rise && !REDUCED) { e0.animate([{ translate: '0 26px', scale: '.96' }, { translate: '0 0', scale: '1' }], { duration: 520, easing: EZ }); if (env.sfx) { env.sfx('land'); if (/new project/i.test(str(a.lab))) later(300, () => env.sfx('chime')); } }
+      toEnd(true); later(560, () => toEnd(true));
+      return e0;
+    }
     ui.stage.innerHTML = ''; cur = null;
     if (!a) return null;
     fit();
@@ -286,8 +295,8 @@ export function createPanel(cfg, host, env) {
   /* ---------- the thread ---------- */
   function attOf(a) {
     const b = h('button', 'p-att'); b.type = 'button';
-    const m = (a.kind === 'photo' ? { img: PHONE() && a.img_m ? a.img_m : a.img } : null) || a.media || (a.opts && a.opts[0]) || (a.cuts && a.cuts.find((x) => x.st === 'win')) || null;
-    if (m && m.voice) b.appendChild(voiceBubble(m.voice));
+    const m = (a.kind === 'photo' ? { img: a.img } : null) || a.media || (a.opts && a.opts[0]) || (a.cuts && a.cuts.find((x) => x.st === 'win')) || null;
+    if (m && m.voice && /voice note/i.test(str(a.lab))) b.appendChild(voiceBubble(m.voice));   /* only the note itself is a voice bubble; a card that holds the note is a card */
     else {
       if (m && m.label) { const t = h('span', 'p-att-i is-label'); t.appendChild(h('i')); b.appendChild(t); }
       else if (m && m.img && pic(m.img)) { const im = h('img', 'p-att-i'); im.alt = ''; im.src = pic(m.img); b.appendChild(im); }
@@ -309,7 +318,7 @@ export function createPanel(cfg, host, env) {
   function divider(t) { const d = h('div', 'p-div'); d.appendChild(h('span', null, t)); return d; }
   function typing(who) { const r = h('div', 'p-m is-typing'); r.appendChild(face(who)); const d = h('span', 'p-dots'); d.appendChild(h('i')); d.appendChild(h('i')); d.appendChild(h('i')); r.appendChild(d); ui.list.appendChild(r); toEnd(); return r; }
   function toEnd(smooth) { const t = ui.thr; try { t.scrollTo({ top: t.scrollHeight, behavior: smooth && !REDUCED ? 'smooth' : 'auto' }); } catch (e) { t.scrollTop = t.scrollHeight; } }
-  function add(it, quick) { const r = msg(it); ui.list.appendChild(r); if (!quick && !REDUCED) r.animate([{ translate: '0 12px' }, { translate: '0 0' }], { duration: 420, easing: EZ }); toEnd(!quick); return r; }
+  function add(it, quick) { const r = msg(it); ui.list.appendChild(r); ui.inlineHost = null; if (PHONE() && it.art) { const hst = h('div', 'p-inline'); ui.list.appendChild(hst); if (quick) hst.appendChild(art(it.art, { done: true })); else ui.inlineHost = hst; } if (!quick && !REDUCED) r.animate([{ translate: '0 12px' }, { translate: '0 0' }], { duration: 420, easing: EZ }); toEnd(!quick); return r; }
 
   /* history: the thread as it stands before beat k (instant), and the canvas showing the last artefact */
   function history(beats) {
@@ -358,6 +367,7 @@ export function createPanel(cfg, host, env) {
       let said = 0; if (it.voice && env.voice) { said = env.voice(it.voice) || 0; if (row._vb) { row._vb.classList.add('is-playing'); later(Math.max(said, 1200), () => row._vb.classList.remove('is-playing')); } }
       if (it.art) {
         if (!(shown && shown._a === it.art)) { shown = show(it.art, { rise: true }); }
+        ui.list.querySelectorAll('.p-att.is-shown').forEach((x) => x.classList.remove('is-shown')); { const at = row.querySelector('.p-att'); if (at) at.classList.add('is-shown'); }
         cue();
         animate(shown, Math.max(3000, read(it.text) + 2400 + slack / items.length));
       }
