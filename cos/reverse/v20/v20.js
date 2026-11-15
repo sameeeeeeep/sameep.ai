@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v20u';
+import { createPanel, EZ, read } from './v20-app.js?v=v20x';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -223,7 +223,7 @@ const SCENE = {
   },
   phone: (b) => {
     const w = h('div', 'sc-night'), p = h('div', 'ph');
-    const hd = h('div', 'ph-hd'); hd.appendChild(panel.face('Chief of staff')); const ht = h('div'); ht.appendChild(h('b', null, 'Chief of staff')); ht.appendChild(h('span', null, str(V.wordmark, 'Coco'))); hd.appendChild(ht); p.appendChild(hd);
+    const hd = h('div', 'ph-hd'); hd.appendChild(panel.face('Chief of staff')); const ht = h('div'); ht.appendChild(h('b', null, str(V.wordmark, 'Coco'))); ht.appendChild(h('span', null, 'chief of staff')); hd.appendChild(ht); p.appendChild(hd);
     const body = h('div', 'ph-body'), P = (cfg.storyboard || {}).phone || {};
     if (P.chip) body.appendChild(h('span', 'ph-chip', P.chip));
     arr(P.earlier).forEach((m) => { const e = h('div', 'ph-b is-text'); e.appendChild(h('span', null, m[0])); e.appendChild(h('span', 'ph-t', m[1])); body.appendChild(e); });
@@ -243,9 +243,16 @@ const SCENE = {
       if (live.children.length < 30) { const bar = h('i'); bar.style.height = Math.round(20 + 70 * Math.abs(Math.sin(n * 1.3) * Math.cos(n * 0.4))) + '%'; live.appendChild(bar); }
     }, 160);
     const send = () => { if (!rec.isConnected || rec.hidden) return; ui.sceneAct = null; clearInterval(ui.recI); rec.hidden = true; if (AUTO && started && playing && !ui.seek) { clearTimeout(timer); timer = setTimeout(autoNext, 2600); } sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
-    /* the viewer sends it: the note records until they tap send (Next and scroll send it too) */
+    /* her words appear above the waveform as she says them; when she stops, the note sends itself */
     if (!sendAt) send();
-    else { const sb = h('button', 'ph-send'); sb.type = 'button'; sb.setAttribute('aria-label', 'Send the voice note'); sb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3.6M3.8 7.6L8 3.4l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; sb.addEventListener('click', (e) => { e.stopPropagation(); unlock(); send(); }); rec.appendChild(sb); ui.sceneAct = send; }
+    else {
+      const W = str(b.words).split(/\s+/).filter(Boolean), tr = h('p', 'ph-tr'); p.insertBefore(tr, rec);
+      const total = (SOUND && !MUTED && (cfg.audio || {})[b.voice] && (cfg.audio_len || {})[b.voice]) ? cfg.audio_len[b.voice] * 1000 : Math.max(5200, W.length * 330);
+      const chars = W.reduce((a, x) => a + x.length + 1, 0) || 1; let at = 500;
+      W.forEach((x) => { const sp = h('span', null, x + ' '); sp.style.visibility = 'hidden'; tr.appendChild(sp); const t = at; at += (total - 900) * (x.length + 1) / chars; setTimeout(() => { if (sp.isConnected) sp.style.visibility = ''; }, t); });
+      if (!W.length) tr.hidden = true;
+      ui.sceneT = setTimeout(() => { tr.remove(); send(); }, total + 500);
+    }
     if (b.voice && !ui.seek) playClip(b.voice);
     return w;
   },
@@ -355,16 +362,17 @@ function show(k, how) {
     ui.root.classList.remove('is-3d');
     ui.scene.innerHTML = ''; ui.scene.className = 'v-scene';
     ui.panelHost.classList.add('is-on');
-    clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
+    ui.root.classList.toggle('bd-build', !!src && !REDUCED);
+    ui.workDone = seq ? 0 : 99; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
     panel.fit();
     if (!seq || from < 0 || B[from].type !== 'panel') {
       /* rebuild the thread from history when we jumped in, or arrive from a scene (the thread keeps everything) */
       const H = panel.history(B.slice(0, k).filter((x) => x.type === 'panel'));
       if (!seq) { panel.label(b.label); if (H.art && !b.art && !b.enter) panel.show(H.art); }
     }
-    const po = { onCue: () => { if (B[i] === b) setLine(b); } }; if (src) po.landing = (card) => travel(src, card);
+    const po = { onCue: () => { if (B[i] === b) setLine(b); } }; if (src) po.landing = (card) => travel(src, card).then(buildAround);
     const go = () => { if (i !== k) return; Promise.resolve(panel.play(b, po)).then(() => { if (i === k && AUTO && started && playing) { clearTimeout(timer); timer = setTimeout(autoNext, 1600); } }); };
-    if (seq && ui.bd && ui.bd.stageChanged && !REDUCED) { clearTimeout(ui.stT); ui.stT = setTimeout(go, 900); } else go();
+    if (seq && !src && ui.bd && ui.bd.stageChanged && !REDUCED) { clearTimeout(ui.stT); ui.stT = setTimeout(go, 900); } else go();
   } else {
     panel.stop(); ui.panelHost.classList.remove('is-on');
     const is3d = IS3D(b);
@@ -401,7 +409,7 @@ function setLine(b) {
   L.appendChild(document.createTextNode(str(b.line)));
   if (b.line2) { L.appendChild(document.createTextNode(' ')); L.appendChild(h('span', null, b.line2)); }
   ui.when.textContent = str(b.when);
-  if (ui.hint) ui.hint.textContent = b.scene === 'end' ? '' : b.scene === 'phone' ? 'Tap send to continue' : !started ? (PHONE() ? 'Tap to begin' : 'Click to begin') : AUTO ? '' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
+  if (ui.hint) ui.hint.textContent = b.scene === 'end' ? '' : !started ? (PHONE() ? 'Tap to begin' : 'Click to begin') : AUTO ? '' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
 }
 function chapters(ch) {
   ui.chs.forEach((e, j) => { e.classList.toggle('is-on', j === ch && !CH[j].quiet); e.classList.toggle('is-done', j < ch); e.setAttribute('aria-current', j === ch ? 'step' : 'false'); });
@@ -420,6 +428,7 @@ function endCard(b) {
 /* ---------- the board (the v5 screen): around the thread and the canvas sit the team bar, the stage strip, the channel
    tiles, and the Now card with tasks and agents. Everything is derived from the beats up to the current one. ---------- */
 const isAg = (w) => /agent$|^chief of staff$/i.test(str(w));
+const nameOf = (w) => (/^chief of staff$/i.test(str(w)) ? str(V && V.wordmark, 'Coco') : str(w));
 const dayOf = (b) => { const m = /Day (\d+)/.exec(str(b && b.when)); return m ? +m[1] : null; };
 const clip2 = (t, n) => { t = str(t); return t.length > n ? t.slice(0, n - 1).trimEnd() + '…' : t; };
 let STG = [], CHN = [], PEOPLE = [];
@@ -448,6 +457,23 @@ function buildBoard() {
   bd.tiles = h('aside', 'bd-tiles'); root.insertBefore(bd.tiles, root.firstChild);
   bd.mid = h('section', 'bd-mid'); root.insertBefore(bd.mid, root.querySelector('.p-cv'));
 }
+function lightStage(si) {
+  const e = ui.bd && ui.bd.stg[si]; if (!e || REDUCED) return;
+  e.animate([{ backgroundSize: '0% 100%', color: '#0B0B0C' }, { backgroundSize: '100% 100%', color: '#0B0B0C', offset: 0.55 }, { backgroundSize: '100% 100%', color: '#FFFFFF' }], { duration: 760, easing: 'cubic-bezier(.22,.8,.24,1)', fill: 'backwards' });
+  e.animate([{ scale: '1' }, { scale: '1.06', offset: 0.6 }, { scale: '1' }], { duration: 760, easing: 'cubic-bezier(.22,.8,.24,1)' });
+  setTimeout(() => SFX.stamp(), 380);
+}
+/* an element that arrives from a scene stays where it lands, and the board assembles around it: canvas, tasks, chat, channels, stages */
+function buildAround() {
+  return new Promise((res) => {
+    const r = ui.root; if (!r.classList.contains('bd-build')) return res();
+    r.classList.remove('bd-build');
+    if (REDUCED) return res();
+    const parts = [ui.bd.mid, ui.panelHost.querySelector('.p-thr'), ui.bd.tiles, ui.bd.strip, ui.bd.team, ui.panelHost.querySelector('.p-lab')].filter(Boolean);
+    parts.forEach((el, n) => { el.animate([{ opacity: 0, translate: '0 22px' }, { opacity: 0, translate: '0 22px', offset: 0.01 }, { opacity: 1, translate: '0 0' }], { duration: 480, delay: n * 150, easing: 'cubic-bezier(.22,.8,.24,1)', fill: 'backwards' }); setTimeout(() => SFX.tick(), n * 150); });
+    setTimeout(() => { const si = STG.findIndex((x) => x.name === (B[i] || {}).stage); lightStage(si); setTimeout(res, 900); }, parts.length * 150 + 300);
+  });
+}
 /* what moved since the last render gets a small move of its own, in order, so the eye lands on the change */
 const BEZ = 'cubic-bezier(.22,.8,.24,1)', BACK = 'cubic-bezier(.3,1.5,.5,1)';
 function board(k, settled) {
@@ -460,7 +486,7 @@ function board(k, settled) {
   /* who is here: at night only the one who spoke; from the morning everyone, and their agents once they have them */
   const spoke = {}; let clones = false; const agents = [];
   past.forEach((x) => {
-    if (x.id === 'agents') clones = true;
+    if (x.id === 'agents' || x.clones) clones = true;
     const here = x === b;
     const note = (w, text) => { if (!w) return; if (!isAg(w)) { spoke[w] = 1; return; } let a = agents.find((y) => y.who === w); if (!a) { a = { who: w }; agents.push(a); } if (text) a.last = text; a.live = here; };
     arr(x.thread).forEach((it) => { note(it.who, it.text); if (it.art && it.art.kind === 'list') arr(it.art.rows).forEach((r) => note(r.who, r.text)); });
@@ -480,12 +506,7 @@ function board(k, settled) {
   /* stages */
   const si = STG.findIndex((s) => s.name === b.stage);
   cur.stage = si;
-  if (si !== was.stage && bd.stg[si] && live) {
-    const e = bd.stg[si];
-    e.animate([{ backgroundSize: '0% 100%', color: '#0B0B0C' }, { backgroundSize: '100% 100%', color: '#0B0B0C', offset: 0.55 }, { backgroundSize: '100% 100%', color: '#FFFFFF' }], { duration: 760, easing: BEZ, fill: 'backwards' });
-    e.animate([{ scale: '1' }, { scale: '1.06', offset: 0.6 }, { scale: '1' }], { duration: 760, easing: BEZ });
-    setTimeout(() => SFX.stamp(), 380);
-  }
+  if (si !== was.stage && bd.stg[si] && live && !ui.root.classList.contains('bd-build')) lightStage(si);
   bd.stageChanged = si !== was.stage;
   bd.stg.forEach((e, n) => { e.classList.toggle('is-on', n === si); e.classList.toggle('is-done', n < si); if (n === si && e.scrollIntoView && bd.strip.scrollWidth > bd.strip.clientWidth) bd.strip.scrollTo({ left: e.offsetLeft - 24 }); });
   /* channel tiles */
@@ -497,7 +518,7 @@ function board(k, settled) {
     let last = null; const who = [];
     (mine.length ? mine : []).forEach((x) => arr(x.thread).forEach((it) => { if (it.text) last = it; if (it.who && who.indexOf(it.who) < 0) who.push(it.who); }));
     if (!mine.length) B.filter((x) => x.chan === cn.name).forEach((x) => arr(x.thread).forEach((it) => { if (it.who && who.indexOf(it.who) < 0) who.push(it.who); }));
-    if (last) t.appendChild(h('p', null, clip2(last.who + ': ' + last.text, 74)));
+    if (last) t.appendChild(h('p', null, clip2(nameOf(last.who) + ': ' + last.text, 74)));
     const ft = h('div', 'bd-tf'); who.slice(0, 4).forEach((w) => ft.appendChild(panel.face(w))); t.appendChild(ft);
     bd.tiles.appendChild(t);
   });
@@ -516,39 +537,51 @@ function board(k, settled) {
     arr(x.tasks).forEach((r) => T.push({ key: r.text, title: r.text, who: r.who, due: r.due, dueDay: +(/Day (\d+)/.exec(str(r.due)) || [0, -1])[1] }));
   });
   const under = b.under || (stageBeats.find((x) => x.under) || {}).under;
-  const tk = h('div', 'bd-card is-tasks'); tk.appendChild(h('span', 'bd-h', 'Tasks'));
+  const tk = h('div', 'bd-tasks'); tk.appendChild(h('span', 'bd-h', 'Tasks'));
   if (!T.length) tk.appendChild(h('p', 'bd-empty', 'No tasks yet'));
   let tlag = 250;
   T.forEach((t) => {
     let done, active, nest = [];
-    if (t.work) { done = !t.here || !!settled; active = t.here; nest = arr(t.work.agents).map((a) => ({ who: a.who, text: a.text, tag: done ? str(a.done, 'done') : 'working', work: !done })); }
-    else {
+    if (t.work) {
+      const ags = arr(t.work.agents), wd = t.here ? Math.min(ui.workDone || 0, ags.length) : ags.length;
+      done = wd >= ags.length; active = t.here && !done;
+      nest = ags.map((a, n) => ({ who: a.who, text: n < wd ? str(a.done, 'Done') : a.text, tag: n < wd ? 'done' : 'working', work: n >= wd }));
+    } else {
       active = (under ? under === t.title : t.dueDay === stageDay);
-      done = t.dueDay >= 0 && (day > t.dueDay || (day === t.dueDay && !!settled && b === stageBeats[stageBeats.length - 1] && !B.slice(k + 1).some((x) => x.type === 'panel' && x.stage === b.stage)));
+      done = t.dueDay >= 0 && (day > t.dueDay || (day === t.dueDay && !!settled && !B.slice(k + 1).some((x) => x.type === 'panel' && x.stage === b.stage)));
       if (active && !done) {
         const seen = {};
-        stageBeats.forEach((x) => arr(x.thread).forEach((it) => { if (isAg(it.who) && !/^chief of staff$/i.test(it.who) && (x !== b || settled || true)) { const live = x === b && !settled; if (!seen[it.who]) { seen[it.who] = { who: it.who, text: it.text, tag: live ? 'working' : 'done', work: live }; nest.push(seen[it.who]); } else { seen[it.who].text = it.text; seen[it.who].tag = live ? 'working' : 'done'; seen[it.who].work = live; } } }));
+        stageBeats.forEach((x) => arr(x.thread).forEach((it) => { if (isAg(it.who) && !/^chief of staff$/i.test(it.who)) { const lv = x === b && !settled; if (!seen[it.who]) { seen[it.who] = { who: it.who }; nest.push(seen[it.who]); } seen[it.who].text = it.text; seen[it.who].tag = lv ? 'working' : 'done'; seen[it.who].work = lv; } }));
       }
+      active = active && !done;
     }
-    const row = h('div', 'bd-task' + (done ? ' is-done' : '') + (active && !done ? ' is-active' : '')); const box = h('i'); row.appendChild(box);
-    const tx = h('div'); tx.appendChild(h('b', null, t.title)); const o = h('span'); o.appendChild(panel.face(t.who)); o.appendChild(document.createTextNode(str(t.who) + (t.due ? ' · ' + t.due : ''))); tx.appendChild(o);
-    if (nest.length && (active || t.work) && !(t.work && done && T.length > 1)) {
-      const N = h('div', 'bd-nest');
-      nest.slice(-3).forEach((a, n) => {
-        const ar = h('div', 'bd-na'); ar.appendChild(panel.face(a.who)); const at = h('div'); at.appendChild(h('b', null, a.who)); at.appendChild(h('p', null, clip2(a.text, 54))); ar.appendChild(at);
-        const tag = h('span', 'bd-tag' + (a.work ? ' is-work' : ''), a.tag); ar.appendChild(tag);
-        const ak = t.key + '>' + a.who; cur.agents[ak] = a.work ? 2 : 1;
-        if (!was.agents[ak]) { move(ar, [{ translate: '0 10px', scale: '.96' }, { translate: '0 0', scale: '1' }], { delay: tlag + 200 + n * 160 }); if (live) setTimeout(() => SFX.tick(), tlag + 200 + n * 160); }
-        else if (was.agents[ak] === 2 && !a.work) { move(tag, [{ scale: '.6' }, { scale: '1' }], { easing: BACK, delay: n * 180 }); if (live) setTimeout(() => SFX.done(), n * 180); }
-        N.appendChild(ar);
-      });
-      tx.appendChild(N);
-    } else if (t.work && done) tx.appendChild(h('span', 'bd-sum', arr(t.work.agents).length + ' agents · done overnight'));
-    row.appendChild(tx);
-    cur.tasks[t.key] = 1; if (done) cur.done[t.key] = 1;
-    if (!was.tasks[t.key]) { move(row, [{ translate: '0 16px' }, { translate: '0 0' }], { delay: tlag }); if (live) setTimeout(() => SFX.pop(), tlag); tlag += 170; }
-    else if (done && !was.done[t.key]) { move(box, [{ scale: '.3' }, { scale: '1' }], { delay: 120, easing: BACK }); if (live) setTimeout(() => SFX.done(), 120); }
-    tk.appendChild(row);
+    const state = done ? 'Done' : active ? 'In progress' : 'Queued';
+    const card = h('div', 'bd-tc' + (done ? ' is-done' : active ? ' is-active' : ''));
+    const hd = h('div', 'bd-tch'); hd.appendChild(h('b', null, t.title)); const chip = h('span', 'bd-chip', state); hd.appendChild(chip); card.appendChild(hd);
+    const pair = clones && !t.work && !isAg(t.who);
+    const o = h('div', 'bd-tco'); o.appendChild(panel.face(t.who)); if (pair) o.appendChild(panel.face(t.who + "'s agent")); o.appendChild(h('span', null, nameOf(t.who) + (pair ? ' and agent' : '') + (t.due ? ' \u00b7 ' + t.due : ''))); card.appendChild(o);
+    if (active || (t.work && t.here)) {
+      const total = Math.max(1, nest.length), fin = nest.filter((a) => !a.work).length;
+      const pg = h('div', 'bd-pg'); const fill = h('i'); fill.style.transform = 'scaleX(' + (nest.length ? Math.max(0.08, fin / total) : 0.3) + ')'; pg.appendChild(fill); card.appendChild(pg);
+      if (nest.length) {
+        const N = h('div', 'bd-nest');
+        nest.slice(-3).forEach((a, n) => {
+          const ar = h('div', 'bd-na' + (a.work ? ' is-work' : '')); ar.appendChild(panel.face(a.who));
+          const at = h('div'); at.appendChild(h('b', null, a.who)); at.appendChild(h('p', null, clip2(a.text, 46))); ar.appendChild(at);
+          const tag = h('span', 'bd-tag' + (a.work ? ' is-work' : ''), a.work ? 'working' : 'done'); ar.appendChild(tag);
+          const ak = t.key + '>' + a.who; cur.agents[ak] = a.work ? 2 : 1;
+          if (!was.agents[ak]) { move(ar, [{ translate: '-14px 0' }, { translate: '0 0' }], { delay: tlag + 250 + n * 220 }); if (live) setTimeout(() => SFX.tick(), tlag + 250 + n * 220); }
+          else if (was.agents[ak] === 2 && !a.work) { move(tag, [{ scale: '.5' }, { scale: '1' }], { easing: BACK }); move(at, [{ translate: '0 6px' }, { translate: '0 0' }], {}); if (live) SFX.done(); }
+          N.appendChild(ar);
+        });
+        card.appendChild(N);
+      }
+    } else if (t.work && done) card.appendChild(h('span', 'bd-sum', arr(t.work.agents).length + ' agents · done overnight'));
+    cur.tasks[t.key] = active ? 2 : 1; if (done) cur.done[t.key] = 1;
+    if (!was.tasks[t.key]) { move(card, [{ translate: '0 18px', scale: '.97' }, { translate: '0 0', scale: '1' }], { delay: tlag }); if (live) setTimeout(() => SFX.pop(), tlag); tlag += 170; }
+    else if (done && !was.done[t.key]) { move(chip, [{ scale: '.5' }, { scale: '1' }], { delay: 150, easing: BACK }); if (live) setTimeout(() => SFX.done(), 150); }
+    else if (active && was.tasks[t.key] === 1) { move(card, [{ scale: '1' }, { scale: '1.03', offset: 0.5 }, { scale: '1' }], { duration: 520 }); move(chip, [{ scale: '.5' }, { scale: '1' }], { easing: BACK }); if (live) SFX.tick(); }
+    tk.appendChild(card);
   });
   bd.mid.appendChild(tk);
   bd.was = cur;
@@ -654,7 +687,8 @@ function build() {
   mount.appendChild(r);
   panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView,
     voice: (k) => { const len = +((cfg.audio_len || {})[k] || 0) * 1000; playClip(k); return len; },
-    peek: () => { if (AUTO && playing) setPlay(false); } });
+    peek: () => { if (AUTO && playing) setPlay(false); },
+    work: () => new Promise((res) => { const k = i, b = B[k], n = arr(b && b.work && b.work.agents).length; if (!n || ui.seek || REDUCED) { ui.workDone = n; board(k, false); return res(); } let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 700); else setTimeout(tick, 1100); }; setTimeout(tick, 1600); }) });
   top.appendChild(ctl);   /* the controls live in the top bar: nothing sits under the picture */
   boardData(); buildBoard();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });

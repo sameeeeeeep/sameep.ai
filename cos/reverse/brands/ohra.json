@@ -2956,12 +2956,10 @@
   "order-agency": "assets/ohra/audio/order-agency.mp3",
   "ad-agency": "assets/ohra/audio/ad-agency.mp3",
   "samples-agency": "assets/ohra/audio/samples-agency.mp3",
-  "cos-agents": "assets/ohra/audio/cos-agents.mp3",
-  "cos-heard": "assets/ohra/audio/cos-heard.mp3",
-  "cos-morning": "assets/ohra/audio/cos-morning.mp3",
-  "cos-research": "assets/ohra/audio/cos-research.mp3",
-  "ops-launch": "assets/ohra/audio/ops-launch.mp3",
-  "ra-findings": "assets/ohra/audio/ra-findings.mp3"
+  "coco-findings": "assets/ohra/audio/coco-findings.mp3",
+  "coco-heard": "assets/ohra/audio/coco-heard.mp3",
+  "coco-research": "assets/ohra/audio/coco-research.mp3",
+  "coco-morning2": "assets/ohra/audio/coco-morning2.mp3"
  },
  "channels": {
   "voice": "aditi-notes",
@@ -5209,7 +5207,7 @@
       "photo_at": "1:31 am",
       "line": "",
       "when": "Day 0 · 1:32 am",
-      "hold": 9000
+      "words": "Fourth girl in our DMs today asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
      },
      {
       "type": "panel",
@@ -5246,8 +5244,8 @@
          "n": "#41",
          "sub": "Owner Aditi · from her 1:32 am note"
         },
-        "voice": "cos-heard",
-        "vlen": "0:04"
+        "voice": "coco-heard",
+        "vlen": "0:03"
        }
       ],
       "stage": "Idea",
@@ -5261,13 +5259,13 @@
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "@Research agent is it just Aditi's DMs? @Market agent search trends. @Pricing agent what do oils sell for?",
-        "voice": "cos-research",
-        "vlen": "0:10"
+        "text": "I've started on it. Three agents are working overnight: reading our DMs, checking search trends, and studying what competitors charge.",
+        "voice": "coco-research",
+        "vlen": "0:08"
        },
        {
-        "who": "Research agent",
-        "text": "It's not just your DMs. 64 people asked for a lip oil, and searches are up 3x in a year.",
+        "who": "Chief of staff",
+        "text": "It's not just your DMs. 64 people asked for a lip oil, searches are up 3x in a year, and nobody does real colour as an oil.",
         "art": {
          "kind": "stats",
          "lab": "Findings",
@@ -5288,7 +5286,8 @@
          ],
          "foot": "Sheer oils get one star for no colour. Nobody does real colour as an oil."
         },
-        "voice": "ra-findings",
+        "after": "work",
+        "voice": "coco-findings",
         "vlen": "0:08"
        }
       ],
@@ -5300,17 +5299,17 @@
        "agents": [
         {
          "who": "Research agent",
-         "text": "Read six months of DMs",
+         "text": "Reading six months of DMs",
          "done": "64 asked"
         },
         {
          "who": "Market agent",
-         "text": "Search trends, one year",
+         "text": "Checking search trends, one year",
          "done": "Up 3x"
         },
         {
          "who": "Pricing agent",
-         "text": "Every lip oil under ₹1,500",
+         "text": "Studying every lip oil under ₹1,500",
          "done": "31 found"
         }
        ]
@@ -5324,32 +5323,32 @@
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "Morning, team. Aditi's 1:32 note is now project #41, and the research is in. Here's who does what.",
-        "voice": "cos-morning",
-        "vlen": "0:08"
+        "text": "Morning, team. New project: we're launching a lip oil. Here are the tasks, for all of you and your agents.",
+        "voice": "coco-morning2",
+        "vlen": "0:07"
        }
       ],
       "stage": "Project",
       "chan": "#team",
       "tasks": [
        {
-        "who": "Aditi",
-        "text": "Concept and two mockups",
-        "due": "Day 3"
-       },
-       {
         "who": "Tanvi",
-        "text": "First sample and wear test",
+        "text": "Find suppliers and get samples",
         "due": "Day 21"
        },
        {
+        "who": "Aditi",
+        "text": "Finalise form factor and shades",
+        "due": "Day 30"
+       },
+       {
         "who": "Vikram",
-        "text": "Carton and print",
-        "due": "Day 70"
+        "text": "Approve sample, pricing and the PO",
+        "due": "Day 72"
        },
        {
         "who": "Naina",
-        "text": "Shoot, listing and ads",
+        "text": "Photoshoot, listing and ads",
         "due": "Day 165"
        },
        {
@@ -5357,7 +5356,8 @@
         "text": "Packing and shipping",
         "due": "Day 167"
        }
-      ]
+      ],
+      "clones": true
      },
      {
       "id": "agents",
@@ -5382,8 +5382,8 @@
           "Vikram"
          ]
         },
-        "voice": "cos-agents",
-        "vlen": "0:08"
+        "voice": "coco-agents",
+        "vlen": "0:06"
        },
        {
         "who": "Chief of staff",
@@ -5441,15 +5441,197 @@
       ],
       "stage": "Project",
       "chan": "#team",
-      "under": "First sample and wear test"
+      "under": "First sample and wear test",
+      "skip": true
      }
     ]
    },
    {
     "id": "npd",
     "name": "New product",
-    "div": "New product, Day 3",
+    "div": "New product, Day 21",
     "beats": [
+     {
+      "type": "panel",
+      "label": "#41 · Suppliers · Day 21",
+      "line": "",
+      "when": "Day 21",
+      "stage": "Suppliers",
+      "chan": "#npd",
+      "thread": [
+       {
+        "who": "Tanvi's agent",
+        "text": "I found six suppliers who can make a charm body. Three are sending samples.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "vendor",
+          "fit": "cover"
+         },
+         "lab": "Supplier",
+         "title": "Kapoor, Vapi",
+         "n": "₹46",
+         "sub": "a unit · can make the charm body · samples in 10 days"
+        }
+       },
+       {
+        "who": "Tanvi",
+        "text": "Samples are in. This one is the doodle, for real.",
+        "art": {
+         "kind": "photo",
+         "img": "firstsample",
+         "img_m": "firstsample_m",
+         "lab": "Day 21",
+         "title": "The first sample"
+        }
+       }
+      ]
+     },
+     {
+      "type": "panel",
+      "label": "#41 · Form and shades · Day 30",
+      "line": "",
+      "when": "Day 30",
+      "stage": "Form and shades",
+      "chan": "#npd",
+      "thread": [
+       {
+        "who": "Aditi's agent",
+        "text": "Two forms from the samples. The team has voted.",
+        "art": {
+         "kind": "poll",
+         "lab": "Form factor",
+         "title": "Which form?",
+         "pick": "AI pick",
+         "total": 5,
+         "opts": [
+          {
+           "img": "mock_a",
+           "name": "Charm",
+           "sub": "clips on a bag",
+           "votes": 4,
+           "ai": true
+          },
+          {
+           "img": "mock_b",
+           "name": "Tube and wand",
+           "sub": "the usual",
+           "votes": 1
+          }
+         ]
+        }
+       },
+       {
+        "who": "Aditi",
+        "text": "Charm. It clips on a bag and there's no dipping.",
+        "decide": true,
+        "call": "Pick the charm"
+       },
+       {
+        "who": "Tanvi's agent",
+        "text": "Shades tested on three skin tones. Brick Dust holds for six hours.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "sample"
+         },
+         "lab": "Shade",
+         "title": "Brick Dust",
+         "n": "3 of 3",
+         "sub": "skin tones · holds six hours · no feathering"
+        }
+       }
+      ]
+     },
+     {
+      "type": "panel",
+      "label": "#41 · Approvals · Day 72",
+      "line": "",
+      "when": "Day 72",
+      "stage": "Approvals",
+      "chan": "#npd",
+      "thread": [
+       {
+        "who": "Vikram's agent",
+        "text": "Carton v4 passes all 14 label rules. Cleared to print.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "carton",
+          "fit": "cover"
+         },
+         "lab": "Carton proof v4",
+         "title": "14 of 14 rules",
+         "list": [
+          [
+           "Brand and shade",
+           ""
+          ],
+          [
+           "Ingredients",
+           ""
+          ],
+          [
+           "MRP and batch",
+           ""
+          ],
+          [
+           "Net 4 ml",
+           "added"
+          ]
+         ],
+         "pick": "Cleared to print"
+        }
+       },
+       {
+        "who": "Vikram's agent",
+        "text": "Pricing is in: ₹46 a unit for the product, ₹6 for the carton. The PO is drafted.",
+        "art": {
+         "kind": "table",
+         "lab": "Purchase order",
+         "title": "PO-0142 · Kapoor, Vapi",
+         "cols": [
+          "Item",
+          "Qty",
+          "Rate",
+          "Amount"
+         ],
+         "rows": [
+          [
+           "Charm body and cap",
+           "5,000",
+           "₹46",
+           "₹2,30,000"
+          ],
+          [
+           "Carton v4",
+           "5,000",
+           "₹6",
+           "₹30,000"
+          ],
+          [
+           "Freight to Delhi",
+           "1",
+           "₹8,400",
+           "₹8,400"
+          ]
+         ],
+         "total": [
+          "Total, 45 days to pay",
+          "₹2.68L"
+         ],
+         "pick": "Waiting on Aditi",
+         "pickDone": "Approved"
+        }
+       },
+       {
+        "who": "Aditi",
+        "text": "Approved. Sample, pricing and the PO.",
+        "decide": true,
+        "call": "Approve all three"
+       }
+      ]
+     },
      {
       "type": "panel",
       "label": "#41 · Concept · Day 3",
@@ -5490,7 +5672,8 @@
        }
       ],
       "stage": "Concept",
-      "chan": "#npd"
+      "chan": "#npd",
+      "skip": true
      },
      {
       "type": "scene",
@@ -5544,7 +5727,8 @@
        }
       ],
       "stage": "Sample",
-      "chan": "#npd"
+      "chan": "#npd",
+      "skip": true
      },
      {
       "type": "panel",
@@ -5663,7 +5847,8 @@
        }
       ],
       "stage": "Packaging",
-      "chan": "#packaging"
+      "chan": "#packaging",
+      "skip": true
      },
      {
       "type": "panel",
@@ -5728,8 +5913,117 @@
    {
     "id": "shoot",
     "name": "Shoot",
-    "div": "Shoot, Day 150",
+    "div": "Launch, Day 165",
     "beats": [
+     {
+      "type": "panel",
+      "label": "#41 · Launch · Day 165",
+      "line": "",
+      "when": "Day 165",
+      "stage": "Launch",
+      "chan": "#marketing",
+      "thread": [
+       {
+        "who": "Naina",
+        "text": "From the shoot. Daylight, on a bag, 214 frames.",
+        "art": {
+         "kind": "photo",
+         "img": "shoot",
+         "img_m": "shoot_m",
+         "lab": "The shoot",
+         "title": "On a bag, in daylight"
+        }
+       },
+       {
+        "who": "Naina",
+        "text": "This one's the hero. Frame 38.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "hero",
+          "fit": "cover"
+         },
+         "lab": "Hero photo",
+         "title": "Frame 38",
+         "sub": "Shot on a bag, daylight, no retouching.",
+         "n": "1 of 214"
+        }
+       },
+       {
+        "who": "Naina's agent",
+        "text": "One listing, five places, one voice. All live.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "hero",
+          "fit": "cover"
+         },
+         "lab": "Listing",
+         "title": "Live in 5 places",
+         "list": [
+          [
+           "ohra.in",
+           "₹899"
+          ],
+          [
+           "Nykaa",
+           "₹899"
+          ],
+          [
+           "Amazon",
+           "₹899"
+          ],
+          [
+           "Myntra",
+           "₹899"
+          ],
+          [
+           "Purplle",
+           "₹899"
+          ]
+         ]
+        }
+       }
+      ]
+     },
+     {
+      "type": "panel",
+      "label": "#41 · Ads · Launch week",
+      "line": "",
+      "when": "Day 166, 12:50 am",
+      "stage": "Launch",
+      "chan": "#marketing",
+      "thread": [
+       {
+        "who": "Naina's agent",
+        "text": "Three ad cuts are live. I'll pause anything under 1 overnight.",
+        "art": {
+         "kind": "ads",
+         "lab": "Ads",
+         "title": "Three cuts",
+         "sub": "Return on ₹1, first night",
+         "cuts": [
+          {
+           "img": "ad_a",
+           "name": "Cut A, clip on",
+           "sub": "1.6x"
+          },
+          {
+           "img": "ad_b",
+           "name": "Cut B, bag swing",
+           "sub": "2.8x"
+          },
+          {
+           "img": "ad_c",
+           "name": "Cut C, applicator",
+           "sub": "0.9x · paused",
+           "st": "paused"
+          }
+         ]
+        }
+       }
+      ]
+     },
      {
       "type": "scene",
       "scene": "still",
@@ -5810,7 +6104,8 @@
        }
       ],
       "stage": "Launch",
-      "chan": "#marketing"
+      "chan": "#marketing",
+      "skip": true
      },
      {
       "type": "panel",
@@ -5848,15 +6143,70 @@
        }
       ],
       "stage": "Launch",
-      "chan": "#marketing"
+      "chan": "#marketing",
+      "skip": true
      }
     ]
    },
    {
     "id": "order",
     "name": "Order",
-    "div": "Order, Day 167",
+    "div": "Orders, Day 167",
     "beats": [
+     {
+      "type": "panel",
+      "label": "#41 · Orders · Day 167",
+      "line": "",
+      "when": "Day 167, 6 pm",
+      "stage": "Orders",
+      "chan": "#orders",
+      "thread": [
+       {
+        "who": "Arjun's agent",
+        "text": "First order, just now, from the site.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "list_site",
+          "fit": "cover"
+         },
+         "lab": "New order · ohra.in",
+         "title": "Brick Dust lip oil",
+         "n": "₹899",
+         "sub": "Order OH-20418 · Saket, New Delhi · paid"
+        }
+       },
+       {
+        "who": "Arjun's agent",
+        "text": "Launch hour: 86 orders. Labels are printed.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "label": true
+         },
+         "lab": "Orders, first hour",
+         "title": "Launch hour",
+         "n": "86",
+         "sub": "₹77,314 · average ₹899"
+        }
+       },
+       {
+        "who": "Arjun",
+        "text": "all 86 packed for the morning batch"
+       }
+      ]
+     },
+     {
+      "type": "scene",
+      "scene": "pack",
+      "line": "",
+      "when": "Day 167",
+      "el": {
+       "label": true
+      },
+      "hold": 14200,
+      "p3dur": 13000
+     },
      {
       "type": "panel",
       "label": "#41 · Orders · launch hour",
@@ -5875,9 +6225,7 @@
          "title": "Launch hour",
          "n": "86",
          "sub": "₹77,314 · average ₹899"
-        },
-        "voice": "ops-launch",
-        "vlen": "0:06"
+        }
        },
        {
         "who": "Arjun",
@@ -5885,18 +6233,8 @@
        }
       ],
       "stage": "Orders",
-      "chan": "#orders"
-     },
-     {
-      "type": "scene",
-      "scene": "pack",
-      "line": "",
-      "when": "Day 167",
-      "el": {
-       "label": true
-      },
-      "hold": 14200,
-      "p3dur": 13000
+      "chan": "#orders",
+      "skip": true
      },
      {
       "type": "panel",
@@ -6070,11 +6408,10 @@
   ]
  },
  "audio_len": {
-  "cos-agents": 7.89,
-  "cos-heard": 4.09,
-  "cos-morning": 7.76,
-  "cos-research": 10.17,
-  "ops-launch": 5.85,
-  "ra-findings": 7.8
+  "coco-findings": 7.52,
+  "coco-heard": 3.48,
+  "coco-research": 7.89,
+  "voice-note": 21.76,
+  "coco-morning2": 7.24
  }
 }

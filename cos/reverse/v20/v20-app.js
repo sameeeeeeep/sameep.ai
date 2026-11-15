@@ -300,7 +300,7 @@ export function createPanel(cfg, host, env) {
   }
   function msg(it) {
     const r = h('div', 'p-m'); r.appendChild(face(it.who));
-    const c = h('div', 'p-mc'); c.appendChild(h('b', 'p-mn', str(it.who)));
+    const c = h('div', 'p-mc'); c.appendChild(h('b', 'p-mn', isCos(it.who) ? str(V.wordmark, 'Coco') : str(it.who)));
     if (it.voice) { const vb = voiceBubble(it.vlen || '0:05'); vb.classList.add('is-msg'); c.appendChild(vb); r._vb = vb; }
     if (it.text) c.appendChild(rich('p-mt' + (it.voice ? ' is-said' : ''), it.text));
     if (it.art) c.appendChild(attOf(it.art));
@@ -350,6 +350,7 @@ export function createPanel(cfg, host, env) {
     await wait(o.landing ? 300 : 600); if (!live()) return;
     for (let j = 0; j < items.length; j++) {
       const it = items[j];
+      if (it.after === 'work' && env.work) { await env.work(); if (!live()) return; }
       if (it.decide) { await askCall(it); if (!live()) return; }
       const ty = it.instant || it.decide ? null : typing(it.who);
       await wait(it.instant || it.decide ? 0 : 650); if (!live()) return; if (ty) ty.remove();

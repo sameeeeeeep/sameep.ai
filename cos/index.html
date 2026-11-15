@@ -50,7 +50,7 @@
   setTimeout(fonted, 1500);
   L.prime = import('./p20-parcel.js?v=p20g').then(function (t) { return t.prime(); }).then(function (k) { (window.__T = window.__T || {}).primed = Math.round(performance.now()); return k; }, function () { return 0; });
   L.font3d = function () { if (document.fonts && document.fonts.load) ['500 40px "Fraunces"', '500 20px "Inter"', '700 20px "Inter"', '500 20px "Spline Sans Mono"'].forEach(function (f) { document.fonts.load(f).catch(function () {}); }); };
-  ['./vendor/three.module.min.js', './p20-parcel.js?v=p20g', './p20-tex.js?v=p20v2', './p3-tex.js?v=p3v4', './p3-geo.js?v=p3v2', './p3-post.js?v=p3v2', './v20/v20-app.js?v=v20u', './v20/v20.js?v=v20u'].forEach(function (u) { L.get(u); });
+  ['./vendor/three.module.min.js', './p20-parcel.js?v=p20g', './p20-tex.js?v=p20v2', './p3-tex.js?v=p3v4', './p3-geo.js?v=p3v2', './p3-post.js?v=p3v2', './v20/v20-app.js?v=v20x', './v20/v20.js?v=v20z'].forEach(function (u) { L.get(u); });
   if (!L.priv) {
     var id = (q.get('brand') || 'ohra').replace(/[^a-z0-9_-]/gi, '');
     L.cfgP = fetch('./brands/' + id + '.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
@@ -61,7 +61,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=block" onload="__V20L.font()" onerror="__V20L.font()">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" data-p3fonts="1" media="print" onload="this.media='all';__V20L.font3d()">
-<link rel="stylesheet" href="./v20/v20.css?v=v20v">
+<link rel="stylesheet" href="./v20/v20.css?v=v20z">
 <link rel="stylesheet" href="./sb-offer.css?v=sb16">
 </head>
 <body>
@@ -70,7 +70,7 @@
   <div class="vl-in"><p class="vl-wm"><b>Coco</b><span>chief of staff OS</span></p><span class="vl-bar"><i></i></span></div>
 </div>
 <script src="./sb-offer.js?v=sb16" defer></script>
-<script type="module" src="./v20/v20.js?v=v20u"></script>
+<script type="module" src="./v20/v20.js?v=v20z"></script>
 <script src="./pin-loader.js?v=b29fb3f2"></script>
 </body>
 </html>

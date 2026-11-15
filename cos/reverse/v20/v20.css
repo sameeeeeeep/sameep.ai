@@ -655,3 +655,53 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: "Clash Display", system-ui, 
 .bd-na .bd-tag { position: absolute; right: 0; top: 0; }
 .p-mc .vb.is-msg.is-playing { outline: 0; }
 .p-mc .vb.is-msg.is-playing .vb-p { background: var(--ring); }
+.bd-na p { padding-right: 78px; }
+.bd-na .p-av { display: grid; place-items: center; line-height: 1; }
+
+/* ---------- the board assembles around an element that arrives from a scene ---------- */
+.v.bd-build .p-thr, .v.bd-build .bd-mid, .v.bd-build .bd-tiles, .v.bd-build .bd-strip, .v.bd-build .bd-team, .v.bd-build .p-lab { opacity: 0; }
+.v.bd-build .v-panel .p > .p-cv { border-color: transparent; }
+
+/* ---------- the wordmark, with what it is underneath ---------- */
+.v-wm { flex-direction: column; align-items: flex-start; gap: 1px; }
+.v-wm b { font-size: 24px; } .v-wm span { font-size: 11.5px; letter-spacing: .01em; }
+.vl-wm { flex-direction: column; align-items: flex-start; gap: 6px; } .vl-wm span { font-size: 16px; }
+@media (max-width: 760px) { .v-wm span { display: block; font-size: 10px; } .v-wm b { font-size: 19px; } }
+
+/* ---------- phone: aligned stamps, and her words above the waveform while she speaks ---------- */
+.ph-b.is-text { align-items: baseline; }
+.ph-b.is-voice { max-width: 96%; padding: 10px 14px 26px 10px; }
+.ph-b.is-voice .vb { width: 214px; }
+.ph-b.is-voice .ph-t, .ph-b.is-photo .ph-t { right: 14px; bottom: 8px; }
+.ph-tr { margin: 0 12px 8px; padding: 10px 14px; border-radius: 16px; background: var(--w); font-size: 14.5px; line-height: 1.4; color: var(--k); }
+.ph-rec { margin-bottom: 26px; }
+@media (max-width: 760px) { .ph-b.is-voice .vb { width: 176px; } .ph-tr { font-size: 13px; } }
+
+/* ---------- tasks are cards: a title, who has it, a status; the one in progress opens to show the agents on it ---------- */
+.v-panel .p > .bd-mid { overflow: hidden; }
+.bd-tasks { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.bd-tasks > .bd-h { padding: 4px 4px 0; }
+.bd-tc { flex: none; display: grid; gap: 7px; padding: 11px 12px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--w); }
+.bd-tc.is-active { border: 2px solid var(--k); padding: 10px 11px 11px; }
+.bd-tc.is-done { background: none; }
+.bd-tch { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.bd-tch b { font-size: 14px; font-weight: 600; line-height: 1.25; }
+.bd-tc.is-done .bd-tch b { font-weight: 500; color: var(--g2); }
+.bd-chip { flex: none; padding: 2px 8px; border-radius: 99px; background: var(--line2); font-size: 11.5px; font-weight: 500; color: var(--g2); white-space: nowrap; }
+.bd-tc.is-active .bd-chip { background: var(--ring); color: var(--w); }
+.bd-tc.is-done .bd-chip { background: var(--k); color: var(--w); }
+.bd-tco { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--g2); }
+.bd-tco .p-av { width: 20px; height: 20px; font-size: 9px; border-width: 2px; }
+.bd-pg { height: 3px; border-radius: 2px; background: var(--line2); overflow: hidden; }
+.bd-pg i { display: block; height: 100%; background: var(--ring); transform-origin: 0 50%; transition: transform .7s cubic-bezier(.22,.8,.24,1); }
+.bd-tc .bd-nest { margin: 2px 0 0; padding: 0; border: 0; background: none; border-radius: 0; gap: 6px; }
+.bd-tc .bd-na { grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 10px; background: var(--p); }
+.bd-tc .bd-na .p-av { width: 26px; height: 26px; margin: 0; display: grid; place-items: center; font-size: 11px; line-height: 1; border-width: 2px; }
+.bd-tc .bd-na b { padding: 0; font-size: 12.5px; } .bd-tc .bd-na p { padding: 0; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-tc .bd-na .bd-tag { position: static; }
+.bd-tc .bd-na.is-work .p-av { animation: bd-spin 1.4s linear infinite; }
+.bd-tc .bd-na.is-work .p-av.is-clone { animation: none; }
+@keyframes bd-spin { 0% { border-color: var(--ring) var(--line) var(--line) var(--line); } 25% { border-color: var(--line) var(--ring) var(--line) var(--line); } 50% { border-color: var(--line) var(--line) var(--ring) var(--line); } 75% { border-color: var(--line) var(--line) var(--line) var(--ring); } 100% { border-color: var(--ring) var(--line) var(--line) var(--line); } }
+.bd-tc .bd-sum { font-size: 12px; color: var(--g2); }
+@media (max-width: 760px) { .bd-tasks { display: none; } }
+.bd-tco .p-av + .p-av { margin-left: -9px; box-shadow: 0 0 0 1.5px var(--w); }
