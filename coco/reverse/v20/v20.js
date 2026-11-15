@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21y';
+import { createPanel, EZ, read } from './v20-app.js?v=v21z';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');

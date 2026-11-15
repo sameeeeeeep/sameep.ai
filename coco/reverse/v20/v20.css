@@ -905,7 +905,7 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: var(--f) !important; }
 .v-gbar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--w); transform-origin: 0 50%; scale: 0 1; }
 .v-gcur { position: fixed; left: 0; top: 0; z-index: 61; width: 20px; height: 31px; pointer-events: none; visibility: hidden; transition: transform .8s cubic-bezier(.45,.05,.25,1); }
 .v-gcur.is-on { visibility: visible; }
-.is-guided { outline: 2px solid var(--k) !important; outline-offset: 4px; border-radius: 14px; }
+.is-guided { outline: 2px solid var(--k) !important; outline-offset: 4px; }   /* the outline follows the thing's own corners; nothing changes shape */
 .ph.is-guided { outline: 0 !important; }
 @media (max-width: 760px) { .v-guide { width: calc(100vw - 24px); padding: 12px 14px 14px; } .v-guide p { font-size: 15.5px; } .is-guided { outline-offset: 2px; } }
 @media (prefers-reduced-motion: reduce) { .v-guide.is-on { animation: none; } .v-gcur { transition: none; } }
