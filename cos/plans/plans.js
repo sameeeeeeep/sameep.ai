@@ -1,12 +1,6 @@
-// brandcos/plans: the plan builder (same pricing as d2c-clone/pricing/pricing.js) and the enquiry form.
+// plans: the four options and the enquiry form.
 (function () {
-  var PRICE = { integration: 1000, access: 100, extraWeeks: 100, custom: 100 };
-  var HOURS = { base: 6, extraWeeks: 6, custom: 6 };
-  var PRESETS = { budget: { m1: false, m2: false, custom: false }, balanced: { m1: true, m2: false, custom: false }, hands: { m1: true, m2: true, custom: true } };
-  var NAMES = { budget: 'Budgeted', balanced: 'Balanced', hands: 'Hands-on' };
   var $ = function (id) { return document.getElementById(id); };
-  var usd = function (n) { return '$' + n.toLocaleString('en-US'); };
-  var hrs = function (n) { return n === 1 ? '1 hour' : (Math.round(n * 10) / 10) + ' hours'; };
 
   // API base: same origin; on localhost only, ?api= may point at a localhost worker
   var API = '/d2c-api';
@@ -16,77 +10,26 @@
     if (localPage && q) { var u = new URL(q); if (/^(localhost|127\.0\.0\.1)$/.test(u.hostname)) API = u.origin + '/d2c-api'; }
   } catch (e) { /* keep the default */ }
 
-  // ---------- builder ----------
-  var form = $('plan');
-  var box = function (n) { return form.elements[n]; };
-  function state() {
-    return {
-      m1: box('m1').checked, m2: box('m2').checked, custom: box('custom').checked,
-      teams: Array.prototype.filter.call(form.querySelectorAll('input[name="team"]'), function (i) { return i.checked; }).map(function (i) { return i.value; })
-    };
-  }
-  function priced(s) {
-    return {
-      m1: PRICE.integration + (s.m1 ? PRICE.extraWeeks : 0) + (s.custom ? PRICE.custom : 0),
-      m2: PRICE.access + (s.m2 ? PRICE.extraWeeks : 0) + (s.custom ? PRICE.custom : 0),
-      m3: PRICE.access + (s.custom ? PRICE.custom : 0),
-      h1: HOURS.base + (s.m1 ? HOURS.extraWeeks : 0) + (s.custom ? HOURS.custom : 0),
-      h2: (s.m2 ? HOURS.extraWeeks : 0) + (s.custom ? HOURS.custom : 0),
-      h3: s.custom ? HOURS.custom : 0
-    };
-  }
-  function presetFor(s) {
-    for (var k in PRESETS) { var p = PRESETS[k]; if (p.m1 === s.m1 && p.m2 === s.m2 && p.custom === s.custom) return k; }
-    return null;
-  }
-  function setPlan(p) { box('m1').checked = p.m1; box('m2').checked = p.m2; box('custom').checked = p.custom; }
-
-  function render() {
-    var s = state(), p = priced(s);
-    $('s-m1').textContent = usd(p.m1);
-    $('s-m2').textContent = usd(p.m2);
-    $('s-m3').textContent = usd(p.m3);
-    $('s-hours').textContent = 'Hours with me: ' + hrs(p.h1) + ' in month 1, ' + hrs(p.h2) + ' in month 2, ' +
-      (p.h3 ? hrs(p.h3) + ' each month after.' : 'none after that unless you add custom hours.');
-    var n = s.teams.length, early = p.h1 + p.h2;
-    $('split').textContent = n
-      ? n + (n === 1 ? ' team' : ' teams') + ' across ' + hrs(early) + ' in the first two months: about ' + hrs(early / n) + ' each.' + (early / n < 1 ? ' That is under an hour a team, so consider adding weeks.' : '')
-      : 'No teams picked yet.';
-    var pre = presetFor(s);
-    Array.prototype.forEach.call(form.elements.preset, function (r) { r.checked = r.value === pre; });
-    syncFormPlan();
-  }
-
-  form.addEventListener('change', function (e) {
-    if (e.target.name === 'preset') setPlan(PRESETS[e.target.value]);
-    render();
-  });
-  document.querySelectorAll('[data-choose]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      setPlan(PRESETS[b.getAttribute('data-choose')]);
-      render();
-      $('build').scrollIntoView({ block: 'start' });
-    });
-  });
-
-  // ---------- the form ----------
+  // ---------- the four options ----------
+  var OPT = {
+    build: { name: 'Custom build', line: '$1,500 once. No product updates.' },
+    product: { name: 'Subscription', line: '$100 a month. Updates included.' },
+    setup: { name: 'Subscription + set-up', line: '$750 upfront, then $100 a month. Updates included.' },
+    all: { name: 'Everything, monthly', line: '$500 a month. Strategy support is billed separately.' }
+  };
   var lead = $('lead');
   var fbox = function (n) { return lead.elements[n]; };
-  var fromBuilder = true;
-  function formPlan() { return { m1: fbox('f_m1').checked, m2: fbox('f_m2').checked, custom: fbox('f_custom').checked, teams: state().teams }; }
-  function describe(s) {
-    var p = priced(s), pre = presetFor(s);
-    return (pre ? NAMES[pre] + ': ' : 'Custom: ') + usd(p.m1) + ' in month 1, ' + usd(p.m2) + ' in month 2, then ' + usd(p.m3) + ' a month.' +
-      (s.teams.length ? ' Training for ' + s.teams.length + (s.teams.length === 1 ? ' team.' : ' teams.') : '');
-  }
-  function syncFormPlan() {
-    if (fromBuilder) { var s = state(); fbox('f_m1').checked = s.m1; fbox('f_m2').checked = s.m2; fbox('f_custom').checked = s.custom; }
-    $('f-plan').textContent = describe(formPlan());
-  }
-  ['f_m1', 'f_m2', 'f_custom'].forEach(function (n) {
-    fbox(n).addEventListener('change', function () { fromBuilder = false; $('f-plan').textContent = describe(formPlan()); });
+  function chosen() { var r = lead.querySelector('input[name="option"]:checked'); return r ? r.value : 'setup'; }
+  function formPlan() { var o = chosen(); return { option: o, maintenance: o === 'build' && fbox('f_maint').checked }; }
+  function describe(p) { var o = OPT[p.option] || OPT.setup; return o.name + ': ' + o.line + (p.maintenance ? ' Plus $100 a month for maintenance and support.' : ''); }
+  function sync() { var p = formPlan(); $('f-maint-w').hidden = p.option !== 'build'; $('f-plan').textContent = describe(p); }
+  lead.addEventListener('change', function (e) { if (e.target.name === 'option' || e.target.name === 'f_maint') sync(); });
+  document.querySelectorAll('[data-choose]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var r = lead.querySelector('input[name="option"][value="' + b.getAttribute('data-choose') + '"]'); if (r) r.checked = true;
+      sync(); $('enquire').scrollIntoView({ block: 'start' });
+    });
   });
-  $('use-plan').addEventListener('click', function () { fromBuilder = true; syncFormPlan(); });
 
   var EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[a-z]{2,24}$/i;
   function values() {
@@ -128,10 +71,9 @@
   });
 
   function mailtoFallback(v) {
-    var p = priced(v.plan);
     var lines = ['Company: ' + v.company, 'Name: ' + v.name, 'Role: ' + v.role, 'Email: ' + v.email, 'Phone: ' + v.phone,
       'Stage: ' + v.stage, 'Team: ' + v.team_size, 'Channels: ' + v.channels.join(', '), 'Tools: ' + v.tools.concat(v.tools_other ? [v.tools_other] : []).join(', '),
-      'Run first: ' + v.run_first, 'Plan: ' + describe(v.plan), 'Hours: ' + p.h1 + ', ' + p.h2 + ', then ' + p.h3 + ' a month', 'Start: ' + v.start_day, 'Notes: ' + v.notes];
+      'Run first: ' + v.run_first, 'Plan: ' + describe(v.plan), 'Start: ' + v.start_day, 'Notes: ' + v.notes];
     return 'mailto:hello@sameep.ai?subject=' + encodeURIComponent('Chief of Staff enquiry: ' + v.company) + '&body=' + encodeURIComponent(lines.join('\n'));
   }
 
@@ -163,6 +105,5 @@
       .then(function () { btn.disabled = false; btn.textContent = 'Send'; });
   });
 
-  setPlan(PRESETS.balanced);
-  render();
+  sync();
 })();

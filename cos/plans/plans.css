@@ -1,10 +1,11 @@
+@font-face { font-family: 'Clash Display'; src: url('./ClashDisplay-Variable.woff2') format('woff2'); font-weight: 200 700; font-display: swap; }
 /* brandcos/plans: the product's dark command-centre look. Instrument Serif for headlines, Inter for the rest.
    One accent (lime) only on what you press or have picked. */
 :root {
   color-scheme: dark;
   --bg: #0b0c0a; --band: #10110e; --card: #141512; --card-2: #1a1b17; --line: rgba(236,235,228,.09); --line-2: rgba(236,235,228,.18);
   --ink: #ecebe4; --ink-2: #c9c8c0; --muted: #8b8a82; --acc: #c8f04a; --acc-ink: #121409; --bad: #ee7c6c;
-  --f-head: 'Instrument Serif', Georgia, serif; --f-body: 'Inter', system-ui, sans-serif;
+  --f-head: 'Clash Display', system-ui, sans-serif; --f-body: 'Clash Display', system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
@@ -155,3 +156,13 @@ textarea { resize: vertical; }
   .line { flex-direction: column; gap: 6px; }
   .foot { flex-direction: column; }
 }
+
+/* four options */
+.plans { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.plan .big { white-space: nowrap; }
+@media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .plans { grid-template-columns: minmax(0, 1fr); } }
+.plan-pick .plan-line { margin: 12px 0; }
+#f-maint-w[hidden] { display: none; }
+h1, h2, h3, .sec-h, .big { font-weight: 600; letter-spacing: -.02em; }
+.plan ul { align-content: start; justify-content: flex-start; } .plan .btn { margin-top: auto; }

@@ -136,6 +136,19 @@ export function createPanel(cfg, host, env) {
       e._run = (ms, at) => { let got = 0; rows.forEach((x, j) => at(ms * (j + 0.6) / (rows.length + 0.6), () => { x.el.style.visibility = ''; if (!REDUCED) x.el.animate([{ translate: '14px 0' }, { translate: '0 0' }], { duration: 300, easing: EZ }); if (x.r.hit) { got++; big.textContent = String(Math.round(to * got / hits)); if (env.sfx) env.sfx('ping'); } else if (env.sfx) env.sfx(x.r.miss ? 'miss' : 'tick'); Rw.scrollTop = Rw.scrollHeight; })); at(ms, () => { big.textContent = String(to); }); };
       return e;
     }
+    if (a.kind === 'dash' && a.tiles) {   /* the dashboard as it is in the product: a few big tiles, one idea each */
+      const T = h('div', 'a-hd'); head(T, a); e.appendChild(T);
+      const G = h('div', 'a-db');
+      arr(a.tiles).forEach((t) => {
+        const c = h('div', 'a-dt' + (t.wide ? ' is-wide' : '')), L = h('div', 'a-dtl'); c.appendChild(L);
+        L.appendChild(h('span', 'a-dk', t.k)); if (t.n) L.appendChild(h('b', null, t.n)); if (t.sub) L.appendChild(h('span', 'a-ds', t.sub));
+        if (t.act) L.appendChild(h('span', 'a-da', t.act));
+        if (t.bars) { const B = h('div', 'a-dbars'), mx = Math.max(1, ...t.bars); t.bars.forEach((n, j) => { const b = h('i' + '', j === t.bars.length - 1 ? 'is-last' : null); b.style.height = Math.max(4, Math.round(n / mx * 100)) + '%'; B.appendChild(b); }); c.appendChild(B); }
+        if (t.rows) { const Rw = h('div', 'a-dl'); arr(t.rows).forEach((r) => { const x = h('div'); x.appendChild(h('span', null, r[0])); if (r[1]) x.appendChild(h('em', null, r[1])); Rw.appendChild(x); }); c.appendChild(Rw); }
+        G.appendChild(c);
+      });
+      e.appendChild(G); return e;
+    }
     if (a.kind === 'dash') {   /* the dashboard: the project's numbers on one screen */
       const T = h('div', 'a-hd'); head(T, a); e.appendChild(T);
       const G = h('div', 'a-dash'); arr(a.nums).forEach((x) => { const c = h('div', 'a-dn'); c.appendChild(h('b', null, x[0])); c.appendChild(h('span', null, x[1])); G.appendChild(c); }); e.appendChild(G);
@@ -303,10 +316,11 @@ export function createPanel(cfg, host, env) {
     e.addEventListener('click', (ev) => { if (ev.target.closest('.a-row')) return; if (env.open) env.open({ art: a }); });
     w.appendChild(e); ui.stage.appendChild(w); cur = e;
     if (o.rise && !REDUCED) {
-      e.animate([{ translate: '0 46px', scale: '.94' }, { translate: '0 0', scale: '1' }], { duration: 620, easing: EZ });
-      const big = e.querySelector('.a-n'); if (big) big.animate([{ scale: '.5' }, { scale: '1.12', offset: 0.7 }, { scale: '1' }], { duration: 700, delay: 260, easing: EZ, fill: 'backwards' });
+      const OUT = 'cubic-bezier(.16,1,.3,1)';
+      w.animate([{ clipPath: 'inset(0 0 100% 0)', translate: '0 22px' }, { clipPath: 'inset(0 0 0 0)', translate: '0 0' }], { duration: 720, easing: OUT });
+      [...e.children].forEach((c, j) => c.animate([{ transform: 'translateY(16px)' }, { transform: 'translateY(0)' }], { duration: 560, delay: 90 + j * 60, easing: OUT, fill: 'backwards' }));
       if (env.sfx) { env.sfx('land'); if (/new project/i.test(str(a.lab))) later(300, () => env.sfx('chime')); }
-      later(380, () => sheen(e));
+      later(640, () => sheen(e));
     }
     return e;
   }
@@ -401,7 +415,8 @@ export function createPanel(cfg, host, env) {
       }
       if (it.step != null && shown && shown._step) shown._step(it.step);
       if (it.decide && shown) decide(shown);
-      await wait((it.voice && it.art ? 500 : Math.max(read(it.text), said + 500)) + (it.art ? 2400 : 0) + slack / Math.max(1, items.length)); if (!live()) return;
+      if (it.guide && env.note) env.note(it.guide);   /* the guide says what just happened */
+      await wait((it.guide && !it.art ? 900 : 0) + (it.voice && it.art ? 500 : Math.max(read(it.text), said + 500)) + (it.art ? 2400 : 0) + slack / Math.max(1, items.length)); if (!live()) return;
     }
   }
   function estimateItems(items) { return 900 + items.reduce((t, it) => t + 650 + read(it.text) + (it.art ? 2400 : 0), 0); }

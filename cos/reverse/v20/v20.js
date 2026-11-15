@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21q';
+import { createPanel, EZ, read } from './v20-app.js?v=v21s';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -426,7 +426,7 @@ function show(k, how) {
     ui.panelHost.classList.add('is-on');
     ui.root.classList.toggle('bd-build', !!src && !REDUCED);
     ui.root.dataset.focus = b.tasks ? 'tasks' : '';   /* on a phone, a beat that hands out tasks shows the task cards where the canvas is */
-    ui.workDone = seq ? 0 : 99; ui.workOn = !seq; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
+    ui.workDone = seq ? 0 : 99; ui.workOn = !seq; ui.tasksOn = !seq || !b.tasks; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k && ui.tasksOn) board(k, true); }, dur);
     panel.fit();
     if (!seq || from < 0 || B[from].type !== 'panel') {
       /* rebuild the thread from history when we jumped in, or arrive from a scene (the thread keeps everything) */
@@ -434,7 +434,7 @@ function show(k, how) {
       if (!seq) { panel.label(b.label); if (H.art && !b.art && !b.enter) panel.show(H.art); }
     }
     const po = { onCue: () => { if (B[i] === b) setLine(b); } }; if (src) po.landing = (card) => travel(src, card).then(buildAround);
-    const go0 = () => { if (i !== k) return; Promise.resolve(panel.play(b, po)).then(() => (seq && i === k && playing ? guide(guideFor(b, 'end'), k) : null)).then(() => { if (i === k && AUTO && started && playing) { clearTimeout(timer); timer = setTimeout(autoNext, 1600); } }); };
+    const go0 = () => { if (i !== k) return; Promise.resolve(panel.play(b, po)).then(() => { if (i === k && !ui.tasksOn) { ui.tasksOn = true; board(k, false); SFX.land(); return new Promise((r) => setTimeout(r, 1500)); } }).then(() => (seq && i === k && playing ? guide(guideFor(b, 'end'), k) : null)).then(() => { if (i === k && AUTO && started && playing) { clearTimeout(timer); timer = setTimeout(autoNext, 1600); } }); };
     /* the guide names what is new before the conversation starts, so nobody reads two things at once */
     const go = () => { if (i !== k) return; const pre = seq && !src ? guideFor(b, 'pre') : []; if (pre.length) guide(pre, k).then(go0); else go0(); };
     if (seq && !src && ui.bd && ui.bd.stageChanged && !REDUCED) { clearTimeout(ui.stT); ui.stT = setTimeout(go, 900); } else go();
@@ -614,6 +614,7 @@ function board(k, settled) {
   const T = [];
   past.forEach((x) => {
     if (x.work && (x !== b || ui.workOn)) T.push({ key: 'w:' + x.work.title, title: x.work.title, who: x.work.who, due: '', work: x.work, here: x === b });
+    if (x === b && !ui.tasksOn) return;   /* this beat's tasks land once they have been announced */
     arr(x.tasks).forEach((r) => T.push({ key: r.text, title: r.text, who: r.who, due: r.due, dueDay: +(/Day (\d+)/.exec(str(r.due)) || [0, -1])[1] }));
   });
   const under = b.under || (stageBeats.find((x) => x.under) || {}).under;
@@ -779,6 +780,7 @@ function build() {
   panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView,
     voice: (k) => { const len = +((cfg.audio_len || {})[k] || 0) * 1000; SFX.voice(); playClip(k); return len; },
     peek: () => { if (AUTO && playing) setPlay(false); },
+    note: (g) => { if (ui.seek || !playing) return; guide([g], i); },
     work: () => new Promise((res) => {
       const k = i, b = B[k], n = arr(b && ((b.work && b.work.agents) || b.agents)).length, wa = b && (b.workArt || (b.work && b.work.art));
       ui.workOn = true;
@@ -787,6 +789,7 @@ function build() {
       guide(guideFor(b, 'work'), k).then(() => {
         if (i !== k || !playing) return res();
         if (wa) panel.showWork(wa, 1300 + n * 1100);
+        setTimeout(() => { if (i === k && playing) guide(guideFor(b, 'during'), k); }, 500);
         let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 800); else setTimeout(tick, 1100); };
         setTimeout(tick, 1700);
       });
@@ -820,7 +823,7 @@ function build() {
   addEventListener('touchstart', (e) => { const t = e.touches[0]; ty = t.clientY; tx = t.clientX; }, { passive: true });
   addEventListener('touchend', (e) => { if (ty == null) return; const t = e.changedTouches[0], dy = ty - t.clientY, dx = tx - t.clientX; ty = null; if (e.target.closest && own(e.target, dy)) return; if (Math.abs(dy) > 48 && Math.abs(dy) > Math.abs(dx)) step(dy); else if (Math.abs(dx) > 60) step(dx); }, { passive: true });
   let rz = 0; addEventListener('resize', () => { sizeBox(); clearTimeout(rz); rz = setTimeout(() => { panel.fit(); }, 120); });
-  if (AUTO) { playing = false; const sbn = h('button', 'v-start'); sbn.type = 'button'; sbn.setAttribute('aria-label', 'Play'); sbn.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M5 3.2v9.6a.6.6 0 0 0 .9.5l7.4-4.8a.6.6 0 0 0 0-1L5.9 2.7a.6.6 0 0 0-.9.5z"/></svg>'; sbn.addEventListener('click', (e) => { e.stopPropagation(); begin(); }); pic.appendChild(sbn); ui.startB = sbn; }
+  if (AUTO) { playing = false; const sbn = h('button', 'v-start'); sbn.type = 'button'; sbn.setAttribute('aria-label', 'Play'); sbn.appendChild(h('span', null, 'Play')); sbn.addEventListener('click', (e) => { e.stopPropagation(); begin(); }); pic.appendChild(sbn); ui.startB = sbn; }
   setSound(); setPlayBtn();
 }
 

@@ -909,3 +909,28 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: "Clash Display", system-ui, 
 .ph.is-guided { outline: 0 !important; }
 @media (max-width: 760px) { .v-guide { width: calc(100vw - 24px); padding: 12px 14px 14px; } .v-guide p { font-size: 15.5px; } .is-guided { outline-offset: 2px; } }
 @media (prefers-reduced-motion: reduce) { .v-guide.is-on { animation: none; } .v-gcur { transition: none; } }
+
+/* the way in: a ring that says Play (no filled disc over the picture) */
+.v-start { width: 132px; height: 132px; background: rgba(255,255,255,.14); color: var(--w); border: 2px solid var(--w); backdrop-filter: none; }
+.v-start span { font-size: 24px; font-weight: 600; letter-spacing: -.01em; }
+.v-start::after { border-color: var(--w); border-width: 2px; opacity: .7; inset: -2px; }
+@keyframes v-ring { from { scale: 1; opacity: .7; } to { scale: 1.42; opacity: 0; } }
+@media (max-width: 760px) { .v-start { width: 108px; height: 108px; } .v-start span { font-size: 20px; } }
+
+/* ---------- the dashboard, as in the product: tiles you read at a glance ---------- */
+.a-db { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.a-dt { display: flex; gap: 14px; min-width: 0; padding: 16px 18px; border-radius: 14px; background: var(--p); overflow: hidden; }
+.a-dt.is-wide { grid-column: span 2; }
+.a-dtl { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: none; max-width: 100%; }
+.a-dk { font-size: 14px; font-weight: 500; color: var(--g2); }
+.a-dt b { font-size: 40px; font-weight: 600; letter-spacing: -.03em; line-height: 1.05; white-space: nowrap; }
+.a-ds { font-size: 14px; color: var(--g2); line-height: 1.25; }
+.a-da { align-self: flex-start; margin-top: auto; padding: 7px 14px; border-radius: 999px; background: var(--k); color: var(--w); font-size: 14px; font-weight: 600; }
+.a-dbars { flex: 1; min-width: 0; display: flex; align-items: flex-end; gap: 4px; padding-top: 8px; }
+.a-dbars i { flex: 1; border-radius: 3px 3px 0 0; background: #CFCBC2; } .a-dbars i.is-last { background: var(--k); }
+.a-dl { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.a-dl div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 7px 12px; border-radius: 10px; background: var(--w); font-size: 14.5px; line-height: 1.2; }
+.a-dl span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .a-dl em { flex: none; font-style: normal; font-size: 12.5px; color: var(--g2); }
+.a.is-dash:has(.a-db) .a-hd .a-t { font-size: 30px; }
+@media (max-width: 760px) { .a-db { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; gap: 8px; } .a-dt { padding: 12px; flex-direction: column; gap: 8px; } .a-dt b { font-size: 26px; } .a-dbars { height: 54px; flex: none; } .a-dl div { font-size: 13px; padding: 6px 9px; } }
+@media (min-width: 761px) { .a-dl em { display: none; } .a-dl div { font-size: 14px; } }

@@ -5223,28 +5223,28 @@
       "cues": [
        [
         "Fourth girl in our DMs today,",
-        0.15,
-        1.82
+        0.1,
+        1.78
        ],
        [
         "asking for a lip oil.",
-        2.33,
-        3.42
+        2.19,
+        3.45
        ],
        [
         "Not lipstick.",
-        3.77,
-        4.39
+        3.97,
+        4.83
        ],
        [
         "But real colour.",
-        5.0,
-        5.91
+        5.27,
+        6.29
        ],
        [
         "Check if it's just my DMs.",
-        6.38,
-        7.9
+        6.93,
+        8.56
        ]
       ],
       "guide": [
@@ -5318,7 +5318,11 @@
         "who": "Chief of staff",
         "text": "Looking into it now. You'll have an answer by morning.",
         "voice": "cv-research",
-        "vlen": "0:03"
+        "vlen": "0:03",
+        "guide": {
+         "at": "thread",
+         "text": "Coco answers by voice, like a teammate would."
+        }
        },
        {
         "who": "Chief of staff",
@@ -5345,7 +5349,11 @@
         },
         "after": "work",
         "voice": "cv-findings",
-        "vlen": "0:03"
+        "vlen": "0:03",
+        "guide": {
+         "at": "canvas",
+         "text": "The answer comes back as one card."
+        }
        }
       ],
       "stage": "Idea",
@@ -5429,6 +5437,11 @@
         "on": "work",
         "at": "task",
         "text": "A task appears. The agents working on it sit inside it."
+       },
+       {
+        "on": "during",
+        "at": "canvas",
+        "text": "You watch the work happen: six months of DMs being read."
        }
       ]
      },
@@ -5442,7 +5455,11 @@
         "who": "Chief of staff",
         "text": "Morning, team. New project. Your tasks are assigned, have a look.",
         "voice": "cv-morning",
-        "vlen": "0:04"
+        "vlen": "0:04",
+        "guide": {
+         "at": "thread",
+         "text": "Coco briefs the whole team at once."
+        }
        }
       ],
       "stage": "Project",
@@ -5589,7 +5606,11 @@
       "thread": [
        {
         "who": "Tanvi",
-        "text": "Find me suppliers who can make this charm shape. Get samples."
+        "text": "Find me suppliers who can make this charm shape. Get samples.",
+        "guide": {
+         "at": "thread",
+         "text": "People ask in plain words. No forms, no tickets."
+        }
        },
        {
         "who": "Tanvi's agent",
@@ -5611,6 +5632,10 @@
          "title": "Kapoor, Vapi",
          "n": "₹46",
          "sub": "a unit · can make the charm body · samples in 10 days"
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "Coco brings back only what needs a look."
         }
        },
        {
@@ -5623,6 +5648,10 @@
          "img": "firstsample",
          "lab": "Day 10 · from the supplier",
          "title": "The first sample"
+        },
+        "guide": {
+         "at": "thread",
+         "text": "She decides by voice. The task closes itself."
         }
        }
       ],
@@ -5680,6 +5709,11 @@
         "on": "work",
         "at": "task",
         "text": "Tanvi asked. Her agent does the legwork inside her task."
+       },
+       {
+        "on": "during",
+        "at": "canvas",
+        "text": "Her agent contacts six suppliers and chases the samples."
        }
       ]
      },
@@ -5693,7 +5727,11 @@
       "thread": [
        {
         "who": "Aditi",
-        "text": "Mock up both forms and put it to the team."
+        "text": "Mock up both forms and put it to the team.",
+        "guide": {
+         "at": "thread",
+         "text": "A new ask from the founder."
+        }
        },
        {
         "who": "Aditi's agent",
@@ -5726,27 +5764,39 @@
            "votes": 1
           }
          ]
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "A decision card: two options, the votes, and Coco's pick."
         }
        },
        {
         "who": "Aditi",
         "text": "Soft lobes. That's the one.",
         "voice": "hv-form",
-        "vlen": "0:02",
-        "decide": true
+        "vlen": "0:03",
+        "decide": true,
+        "guide": {
+         "at": "thread",
+         "text": "Agents prepare the options. A person makes the call."
+        }
        },
        {
         "who": "Tanvi's agent",
-        "text": "Shade test done. Brick Dust holds six hours on all three skin tones.",
+        "text": "Shade test done. Six shades hold six hours on all three skin tones.",
         "art": {
          "kind": "card",
          "media": {
           "img": "sample"
          },
-         "lab": "Shade",
-         "title": "Brick Dust",
-         "n": "3 of 3",
-         "sub": "skin tones · holds six hours · no feathering"
+         "lab": "Shades",
+         "title": "Six shades",
+         "n": "6 of 9",
+         "sub": "Brick Dust · Fig Jam · Rosewood · Terracotta · Cocoa · Mulberry. All hold six hours, no feathering."
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "Another agent tested nine shades. Six pass."
         }
        }
       ],
@@ -5758,8 +5808,8 @@
        },
        {
         "who": "Tanvi's agent",
-        "text": "Testing shades on three skin tones",
-        "done": "1 shade holds 6 h"
+        "text": "Testing nine shades on three skin tones",
+        "done": "6 shades hold 6 h"
        }
       ],
       "workArt": {
@@ -5799,9 +5849,9 @@
       },
       "guide": [
        {
-        "on": "end",
-        "at": "thread",
-        "text": "Agents prepare the options. A person makes the call."
+        "on": "during",
+        "at": "canvas",
+        "text": "The agent mocks up both forms and collects the team's votes."
        }
       ]
      },
@@ -5815,7 +5865,11 @@
       "thread": [
        {
         "who": "Vidhi",
-        "text": "Check the carton proof before it goes to print."
+        "text": "Check the carton proof before it goes to print.",
+        "guide": {
+         "at": "thread",
+         "text": "A check that usually takes a day of reading."
+        }
        },
        {
         "who": "Vidhi's agent",
@@ -5853,6 +5907,10 @@
            "missing"
           ]
          ]
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "The gap is caught before 5,000 cartons are printed."
         }
        },
        {
@@ -5894,6 +5952,10 @@
          ],
          "pick": "Waiting on Aditi",
          "pickDone": "Approved"
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "The purchase order is drafted. It waits for a person."
         }
        },
        {
@@ -5901,7 +5963,11 @@
         "text": "Approved. Send the PO.",
         "voice": "hv-approve",
         "vlen": "0:03",
-        "decide": true
+        "decide": true,
+        "guide": {
+         "at": "thread",
+         "text": "One spoken yes, and the PO goes to the supplier."
+        }
        }
       ],
       "agents": [
@@ -5966,7 +6032,14 @@
          "hit": true
         }
        ]
-      }
+      },
+      "guide": [
+       {
+        "on": "during",
+        "at": "canvas",
+        "text": "Every label rule is checked before print. One is missing."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -6266,6 +6339,10 @@
          "img": "shoot",
          "lab": "The shoot",
          "title": "On a bag, in daylight"
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "Day 52. Photos from the shoot land in the chat."
         }
        },
        {
@@ -6283,6 +6360,10 @@
          "title": "Frame 38",
          "sub": "Shot on a bag, daylight, no retouching.",
          "n": "1 of 214"
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "The hero photo is picked."
         }
        },
        {
@@ -6303,6 +6384,10 @@
          "title": "Brick Dust lip oil",
          "n": "₹899",
          "sub": "Hero photo, 5 pictures, shade story, reviews switched on"
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "Each listing comes back as a card you can open."
         }
        },
        {
@@ -6355,6 +6440,10 @@
            "₹899"
           ]
          ]
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "Live everywhere, at one price."
         }
        }
       ],
@@ -6415,7 +6504,14 @@
          "hit": true
         }
        ]
-      }
+      },
+      "guide": [
+       {
+        "on": "during",
+        "at": "canvas",
+        "text": "Three agents publish the product in five places at once."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -6427,7 +6523,11 @@
       "thread": [
        {
         "who": "Naina",
-        "text": "Run the three cuts tonight. Small budget."
+        "text": "Run the three cuts tonight. Small budget.",
+        "guide": {
+         "at": "thread",
+         "text": "The ads go out the same night."
+        }
        },
        {
         "who": "Naina's agent",
@@ -6462,6 +6562,10 @@
            "st": "paused"
           }
          ]
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "By morning: which cut is winning, and by how much."
         }
        }
       ],
@@ -6509,7 +6613,14 @@
          "miss": true
         }
        ]
-      }
+      },
+      "guide": [
+       {
+        "on": "during",
+        "at": "canvas",
+        "text": "The agent watches the spend and pauses what loses money."
+       }
+      ]
      },
      {
       "type": "scene",
@@ -6650,7 +6761,10 @@
        {
         "who": "Anjali's agent",
         "text": "Order OH-20418 is in from the site. Label printed.",
-        "after": "work"
+        "guide": {
+         "at": "thread",
+         "text": "Day 58. The first order arrives from the site."
+        }
        },
        {
         "who": "Chief of staff",
@@ -6667,6 +6781,10 @@
          "title": "Brick Dust lip oil",
          "n": "₹899",
          "sub": "Order OH-20418 · Saket, New Delhi · paid"
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "Her order: one lip oil, paid, going to Saket."
         }
        },
        {
@@ -6681,13 +6799,22 @@
          "title": "Launch hour",
          "n": "86",
          "sub": "₹77,314 · average ₹899"
+        },
+        "after": "work",
+        "guide": {
+         "at": "canvas",
+         "text": "86 orders in the first hour."
         }
        },
        {
         "who": "Anjali",
         "text": "All packed for the morning batch.",
         "voice": "hv-packed",
-        "vlen": "0:02"
+        "vlen": "0:03",
+        "guide": {
+         "at": "thread",
+         "text": "Packing is the one part done by hand."
+        }
        }
       ],
       "agents": [
@@ -6747,7 +6874,14 @@
          "hit": true
         }
        ]
-      }
+      },
+      "guide": [
+       {
+        "on": "during",
+        "at": "canvas",
+        "text": "Then they keep coming. Every label prints itself."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -6764,33 +6898,74 @@
         "art": {
          "kind": "dash",
          "lab": "Dashboard",
-         "title": "Launch day",
-         "nums": [
-          [
-           "86",
-           "orders in the launch hour"
-          ],
-          [
-           "₹77,314",
-           "sales in the launch hour"
-          ],
-          [
-           "58",
-           "days from idea to launch"
-          ],
-          [
-           "6",
-           "tasks, 5 done"
-          ],
-          [
-           "8",
-           "agents on the project"
-          ],
-          [
-           "2",
-           "calls the team had to make"
-          ]
+         "title": "Good evening, Aditi",
+         "tiles": [
+          {
+           "k": "Sales today",
+           "n": "₹77,314",
+           "sub": "launch day, by the hour",
+           "bars": [
+            1,
+            1,
+            2,
+            1,
+            2,
+            3,
+            2,
+            4,
+            3,
+            5,
+            9,
+            38
+           ],
+           "wide": true
+          },
+          {
+           "k": "Orders",
+           "n": "86",
+           "sub": "average ₹899"
+          },
+          {
+           "k": "Needs you",
+           "n": "1",
+           "sub": "Reorder 5,000 units?",
+           "act": "Approve"
+          },
+          {
+           "k": "Agents, since yesterday",
+           "n": "41",
+           "sub": "things done",
+           "rows": [
+            [
+             "Listed in 5 places",
+             "Website agent"
+            ],
+            [
+             "Paused ad cut C",
+             "Naina's agent"
+            ],
+            [
+             "Printed 86 labels",
+             "Anjali's agent"
+            ]
+           ],
+           "wide": true
+          },
+          {
+           "k": "Stock",
+           "n": "4,914",
+           "sub": "of 5,000 left"
+          },
+          {
+           "k": "Launch",
+           "n": "Day 58",
+           "sub": "7 of 7 stages done"
+          }
          ]
+        },
+        "guide": {
+         "at": "canvas",
+         "text": "The screen the founder opens every morning."
         }
        }
       ],
@@ -7022,11 +7197,11 @@
   "cv-launch": 2.65,
   "cv-ads": 3.34,
   "cv-orders": 1.81,
-  "hv-samples": 2.69,
-  "hv-form": 2.18,
-  "hv-approve": 3.39,
-  "hv-hero": 2.74,
-  "hv-packed": 2.37,
-  "vn-founder": 8.82
+  "hv-samples": 3.12,
+  "hv-form": 2.56,
+  "hv-approve": 2.56,
+  "hv-hero": 3.12,
+  "hv-packed": 2.64,
+  "vn-founder": 8.88
  }
 }
