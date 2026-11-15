@@ -210,6 +210,40 @@
     var hint = h('span', 'sbo-hint', 'Pick a start date to send'); acts.appendChild(hint);
     st.appendChild(acts);
     page.appendChild(st);
+    /* "I'm interested" with one field: the email goes to us from here, nothing opens */
+    if (I.mode === 'email') {
+      grid.style.display = 'none'; acts.style.display = 'none';
+      var fm = h('form', 'sbo-mail'); fm.noValidate = true;
+      if (I.note) fm.appendChild(h('p', 'sbo-mail-note', I.note));
+      var mrow = h('div', 'sbo-mail-row');
+      var inp = h('input', 'sbo-mail-in'); inp.type = 'email'; inp.name = 'email'; inp.autocomplete = 'email'; inp.inputMode = 'email'; inp.placeholder = str(I.placeholder, 'you@yourbrand.com'); inp.setAttribute('aria-label', 'Your email');
+      var hp = h('input', 'sbo-hp'); hp.name = 'website'; hp.tabIndex = -1; hp.autocomplete = 'off'; hp.setAttribute('aria-hidden', 'true');
+      var sbt = h('button', 'sbo-btn', str(I.send, 'Send')); sbt.type = 'submit';
+      mrow.appendChild(inp); mrow.appendChild(hp); mrow.appendChild(sbt); fm.appendChild(mrow);
+      var mmsg = h('p', 'sbo-mail-msg'); mmsg.setAttribute('role', 'status'); fm.appendChild(mmsg);
+      var mdone = h('div', 'sbo-mail-done'); mdone.hidden = true; mdone.appendChild(h('b', null, str(I.done, 'Sent. I will reply within a day.'))); if (I.done_note) mdone.appendChild(h('p', null, I.done_note));
+      st.insertBefore(fm, grid); st.insertBefore(mdone, grid);
+      fm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = inp.value.trim(), p = prices[pick] || {};
+        if (!/^[^\s@]{1,64}@[^\s@]{1,190}\.[a-z]{2,24}$/i.test(v)) { mmsg.textContent = 'Add an email I can reply to.'; inp.focus(); return; }
+        mmsg.textContent = ''; sbt.disabled = true; sbt.textContent = 'Sending…';
+        var opt = O.choose && p.item ? p.item + ': ' + p.now + ' ' + str(p.unit) + (p.note ? '. ' + p.note : '') : '';
+        fetch('/d2c-api/leads/interest', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: v, option: opt, brand: brand, page: location.pathname, website: hp.value }) })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { s: r.status, d: d }; }); })
+          .then(function (r) {
+            if (r.s === 200 && r.d && r.d.ok) { fm.hidden = true; mdone.hidden = false; try { window.dispatchEvent(new CustomEvent('coco:track', { detail: ['coco_lead', { opt: String(p.item || 'offer').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) }] })); } catch (e2) { /* */ } return; }
+            throw new Error((r.d && r.d.error) || 'x');
+          })
+          .catch(function (err) {
+            mmsg.textContent = '';
+            mmsg.appendChild(document.createTextNode(err && err.message && err.message !== 'x' && !/fetch|network|load/i.test(err.message) ? err.message + ' ' : 'That did not go through. '));
+            var a = h('a', null, 'Email ' + str(I.email, 'hello@sameep.ai')); a.href = 'mailto:' + str(I.email, 'hello@sameep.ai') + '?subject=' + encodeURIComponent('Coco: interested') + '&body=' + encodeURIComponent((opt ? 'Option: ' + opt + '\n\n' : '') + 'From: ' + v);
+            mmsg.appendChild(a); mmsg.appendChild(document.createTextNode(' instead.'));
+          })
+          .then(function () { sbt.disabled = false; sbt.textContent = str(I.send, 'Send'); });
+      });
+    }
     if (O.tax_note || O.tag) page.appendChild(h('p', 'sbo-foot', [O.tag ? O.tag + '.' : '', O.tax_note || ''].join(' ').trim()));
 
     /* ---------- dates (the same rules as the earlier proposal page) ---------- */
