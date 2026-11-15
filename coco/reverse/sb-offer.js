@@ -132,7 +132,7 @@
 
     /* ---------- 2. pricing ---------- */
     var pr = h('section', 'sbo-sec sbo-pricing');
-    var prh = h('div', 'sbo-sec-hd'); prh.appendChild(h('h2', 'sbo-h2', 'Pricing')); pr.appendChild(prh);
+    var prh = h('div', 'sbo-sec-hd'); prh.appendChild(h('h2', 'sbo-h2', 'Pricing')); if (O.deal) prh.appendChild(h('span', 'sbo-deal', O.deal)); pr.appendChild(prh);
     var prices = arr(O.prices), feat = -1;
     prices.forEach(function (p, k) { if (p.featured || (feat < 0 && /subscription/i.test(p.item))) feat = k; });
     if (feat < 0 && prices.length === 3) feat = 1;
@@ -140,9 +140,10 @@
     prices.forEach(function (p, k) {
       var c = h('div', 'sbo-price' + (k === feat ? ' is-feat' : ''));
       c.appendChild(h('b', 'sbo-price-item', p.item));
+      if (p.was) { var ws = h('p', 'sbo-price-was'); ws.appendChild(h('s', null, p.was)); ws.appendChild(h('span', 'sbo-sr', ' before the discount')); c.appendChild(ws); }
       var v = h('p', 'sbo-price-v'); v.appendChild(h('span', 'sbo-price-n', p.now)); v.appendChild(taxEl(p.tax)); c.appendChild(v);
       if (p.unit) c.appendChild(h('p', 'sbo-price-u', p.unit));
-      if (p.note) c.appendChild(h('p', 'sbo-price-note', p.note));
+      if (p.note) { var nt = h('p', 'sbo-price-note'); if (p.note_was) { nt.appendChild(document.createTextNode(str(p.note_pre) + ' ')); nt.appendChild(h('s', null, p.note_was)); nt.appendChild(document.createTextNode(' ')); nt.appendChild(h('b', null, str(p.note_now))); nt.appendChild(document.createTextNode(' ' + str(p.note_post))); } else nt.textContent = p.note; c.appendChild(nt); }
       if (arr(p.points).length) { var pl = h('ul', 'sbo-price-pts'); p.points.forEach(function (t) { pl.appendChild(h('li', null, t)); }); c.appendChild(pl); }
       if (O.choose) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-pressed', k === pick ? 'true' : 'false'); var choose = function () { pick = k; try { window.dispatchEvent(new CustomEvent('coco:track', { detail: ['coco_option', { opt: String(p.item || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40), at: 'landing' }] })); } catch (e) { /* */ } cards.forEach(function (x, j) { x.classList.toggle('is-feat', j === k); x.setAttribute('aria-pressed', j === k ? 'true' : 'false'); }); if (typeof refresh === 'function') refresh(false); }; c.addEventListener('click', choose); c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } }); }
       cards.push(c); pg.appendChild(c);

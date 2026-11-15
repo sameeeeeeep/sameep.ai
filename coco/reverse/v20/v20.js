@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21w';
+import { createPanel, EZ, read } from './v20-app.js?v=v21y';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -45,13 +45,24 @@ function candidates(k) {
 }
 
 /* ---------- sound: off until a tap; the voice note plays on the midnight scene ---------- */
-let AC = null, SOUND = false; const CLIPS = {}; let NOW = null;
-function clip(url) { if (!CLIPS[url]) { const a = new Audio(); a.preload = 'auto'; a.src = url; CLIPS[url] = a; } return CLIPS[url]; }
+let AC = null, SOUND = false, NOW = null;
+/* one player for every clip. A phone lets a page start sound only from a tap, and only for the players that tap started: with a
+   player per clip, the ones a phone did not get round to stayed silent (the team's voice notes). So one player is started by the
+   first tap, on a moment of silence, and every clip after that is played through it. */
+const ONE = new Audio(); ONE.preload = 'auto'; let ONE_OK = false, TURN = 0;
+const HUSH = 'data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YUAGAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA';
+const WARM = {};
+function warm() {   /* the clips this story plays are fetched ahead, so the one player starts them without a wait */
+  const A = cfg.audio || {}, keys = [];
+  B.forEach((b) => { if (b.voice) keys.push(b.voice); arr(b.thread).forEach((it) => { if (it.voice) keys.push(it.voice); }); });
+  keys.forEach((k) => { const u = A[k]; if (u && !WARM[u] && !/^blob:|^data:/.test(u)) { WARM[u] = 1; try { fetch(u, { priority: 'low' }).catch(() => {}); } catch (e) { /* */ } } });
+}
 function unlock() {
   if (MUTED || SOUND) return;
   try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { AC = null; }
   SOUND = true;
-  Object.values(cfg.audio || {}).forEach((u) => { if (!u) return; const a = clip(u); a.muted = true; const p = a.play(); if (p && p.then) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; }); });
+  if (!ONE_OK) { ONE_OK = true; try { ONE.muted = true; ONE.src = HUSH; const p = ONE.play(); const done = () => { if (!TURN) { try { ONE.pause(); } catch (e) { /* */ } ONE.muted = false; } }; if (p && p.then) p.then(done, done); else done(); } catch (e) { ONE.muted = false; } }
+  warm();
   setSound();
 }
 function tone(f, d, v, type, to) {
@@ -80,11 +91,11 @@ const BOXFX = {
 const SFX = { recv: () => tone(740, 0.07, 0.03, 'sine', 980), sendh: () => tone(560, 0.08, 0.035, 'sine', 420), type: () => { tone(1500, 0.02, 0.012, 'square'); setTimeout(() => tone(1700, 0.02, 0.01, 'square'), 120); setTimeout(() => tone(1400, 0.02, 0.01, 'square'), 260); }, ping: () => tone(1180, 0.09, 0.035, 'triangle', 1560), miss: () => tone(220, 0.16, 0.05, 'sawtooth', 160), tab: () => noise(0.07, 0.03, 2400, 1.2), ching: () => { tone(1320, 0.1, 0.05, 'triangle'); setTimeout(() => tone(1760, 0.24, 0.05, 'triangle'), 80); }, rec: () => { tone(880, 0.09, 0.05); setTimeout(() => tone(880, 0.09, 0.05), 140); }, approve: () => { tone(523, 0.1, 0.06); setTimeout(() => tone(784, 0.2, 0.06), 90); noise(0.06, 0.03, 3000, 1); }, voice: () => tone(1040, 0.06, 0.03, 'triangle'), whoosh: () => noise(0.35, 0.04, 700, 0.8, 'bandpass', 2600), sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06), tick: () => tone(880, 0.07, 0.03, 'triangle'), done: () => { tone(620, 0.08, 0.04, 'triangle'); setTimeout(() => tone(930, 0.12, 0.04, 'triangle'), 70); }, chime: () => { tone(523, 0.22, 0.05); setTimeout(() => tone(659, 0.22, 0.05), 110); setTimeout(() => tone(784, 0.34, 0.05), 220); } };
 function playClip(key) {
   stopClip(); const u = (cfg.audio || {})[key]; if (!u || MUTED || !SOUND) return false;
-  const a = clip(u); try { a.currentTime = 0; } catch (e) { /* */ }
-  NOW = a; const p = a.play(); if (p && p.catch) p.catch(() => { if (NOW === a) NOW = null; });
+  const a = ONE, turn = ++TURN; a.muted = false; a.src = u; try { a.currentTime = 0; } catch (e) { /* not loaded yet: it starts from 0 anyway */ }
+  NOW = a; const p = a.play(); if (p && p.catch) p.catch(() => { if (TURN === turn) NOW = null; });
   return true;
 }
-function stopClip() { if (NOW) { try { NOW.pause(); } catch (e) { /* */ } NOW = null; } }
+function stopClip() { if (NOW) { TURN++; try { NOW.pause(); } catch (e) { /* */ } NOW = null; } }
 
 /* ---------- the 3D parcel (chapter 1, 5 and 6). parcel3d today; v20-3d adds the rewind and the packing line ----------
    Feature-detected: box.rewind(t) / box.pack(t) / box.arrive(t), or box.caps.{rewind,pack,arrive} meaning doorPose({rewind:t}) etc.
@@ -741,7 +752,7 @@ function board(k, settled) {
 
 /* autoplay never takes a decision or sends the note for the viewer: it holds until they do */
 function autoNext() { if (!playing || viewOpen) return; if ((panel && panel.asking) || ui.sceneAct) { timer = setTimeout(autoNext, 600); return; } if (i < B.length - 1) show(i + 1); }
-function begin() { if (started) return false; started = true; TRK('coco_play', { v: TV() }); playing = true; setPlayBtn(); ui.root.classList.add('is-started'); if (ui.startB) { ui.startB.remove(); ui.startB = null; } unlock(); B.forEach((x) => arr(x.thread).forEach((it) => { const u = it.voice && (cfg.audio || {})[it.voice]; if (u && !MUTED) clip(u); })); if (i === 0) show(1); else show(i, 'seek'); return true; }
+function begin() { if (started) return false; started = true; TRK('coco_play', { v: TV() }); playing = true; setPlayBtn(); ui.root.classList.add('is-started'); if (ui.startB) { ui.startB.remove(); ui.startB = null; } unlock(); if (i === 0) show(1); else show(i, 'seek'); return true; }
 function next() {
   if (begin()) return;
   /* a waiting interaction comes first: Next and scroll take the decision or send the note, then the story moves */
@@ -909,6 +920,13 @@ function flatten() {
       /* a config without stages/channels (the private one, until it is rebuilt) still gets a working board */
       if (x.type === 'panel') { if (!x.stage) { const m = /^#\d+\s*\u00b7\s*([^\u00b7]+)/.exec(str(x.label)); x.stage = m ? m[1].trim() : str(c.name, 'Stage'); } if (!x.chan) x.chan = '#' + str(c.id, 'c' + j); }
       if (x.type === 'panel' && firstPanel) { x.div = str(c.div, c.name); firstPanel = false; }
+      /* every message carries the time it was sent: the beat's clock, moving on a couple of minutes a message (more after agents have worked) */
+      if (x.type === 'panel') {
+        const m0 = /(\d{1,2})(?::(\d\d))?\s*(am|pm)/i.exec(str(x.clock, x.when));
+        if (m0) { let t = ((+m0[1] % 12) + (/pm/i.test(m0[3]) ? 12 : 0)) * 60 + (+m0[2] || 0);
+          const fmt = (n) => { n = ((n % 1440) + 1440) % 1440; const hh = Math.floor(n / 60), mm = n % 60; return ((hh % 12) || 12) + ':' + String(mm).padStart(2, '0') + (hh < 12 ? ' am' : ' pm'); };
+          arr(x.thread).forEach((it, q) => { if (it.at) { const m1 = /(\d{1,2})(?::(\d\d))?\s*(am|pm)/i.exec(it.at); if (m1) t = ((+m1[1] % 12) + (/pm/i.test(m1[3]) ? 12 : 0)) * 60 + (+m1[2] || 0); return; } if (q) t += it.after === 'work' ? 9 : 2; it.at = fmt(t); }); }
+      }
       B.push(x);
     });
   });
@@ -1013,7 +1031,7 @@ function start(raw) {
   const st = /[?&]step=(\d+)/.exec(location.search);
   playing = !Q.has('still') && !AUTO; setPlayBtn();
   loadThen(clamp(st ? +st[1] - 1 : 0, 0, B.length - 1));
-  window.__v20 = { show: (k) => show(k, 'seek'), next, prev, get i() { return i; }, get beat() { return B[i]; }, n: B.length, B, get total() { return TOTAL; }, open: openView, close: closeView, setPlay, offer, get box() { return box; } };
+  window.__v20 = { show: (k) => show(k, 'seek'), next, prev, get i() { return i; }, get beat() { return B[i]; }, n: B.length, B, get total() { return TOTAL; }, open: openView, close: closeView, setPlay, offer, get sound() { return { on: SOUND, src: (ONE.currentSrc || '').split('/').pop().split('?')[0].slice(0, 40), paused: ONE.paused, t: ONE.currentTime, err: ONE.error ? ONE.error.code : 0 }; }, get box() { return box; } };
   return true;
 }
 window.cosV20 = start;

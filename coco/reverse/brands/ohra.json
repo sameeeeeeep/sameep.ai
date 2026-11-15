@@ -5276,7 +5276,8 @@
          },
          "lab": "Voice note",
          "title": "Aditi, 1:32 am"
-        }
+        },
+        "at": "1:32 am"
        },
        {
         "who": "Chief of staff",
@@ -5293,7 +5294,8 @@
          "sub": "Owner Aditi · from her 1:32 am note"
         },
         "voice": "cv-heard",
-        "vlen": "0:03"
+        "vlen": "0:03",
+        "at": "1:33 am"
        }
       ],
       "stage": "Idea",
@@ -5357,7 +5359,8 @@
         },
         "after": "work",
         "voice": "cv-findings",
-        "vlen": "0:03"
+        "vlen": "0:03",
+        "at": "6:40 am"
        }
       ],
       "stage": "Idea",
@@ -5715,7 +5718,8 @@
         "at": "canvas",
         "text": "Her agent contacts six suppliers and chases the samples."
        }
-      ]
+      ],
+      "clock": "10:20 am"
      },
      {
       "type": "panel",
@@ -5849,7 +5853,8 @@
         "at": "canvas",
         "text": "The agent mocks up both forms and collects the team's votes."
        }
-      ]
+      ],
+      "clock": "11:05 am"
      },
      {
       "type": "panel",
@@ -6031,7 +6036,8 @@
         "at": "canvas",
         "text": "Every label rule is checked before print. One is missing."
        }
-      ]
+      ],
+      "clock": "3:15 pm"
      },
      {
       "type": "panel",
@@ -6491,7 +6497,8 @@
         "at": "canvas",
         "text": "Three agents publish the product in five places at once."
        }
-      ]
+      ],
+      "clock": "4:30 pm"
      },
      {
       "type": "panel",
@@ -6542,7 +6549,8 @@
         "guide": {
          "at": "canvas",
          "text": "By morning: which cut is winning, and by how much."
-        }
+        },
+        "at": "7:10 am"
        }
       ],
       "agents": [
@@ -6843,7 +6851,7 @@
        {
         "on": "during",
         "at": "canvas",
-        "text": "Then they keep coming. Every label prints itself."
+        "text": "Then the orders keep coming, on every channel."
        }
       ]
      },

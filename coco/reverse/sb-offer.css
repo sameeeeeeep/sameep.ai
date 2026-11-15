@@ -240,3 +240,10 @@
 .sbo-mail-done { margin-top: 20px; } .sbo-mail-done[hidden] { display: none; } .sbo-mail-done b { display: block; font: 600 22px/1.25 var(--fd); } .sbo-mail-done p { margin: 6px 0 0; font-size: 16px; color: var(--ink2); }
 @media (max-width: 640px) { .sbo-mail-row { flex-direction: column; } .sbo-mail-row .sbo-btn { width: 100%; } }
 .sbo-mail-in { box-sizing: border-box; } @media (max-width: 640px) { .sbo-mail-in { flex: none; width: 100%; } }
+
+/* an offer: the full price struck out above the price to pay, and the offer named beside the heading */
+.sbo-deal { display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 999px; background: var(--ink); color: #fff; font: 600 14px/1.2 var(--fd); }
+.sbo-price-was { margin: 6px 0 -2px; font-size: 17px; line-height: 1.2; color: var(--ink3); } .sbo-price-was s { text-decoration-thickness: 1.5px; }
+.sbo-price.is-feat .sbo-price-was { color: rgba(255,255,255,.6); }
+.sbo-price-note s { opacity: .7; } .sbo-price-note b { font-weight: 600; color: var(--ink); } .sbo-price.is-feat .sbo-price-note b { color: #fff; }
+.sbo-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

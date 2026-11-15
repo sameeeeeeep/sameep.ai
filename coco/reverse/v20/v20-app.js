@@ -55,7 +55,9 @@ export function createPanel(cfg, host, env) {
   /* ---------- the shared pieces an element can travel as (identical in the scene and on the canvas) ---------- */
   function bars(n, seed) { const w = h('span', 'vb-w'); for (let k = 0; k < n; k++) { const b = h('i'); b.style.height = Math.round(18 + 76 * Math.abs(Math.sin((k + (seed || 0)) * 1.7) * Math.cos(k * 0.45))) + '%'; w.appendChild(b); } return w; }
   /* the voice bubble: the phone's sent note, the thread's attachment and the canvas's media are all this */
-  function voiceBubble(len) { const b = h('div', 'vb'); b.appendChild(h('span', 'vb-p')); b.appendChild(bars(30)); b.appendChild(h('span', 'vb-l', str(len, '0:20'))); return b; }
+  function voiceBubble(len) { const b = h('div', 'vb'); b.appendChild(h('span', 'vb-p')); b.appendChild(bars(30)); b.appendChild(h('span', 'vb-l', secs(str(len, '0:20')))); return b; }
+  /* a voice note's length reads as a length ("9s", "1m 05s"), never as a time of day */
+  function secs(v) { const m = /^(\d+):(\d\d)$/.exec(v); if (!m) return v; const mm = +m[1], ss = +m[2]; return mm ? mm + 'm ' + String(ss).padStart(2, '0') + 's' : ss + 's'; }
   /* the shipping label: printed on the box in the scene, then the canvas's media */
   /* the shipping label, landscape like the thermal label the 3D printer prints: header, barcode, address, pin, code */
   function shipLabel() {
@@ -349,7 +351,7 @@ export function createPanel(cfg, host, env) {
   }
   function msg(it) {
     const r = h('div', 'p-m'); r.appendChild(face(it.who));
-    const c = h('div', 'p-mc'); c.appendChild(h('b', 'p-mn', isCos(it.who) ? str(V.wordmark, 'Coco') : str(it.who)));
+    const c = h('div', 'p-mc'), hd = h('b', 'p-mn', isCos(it.who) ? str(V.wordmark, 'Coco') : str(it.who)); if (it.at) hd.appendChild(h('span', 'p-mtm', it.at)); c.appendChild(hd);
     if (it.voice) { const vb = voiceBubble(it.vlen || '0:05'); vb.classList.add('is-msg'); c.appendChild(vb); r._vb = vb; }
     if (it.text && it.voice) { const pt = h('p', 'p-mt is-said'); r._words = str(it.text).split(/\s+/).filter(Boolean).map((x) => { const sp = h('span', null, x + ' '); pt.appendChild(sp); return sp; }); c.appendChild(pt); }
     else if (it.text) c.appendChild(rich('p-mt', it.text));

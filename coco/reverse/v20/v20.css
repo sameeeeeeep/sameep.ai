@@ -1018,3 +1018,6 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: var(--f) !important; }
   .os-fr:nth-of-type(n+4) { display: none; } .os-fr { padding: 5px 0; } .os-fr div span { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .os-grid { grid-template-rows: auto auto auto auto minmax(0, 1fr); }
 }
+
+/* when each message was sent, beside the name */
+.p-mtm { margin-left: 8px; font-size: .82em; font-weight: 500; color: var(--g); white-space: nowrap; }
