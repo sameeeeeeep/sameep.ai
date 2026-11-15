@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21u';
+import { createPanel, EZ, read } from './v20-app.js?v=v21v';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -977,6 +977,16 @@ function start(raw) {
   if (cfg) return true;
   const c = raw || {}; if (!c.v20 || !arr(c.v20.chapters).length) return false;
   cfg = c; V = cfg.v20;
+  /* the brand's own typeface (cfg.font = { family, weights, fallback }): the whole story and its offer take it; the Coco wordmark keeps its own */
+  { const F = cfg.font;
+    if (F && typeof F.family === 'string' && /^[\w .'-]{2,40}$/.test(F.family)) {
+      const l = document.createElement('link'); l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?family=' + F.family.trim().replace(/ /g, '+') + ':wght@' + (/^[\d;]{3,40}$/.test(str(F.weights)) ? F.weights : '400;500;600;700') + '&display=swap';
+      document.head.appendChild(l);
+      document.documentElement.style.setProperty('--f', '"' + F.family.trim() + '", ' + (/^[\w ,'"-]{2,80}$/.test(str(F.fallback)) ? F.fallback : 'system-ui, sans-serif'));
+      document.documentElement.dataset.font = 'brand';
+      if (document.fonts && document.fonts.load) ['400', '500', '600'].forEach((w) => document.fonts.load(w + ' 20px "' + F.family.trim() + '"').catch(() => {}));
+    } }
   flatten();
   document.title = str(V.title, 'Coco') + ' · ' + str(V.tagline, 'the chief of staff OS for consumer brands, by sameep.ai');
   build();

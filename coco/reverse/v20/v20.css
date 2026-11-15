@@ -310,7 +310,7 @@ html.is-v20 body { font-family: var(--f); -webkit-font-smoothing: antialiased; f
 /* ---------- the offer page (sb-offer.js) in the new brand ---------- */
 .v-offer { position: fixed; inset: 0; z-index: 30; display: none; }
 .v.is-offer .v-offer { display: block; }
-.v-offer .sbo { --g: #F2F0EB; --ink: #0B0B0C; --ink2: #6B6A66; --ink3: #8B8A86; --acc: #0B0B0C; --ok: #0B0B0C; --fd: "Clash Display", system-ui, sans-serif; --fm: "Clash Display", system-ui, sans-serif; }
+.v-offer .sbo { --g: #F2F0EB; --ink: #0B0B0C; --ink2: #6B6A66; --ink3: #8B8A86; --acc: #0B0B0C; --ok: #0B0B0C; --fd: var(--f); --fm: var(--f); }
 
 /* ---------- the lock screen (pin-loader's markup) in the v20 look: black, Clash, the time light and large ---------- */
 html.v20 .pl, html.v20 .pl.pl-lobby { background: var(--k) !important; text-shadow: none !important; font-family: var(--f) !important; }
@@ -616,8 +616,8 @@ html.v20 .pl .pl-ask { font-weight: 500 !important; }
 
 /* ---------- click to begin; the offer in the landing's face ---------- */
 .v:not(.is-started) .v-hint { font-size: 22px; font-weight: 600; }
-html.is-v20 .sbo { --fd: "Clash Display", system-ui, sans-serif; --fm: "Clash Display", system-ui, sans-serif; font-variant-numeric: tabular-nums; }
-html.is-v20 .sbo, html.is-v20 .sbo * { font-family: "Clash Display", system-ui, sans-serif !important; }
+html.is-v20 .sbo { --fd: var(--f); --fm: var(--f); font-variant-numeric: tabular-nums; }
+html.is-v20 .sbo, html.is-v20 .sbo * { font-family: var(--f) !important; }
 @media (max-width: 760px) { .v:not(.is-started) .v-hint { font-size: 18px; } }
 
 /* ---------- one tasks pane: the agent works inside its task ---------- */
@@ -990,3 +990,6 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: "Clash Display", system-ui, 
 }
 @media (max-width: 760px) { .os-feed .os-fr:nth-child(5) { display: none; } .os-row { grid-template-rows: minmax(0, .6fr) minmax(0, 1.4fr); } .os-svg { min-height: 40px; } }
 @media (max-width: 760px) { .os-feed .os-fr:nth-child(4) { display: none; } .os-lg div:nth-child(3) { display: none; } .os-row { grid-template-rows: minmax(0, .55fr) minmax(0, 1.45fr); } }
+
+/* a brand's own typeface (cfg.font): its numerals and tracking sit a little differently from Clash Display */
+html[data-font="brand"] .a-n, html[data-font="brand"] .os-k b, html[data-font="brand"] .a-dt b { letter-spacing: -.035em; }
