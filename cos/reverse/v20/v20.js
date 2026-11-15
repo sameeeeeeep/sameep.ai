@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v20i';
+import { createPanel, EZ, read } from './v20-app.js?v=v20u';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -18,9 +18,10 @@ const str = (v, d) => (v == null || v === '' ? (d == null ? '' : d) : String(v))
 const arr = (v) => (Array.isArray(v) ? v : []);
 const PHONE = () => innerWidth < 760;
 const PAPER = '#F2F0EB';
-const P3_URL = '../p20-parcel.js?v=p20f', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
+const P3_URL = '../p20-parcel.js?v=p20g', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
 const P3 = !Q.has('door3d');
-const AUTO = Q.has('autoplay');   /* off by default: the viewer moves the story */
+const AUTO = !Q.has('manual');   /* the story plays itself once the viewer clicks to begin; it holds at the milestones (send the note, the decisions). ?manual = stepped */
+let started = !AUTO;
 
 let cfg, V, B = [], CH = [], i = -1, playing = true, timer = 0, raf = 0;
 const ui = {};
@@ -60,7 +61,7 @@ function tone(f, d, v, type, to) {
   g.gain.setValueAtTime(0.0001, n); g.gain.exponentialRampToValueAtTime(v, n + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, n + d);
   o.connect(g); g.connect(AC.destination); o.start(n); o.stop(n + d + 0.05);
 }
-const SFX = { sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06) };
+const SFX = { sent: () => tone(520, 0.14, 0.08, 'sine', 1300), pop: () => tone(660, 0.1, 0.035), stamp: () => { tone(420, 0.1, 0.06); setTimeout(() => tone(840, 0.14, 0.04), 90); }, land: () => tone(240, 0.16, 0.06), tick: () => tone(880, 0.07, 0.03, 'triangle'), done: () => { tone(620, 0.08, 0.04, 'triangle'); setTimeout(() => tone(930, 0.12, 0.04, 'triangle'), 70); }, chime: () => { tone(523, 0.22, 0.05); setTimeout(() => tone(659, 0.22, 0.05), 110); setTimeout(() => tone(784, 0.34, 0.05), 220); } };
 function playClip(key) {
   stopClip(); const u = (cfg.audio || {})[key]; if (!u || MUTED || !SOUND) return false;
   const a = clip(u); try { a.currentTime = 0; } catch (e) { /* */ }
@@ -241,10 +242,9 @@ const SCENE = {
       n++; const s = Math.min(n * 0.16, 59); tm.textContent = '0:' + String(Math.floor(s)).padStart(2, '0');
       if (live.children.length < 30) { const bar = h('i'); bar.style.height = Math.round(20 + 70 * Math.abs(Math.sin(n * 1.3) * Math.cos(n * 0.4))) + '%'; live.appendChild(bar); }
     }, 160);
-    const send = () => { if (!rec.isConnected || rec.hidden) return; ui.sceneAct = null; clearInterval(ui.recI); rec.hidden = true; sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
+    const send = () => { if (!rec.isConnected || rec.hidden) return; ui.sceneAct = null; clearInterval(ui.recI); rec.hidden = true; if (AUTO && started && playing && !ui.seek) { clearTimeout(timer); timer = setTimeout(autoNext, 2600); } sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
     /* the viewer sends it: the note records until they tap send (Next and scroll send it too) */
     if (!sendAt) send();
-    else if (AUTO) ui.sceneT = setTimeout(send, sendAt);
     else { const sb = h('button', 'ph-send'); sb.type = 'button'; sb.setAttribute('aria-label', 'Send the voice note'); sb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3.6M3.8 7.6L8 3.4l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; sb.addEventListener('click', (e) => { e.stopPropagation(); unlock(); send(); }); rec.appendChild(sb); ui.sceneAct = send; }
     if (b.voice && !ui.seek) playClip(b.voice);
     return w;
@@ -341,7 +341,7 @@ function show(k, how) {
   k = clamp(k, 0, B.length - 1);
   const b = B[k], from = i, seq = k === from + 1 && how !== 'seek';
   i = k; ui.seek = !seq && how !== 'first';
-  clearTimeout(timer); clearTimeout(ui.sceneT); clearInterval(ui.recI); stopClip(); ui.sceneAct = null;
+  clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearInterval(ui.recI); stopClip(); ui.sceneAct = null;
   closeView(true);
   const ch = b.ch;
   ui.root.dataset.ch = CH[ch].id; ui.root.dataset.type = b.type; ui.root.dataset.scene = b.scene || '';
@@ -363,7 +363,8 @@ function show(k, how) {
       if (!seq) { panel.label(b.label); if (H.art && !b.art && !b.enter) panel.show(H.art); }
     }
     const po = { onCue: () => { if (B[i] === b) setLine(b); } }; if (src) po.landing = (card) => travel(src, card);
-    panel.play(b, po);
+    const go = () => { if (i !== k) return; Promise.resolve(panel.play(b, po)).then(() => { if (i === k && AUTO && started && playing) { clearTimeout(timer); timer = setTimeout(autoNext, 1600); } }); };
+    if (seq && ui.bd && ui.bd.stageChanged && !REDUCED) { clearTimeout(ui.stT); ui.stT = setTimeout(go, 900); } else go();
   } else {
     panel.stop(); ui.panelHost.classList.remove('is-on');
     const is3d = IS3D(b);
@@ -379,7 +380,7 @@ function show(k, how) {
   ui.next.disabled = k === B.length - 1;
   window.__beatT0 = performance.now();
   ui.back.disabled = k === 0;
-  if (AUTO && playing && k < B.length - 1) { timer = setTimeout(() => next(), dur); runProgress(dur); } else runProgress(0);
+  if (AUTO && started && playing && k < B.length - 1) { if (b.type !== 'panel' && b.scene !== 'phone') timer = setTimeout(autoNext, dur); runProgress(dur); } else runProgress(0);
 }
 function durOf(b) {
   if (b.type === 'panel') return panel.estimate(b) + (b.enter ? 2200 : 0);
@@ -400,7 +401,7 @@ function setLine(b) {
   L.appendChild(document.createTextNode(str(b.line)));
   if (b.line2) { L.appendChild(document.createTextNode(' ')); L.appendChild(h('span', null, b.line2)); }
   ui.when.textContent = str(b.when);
-  if (ui.hint) ui.hint.textContent = b.scene === 'end' ? '' : b.scene === 'phone' ? 'Tap send' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
+  if (ui.hint) ui.hint.textContent = b.scene === 'end' ? '' : b.scene === 'phone' ? 'Tap send to continue' : !started ? (PHONE() ? 'Tap to begin' : 'Click to begin') : AUTO ? '' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
 }
 function chapters(ch) {
   ui.chs.forEach((e, j) => { e.classList.toggle('is-on', j === ch && !CH[j].quiet); e.classList.toggle('is-done', j < ch); e.setAttribute('aria-current', j === ch ? 'step' : 'false'); });
@@ -463,6 +464,7 @@ function board(k, settled) {
     const here = x === b;
     const note = (w, text) => { if (!w) return; if (!isAg(w)) { spoke[w] = 1; return; } let a = agents.find((y) => y.who === w); if (!a) { a = { who: w }; agents.push(a); } if (text) a.last = text; a.live = here; };
     arr(x.thread).forEach((it) => { note(it.who, it.text); if (it.art && it.art.kind === 'list') arr(it.art.rows).forEach((r) => note(r.who, r.text)); });
+    if (x.work) arr(x.work.agents).forEach((r) => note(r.who, r.text));
   });
   bd.team.innerHTML = '';
   const fs = h('span', 'bd-faces');
@@ -477,12 +479,19 @@ function board(k, settled) {
   bd.team.appendChild(h('span', 'bd-count', online + (online === 1 ? ' person' : ' people') + ' online · ' + nAg + (nAg === 1 ? ' agent' : ' agents')));
   /* stages */
   const si = STG.findIndex((s) => s.name === b.stage);
-  cur.stage = si; if (si !== was.stage && bd.stg[si]) move(bd.stg[si], [{ scale: '.94' }, { scale: '1' }], { easing: BACK });
+  cur.stage = si;
+  if (si !== was.stage && bd.stg[si] && live) {
+    const e = bd.stg[si];
+    e.animate([{ backgroundSize: '0% 100%', color: '#0B0B0C' }, { backgroundSize: '100% 100%', color: '#0B0B0C', offset: 0.55 }, { backgroundSize: '100% 100%', color: '#FFFFFF' }], { duration: 760, easing: BEZ, fill: 'backwards' });
+    e.animate([{ scale: '1' }, { scale: '1.06', offset: 0.6 }, { scale: '1' }], { duration: 760, easing: BEZ });
+    setTimeout(() => SFX.stamp(), 380);
+  }
+  bd.stageChanged = si !== was.stage;
   bd.stg.forEach((e, n) => { e.classList.toggle('is-on', n === si); e.classList.toggle('is-done', n < si); if (n === si && e.scrollIntoView && bd.strip.scrollWidth > bd.strip.clientWidth) bd.strip.scrollTo({ left: e.offsetLeft - 24 }); });
   /* channel tiles */
   bd.tiles.innerHTML = '';
   CHN.forEach((cn) => {
-    const mine = past.filter((x) => x.chan === cn.name), open = b.chan === cn.name;
+    const mine = past.filter((x) => x.chan === cn.name && (x !== b || settled)), open = b.chan === cn.name;
     const t = h('div', 'bd-tile' + (open ? ' is-on' : mine.length ? ' is-done' : ''));
     const hd = h('div', 'bd-th'); hd.appendChild(h('b', null, cn.name)); hd.appendChild(h('span', null, open ? 'Open now' : mine.length ? 'Done' : 'Next')); t.appendChild(hd);
     let last = null; const who = [];
@@ -499,40 +508,57 @@ function board(k, settled) {
   const nb = h('div', 'bd-nb'); const pi = IMG('product'); if (pi && day >= 21) nb.appendChild(img(pi, 'bd-np')); else if (IMG('sketch_ink') || IMG('sketch')) nb.appendChild(img(str(IMG('sketch_ink'), IMG('sketch')), 'bd-np is-sk'));
   const nt = h('div'); nt.appendChild(h('b', null, str(b.stage) + ' · ' + str(b.chan))); nt.appendChild(h('p', null, str(b.label).replace(/^#\d+\s*·\s*/, ''))); nb.appendChild(nt); now.appendChild(nb);
   bd.mid.appendChild(now);
-  /* tasks: the newest list of work, ticked as its days pass (agent rows tick when their beat settles) */
-  let list = null, listBeat = null;
-  past.forEach((x) => arr(x.thread).forEach((it) => { if (it.art && it.art.kind === 'list' && arr(it.art.rows).length) { list = it.art; listBeat = x; } }));
-  let tlag = 200;
-  const tk = h('div', 'bd-card'); tk.appendChild(h('span', 'bd-h', 'Tasks and decisions'));
-  if (!list) tk.appendChild(h('p', 'bd-empty', 'Nothing yet'));
-  else arr(list.rows).forEach((r) => {
-    const due = /Day (\d+)/.exec(str(r.due)), done = due ? day >= +due[1] : (listBeat !== b || settled);
-    const row = h('div', 'bd-task' + (done ? ' is-done' : '')); const box = h('i'); row.appendChild(box);
-    cur.tasks[r.text] = 1; if (done) cur.done[r.text] = 1;
-    if (!was.tasks[r.text]) { move(row, [{ translate: '0 12px' }, { translate: '0 0' }], { delay: tlag }); tlag += 110; }
-    else if (done && !was.done[r.text]) { move(box, [{ scale: '.3' }, { scale: '1' }], { delay: tlag, easing: BACK }); tlag += 160; }
-    const tx = h('div'); tx.appendChild(h('b', null, r.text)); const o = h('span'); o.appendChild(panel.face(r.who)); o.appendChild(document.createTextNode(str(r.who) + (r.due ? ' · ' + r.due : ''))); tx.appendChild(o); row.appendChild(tx);
+  /* one pane: the tasks, and inside the task being worked on, the agents working on it. Nothing here repeats on the canvas. */
+  const stageDay = si >= 0 ? STG[si].day : null, stageBeats = past.filter((x) => x.stage === b.stage);
+  const T = [];
+  past.forEach((x) => {
+    if (x.work) T.push({ key: 'w:' + x.work.title, title: x.work.title, who: x.work.who, due: '', work: x.work, here: x === b });
+    arr(x.tasks).forEach((r) => T.push({ key: r.text, title: r.text, who: r.who, due: r.due, dueDay: +(/Day (\d+)/.exec(str(r.due)) || [0, -1])[1] }));
+  });
+  const under = b.under || (stageBeats.find((x) => x.under) || {}).under;
+  const tk = h('div', 'bd-card is-tasks'); tk.appendChild(h('span', 'bd-h', 'Tasks'));
+  if (!T.length) tk.appendChild(h('p', 'bd-empty', 'No tasks yet'));
+  let tlag = 250;
+  T.forEach((t) => {
+    let done, active, nest = [];
+    if (t.work) { done = !t.here || !!settled; active = t.here; nest = arr(t.work.agents).map((a) => ({ who: a.who, text: a.text, tag: done ? str(a.done, 'done') : 'working', work: !done })); }
+    else {
+      active = (under ? under === t.title : t.dueDay === stageDay);
+      done = t.dueDay >= 0 && (day > t.dueDay || (day === t.dueDay && !!settled && b === stageBeats[stageBeats.length - 1] && !B.slice(k + 1).some((x) => x.type === 'panel' && x.stage === b.stage)));
+      if (active && !done) {
+        const seen = {};
+        stageBeats.forEach((x) => arr(x.thread).forEach((it) => { if (isAg(it.who) && !/^chief of staff$/i.test(it.who) && (x !== b || settled || true)) { const live = x === b && !settled; if (!seen[it.who]) { seen[it.who] = { who: it.who, text: it.text, tag: live ? 'working' : 'done', work: live }; nest.push(seen[it.who]); } else { seen[it.who].text = it.text; seen[it.who].tag = live ? 'working' : 'done'; seen[it.who].work = live; } } }));
+      }
+    }
+    const row = h('div', 'bd-task' + (done ? ' is-done' : '') + (active && !done ? ' is-active' : '')); const box = h('i'); row.appendChild(box);
+    const tx = h('div'); tx.appendChild(h('b', null, t.title)); const o = h('span'); o.appendChild(panel.face(t.who)); o.appendChild(document.createTextNode(str(t.who) + (t.due ? ' · ' + t.due : ''))); tx.appendChild(o);
+    if (nest.length && (active || t.work) && !(t.work && done && T.length > 1)) {
+      const N = h('div', 'bd-nest');
+      nest.slice(-3).forEach((a, n) => {
+        const ar = h('div', 'bd-na'); ar.appendChild(panel.face(a.who)); const at = h('div'); at.appendChild(h('b', null, a.who)); at.appendChild(h('p', null, clip2(a.text, 54))); ar.appendChild(at);
+        const tag = h('span', 'bd-tag' + (a.work ? ' is-work' : ''), a.tag); ar.appendChild(tag);
+        const ak = t.key + '>' + a.who; cur.agents[ak] = a.work ? 2 : 1;
+        if (!was.agents[ak]) { move(ar, [{ translate: '0 10px', scale: '.96' }, { translate: '0 0', scale: '1' }], { delay: tlag + 200 + n * 160 }); if (live) setTimeout(() => SFX.tick(), tlag + 200 + n * 160); }
+        else if (was.agents[ak] === 2 && !a.work) { move(tag, [{ scale: '.6' }, { scale: '1' }], { easing: BACK, delay: n * 180 }); if (live) setTimeout(() => SFX.done(), n * 180); }
+        N.appendChild(ar);
+      });
+      tx.appendChild(N);
+    } else if (t.work && done) tx.appendChild(h('span', 'bd-sum', arr(t.work.agents).length + ' agents · done overnight'));
+    row.appendChild(tx);
+    cur.tasks[t.key] = 1; if (done) cur.done[t.key] = 1;
+    if (!was.tasks[t.key]) { move(row, [{ translate: '0 16px' }, { translate: '0 0' }], { delay: tlag }); if (live) setTimeout(() => SFX.pop(), tlag); tlag += 170; }
+    else if (done && !was.done[t.key]) { move(box, [{ scale: '.3' }, { scale: '1' }], { delay: 120, easing: BACK }); if (live) setTimeout(() => SFX.done(), 120); }
     tk.appendChild(row);
   });
   bd.mid.appendChild(tk);
-  const ag = h('div', 'bd-card'); ag.appendChild(h('span', 'bd-h', 'Agents at work'));
-  if (!agents.length) ag.appendChild(h('p', 'bd-empty', 'None yet'));
-  let alag = 300;
-  agents.slice(-4).forEach((a) => {
-    const row = h('div', 'bd-ag'); row.appendChild(panel.face(a.who));
-    cur.agents[a.who] = a.live && !settled ? 2 : 1;
-    if (!was.agents[a.who]) { move(row, [{ translate: '0 12px' }, { translate: '0 0' }], { delay: alag }); alag += 110; }
-    const working = a.live && !settled;
-    const tx = h('div'); const top = h('b', null, a.who); tx.appendChild(top); tx.appendChild(h('p', null, clip2(a.last, 58))); row.appendChild(tx);
-    const tag = h('span', 'bd-tag' + (working ? ' is-work' : ''), working ? 'working' : a.live ? 'done' : 'ready'); row.appendChild(tag);
-    if (was.agents[a.who] === 2 && !working) move(tag, [{ scale: '.7' }, { scale: '1' }], { easing: BACK });
-    ag.appendChild(row);
-  });
-  bd.mid.appendChild(ag);
   bd.was = cur;
 }
 
+/* autoplay never takes a decision or sends the note for the viewer: it holds until they do */
+function autoNext() { if (!playing || viewOpen) return; if ((panel && panel.asking) || ui.sceneAct) { timer = setTimeout(autoNext, 600); return; } if (i < B.length - 1) show(i + 1); }
+function begin() { if (started) return false; started = true; ui.root.classList.add('is-started'); unlock(); B.forEach((x) => arr(x.thread).forEach((it) => { const u = it.voice && (cfg.audio || {})[it.voice]; if (u && !MUTED) clip(u); })); if (i === 0) show(1); else show(i, 'seek'); return true; }
 function next() {
+  if (begin()) return;
   /* a waiting interaction comes first: Next and scroll take the decision or send the note, then the story moves */
   if (panel && panel.asking) { panel.answer(); return; }
   if (ui.sceneAct) { const f = ui.sceneAct; ui.sceneAct = null; f(); return; }
@@ -626,7 +652,9 @@ function build() {
   r.appendChild(bot);
   ui.offer = h('div', 'v-offer'); r.appendChild(ui.offer);
   mount.appendChild(r);
-  panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView });
+  panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView,
+    voice: (k) => { const len = +((cfg.audio_len || {})[k] || 0) * 1000; playClip(k); return len; },
+    peek: () => { if (AUTO && playing) setPlay(false); } });
   top.appendChild(ctl);   /* the controls live in the top bar: nothing sits under the picture */
   boardData(); buildBoard();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });
@@ -634,6 +662,7 @@ function build() {
   ui.play.addEventListener('click', (e) => { e.stopPropagation(); unlock(); setPlay(!playing); });
   ui.sound.addEventListener('click', (e) => { e.stopPropagation(); if (SOUND) { SOUND = false; stopClip(); setSound(); } else unlock(); });
   addEventListener('pointerdown', () => unlock(), { once: true, capture: true });
+  ui.pic.addEventListener('click', (e) => { if (!started && !(e.target.closest && e.target.closest('button, a'))) begin(); });
   addEventListener('keydown', (e) => {
     if (ui.root.classList.contains('is-offer')) return;
     if (e.key === 'Escape' && viewOpen) { closeView(); return; }

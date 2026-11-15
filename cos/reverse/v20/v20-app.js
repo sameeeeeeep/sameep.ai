@@ -124,6 +124,12 @@ export function createPanel(cfg, host, env) {
       e.appendChild(G); if (o.done) e.classList.add('is-decided');
       return e;
     }
+    if (a.kind === 'photo') {   /* a photograph fills the card; a caption sits under it */
+      const src = pic(PHONE() && a.img_m ? a.img_m : a.img), F = h('div', 'a-photo');
+      if (src) { const im = h('img'); im.alt = str(a.title); im.decoding = 'async'; im.src = src; F.appendChild(im); } else F.appendChild(h('span', 'a-ph', str(a.title, a.img)));
+      e.appendChild(F); const C = h('div', 'a-cap'); if (a.title) C.appendChild(h('b', null, a.title)); if (a.lab) C.appendChild(h('span', null, a.lab)); e.appendChild(C);
+      return e;
+    }
     if (a.kind === 'ads') {
       const T = h('div', 'a-l'); head(T, a); if (a.n) T.appendChild(h('span', 'a-n', a.n)); if (a.sub) T.appendChild(h('span', 'a-sub', a.sub)); e.appendChild(T);
       const G = h('div', 'a-cuts');
@@ -268,7 +274,11 @@ export function createPanel(cfg, host, env) {
     const w = h('div', 'p-fit'), e = art(a, o);
     e.addEventListener('click', (ev) => { if (ev.target.closest('.a-row')) return; if (env.open) env.open({ art: a }); });
     w.appendChild(e); ui.stage.appendChild(w); cur = e;
-    if (o.rise && !REDUCED) e.animate([{ translate: '0 14px' }, { translate: '0 0' }], { duration: 520, easing: EZ });
+    if (o.rise && !REDUCED) {
+      e.animate([{ translate: '0 46px', scale: '.94' }, { translate: '0 0', scale: '1' }], { duration: 620, easing: EZ });
+      const big = e.querySelector('.a-n'); if (big) big.animate([{ scale: '.5' }, { scale: '1.12', offset: 0.7 }, { scale: '1' }], { duration: 700, delay: 260, easing: EZ, fill: 'backwards' });
+      if (env.sfx) { env.sfx('land'); if (/new project/i.test(str(a.lab))) later(300, () => env.sfx('chime')); }
+    }
     return e;
   }
   function label(t) { ui.lab.textContent = str(t); }
@@ -276,7 +286,7 @@ export function createPanel(cfg, host, env) {
   /* ---------- the thread ---------- */
   function attOf(a) {
     const b = h('button', 'p-att'); b.type = 'button';
-    const m = a.media || (a.opts && a.opts[0]) || (a.cuts && a.cuts.find((x) => x.st === 'win')) || null;
+    const m = (a.kind === 'photo' ? { img: PHONE() && a.img_m ? a.img_m : a.img } : null) || a.media || (a.opts && a.opts[0]) || (a.cuts && a.cuts.find((x) => x.st === 'win')) || null;
     if (m && m.voice) b.appendChild(voiceBubble(m.voice));
     else {
       if (m && m.label) { const t = h('span', 'p-att-i is-label'); t.appendChild(h('i')); b.appendChild(t); }
@@ -284,13 +294,15 @@ export function createPanel(cfg, host, env) {
       else { const t = h('span', 'p-att-i is-doc'); t.appendChild(h('i')); t.appendChild(h('i')); t.appendChild(h('i')); b.appendChild(t); }
       b.appendChild(h('span', 'p-att-t', str(a.title, a.lab)));
     }
-    b.addEventListener('click', (ev) => { ev.stopPropagation(); if (env.open) env.open({ art: a }); });
+    /* the chat is where things are said; clicking anything in it puts it on the canvas, big */
+    b.addEventListener('click', (ev) => { ev.stopPropagation(); if (env.peek) env.peek(); show(a, { done: true, rise: true }); ui.list.querySelectorAll('.p-att.is-shown').forEach((x) => x.classList.remove('is-shown')); b.classList.add('is-shown'); });
     return b;
   }
   function msg(it) {
     const r = h('div', 'p-m'); r.appendChild(face(it.who));
     const c = h('div', 'p-mc'); c.appendChild(h('b', 'p-mn', str(it.who)));
-    if (it.text) c.appendChild(rich('p-mt', it.text));
+    if (it.voice) { const vb = voiceBubble(it.vlen || '0:05'); vb.classList.add('is-msg'); c.appendChild(vb); r._vb = vb; }
+    if (it.text) c.appendChild(rich('p-mt' + (it.voice ? ' is-said' : ''), it.text));
     if (it.art) c.appendChild(attOf(it.art));
     r.appendChild(c); return r;
   }
@@ -341,7 +353,8 @@ export function createPanel(cfg, host, env) {
       if (it.decide) { await askCall(it); if (!live()) return; }
       const ty = it.instant || it.decide ? null : typing(it.who);
       await wait(it.instant || it.decide ? 0 : 650); if (!live()) return; if (ty) ty.remove();
-      add(it);
+      const row = add(it);
+      let said = 0; if (it.voice && env.voice) { said = env.voice(it.voice) || 0; if (row._vb) { row._vb.classList.add('is-playing'); later(Math.max(said, 1200), () => row._vb.classList.remove('is-playing')); } }
       if (it.art) {
         if (!(shown && shown._a === it.art)) { shown = show(it.art, { rise: true }); }
         cue();
@@ -350,7 +363,7 @@ export function createPanel(cfg, host, env) {
       if (it.step != null && shown && shown._step) shown._step(it.step);
       if (it.decide && shown) decide(shown);
       if (env.sfx) env.sfx('pop');
-      await wait(read(it.text) + (it.art ? 2400 : 0) + slack / Math.max(1, items.length)); if (!live()) return;
+      await wait(Math.max(read(it.text), said + 500) + (it.art ? 2400 : 0) + slack / Math.max(1, items.length)); if (!live()) return;
     }
   }
   function estimateItems(items) { return 900 + items.reduce((t, it) => t + 650 + read(it.text) + (it.art ? 2400 : 0), 0); }
@@ -358,7 +371,7 @@ export function createPanel(cfg, host, env) {
   /* every picture the panel shows, for the loader */
   function assets(beats) {
     const out = new Set(), add2 = (k) => { const u = k && pic(k); if (u) out.add(u); };
-    const walk = (a) => { if (!a) return; arr(a.pairs).forEach((w) => { if (faceSrc(w)) out.add(faceSrc(w)); }); arr(a.steps).forEach((s) => { const w = agentOf(s.who) || s.who; if (faceSrc(w)) out.add(faceSrc(w)); }); if (a.media && a.media.img) add2(a.media.img); arr(a.opts).forEach((x) => add2(x.img)); arr(a.cuts).forEach((x) => add2(x.img)); arr(a.rows).forEach((r) => { if (!isAgent(r.who) && faceSrc(r.who)) out.add(faceSrc(r.who)); }); };
+    const walk = (a) => { if (!a) return; arr(a.pairs).forEach((w) => { if (faceSrc(w)) out.add(faceSrc(w)); }); arr(a.steps).forEach((s) => { const w = agentOf(s.who) || s.who; if (faceSrc(w)) out.add(faceSrc(w)); }); if (a.media && a.media.img) add2(a.media.img); if (a.kind === 'photo') { add2(a.img); add2(a.img_m); } arr(a.opts).forEach((x) => add2(x.img)); arr(a.cuts).forEach((x) => add2(x.img)); arr(a.rows).forEach((r) => { if (!isAgent(r.who) && faceSrc(r.who)) out.add(faceSrc(r.who)); }); };
     beats.forEach((b) => { walk(b.art); arr(b.thread).forEach((it) => { walk(it.art); if (!isAgent(it.who) && faceSrc(it.who)) out.add(faceSrc(it.who)); }); });
     return Array.from(out);
   }

@@ -2955,7 +2955,13 @@
   "support-agency": "assets/ohra/audio/support-agency.mp3",
   "order-agency": "assets/ohra/audio/order-agency.mp3",
   "ad-agency": "assets/ohra/audio/ad-agency.mp3",
-  "samples-agency": "assets/ohra/audio/samples-agency.mp3"
+  "samples-agency": "assets/ohra/audio/samples-agency.mp3",
+  "cos-agents": "assets/ohra/audio/cos-agents.mp3",
+  "cos-heard": "assets/ohra/audio/cos-heard.mp3",
+  "cos-morning": "assets/ohra/audio/cos-morning.mp3",
+  "cos-research": "assets/ohra/audio/cos-research.mp3",
+  "ops-launch": "assets/ohra/audio/ops-launch.mp3",
+  "ra-findings": "assets/ohra/audio/ra-findings.mp3"
  },
  "channels": {
   "voice": "aditi-notes",
@@ -5169,21 +5175,21 @@
       "type": "scene",
       "scene": "rewind",
       "ph": "The packing station",
-      "line": "Every product…",
+      "line": "…starts its journey…",
       "when": "",
       "hold": 4800
      },
      {
       "type": "scene",
       "scene": "open",
-      "line": "Every product…",
+      "line": "…starts its journey…",
       "when": "",
       "hold": 11000
      },
      {
       "type": "scene",
       "scene": "sketch",
-      "line": "…starts out as an idea.",
+      "line": "…as an idea.",
       "when": "",
       "hold": 5600
      }
@@ -5239,7 +5245,9 @@
          "title": "Charm lip oil",
          "n": "#41",
          "sub": "Owner Aditi · from her 1:32 am note"
-        }
+        },
+        "voice": "cos-heard",
+        "vlen": "0:04"
        }
       ],
       "stage": "Idea",
@@ -5254,32 +5262,8 @@
        {
         "who": "Chief of staff",
         "text": "@Research agent is it just Aditi's DMs? @Market agent search trends. @Pricing agent what do oils sell for?",
-        "art": {
-         "kind": "list",
-         "lab": "Agents at work",
-         "title": "Overnight",
-         "clock": [
-          "1:50 am",
-          "7:40 am"
-         ],
-         "rows": [
-          {
-           "who": "Research agent",
-           "text": "Read six months of DMs",
-           "done": "64 asked"
-          },
-          {
-           "who": "Market agent",
-           "text": "Search trends, one year",
-           "done": "Up 3x"
-          },
-          {
-           "who": "Pricing agent",
-           "text": "Every lip oil under ₹1,500",
-           "done": "31 found"
-          }
-         ]
-        }
+        "voice": "cos-research",
+        "vlen": "0:10"
        },
        {
         "who": "Research agent",
@@ -5303,11 +5287,34 @@
           ]
          ],
          "foot": "Sheer oils get one star for no colour. Nobody does real colour as an oil."
-        }
+        },
+        "voice": "ra-findings",
+        "vlen": "0:08"
        }
       ],
       "stage": "Idea",
-      "chan": "#ideas"
+      "chan": "#ideas",
+      "work": {
+       "title": "Research the idea",
+       "who": "Chief of staff",
+       "agents": [
+        {
+         "who": "Research agent",
+         "text": "Read six months of DMs",
+         "done": "64 asked"
+        },
+        {
+         "who": "Market agent",
+         "text": "Search trends, one year",
+         "done": "Up 3x"
+        },
+        {
+         "who": "Pricing agent",
+         "text": "Every lip oil under ₹1,500",
+         "done": "31 found"
+        }
+       ]
+      }
      },
      {
       "type": "panel",
@@ -5318,50 +5325,39 @@
        {
         "who": "Chief of staff",
         "text": "Morning, team. Aditi's 1:32 note is now project #41, and the research is in. Here's who does what.",
-        "art": {
-         "kind": "list",
-         "drop": true,
-         "lab": "Tasks",
-         "title": "Charm lip oil",
-         "n": "5",
-         "sub": "tasks, made and assigned",
-         "rows": [
-          {
-           "who": "Aditi",
-           "text": "Concept and two mockups",
-           "due": "Day 3",
-           "done": "Done"
-          },
-          {
-           "who": "Tanvi",
-           "text": "First sample and wear test",
-           "due": "Day 21",
-           "done": "Done"
-          },
-          {
-           "who": "Vikram",
-           "text": "Carton and print",
-           "due": "Day 70",
-           "done": "Done"
-          },
-          {
-           "who": "Naina",
-           "text": "Shoot, listing and ads",
-           "due": "Day 165",
-           "done": "Done"
-          },
-          {
-           "who": "Arjun",
-           "text": "Packing and shipping",
-           "due": "Day 167",
-           "done": "Done"
-          }
-         ]
-        }
+        "voice": "cos-morning",
+        "vlen": "0:08"
        }
       ],
       "stage": "Project",
-      "chan": "#team"
+      "chan": "#team",
+      "tasks": [
+       {
+        "who": "Aditi",
+        "text": "Concept and two mockups",
+        "due": "Day 3"
+       },
+       {
+        "who": "Tanvi",
+        "text": "First sample and wear test",
+        "due": "Day 21"
+       },
+       {
+        "who": "Vikram",
+        "text": "Carton and print",
+        "due": "Day 70"
+       },
+       {
+        "who": "Naina",
+        "text": "Shoot, listing and ads",
+        "due": "Day 165"
+       },
+       {
+        "who": "Arjun",
+        "text": "Packing and shipping",
+        "due": "Day 167"
+       }
+      ]
      },
      {
       "id": "agents",
@@ -5385,7 +5381,9 @@
           "Arjun",
           "Vikram"
          ]
-        }
+        },
+        "voice": "cos-agents",
+        "vlen": "0:08"
        },
        {
         "who": "Chief of staff",
@@ -5442,7 +5440,8 @@
        }
       ],
       "stage": "Project",
-      "chan": "#team"
+      "chan": "#team",
+      "under": "First sample and wear test"
      }
     ]
    },
@@ -5501,15 +5500,26 @@
       "line": "",
       "when": "Day 21",
       "hold": 7200,
-      "img_m": "firstsample_m"
+      "img_m": "firstsample_m",
+      "skip": true
      },
      {
       "type": "panel",
-      "enter": true,
       "label": "#41 · Sample · Day 21",
       "line": "",
       "when": "Day 21",
       "thread": [
+       {
+        "who": "Tanvi",
+        "text": "The first sample is in. Here it is, next to the doodle.",
+        "art": {
+         "kind": "photo",
+         "img": "firstsample",
+         "img_m": "firstsample_m",
+         "lab": "Day 21",
+         "title": "The first sample"
+        }
+       },
        {
         "who": "Tanvi",
         "text": "Sample 3 is the one. The cap squishes, it clips on, and the colour holds six hours on all three skin tones.",
@@ -5728,7 +5738,8 @@
       "line": "",
       "when": "Day 150",
       "hold": 7600,
-      "img_m": "shoot_m"
+      "img_m": "shoot_m",
+      "skip": true
      },
      {
       "type": "panel",
@@ -5736,6 +5747,17 @@
       "line": "",
       "when": "Day 165",
       "thread": [
+       {
+        "who": "Naina",
+        "text": "From the shoot. Daylight, on a bag, 214 frames.",
+        "art": {
+         "kind": "photo",
+         "img": "shoot",
+         "img_m": "shoot_m",
+         "lab": "The shoot",
+         "title": "On a bag, in daylight"
+        }
+       },
        {
         "who": "Naina",
         "text": "This one's the hero. Frame 38 of 214.",
@@ -5836,19 +5858,7 @@
     "div": "Order, Day 167",
     "beats": [
      {
-      "type": "scene",
-      "scene": "pack",
-      "line": "",
-      "when": "Day 167",
-      "el": {
-       "label": true
-      },
-      "hold": 14200,
-      "p3dur": 13000
-     },
-     {
       "type": "panel",
-      "enter": true,
       "label": "#41 · Orders · launch hour",
       "line": "",
       "when": "Day 167, 6 pm",
@@ -5865,7 +5875,9 @@
          "title": "Launch hour",
          "n": "86",
          "sub": "₹77,314 · average ₹899"
-        }
+        },
+        "voice": "ops-launch",
+        "vlen": "0:06"
        },
        {
         "who": "Arjun",
@@ -5874,6 +5886,17 @@
       ],
       "stage": "Orders",
       "chan": "#orders"
+     },
+     {
+      "type": "scene",
+      "scene": "pack",
+      "line": "",
+      "when": "Day 167",
+      "el": {
+       "label": true
+      },
+      "hold": 14200,
+      "p3dur": 13000
      },
      {
       "type": "panel",
@@ -5948,7 +5971,8 @@
        }
       ],
       "stage": "Delivered",
-      "chan": "#orders"
+      "chan": "#orders",
+      "skip": true
      },
      {
       "type": "panel",
@@ -6016,7 +6040,8 @@
        }
       ],
       "stage": "Week one",
-      "chan": "#orders"
+      "chan": "#orders",
+      "skip": true
      }
     ]
    },
@@ -6043,5 +6068,13 @@
     ]
    }
   ]
+ },
+ "audio_len": {
+  "cos-agents": 7.89,
+  "cos-heard": 4.09,
+  "cos-morning": 7.76,
+  "cos-research": 10.17,
+  "ops-launch": 5.85,
+  "ra-findings": 7.8
  }
 }

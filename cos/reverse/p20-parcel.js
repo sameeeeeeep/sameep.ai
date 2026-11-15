@@ -249,6 +249,7 @@ export function init(cfg, kitSrc, opts = {}) {
   diffuseColor *= gl_FrontFacing ? lf : lb;`);
   };
   labelM.customProgramCacheKey = () => 'p3-label';
+  labelM.polygonOffset = true; labelM.polygonOffsetFactor = -8; labelM.polygonOffsetUnits = -8;   /* the label is stuck over the tape: it wins the depth test at any distance */
 
   /* carton board: one material; the cap facing +z (object space) is the print, -z the unprinted inside, the rest the cut edge.
      Foil (from the mask) goes metallic and smoother; the print is satin; the inside carries the sketch ink (uInk reveals it). */
@@ -453,8 +454,8 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
 
   /* the label on the front flap */
   const lgeo = labelGrid(LB.w, LB.h, MOBILE ? 30 : 44, MOBILE ? 18 : 28);
-  const labelMesh = new THREE.Mesh(lgeo, labelM); labelMesh.castShadow = true; labelMesh.receiveShadow = true;
-  const labelG = new THREE.Group(); labelG.position.set(-LB.w / 2, TOPY + 0.0018, LB.h / 2);   /* centred on the top of the box, over the tape seam */ labelG.rotation.y = LB.rot; labelG.add(labelMesh); parcel.add(labelG);
+  const labelMesh = new THREE.Mesh(lgeo, labelM); labelMesh.renderOrder = 5; labelMesh.castShadow = true; labelMesh.receiveShadow = true;
+  const labelG = new THREE.Group(); labelG.position.set(-LB.w / 2, TOPY + 0.0026, LB.h / 2);   /* centred on the top of the box, over the tape seam */ labelG.rotation.y = LB.rot; labelG.add(labelMesh); parcel.add(labelG);
   parcel.updateMatrixWorld(true); flaps[0].attach(labelG);
   const LREST = lgeo.userData.rest, LPOS = lgeo.attributes.position.array;
   /* what the label leaves behind: a faint glue patch with a few torn fibres */
