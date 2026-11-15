@@ -6852,14 +6852,14 @@
       "scene": "dash",
       "line": "",
       "when": "Day 58, 9 pm",
-      "hold": 13500,
+      "hold": 14500,
       "guide": [
        {
-        "at": ".os-kpis",
+        "at": ".os-grid",
         "text": "The dashboard: the whole company on one screen."
        },
        {
-        "at": ".os-draft",
+        "at": ".os-t.is-needs",
         "text": "Agents draft. Nothing goes out until a person approves."
        }
       ],
@@ -6878,32 +6878,73 @@
         "Chat"
        ],
        "ask": "What needs me today?",
-       "greet": "Good evening, Aditi.",
-       "sub": "Day 58 · the company on one screen",
+       "greet": "Good evening, Aditi",
+       "sub": "Day 58 · launch day",
+       "money": {
+        "k": "Sales today",
+        "n": "₹77,314",
+        "sub": "86 orders · launch hour",
+        "delta": "launch day",
+        "bars": [
+         1,
+         1,
+         2,
+         1,
+         2,
+         3,
+         2,
+         4,
+         3,
+         5,
+         9,
+         38
+        ],
+        "x": [
+         "10 am",
+         "2 pm",
+         "6 pm"
+        ]
+       },
        "kpis": [
         [
-         "Orders today",
+         "Orders",
          "86",
-         "launch hour"
+         "5 channels live",
+         ""
         ],
         [
-         "Sales today",
-         "₹77,314",
-         "average ₹899"
-        ],
-        [
-         "Channels live",
-         "5",
-         "site, marketplaces, quick commerce"
-        ],
-        [
-         "Waiting on you",
-         "1",
-         "nothing sends without a yes"
+         "Average order",
+         "₹899",
+         "1.1 items",
+         ""
         ]
        ],
+       "needs": {
+        "k": "Needs you",
+        "count": "1",
+        "items": [
+         {
+          "who": "Anjali's agent",
+          "title": "Reorder 5,000 units?",
+          "text": "At this pace stock lasts 57 days. Kapoor, Vapi needs 45 to deliver.",
+          "acts": [
+           "Approve",
+           "Edit",
+           "Not now"
+          ]
+         }
+        ]
+       },
        "chart": {
-        "title": "Orders by channel · launch day",
+        "title": "Orders by channel",
+        "x": [
+         "10 am",
+         "12 pm",
+         "2 pm",
+         "4 pm",
+         "6 pm",
+         "7 pm"
+        ],
         "series": [
          {
           "name": "Own site",
@@ -6955,32 +6996,121 @@
          }
         ]
        },
-       "feed_title": "Today, from the agents",
+       "feed_title": "Since yesterday, from the agents",
+       "feed_count": "41 things done",
        "feed": [
         [
-         "Website",
-         "Product page live. First order in 4 minutes."
+         "Website agent",
+         "Product page live. First order in 4 minutes.",
+         "6:04 pm"
         ],
         [
-         "Marketing",
-         "Cut C paused. Cut B is returning ₹2.80 on ₹1."
+         "Naina's agent",
+         "Paused ad cut C. Cut B returns ₹2.80 on ₹1.",
+         "7:10 am"
         ],
         [
-         "Warehouse",
-         "86 labels printed for the morning batch."
+         "Anjali's agent",
+         "Printed 86 labels for the morning batch.",
+         "7:02 pm"
         ],
         [
-         "Finance",
-         "PO-0142 paid on 45-day terms."
+         "Vidhi's agent",
+         "PO-0142 paid on 45-day terms.",
+         "11:30 am"
+        ],
+        [
+         "Marketplace agent",
+         "Nykaa, Amazon, Zepto and Blinkit in stock.",
+         "5:40 pm"
         ]
        ],
-       "draft": {
-        "title": "Draft · Reorder",
-        "text": "Reorder 5,000 units from Kapoor, Vapi. At this pace stock lasts 57 days.",
-        "acts": [
-         "Approve",
-         "Edit",
-         "Not now"
+       "product": {
+        "k": "Product",
+        "tag": "Live",
+        "name": "Charm lip oil",
+        "sub": "6 shades · live in 5 places",
+        "stages": [
+         "Idea",
+         "Project",
+         "Suppliers",
+         "Form",
+         "Approvals",
+         "Launch",
+         "Orders"
+        ]
+       },
+       "stock": {
+        "k": "Stock by shade",
+        "note": "4,914 of 5,000 left",
+        "rows": [
+         [
+          "Brick Dust",
+          "772",
+          "93",
+          false
+         ],
+         [
+          "Fig Jam",
+          "818",
+          "98",
+          false
+         ],
+         [
+          "Rosewood",
+          "831",
+          "99",
+          false
+         ],
+         [
+          "Terracotta",
+          "826",
+          "99",
+          false
+         ],
+         [
+          "Cocoa",
+          "834",
+          "100",
+          false
+         ],
+         [
+          "Mulberry",
+          "833",
+          "100",
+          false
+         ]
+        ]
+       },
+       "team": {
+        "k": "Team",
+        "note": "5 online",
+        "rows": [
+         [
+          "Aditi",
+          1,
+          "1 to approve"
+         ],
+         [
+          "Naina",
+          0,
+          "ads running"
+         ],
+         [
+          "Tanvi",
+          0,
+          "all clear"
+         ],
+         [
+          "Anjali",
+          0,
+          "packing at 8"
+         ],
+         [
+          "Vidhi",
+          0,
+          "all clear"
+         ]
         ]
        }
       }

@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21v';
+import { createPanel, EZ, read } from './v20-app.js?v=v21w';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -275,37 +275,57 @@ const SCENE = {
     }, 60);
     return w;
   },
-  /* the dashboard: the whole OS on one screen (side nav, ask bar, the numbers, the chart, what the agents did, one draft waiting) */
+  /* the dashboard, as the product has it: a few tiles you read at a glance (money, orders, what needs you, what the agents did,
+     the product, the launch, stock, the team), inside the whole OS */
   dash: (b) => {
-    const d = b.os || {}, w = h('div', 'os'), seq = !ui.seek && !REDUCED, T = (ms, fn) => { if (seq) { const k = i; setTimeout(() => { if (i === k && w.isConnected) fn(); }, ms); } else fn(); };
-    const nav = h('aside', 'os-nav'); const wm = h('b', 'os-wm', str(V.wordmark, 'Coco')); nav.appendChild(wm); nav.appendChild(h('span', 'os-wms', str(V.lockup, 'chief of staff OS')));
-    arr(d.nav).forEach((n, j) => { const a = h('span', 'os-ni' + (j === 0 ? ' is-on' : ''), n); nav.appendChild(a); }); w.appendChild(nav);
+    const d = b.os || {}, w = h('div', 'os'), seq = !ui.seek && !REDUCED, NS = 'http://www.w3.org/2000/svg';
+    const T = (ms, fn) => { if (seq) { const k = i; setTimeout(() => { if (i === k && w.isConnected) fn(); }, ms); } else fn(); };
+    const tile = (cls, title, side) => { const t = h('section', 'os-t ' + cls), hd = h('div', 'os-th'); hd.appendChild(h('span', null, title)); if (side) hd.appendChild(h('em', null, side)); t.appendChild(hd); return t; };
+    const nav = h('aside', 'os-nav'); nav.appendChild(h('b', 'os-wm', str(V.wordmark, 'Coco'))); nav.appendChild(h('span', 'os-wms', str(V.lockup, 'chief of staff OS')));
+    arr(d.nav).forEach((n, j) => nav.appendChild(h('span', 'os-ni' + (j === 0 ? ' is-on' : ''), n))); w.appendChild(nav);
     const main = h('div', 'os-main'); w.appendChild(main);
-    const ask = h('div', 'os-ask'); ask.appendChild(panel.face('Chief of staff')); const at = h('span', null, ''); ask.appendChild(at); main.appendChild(ask);
-    const hd = h('div', 'os-hd'); hd.appendChild(h('h2', null, str(d.greet))); hd.appendChild(h('span', null, str(d.sub))); main.appendChild(hd);
-    const K = h('div', 'os-kpis'); arr(d.kpis).forEach((k) => { const c = h('div', 'os-k'); c.appendChild(h('span', 'os-kk', k[0])); const n = h('b', null, k[1]); c.appendChild(n); c.appendChild(h('span', 'os-ks', k[2])); K.appendChild(c); }); main.appendChild(K);
-    const row = h('div', 'os-row'); main.appendChild(row);
-    const ch = h('section', 'os-card os-chart'); ch.appendChild(h('span', 'os-ct', str((d.chart || {}).title, 'Orders by channel')));
-    const S = arr((d.chart || {}).series), mx = Math.max(1, ...S.flatMap((x) => arr(x.pts))), NS = 'http://www.w3.org/2000/svg';
+    const top = h('div', 'os-top'); const hd = h('div', 'os-hd'); hd.appendChild(h('h2', null, str(d.greet))); hd.appendChild(h('span', null, str(d.sub))); top.appendChild(hd);
+    const ask = h('div', 'os-ask'); ask.appendChild(panel.face('Chief of staff')); const at = h('span', null, ''); ask.appendChild(at); top.appendChild(ask); main.appendChild(top);
+    const G = h('div', 'os-grid'); main.appendChild(G); const tiles = [];
+    /* money: the number, how it compares, the day by the hour */
+    { const m = d.money || {}, t = tile('is-money', str(m.k, 'Sales today'), str(m.delta)); t.appendChild(h('b', 'os-big', str(m.n))); t.appendChild(h('span', 'os-sub', str(m.sub)));
+      const B = h('div', 'os-bars'), mx = Math.max(1, ...arr(m.bars)); arr(m.bars).forEach((n, j) => { const x = h('i', j === arr(m.bars).length - 1 ? 'is-last' : null); x.style.height = Math.max(3, Math.round(n / mx * 100)) + '%'; B.appendChild(x); }); t.appendChild(B);
+      if (arr(m.x).length) { const X = h('div', 'os-x'); m.x.forEach((l) => X.appendChild(h('span', null, l))); t.appendChild(X); } G.appendChild(t); tiles.push(t); }
+    arr(d.kpis).forEach((k) => { const t = tile('is-kpi', k[0], str(k[3])); t.appendChild(h('b', 'os-big', k[1])); t.appendChild(h('span', 'os-sub', k[2])); G.appendChild(t); tiles.push(t); });
+    /* what needs you: the one thing, with the tap */
+    let needT = null;
+    { const n = d.needs || {}, t = tile('is-needs', str(n.k, 'Needs you'), str(n.count)); arr(n.items).forEach((it, j) => { const c = h('div', 'os-need'); c.appendChild(panel.face(str(it.who, 'Chief of staff'))); const x = h('div'); x.appendChild(h('b', null, it.title)); x.appendChild(h('p', null, it.text)); const ac = h('div', 'os-acts'); arr(it.acts).forEach((a, q) => ac.appendChild(h('span', q ? '' : 'is-go', a))); x.appendChild(ac); c.appendChild(x); t.appendChild(c); }); G.appendChild(t); tiles.push(t); needT = t; }
+    /* orders by channel */
+    const ch = tile('is-chart', str((d.chart || {}).title, 'Orders by channel'), '');
+    const S = arr((d.chart || {}).series), mx = Math.max(1, ...S.flatMap((x) => arr(x.pts)));
+    const lg = h('div', 'os-lg'); S.forEach((x, j) => { const r = h('span'); r.appendChild(h('i', 'os-dot os-c' + j)); r.appendChild(document.createTextNode(x.name + ' ')); r.appendChild(h('b', null, str(x.n))); lg.appendChild(r); }); ch.querySelector('.os-th').appendChild(lg);
     const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 600 200'); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('class', 'os-svg');
-    const paths = S.map((x, j) => { const P = arr(x.pts), pth = document.createElementNS(NS, 'path'); pth.setAttribute('d', 'M' + P.map((v, q) => (q * 600 / Math.max(1, P.length - 1)).toFixed(1) + ' ' + (192 - v / mx * 180).toFixed(1)).join(' L')); pth.setAttribute('class', 'os-l os-l' + j); pth.setAttribute('pathLength', '1'); svg.appendChild(pth); return pth; });
-    ch.appendChild(svg);
-    const lg = h('div', 'os-lg'); S.forEach((x, j) => { const r = h('div'); r.appendChild(h('span', null, x.name)); const bar = h('i', 'os-b os-b' + j); const f = h('em'); f.style.width = Math.round(arr(x.pts).slice(-1)[0] / mx * 100) + '%'; bar.appendChild(f); r.appendChild(bar); r.appendChild(h('b', null, str(x.n))); lg.appendChild(r); }); ch.appendChild(lg);
-    row.appendChild(ch);
-    const fd = h('section', 'os-card os-feed'); fd.appendChild(h('span', 'os-ct', str(d.feed_title, 'Today, from the agents')));
-    const rows = arr(d.feed).map((f) => { const r = h('div', 'os-fr'); r.appendChild(h('em', null, f[0])); r.appendChild(h('span', null, f[1])); fd.appendChild(r); return r; });
-    let dr = null; if (d.draft) { dr = h('div', 'os-draft'); dr.appendChild(h('b', null, d.draft.title)); dr.appendChild(h('p', null, d.draft.text)); const ac = h('div', 'os-acts'); arr(d.draft.acts).forEach((a, j) => ac.appendChild(h('span', j ? '' : 'is-go', a))); dr.appendChild(ac); fd.appendChild(dr); }
-    row.appendChild(fd);
-    /* it fills in the way a screen does when you open it: the question, the numbers, the lines, then what happened */
+    [0.25, 0.5, 0.75, 1].forEach((f) => { const g = document.createElementNS(NS, 'path'); g.setAttribute('d', 'M0 ' + (196 - f * 186).toFixed(1) + ' L600 ' + (196 - f * 186).toFixed(1)); g.setAttribute('class', 'os-gl'); svg.appendChild(g); });
+    const paths = S.map((x, j) => { const P = arr(x.pts), pth = document.createElementNS(NS, 'path'); pth.setAttribute('d', 'M' + P.map((v, q) => (q * 600 / Math.max(1, P.length - 1)).toFixed(1) + ' ' + (196 - v / mx * 186).toFixed(1)).join(' L')); pth.setAttribute('class', 'os-l os-s' + j); pth.setAttribute('pathLength', '1'); svg.appendChild(pth); return pth; });
+    const plot = h('div', 'os-plot'); plot.appendChild(svg); ch.appendChild(plot);
+    if (arr((d.chart || {}).x).length) { const X = h('div', 'os-x'); d.chart.x.forEach((l) => X.appendChild(h('span', null, l))); ch.appendChild(X); }
+    G.appendChild(ch); tiles.push(ch);
+    /* since yesterday: what the agents did */
+    const fd = tile('is-feed', str(d.feed_title, 'Since yesterday'), str(d.feed_count));
+    const rows = arr(d.feed).map((f) => { const r = h('div', 'os-fr'); r.appendChild(panel.face(f[0])); const x = h('div'); x.appendChild(h('b', null, f[0])); x.appendChild(h('span', null, f[1])); r.appendChild(x); if (f[2]) r.appendChild(h('em', null, f[2])); fd.appendChild(r); return r; });
+    G.appendChild(fd); tiles.push(fd);
+    /* the product and its launch */
+    { const p = d.product || {}, t = tile('is-prod', str(p.k, 'Product'), str(p.tag)); const r = h('div', 'os-pr'); const src = IMG('product') || IMG('hero'); if (src) r.appendChild(img(src)); const x = h('div'); x.appendChild(h('b', null, str(p.name))); x.appendChild(h('span', null, str(p.sub))); r.appendChild(x); t.appendChild(r);
+      const st = h('div', 'os-stages'); arr(p.stages).forEach((n, j) => { const c = h('span', 'is-done'); c.appendChild(h('i', null, String(j + 1))); c.appendChild(document.createTextNode(n)); st.appendChild(c); }); t.appendChild(st); G.appendChild(t); tiles.push(t); }
+    /* stock, by shade */
+    { const s2 = d.stock || {}, t = tile('is-stock', str(s2.k, 'Stock'), str(s2.note)); arr(s2.rows).forEach((r) => { const x = h('div', 'os-sr' + (r[3] ? ' is-low' : '')); x.appendChild(h('span', null, r[0])); const bar = h('i'); const f = h('em'); f.style.width = Math.max(4, +r[2] || 0) + '%'; bar.appendChild(f); x.appendChild(bar); x.appendChild(h('b', null, r[1])); t.appendChild(x); }); G.appendChild(t); tiles.push(t); }
+    /* the team, and what is waiting on each */
+    { const tm = d.team || {}, t = tile('is-team', str(tm.k, 'Team'), str(tm.note)); const L = h('div', 'os-team'); arr(tm.rows).forEach((r) => { const x = h('div'); const f = h('span', 'os-tf'); f.appendChild(panel.face(r[0])); if (r[1]) f.appendChild(h('em', null, String(r[1]))); x.appendChild(f); x.appendChild(h('b', null, r[0])); x.appendChild(h('span', null, str(r[2]))); L.appendChild(x); }); t.appendChild(L); G.appendChild(t); tiles.push(t); }
+    /* it fills in the way a screen does when you open it */
     if (seq) {
-      [...K.children].forEach((c) => { c.style.visibility = 'hidden'; }); rows.forEach((r) => { r.style.visibility = 'hidden'; }); if (dr) dr.style.visibility = 'hidden';
+      tiles.forEach((t) => { t.style.visibility = 'hidden'; }); rows.forEach((r) => { r.style.visibility = 'hidden'; });
       paths.forEach((pth) => { pth.style.strokeDasharray = '1'; pth.style.strokeDashoffset = '1'; });
-      const q = str(d.ask); [...q].forEach((c0, j) => T(500 + j * 45, () => { at.textContent = q.slice(0, j + 1); if (j % 3 === 0) SFX.type(); }));
-      const t1 = 600 + q.length * 45;
-      [...K.children].forEach((c, j) => T(t1 + j * 260, () => { c.style.visibility = ''; c.animate([{ translate: '0 14px' }, { translate: '0 0' }], { duration: 420, easing: EZ }); SFX.tick(); panel.sheen(c); }));
-      paths.forEach((pth, j) => T(t1 + 1200 + j * 350, () => { pth.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1300, easing: 'cubic-bezier(.3,.6,.3,1)', fill: 'forwards' }); }));
-      rows.forEach((r, j) => T(t1 + 1900 + j * 420, () => { r.style.visibility = ''; r.animate([{ translate: '14px 0' }, { translate: '0 0' }], { duration: 360, easing: EZ }); SFX.recv(); }));
-      if (dr) T(t1 + 2000 + rows.length * 420, () => { dr.style.visibility = ''; dr.animate([{ translate: '0 16px', scale: '.97' }, { translate: '0 0', scale: '1' }], { duration: 460, easing: EZ }); SFX.land(); panel.sheen(dr); });
+      const q = str(d.ask); [...q].forEach((c0, j) => T(400 + j * 40, () => { at.textContent = q.slice(0, j + 1); if (j % 3 === 0) SFX.type(); }));
+      const t1 = 500 + q.length * 40;
+      tiles.forEach((t, j) => T(t1 + j * 170, () => { t.style.visibility = ''; t.animate([{ translate: '0 16px' }, { translate: '0 0' }], { duration: 440, easing: EZ }); if (j < 5) SFX.tick(); }));
+      paths.forEach((pth, j) => T(t1 + 1000 + j * 300, () => { pth.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1300, easing: 'cubic-bezier(.3,.6,.3,1)', fill: 'forwards' }); }));
+      rows.forEach((r, j) => T(t1 + 1500 + j * 420, () => { r.style.visibility = ''; r.animate([{ translate: '14px 0' }, { translate: '0 0' }], { duration: 360, easing: EZ }); SFX.recv(); }));
+      if (needT) T(t1 + 3600, () => { panel.sheen(needT); SFX.land(); });
     } else at.textContent = str(d.ask);
     return w;
   },
