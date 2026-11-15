@@ -5349,11 +5349,7 @@
         },
         "after": "work",
         "voice": "cv-findings",
-        "vlen": "0:03",
-        "guide": {
-         "at": "canvas",
-         "text": "The answer comes back as one card."
-        }
+        "vlen": "0:03"
        }
       ],
       "stage": "Idea",
@@ -5455,11 +5451,7 @@
         "who": "Chief of staff",
         "text": "Morning, team. New project. Your tasks are assigned, have a look.",
         "voice": "cv-morning",
-        "vlen": "0:04",
-        "guide": {
-         "at": "thread",
-         "text": "Coco briefs the whole team at once."
-        }
+        "vlen": "0:04"
        }
       ],
       "stage": "Project",
@@ -5727,11 +5719,7 @@
       "thread": [
        {
         "who": "Aditi",
-        "text": "Mock up both forms and put it to the team.",
-        "guide": {
-         "at": "thread",
-         "text": "A new ask from the founder."
-        }
+        "text": "Mock up both forms and put it to the team."
        },
        {
         "who": "Aditi's agent",
@@ -5865,11 +5853,7 @@
       "thread": [
        {
         "who": "Vidhi",
-        "text": "Check the carton proof before it goes to print.",
-        "guide": {
-         "at": "thread",
-         "text": "A check that usually takes a day of reading."
-        }
+        "text": "Check the carton proof before it goes to print."
        },
        {
         "who": "Vidhi's agent",
@@ -6339,10 +6323,6 @@
          "img": "shoot",
          "lab": "The shoot",
          "title": "On a bag, in daylight"
-        },
-        "guide": {
-         "at": "canvas",
-         "text": "Day 52. Photos from the shoot land in the chat."
         }
        },
        {
@@ -6360,10 +6340,6 @@
          "title": "Frame 38",
          "sub": "Shot on a bag, daylight, no retouching.",
          "n": "1 of 214"
-        },
-        "guide": {
-         "at": "canvas",
-         "text": "The hero photo is picked."
         }
        },
        {
@@ -6440,10 +6416,6 @@
            "₹899"
           ]
          ]
-        },
-        "guide": {
-         "at": "canvas",
-         "text": "Live everywhere, at one price."
         }
        }
       ],
@@ -6523,11 +6495,7 @@
       "thread": [
        {
         "who": "Naina",
-        "text": "Run the three cuts tonight. Small budget.",
-        "guide": {
-         "at": "thread",
-         "text": "The ads go out the same night."
-        }
+        "text": "Run the three cuts tonight. Small budget."
        },
        {
         "who": "Naina's agent",
@@ -6781,10 +6749,6 @@
          "title": "Brick Dust lip oil",
          "n": "₹899",
          "sub": "Order OH-20418 · Saket, New Delhi · paid"
-        },
-        "guide": {
-         "at": "canvas",
-         "text": "Her order: one lip oil, paid, going to Saket."
         }
        },
        {
@@ -6800,21 +6764,13 @@
          "n": "86",
          "sub": "₹77,314 · average ₹899"
         },
-        "after": "work",
-        "guide": {
-         "at": "canvas",
-         "text": "86 orders in the first hour."
-        }
+        "after": "work"
        },
        {
         "who": "Anjali",
         "text": "All packed for the morning batch.",
         "voice": "hv-packed",
-        "vlen": "0:03",
-        "guide": {
-         "at": "thread",
-         "text": "Packing is the one part done by hand."
-        }
+        "vlen": "0:03"
        }
       ],
       "agents": [
@@ -6962,17 +6918,13 @@
            "sub": "7 of 7 stages done"
           }
          ]
-        },
-        "guide": {
-         "at": "canvas",
-         "text": "The screen the founder opens every morning."
         }
        }
       ],
       "guide": [
        {
         "at": "tabs",
-        "text": "The Dashboard tab holds the numbers for the whole project."
+        "text": "The Dashboard tab: the screen the founder opens every morning."
        }
       ]
      },

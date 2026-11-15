@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21s';
+import { createPanel, EZ, read } from './v20-app.js?v=v21t';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -364,7 +364,7 @@ function wrapFly(c) { const d = h('div', 'el-fly is-dom'); d.appendChild(c); ret
 
 /* ---------- show a beat ---------- */
 /* ---------- the guide: a pointer and a caption that names each new thing as it first appears (the sameep.ai guide, here) ---------- */
-const GSEL = { phone: '.ph', team: '.bd-team', strip: '.bd-strip', stage: '.bd-st.is-on', side: '.bd-tiles', thread: '.p-thr', now: '.bd-now', tasks: '.bd-tasks', task: '.bd-tc.is-active', canvas: '.p-stage', tabs: '.p-tabs' };
+const GSEL = { phone: '.ph', team: '.bd-team', strip: '.bd-strip', stage: '.bd-st.is-on', side: '.bd-tiles', thread: () => { const l = document.querySelectorAll('.p-list .p-m'); return l[l.length - 1] || document.querySelector('.p-thr'); }, now: '.bd-now', tasks: '.bd-tasks', task: '.bd-tc.is-active', canvas: () => document.querySelector('.p-stage .a') || document.querySelector('.p-inline:last-of-type .a') || document.querySelector('.p-stage'), tabs: '.p-tabs' };
 const GARROW = '<svg viewBox="0 0 12 19" width="20" height="31" aria-hidden="true"><path d="M1 1v15l3.6-3.4 2.6 5.6 2.4-1.1-2.6-5.5H12L1 1z" fill="#0B0B0C" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
 let G = null;
 function guideOff() { if (!G) return; const g = G; G = null; clearTimeout(g.t); if (g.lit) g.lit.classList.remove('is-guided'); g.cap.remove(); if (g.cur) g.cur.remove(); g.res(); }
@@ -379,20 +379,27 @@ function guide(list, k) {
     const step = () => {
       if (G !== g) return; n++;
       if (n >= list.length || i !== k || !playing) return guideOff();
-      const it = list[n], el = document.querySelector(GSEL[it.at] || it.at), vis = el && el.getClientRects().length ? el : null;
+      const it = list[n], sel = GSEL[it.at] || it.at, el = typeof sel === 'function' ? sel() : document.querySelector(sel), vis = el && el.getClientRects().length ? el : null;
       if (g.lit) g.lit.classList.remove('is-guided'); g.lit = vis; if (vis) vis.classList.add('is-guided');
       tx.textContent = it.text; cap.classList.remove('is-on'); void cap.offsetWidth;
       const W = innerWidth, H = innerHeight, cw = cap.offsetWidth, ch = cap.offsetHeight, r = vis ? vis.getBoundingClientRect() : null;
       let x, y, px, py;
-      if (PHONE() || !r) { x = (W - cw) / 2; y = H - ch - 18; }
+      if (!r) { x = (W - cw) / 2; y = H - ch - 18; }
+      else if (PHONE()) {
+        /* on a phone the note sits right above what it is about (under it when there is no room), never over it */
+        x = (W - cw) / 2; y = r.top - ch - 10; if (y < 118) y = Math.min(r.bottom + 10, H - ch - 12);
+      }
+      else if (r.width > W * 0.3) {
+        /* a card on the canvas: the note hangs off its lower left corner, outside the card */
+        x = clamp(r.left, 12, W - cw - 12); y = r.bottom + 18; if (y + ch > H - 12) y = Math.max(12, r.top - ch - 18);
+        px = x + 22; py = y < r.top ? r.top + 4 : r.bottom - 8;
+      }
       else {
-        /* beside the thing it is naming: right, else left, else under; never on top of it */
-        py = clamp(r.top + Math.min(r.height / 2, 60), 70, H - 60);
-        if (r.width > W * 0.36) { x = r.left + 24; y = r.bottom - ch - 24; px = x + 18; py = y - 12; }   /* a wide area: the caption sits in its own corner */
-        else if (r.right + cw + 44 < W) { x = r.right + 26; px = r.right - 6; }
-        else if (r.left - cw - 44 > 0) { x = r.left - cw - 26; px = r.left + 6; }
-        else { x = clamp(r.left + r.width / 2 - cw / 2, 12, W - cw - 12); px = r.left + r.width / 2; py = Math.min(r.bottom - 6, H - ch - 60); }
-        if (y === undefined) y = px === r.left + r.width / 2 ? py + 30 : clamp(py - ch / 2, 12, H - ch - 12);
+        /* beside the thing it is naming, level with it: right, else left, else under */
+        py = clamp(r.top + Math.min(r.height / 2, 44), 70, H - 60);
+        if (r.right + cw + 44 < W) { x = r.right + 26; px = r.right - 6; y = clamp(py - ch / 2, 12, H - ch - 12); }
+        else if (r.left - cw - 44 > 0) { x = r.left - cw - 26; px = r.left + 6; y = clamp(py - ch / 2, 12, H - ch - 12); }
+        else { x = clamp(r.left + r.width / 2 - cw / 2, 12, W - cw - 12); px = r.left + r.width / 2; py = Math.min(r.bottom - 6, H - ch - 60); y = py + 30; }
       }
       cap.style.left = Math.round(x) + 'px'; cap.style.top = Math.round(y) + 'px'; cap.classList.add('is-on');
       if (cur && r) { cur.style.transform = 'translate(' + Math.round(px - 2) + 'px,' + Math.round(py - 2) + 'px)'; cur.classList.add('is-on'); } else if (cur) cur.classList.remove('is-on');

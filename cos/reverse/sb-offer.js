@@ -120,14 +120,16 @@
     var prices = arr(O.prices), feat = -1;
     prices.forEach(function (p, k) { if (p.featured || (feat < 0 && /subscription/i.test(p.item))) feat = k; });
     if (feat < 0 && prices.length === 3) feat = 1;
-    var pg = h('div', 'sbo-prices');
+    var pg = h('div', 'sbo-prices is-' + prices.length + (O.choose ? ' is-choose' : '')), pick = feat < 0 ? 0 : feat, cards = [];
     prices.forEach(function (p, k) {
       var c = h('div', 'sbo-price' + (k === feat ? ' is-feat' : ''));
       c.appendChild(h('b', 'sbo-price-item', p.item));
       var v = h('p', 'sbo-price-v'); v.appendChild(h('span', 'sbo-price-n', p.now)); v.appendChild(taxEl(p.tax)); c.appendChild(v);
       if (p.unit) c.appendChild(h('p', 'sbo-price-u', p.unit));
       if (p.note) c.appendChild(h('p', 'sbo-price-note', p.note));
-      pg.appendChild(c);
+      if (arr(p.points).length) { var pl = h('ul', 'sbo-price-pts'); p.points.forEach(function (t) { pl.appendChild(h('li', null, t)); }); c.appendChild(pl); }
+      if (O.choose) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-pressed', k === pick ? 'true' : 'false'); var choose = function () { pick = k; cards.forEach(function (x, j) { x.classList.toggle('is-feat', j === k); x.setAttribute('aria-pressed', j === k ? 'true' : 'false'); }); if (typeof refresh === 'function') refresh(false); }; c.addEventListener('click', choose); c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } }); }
+      cards.push(c); pg.appendChild(c);
     });
     pr.appendChild(pg);
 
@@ -243,6 +245,7 @@
       if (!ST.date) return [];
       var k = ST.date, live = avail(add(k, C.setup_days || 45)), out = [];
       out.push(['Kickoff', fmt(k), 'is-key']);
+      if (!fSet) { var cp = prices[pick] || {}; out.push(['First invoice: ' + str(cp.first, cp.now) + G, fmt(k)]); return out; }
       out.push(['First invoice: setup ' + str(C.setup_fee) + ' and quarter 1 ' + str(C.quarter_fee) + G, fmt(k)]);
       out.push(['Setup, ' + (C.setup_days || 45) + ' days', short(k) + ' to ' + fmt(live)]);
       out.push(['Go-live', fmt(live), 'is-key']);
@@ -262,7 +265,7 @@
       });
       var dateTxt = ST.date ? fmt(ST.date) : 'TBC', sub = str(I.subject).replace('{date}', dateTxt);
       var lines = ['Hi Sameep,', '', 'We’d like to go ahead with Coco for ' + brand + '.', '', 'Start: ' + dateTxt, ''];
-      prices.forEach(function (p) { lines.push(p.item + ': ' + p.now + (p.tax ? ' ' + TX : '') + ', ' + str(p.unit)); });
+      (O.choose ? [prices[pick] || {}] : prices).forEach(function (p) { lines.push((O.choose ? 'Option: ' : '') + p.item + ': ' + p.now + (p.tax ? ' ' + TX : '') + ', ' + str(p.unit) + (O.choose && p.note ? '. ' + p.note : '')); });
       lines.push('');
       if (S2.length) { lines.push('Timeline:'); S2.forEach(function (r) { lines.push('- ' + r[0] + ': ' + r[1]); }); lines.push(''); }
       lines.push('Thanks,');
