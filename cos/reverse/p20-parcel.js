@@ -454,7 +454,7 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   /* the label on the front flap */
   const lgeo = labelGrid(LB.w, LB.h, MOBILE ? 30 : 44, MOBILE ? 18 : 28);
   const labelMesh = new THREE.Mesh(lgeo, labelM); labelMesh.castShadow = true; labelMesh.receiveShadow = true;
-  const labelG = new THREE.Group(); labelG.position.set(LB.x, TOPY + 0.0002, D / 2 - TB / 2 + LB.z); labelG.rotation.y = LB.rot; labelG.add(labelMesh); parcel.add(labelG);
+  const labelG = new THREE.Group(); labelG.position.set(-LB.w / 2, TOPY + 0.0018, LB.h / 2);   /* centred on the top of the box, over the tape seam */ labelG.rotation.y = LB.rot; labelG.add(labelMesh); parcel.add(labelG);
   parcel.updateMatrixWorld(true); flaps[0].attach(labelG);
   const LREST = lgeo.userData.rest, LPOS = lgeo.attributes.position.array;
   /* what the label leaves behind: a faint glue patch with a few torn fibres */
@@ -541,9 +541,25 @@ float vn(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f); return mix(
   {
     /* the silhouette is measured off the kit photo (sb/charm.webp), in units of the product's height: body, seam, cap lobes, dome */
     const BODY = [[0.0005, 0], [0.06, 0.002], [0.096, 0.011], [0.122, 0.024], [0.14, 0.037], [0.153, 0.05], [0.163, 0.062], [0.171, 0.075], [0.186, 0.1], [0.197, 0.126], [0.205, 0.151], [0.21, 0.177], [0.213, 0.202], [0.216, 0.253], [0.216, 0.316], [0.214, 0.38], [0.212, 0.45], [0.209, 0.525], [0.205, 0.541]];
-    const bp = BODY.map(([x, y]) => V2(x, y)); bp.push(V2(0.196, 0.548), V2(0.19, 0.556));
-    pmesh(new THREE.LatheGeometry(bp, LSEG), siliM);
     const CAP = [[0.192, 0.55], [0.2, 0.556], [0.209, 0.57], [0.216, 0.583], [0.226, 0.609], [0.231, 0.634], [0.232, 0.659], [0.231, 0.685], [0.222, 0.71], [0.211, 0.735], [0.2, 0.759], [0.201, 0.774], [0.206, 0.786], [0.216, 0.812], [0.227, 0.837], [0.229, 0.863], [0.225, 0.888], [0.217, 0.913], [0.202, 0.939], [0.176, 0.964], [0.156, 0.977], [0.118, 0.99], [0.06, 0.998], [0.0005, 1.0]];
+    /* the body mirrors the cap: the same two soft lobes below the seam as above it (the plain capsule read wrong) */
+    void BODY;
+    const BH = 0.548, bpts = new THREE.SplineCurve(CAP.slice().reverse().map(([x, y]) => V2(x, (1 - y) / 0.45 * BH))).getPoints(MOBILE ? 56 : 84);
+    pmesh(new THREE.LatheGeometry([...bpts, V2(0.19, 0.556)], LSEG), siliM);
+    /* the brand on the body: the wordmark printed tone on tone around the upper body lobe, facing the front (+z) */
+    {
+      const wc = document.createElement('canvas'); wc.width = 1024; wc.height = 256;
+      const wt = new THREE.CanvasTexture(wc); wt.colorSpace = THREE.SRGBColorSpace; wt.anisotropy = 4;
+      const ink = '#' + prodCol.clone().lerp(new THREE.Color(0xffffff), 0.66).getHexString();
+      const drawW = () => {
+        const g = wc.getContext('2d'); g.clearRect(0, 0, 1024, 256); g.fillStyle = ink; g.textAlign = 'center'; g.textBaseline = 'middle';
+        let px = 150; g.font = `${P.wordWeight} ${px}px ${P.wordFont}`; const w = g.measureText(P.brandWord).width; if (w > 880) { px *= 880 / w; g.font = `${P.wordWeight} ${px}px ${P.wordFont}`; }
+        g.fillText(P.brandWord, 512, 134); wt.needsUpdate = true;
+      };
+      drawW(); if (document.fonts && document.fonts.load) document.fonts.load(`${P.wordWeight} 40px ${P.wordFont}`).then(drawW, () => {});
+      const arc = 1.5, wm = new THREE.Mesh(new THREE.CylinderGeometry(0.2338, 0.2338, 0.088, 48, 1, true, -arc / 2, arc), new THREE.MeshStandardMaterial({ map: wt, transparent: true, roughness: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
+      wm.position.y = 0.415; wm.renderOrder = 2; pm.add(wm);
+    }
     const cpts = new THREE.SplineCurve(CAP.map(([x, y]) => V2(x, y))).getPoints(MOBILE ? 56 : 84);
     pmesh(new THREE.LatheGeometry([V2(0.186, 0.552), ...cpts], LSEG), siliM);
     /* the moulded loop on top (the ring threads it) */

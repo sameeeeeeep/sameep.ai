@@ -4906,13 +4906,13 @@
    "size": "4.5 ml"
   },
   "images": {
-   "product": "sb/charm.webp",
+   "product": "sb/charm.webp?v=n15",
    "sketch": "sb/sketch.webp",
-   "charm": "sb/charm.webp",
+   "charm": "sb/charm.webp?v=n15",
    "shoot": "sb/charm_open.webp",
-   "listing": "sb/charm.webp",
+   "listing": "sb/charm.webp?v=n15",
    "adA": "sb/charm_open.webp",
-   "adB": "sb/charm.webp",
+   "adB": "sb/charm.webp?v=n15",
    "adC": "sb/charm_open.webp",
    "app_today": "sb/app-today.webp",
    "app_thread": "sb/app-thread.webp",
@@ -5105,11 +5105,11 @@
    "earlier": [
     [
      "can't sleep",
-     "12:50 am"
+     "1:30 am"
     ],
     [
      "ok wait. an idea",
-     "12:51 am"
+     "1:31 am"
     ]
    ]
   }
@@ -5128,28 +5128,30 @@
   "lockup": "chief of staff OS",
   "cta_href": "../plans/",
   "images": {
-   "bench": "sb/v20/ch3-bench.webp",
-   "bench_m": "sb/v20/ch3-bench-390.webp",
-   "sample": "sb/v20/ch3-sample.webp",
-   "sample_m": "sb/v20/ch3-sample-390.webp",
-   "shoot": "sb/v20/ch4-shoot.webp",
-   "shoot_m": "sb/v20/ch4-shoot-390.webp",
-   "hero": "sb/v20/ch4-hero.webp",
-   "weartest": "sb/v20/a-weartest.webp",
-   "mock_a": "sb/v20/a-concept-charm.webp",
-   "mock_b": "sb/v20/a-concept-tube.webp",
-   "vendor": "sb/v20/a-vendor-1.webp",
-   "carton": "sb/v20/a-carton-proof.webp",
-   "ad_a": "sb/v20/a-ad-1.webp",
-   "ad_b": "sb/v20/a-ad-3.webp",
-   "ad_c": "sb/v20/a-ad-2.webp",
-   "courier": "sb/v20/a-courier.webp",
-   "delivered": "sb/v20/a-delivered.webp",
-   "list_site": "sb/v20/a-list-site.webp",
-   "list_nykaa": "sb/v20/a-list-nykaa.webp",
-   "list_amazon": "sb/v20/a-list-amazon.webp",
-   "list_zepto": "sb/v20/a-list-zepto.webp",
-   "list_blinkit": "sb/v20/a-list-blinkit.webp"
+   "bench": "sb/v20/ch3-bench.webp?v=n15",
+   "bench_m": "sb/v20/ch3-bench-390.webp?v=n15",
+   "sample": "sb/v20/ch3-sample.webp?v=n15",
+   "sample_m": "sb/v20/ch3-sample-390.webp?v=n15",
+   "shoot": "sb/v20/ch4-shoot.webp?v=n15",
+   "shoot_m": "sb/v20/ch4-shoot-390.webp?v=n15",
+   "hero": "sb/v20/ch4-hero.webp?v=n15",
+   "weartest": "sb/v20/a-weartest.webp?v=n15",
+   "mock_a": "sb/v20/a-concept-charm.webp?v=n15",
+   "mock_b": "sb/v20/a-concept-tube.webp?v=n15",
+   "vendor": "sb/v20/a-vendor-1.webp?v=n15",
+   "carton": "sb/v20/a-carton-proof.webp?v=n15",
+   "ad_a": "sb/v20/a-ad-1.webp?v=n15",
+   "ad_b": "sb/v20/a-ad-3.webp?v=n15",
+   "ad_c": "sb/v20/a-ad-2.webp?v=n15",
+   "courier": "sb/v20/a-courier.webp?v=n15",
+   "delivered": "sb/v20/a-delivered.webp?v=n15",
+   "list_site": "sb/v20/a-list-site.webp?v=n15",
+   "list_nykaa": "sb/v20/a-list-nykaa.webp?v=n15",
+   "list_amazon": "sb/v20/a-list-amazon.webp?v=n15",
+   "list_zepto": "sb/v20/a-list-zepto.webp?v=n15",
+   "list_blinkit": "sb/v20/a-list-blinkit.webp?v=n15",
+   "firstsample": "sb/v20/ch3-first-sample.webp?v=n15",
+   "firstsample_m": "sb/v20/ch3-first-sample-390.webp?v=n15"
   },
   "chapters": [
    {
@@ -5159,57 +5161,56 @@
      {
       "type": "scene",
       "scene": "door",
-      "line": "Every delivered product…",
-      "when": "Today, her door",
+      "line": "Every product…",
+      "when": "",
       "hold": 5600
      },
      {
       "type": "scene",
       "scene": "rewind",
       "ph": "The packing station",
-      "line": "…flies back to where it was packed…",
-      "when": "Day 167, the packing station",
+      "line": "Every product…",
+      "when": "",
       "hold": 4800
      },
      {
       "type": "scene",
       "scene": "open",
-      "line": "…out of its box…",
-      "when": "Day 167, the packing station",
+      "line": "Every product…",
+      "when": "",
       "hold": 11000
      },
      {
       "type": "scene",
       "scene": "sketch",
-      "line": "…to the idea it started as.",
-      "when": "Seven months earlier",
+      "line": "…starts out as an idea.",
+      "when": "",
       "hold": 5600
      }
     ]
    },
    {
     "id": "midnight",
-    "name": "Midnight",
-    "div": "Idea, 12:53 am",
+    "name": "Day 0",
+    "div": "Idea, Day 0 · 1:33 am",
     "beats": [
      {
       "type": "scene",
       "scene": "phone",
       "voice": "voice-note",
       "len": "0:22",
-      "at": "12:52 am",
-      "photo_at": "12:51 am",
-      "line": "12:52 am. Aditi can't sleep.",
-      "line2": "She says it out loud.",
-      "when": "Seven months earlier",
+      "at": "1:32 am",
+      "photo_at": "1:31 am",
+      "line": "",
+      "when": "Day 0 · 1:32 am",
       "hold": 9000
      },
      {
       "type": "panel",
       "enter": true,
-      "label": "#ideas · Inbox · 12:53 am",
-      "line": "The note becomes a project.",
-      "when": "12:53 am",
+      "label": "#ideas · Inbox · 1:33 am",
+      "line": "",
+      "when": "Day 0 · 1:33 am",
       "thread": [
        {
         "who": "Aditi",
@@ -5222,7 +5223,7 @@
           "words": "Fourth girl in our DMs today asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
          },
          "lab": "Voice note",
-         "title": "Aditi, 12:52 am"
+         "title": "Aditi, 1:32 am"
         }
        },
        {
@@ -5237,17 +5238,18 @@
          "lab": "New project",
          "title": "Charm lip oil",
          "n": "#41",
-         "sub": "Owner Aditi · from her 12:52 am note"
+         "sub": "Owner Aditi · from her 1:32 am note"
         }
        }
-      ]
+      ],
+      "stage": "Idea",
+      "chan": "#ideas"
      },
      {
       "type": "panel",
       "label": "#41 · Research · overnight",
-      "line": "Overnight, only agents work.",
-      "line2": "No one from the team.",
-      "when": "1:10 am to 7:40 am",
+      "line": "",
+      "when": "Day 0 · 1:50 am",
       "thread": [
        {
         "who": "Chief of staff",
@@ -5257,7 +5259,7 @@
          "lab": "Agents at work",
          "title": "Overnight",
          "clock": [
-          "1:10 am",
+          "1:50 am",
           "7:40 am"
          ],
          "rows": [
@@ -5303,17 +5305,19 @@
          "foot": "Sheer oils get one star for no colour. Nobody does real colour as an oil."
         }
        }
-      ]
+      ],
+      "stage": "Idea",
+      "chan": "#ideas"
      },
      {
       "type": "panel",
-      "label": "Team group · 9:30 am",
-      "line": "In the morning, the team gets the plan.",
-      "when": "9:30 am",
+      "label": "Team group · 11:10 am",
+      "line": "",
+      "when": "Day 1 · 11:10 am",
       "thread": [
        {
         "who": "Chief of staff",
-        "text": "Morning, team. Aditi's 12:52 note is now project #41, and the research is in. Here's who does what.",
+        "text": "Morning, team. Aditi's 1:32 note is now project #41, and the research is in. Here's who does what.",
         "art": {
          "kind": "list",
          "drop": true,
@@ -5330,41 +5334,41 @@
           },
           {
            "who": "Tanvi",
-           "text": "Wear test on three skin tones",
+           "text": "First sample and wear test",
            "due": "Day 21",
+           "done": "Done"
+          },
+          {
+           "who": "Vikram",
+           "text": "Carton and print",
+           "due": "Day 70",
            "done": "Done"
           },
           {
            "who": "Naina",
            "text": "Shoot, listing and ads",
-           "due": "Day 150",
+           "due": "Day 165",
            "done": "Done"
           },
           {
            "who": "Arjun",
-           "text": "Packing line for launch week",
-           "due": "Day 160",
-           "done": "Done"
-          },
-          {
-           "who": "Vikram",
-           "text": "A shoot assistant for launch",
-           "due": "Day 120",
+           "text": "Packing and shipping",
+           "due": "Day 167",
            "done": "Done"
           }
          ]
         }
        }
-      ]
+      ],
+      "stage": "Project",
+      "chan": "#team"
      },
      {
       "id": "agents",
       "type": "panel",
       "label": "Team · Agents",
-      "when": "9:41 am",
-      "hold": 34000,
-      "line": "Everyone gets an agent.",
-      "line2": "Same face, in the ring.",
+      "when": "Day 1 · 11:21 am",
+      "line": "",
       "thread": [
        {
         "who": "Chief of staff",
@@ -5385,7 +5389,7 @@
        },
        {
         "who": "Chief of staff",
-        "text": "First one in: book the wear test for Thursday. Tanvi's agent has it.",
+        "text": "First one in: the lab for Tanvi's sample test, Thursday. Tanvi's agent has it.",
         "step": 2,
         "art": {
          "kind": "route",
@@ -5433,74 +5437,25 @@
        {
         "who": "Aditi",
         "text": "Approved.",
-        "decide": true
+        "decide": true,
+        "call": "Approve ₹18,000"
        }
-      ]
+      ],
+      "stage": "Project",
+      "chan": "#team"
      }
     ]
    },
    {
     "id": "npd",
     "name": "New product",
-    "div": "New product, Day 21",
+    "div": "New product, Day 3",
     "beats": [
      {
-      "type": "scene",
-      "scene": "still",
-      "img": "bench",
-      "ph": "The bench: samples, swatches on skin",
-      "line": "Day 21. Five samples on the bench.",
-      "line2": "Swatched on three skin tones.",
-      "when": "Day 21",
-      "el": {
-       "img": "sample",
-       "img_m": "sample_m",
-       "frac": [
-        0.458,
-        0.2978,
-        0.1073,
-        0.3008
-       ],
-       "frac_m": [
-        0.383,
-        0.2937,
-        0.233,
-        0.1902
-       ]
-      },
-      "hold": 7200,
-      "img_m": "bench_m"
-     },
-     {
       "type": "panel",
-      "enter": true,
-      "label": "#41 · Wear test · Day 21",
-      "line": "Sample 3 holds.",
-      "line2": "All three skin tones, six hours.",
-      "when": "Day 21",
-      "thread": [
-       {
-        "who": "Tanvi",
-        "text": "Wear test done. Sample 3 holds on all three skin tones for six hours.",
-        "art": {
-         "kind": "card",
-         "media": {
-          "img": "sample"
-         },
-         "lab": "Wear test",
-         "title": "Sample 3",
-         "n": "3 of 3",
-         "sub": "skin tones · six hours · no feathering"
-        }
-       }
-      ]
-     },
-     {
-      "type": "panel",
-      "label": "#41 · Concept · Day 21",
-      "line": "The concept, and two mockups.",
-      "line2": "The team votes.",
-      "when": "Day 21",
+      "label": "#41 · Concept · Day 3",
+      "line": "",
+      "when": "Day 3",
       "thread": [
        {
         "who": "Chief of staff",
@@ -5531,15 +5486,60 @@
        {
         "who": "Aditi",
         "text": "Charm. It clips on a bag and there's no dipping.",
-        "decide": true
+        "decide": true,
+        "call": "Pick the charm"
        }
-      ]
+      ],
+      "stage": "Concept",
+      "chan": "#npd"
+     },
+     {
+      "type": "scene",
+      "scene": "still",
+      "img": "firstsample",
+      "ph": "The first sample, on the page it was drawn on",
+      "line": "",
+      "when": "Day 21",
+      "hold": 7200,
+      "img_m": "firstsample_m"
+     },
+     {
+      "type": "panel",
+      "enter": true,
+      "label": "#41 · Sample · Day 21",
+      "line": "",
+      "when": "Day 21",
+      "thread": [
+       {
+        "who": "Tanvi",
+        "text": "Sample 3 is the one. The cap squishes, it clips on, and the colour holds six hours on all three skin tones.",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "sample"
+         },
+         "lab": "First sample",
+         "title": "Sample 3",
+         "n": "3 of 3",
+         "sub": "skin tones · six hours · no feathering",
+         "pick": "Waiting on Aditi",
+         "pickDone": "Approved"
+        }
+       },
+       {
+        "who": "Aditi",
+        "text": "That's the doodle. Make it.",
+        "decide": true,
+        "call": "Approve sample 3"
+       }
+      ],
+      "stage": "Sample",
+      "chan": "#npd"
      },
      {
       "type": "panel",
       "label": "#41 · Vendors · Day 40",
-      "line": "Every option in one view.",
-      "line2": "One pick.",
+      "line": "",
       "when": "Day 40",
       "thread": [
        {
@@ -5566,15 +5566,18 @@
        {
         "who": "Aditi",
         "text": "Go with Kapoor.",
-        "decide": true
+        "decide": true,
+        "call": "Go with Kapoor"
        }
-      ]
+      ],
+      "stage": "Vendor",
+      "chan": "#vendors",
+      "skip": true
      },
      {
       "type": "panel",
       "label": "#41 · Packaging · Day 70",
-      "line": "The carton proof,",
-      "line2": "checked against every rule.",
+      "line": "",
       "when": "Day 70",
       "thread": [
        {
@@ -5613,7 +5616,7 @@
         }
        },
        {
-        "who": "Tanvi",
+        "who": "Vikram",
         "text": "add Net 4 ml under the name pls"
        },
        {
@@ -5648,13 +5651,14 @@
          "pick": "Cleared to print"
         }
        }
-      ]
+      ],
+      "stage": "Packaging",
+      "chan": "#packaging"
      },
      {
       "type": "panel",
       "label": "#41 · Purchase order · Day 72",
-      "line": "The PO goes out.",
-      "line2": "One tap.",
+      "line": "",
       "when": "Day 72",
       "thread": [
        {
@@ -5701,9 +5705,13 @@
        {
         "who": "Aditi",
         "text": "Approved.",
-        "decide": true
+        "decide": true,
+        "call": "Approve the PO"
        }
-      ]
+      ],
+      "stage": "PO",
+      "chan": "#vendors",
+      "skip": true
      }
     ]
    },
@@ -5717,34 +5725,15 @@
       "scene": "still",
       "img": "shoot",
       "ph": "The shoot: on a bag, in daylight",
-      "line": "Day 150. The shoot.",
-      "line2": "On a bag, in daylight.",
+      "line": "",
       "when": "Day 150",
-      "el": {
-       "img": "hero",
-       "fit": "cover",
-       "appear": 4400,
-       "frac": [
-        0.3279,
-        0.1211,
-        0.3241,
-        0.6305
-       ],
-       "frac_m": [
-        0.1121,
-        0.317,
-        0.532,
-        0.3164
-       ]
-      },
       "hold": 7600,
       "img_m": "shoot_m"
      },
      {
       "type": "panel",
-      "enter": true,
       "label": "#41 · Listing · Day 165",
-      "line": "Live in five places.",
+      "line": "",
       "when": "Day 165",
       "thread": [
        {
@@ -5797,13 +5786,15 @@
          ]
         }
        }
-      ]
+      ],
+      "stage": "Launch",
+      "chan": "#marketing"
      },
      {
       "type": "panel",
       "label": "#41 · Ads · Launch week",
-      "line": "Three ad cuts run overnight.",
-      "when": "Day 166, 1:30 am",
+      "line": "",
+      "when": "Day 166, 12:50 am",
       "thread": [
        {
         "who": "Ads agent",
@@ -5833,38 +5824,9 @@
          ]
         }
        }
-      ]
-     },
-     {
-      "type": "panel",
-      "label": "#41 · Ads · Day 173",
-      "line": "One wins.",
-      "line2": "Scale it?",
-      "when": "Day 173",
-      "thread": [
-       {
-        "who": "Ads agent",
-        "text": "Cut B is at 2.8 back per ₹1 over 7 days. Move cut C's ₹1,100 a day onto it?",
-        "art": {
-         "kind": "card",
-         "media": {
-          "img": "ad_b",
-          "fit": "cover"
-         },
-         "lab": "Winner, 7 days",
-         "title": "Cut B, bag swing",
-         "n": "2.8x",
-         "sub": "back per ₹1 spent",
-         "pick": "AI pick: scale",
-         "pickDone": "Scaled"
-        }
-       },
-       {
-        "who": "Naina",
-        "text": "Scale B.",
-        "decide": true
-       }
-      ]
+      ],
+      "stage": "Launch",
+      "chan": "#marketing"
      }
     ]
    },
@@ -5876,8 +5838,8 @@
      {
       "type": "scene",
       "scene": "pack",
-      "line": "Day 167. Her order goes into a box.",
-      "when": "9:52 am, the packing station",
+      "line": "",
+      "when": "Day 167",
       "el": {
        "label": true
       },
@@ -5888,7 +5850,7 @@
       "type": "panel",
       "enter": true,
       "label": "#41 · Orders · launch hour",
-      "line": "86 orders in the first hour.",
+      "line": "",
       "when": "Day 167, 6 pm",
       "thread": [
        {
@@ -5909,12 +5871,14 @@
         "who": "Arjun",
         "text": "all 86 packed for the morning batch. who picks up?"
        }
-      ]
+      ],
+      "stage": "Orders",
+      "chan": "#orders"
      },
      {
       "type": "panel",
       "label": "#41 · Shipments · Day 168",
-      "line": "The courier picks it up.",
+      "line": "",
       "when": "Day 168, 11:20 am",
       "thread": [
        {
@@ -5952,13 +5916,15 @@
         "who": "Arjun",
         "text": "picked up. tracking sent on whatsapp"
        }
-      ]
+      ],
+      "stage": "Orders",
+      "chan": "#orders",
+      "skip": true
      },
      {
       "type": "panel",
       "label": "#41 · Orders · Day 169",
-      "line": "Delivered.",
-      "line2": "She says it's perfect.",
+      "line": "",
       "when": "Day 169, 6:14 pm",
       "thread": [
        {
@@ -5980,13 +5946,48 @@
         "who": "Customer, Saket",
         "text": "it's perfect. already clipped it on my bag"
        }
-      ]
+      ],
+      "stage": "Delivered",
+      "chan": "#orders"
+     },
+     {
+      "type": "panel",
+      "label": "#41 · Ads · Day 173",
+      "line": "",
+      "when": "Day 173",
+      "thread": [
+       {
+        "who": "Ads agent",
+        "text": "Cut B is at 2.8 back per ₹1 over 7 days. Move cut C's ₹1,100 a day onto it?",
+        "art": {
+         "kind": "card",
+         "media": {
+          "img": "ad_b",
+          "fit": "cover"
+         },
+         "lab": "Winner, 7 days",
+         "title": "Cut B, bag swing",
+         "n": "2.8x",
+         "sub": "back per ₹1 spent",
+         "pick": "AI pick: scale",
+         "pickDone": "Scaled"
+        }
+       },
+       {
+        "who": "Naina",
+        "text": "Scale B.",
+        "decide": true,
+        "call": "Scale cut B"
+       }
+      ],
+      "stage": "Week one",
+      "chan": "#marketing",
+      "skip": true
      },
      {
       "type": "panel",
       "label": "#41 · Week one",
-      "line": "Week one.",
-      "line2": "The next shade is already asked for.",
+      "line": "",
       "when": "Day 174",
       "thread": [
        {
@@ -6013,7 +6014,9 @@
          "foot": "Idea #42 is open: a second shade, darker."
         }
        }
-      ]
+      ],
+      "stage": "Week one",
+      "chan": "#orders"
      }
     ]
    },
@@ -6025,15 +6028,14 @@
      {
       "type": "scene",
       "scene": "arrive",
-      "line": "Back at her door.",
-      "when": "Today",
+      "line": "",
+      "when": "",
       "hold": 5600
      },
      {
       "type": "scene",
       "scene": "end",
-      "line": "From a thought at 12:52 am",
-      "line2": "to a thing at her door.",
+      "line": "From a thought at 1:32 am",
       "when": "Today",
       "cta": "See the scope and pricing",
       "hold": 9000

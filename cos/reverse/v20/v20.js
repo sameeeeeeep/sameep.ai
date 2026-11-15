@@ -2,10 +2,10 @@
    the bottom bar the line being said, the when, and a 2px progress line. The picture plays between them.
    Six chapters, each scene -> element -> panel: a scene from the real world, then ONE element travels out of it and
    lands on the panel's canvas, then the panel (v20-app.js) works on it. That travel is the one deliberate move per
-   chapter; everything else is a hard cut. Slow autoplay paced by reading time, pause and next always there, and every
-   artefact and task opens when clicked (autoplay pauses while it's open).
+   chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
+   or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v20b';
+import { createPanel, EZ, read } from './v20-app.js?v=v20i';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -18,8 +18,9 @@ const str = (v, d) => (v == null || v === '' ? (d == null ? '' : d) : String(v))
 const arr = (v) => (Array.isArray(v) ? v : []);
 const PHONE = () => innerWidth < 760;
 const PAPER = '#F2F0EB';
-const P3_URL = '../p20-parcel.js?v=p20b', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
+const P3_URL = '../p20-parcel.js?v=p20f', DOOR_URL = '../door3d.js?v=sb2';   /* module-relative: the same URLs the page's boot list fetched */   /* keep in step with the boot list in scroll20.html */
 const P3 = !Q.has('door3d');
+const AUTO = Q.has('autoplay');   /* off by default: the viewer moves the story */
 
 let cfg, V, B = [], CH = [], i = -1, playing = true, timer = 0, raf = 0;
 const ui = {};
@@ -140,7 +141,7 @@ function onHero(r) {
       c.className = 'mc-ph'; HERO.snap = { el: c, x: x0 + o.left - R.left, y: y0 + o.top - R.top, w: x1 - x0, h: y1 - y0 };
     }
   } catch (e) { /* tainted: the product photo stands in */ }
-  if (B[i] && B[i].scene === 'open' && B[i + 1] && B[i + 1].scene === 'sketch' && playing && !viewOpen) { clearTimeout(timer); show(i + 1); }
+  if (B[i] && B[i].scene === 'open' && B[i + 1] && B[i + 1].scene === 'sketch' && AUTO && playing && !viewOpen) { clearTimeout(timer); show(i + 1); }
 }
 function heroRect() {
   if (HERO) return HERO;
@@ -240,12 +241,15 @@ const SCENE = {
       n++; const s = Math.min(n * 0.16, 59); tm.textContent = '0:' + String(Math.floor(s)).padStart(2, '0');
       if (live.children.length < 30) { const bar = h('i'); bar.style.height = Math.round(20 + 70 * Math.abs(Math.sin(n * 1.3) * Math.cos(n * 0.4))) + '%'; live.appendChild(bar); }
     }, 160);
-    const send = () => { clearInterval(ui.recI); rec.hidden = true; sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
-    if (sendAt) ui.sceneT = setTimeout(send, sendAt); else send();
+    const send = () => { if (!rec.isConnected || rec.hidden) return; ui.sceneAct = null; clearInterval(ui.recI); rec.hidden = true; sent.hidden = false; inp.hidden = false; ui.elNode = vb; if (!ui.seek) { SFX.sent(); if (!REDUCED) sent.animate([{ translate: '0 10px' }, { translate: '0 0' }], { duration: 360, easing: EZ }); } };
+    /* the viewer sends it: the note records until they tap send (Next and scroll send it too) */
+    if (!sendAt) send();
+    else if (AUTO) ui.sceneT = setTimeout(send, sendAt);
+    else { const sb = h('button', 'ph-send'); sb.type = 'button'; sb.setAttribute('aria-label', 'Send the voice note'); sb.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3.6M3.8 7.6L8 3.4l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; sb.addEventListener('click', (e) => { e.stopPropagation(); unlock(); send(); }); rec.appendChild(sb); ui.sceneAct = send; }
     if (b.voice && !ui.seek) playClip(b.voice);
     return w;
   },
-  still: (b) => { const w = still(PHONE() && b.img_m ? b.img_m : b.img, b.ph); if (b.el) placeEl(b, w); return w; },
+  still: (b) => { const w = still(PHONE() && b.img_m ? b.img_m : b.img, b.ph); if (b.el) placeEl(b, w); const im = w.querySelector('img'); if (im && !REDUCED && !ui.seek) im.animate([{ transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 6500, easing: 'cubic-bezier(.2,.6,.2,1)' }); return w; },
   pack: (b) => {
     if (P20()) { boxOn = true; ui.labelHost = h('div', 'sc-over'); runBox(play3('pack', 0, 1), b.p3dur || b.dur * 0.9); return ui.labelHost; }
     if (cap('pack')) { boxOn = true; runBox(poseOf('pack'), b.dur * 0.8); const w = h('div', 'sc-over'); if (b.el) ui.sceneT = setTimeout(() => element(b, w), ui.seek ? 0 : b.dur * 0.55); return w; }
@@ -337,7 +341,7 @@ function show(k, how) {
   k = clamp(k, 0, B.length - 1);
   const b = B[k], from = i, seq = k === from + 1 && how !== 'seek';
   i = k; ui.seek = !seq && how !== 'first';
-  clearTimeout(timer); clearTimeout(ui.sceneT); clearInterval(ui.recI); stopClip();
+  clearTimeout(timer); clearTimeout(ui.sceneT); clearInterval(ui.recI); stopClip(); ui.sceneAct = null;
   closeView(true);
   const ch = b.ch;
   ui.root.dataset.ch = CH[ch].id; ui.root.dataset.type = b.type; ui.root.dataset.scene = b.scene || '';
@@ -351,6 +355,7 @@ function show(k, how) {
     ui.root.classList.remove('is-3d');
     ui.scene.innerHTML = ''; ui.scene.className = 'v-scene';
     ui.panelHost.classList.add('is-on');
+    clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k) board(k, true); }, dur);
     panel.fit();
     if (!seq || from < 0 || B[from].type !== 'panel') {
       /* rebuild the thread from history when we jumped in, or arrive from a scene (the thread keeps everything) */
@@ -373,7 +378,8 @@ function show(k, how) {
   }
   ui.next.disabled = k === B.length - 1;
   window.__beatT0 = performance.now();
-  if (playing && k < B.length - 1) { timer = setTimeout(() => next(), dur); runProgress(dur); } else runProgress(0);
+  ui.back.disabled = k === 0;
+  if (AUTO && playing && k < B.length - 1) { timer = setTimeout(() => next(), dur); runProgress(dur); } else runProgress(0);
 }
 function durOf(b) {
   if (b.type === 'panel') return panel.estimate(b) + (b.enter ? 2200 : 0);
@@ -385,7 +391,7 @@ function timeline() { CUM = []; let t = 0; B.forEach((b) => { CUM.push(t); t += 
 function runProgress(ms) {
   const a = CUM[i] / TOTAL, z = (CUM[i] + durOf(B[i])) / TOTAL, bar = ui.prog;
   bar.getAnimations().forEach((x) => x.cancel());
-  if (!ms || !playing) { bar.style.transform = 'scaleX(' + a.toFixed(4) + ')'; return; }
+  if (!ms || !playing) { bar.style.transform = 'scaleX(' + (AUTO ? a : z).toFixed(4) + ')'; return; }   /* stepped: the line shows how far in you are */
   bar.style.transform = 'scaleX(' + z.toFixed(4) + ')';
   bar.animate([{ transform: 'scaleX(' + a.toFixed(4) + ')' }, { transform: 'scaleX(' + z.toFixed(4) + ')' }], { duration: ms, easing: 'linear' });
 }
@@ -394,6 +400,7 @@ function setLine(b) {
   L.appendChild(document.createTextNode(str(b.line)));
   if (b.line2) { L.appendChild(document.createTextNode(' ')); L.appendChild(h('span', null, b.line2)); }
   ui.when.textContent = str(b.when);
+  if (ui.hint) ui.hint.textContent = b.scene === 'end' ? '' : b.scene === 'phone' ? 'Tap send' : (PHONE() ? 'Swipe up' : 'Scroll') + ' to continue';
 }
 function chapters(ch) {
   ui.chs.forEach((e, j) => { e.classList.toggle('is-on', j === ch && !CH[j].quiet); e.classList.toggle('is-done', j < ch); e.setAttribute('aria-current', j === ch ? 'step' : 'false'); });
@@ -403,12 +410,134 @@ function endCard(b) {
   const a = h('div', 'v-end');
   const go = h('button', 'v-go', str(b.cta, 'See the scope and pricing')); go.type = 'button';
   go.addEventListener('click', (e) => { e.stopPropagation(); unlock(); offer(); });
-  const again = h('button', 'v-again', 'Watch again'); again.type = 'button';
+  const again = h('button', 'v-again', 'Start again'); again.type = 'button';
   again.addEventListener('click', (e) => { e.stopPropagation(); setPlay(true); show(0, 'seek'); });
   a.appendChild(go); a.appendChild(again); ui.scene.appendChild(a); ui.scene.classList.add('is-on');
 }
 
-function next() { if (i < B.length - 1) show(i + 1); }
+
+/* ---------- the board (the v5 screen): around the thread and the canvas sit the team bar, the stage strip, the channel
+   tiles, and the Now card with tasks and agents. Everything is derived from the beats up to the current one. ---------- */
+const isAg = (w) => /agent$|^chief of staff$/i.test(str(w));
+const dayOf = (b) => { const m = /Day (\d+)/.exec(str(b && b.when)); return m ? +m[1] : null; };
+const clip2 = (t, n) => { t = str(t); return t.length > n ? t.slice(0, n - 1).trimEnd() + '…' : t; };
+let STG = [], CHN = [], PEOPLE = [];
+function boardData() {
+  STG = []; CHN = []; PEOPLE = [];
+  const seen = {};
+  B.forEach((b, k) => {
+    if (b.type !== 'panel') return;
+    if (b.stage && !STG.some((x) => x.name === b.stage)) STG.push({ name: b.stage, first: k, day: dayOf(b) });
+    if (b.chan && !CHN.some((x) => x.name === b.chan)) CHN.push({ name: b.chan, first: k });
+    arr(b.thread).forEach((it) => { if (it.who && !isAg(it.who) && cfg.faces && cfg.faces[it.who] && !seen[it.who]) { seen[it.who] = 1; PEOPLE.push(it.who); } });
+  });
+  Object.keys(cfg.faces || {}).forEach((w) => { if (!seen[w] && typeof cfg.faces[w] === 'string') { seen[w] = 1; PEOPLE.push(w); } });
+}
+function buildBoard() {
+  const root = ui.panelHost.querySelector('.p'); if (!root) return;
+  const bd = ui.bd = {};
+  bd.team = h('div', 'bd-team'); ui.top.insertBefore(bd.team, ui.top.children[1] || null);
+  bd.strip = h('nav', 'bd-strip'); bd.strip.setAttribute('aria-label', 'Stages'); ui.panelHost.insertBefore(bd.strip, root);
+  bd.stg = STG.map((s, n) => {
+    const e = h('button', 'bd-st'); e.type = 'button'; e.appendChild(h('i', null, String(n + 1)));
+    const t = h('span'); t.appendChild(h('b', null, s.name)); if (s.day != null) t.appendChild(h('small', null, 'Day ' + s.day)); e.appendChild(t);
+    e.addEventListener('click', (ev) => { ev.stopPropagation(); unlock(); show(s.first, 'seek'); });
+    bd.strip.appendChild(e); return e;
+  });
+  bd.tiles = h('aside', 'bd-tiles'); root.insertBefore(bd.tiles, root.firstChild);
+  bd.mid = h('section', 'bd-mid'); root.insertBefore(bd.mid, root.querySelector('.p-cv'));
+}
+/* what moved since the last render gets a small move of its own, in order, so the eye lands on the change */
+const BEZ = 'cubic-bezier(.22,.8,.24,1)', BACK = 'cubic-bezier(.3,1.5,.5,1)';
+function board(k, settled) {
+  const bd = ui.bd; if (!bd) return;
+  const was = bd.was || { on: {}, clones: false, tasks: {}, done: {}, agents: {}, stage: -1 }, cur = { on: {}, clones: false, tasks: {}, done: {}, agents: {}, stage: -1 };
+  const live = !ui.seek && !REDUCED; let lag = 0;
+  const move = (el, frames, o) => { if (live) el.animate(frames, Object.assign({ duration: 420, easing: BEZ, fill: 'backwards' }, o)); };
+  const b = B[k], past = B.slice(0, k + 1).filter((x) => x.type === 'panel');
+  const day = dayOf(b) || 0;
+  /* who is here: at night only the one who spoke; from the morning everyone, and their agents once they have them */
+  const spoke = {}; let clones = false; const agents = [];
+  past.forEach((x) => {
+    if (x.id === 'agents') clones = true;
+    const here = x === b;
+    const note = (w, text) => { if (!w) return; if (!isAg(w)) { spoke[w] = 1; return; } let a = agents.find((y) => y.who === w); if (!a) { a = { who: w }; agents.push(a); } if (text) a.last = text; a.live = here; };
+    arr(x.thread).forEach((it) => { note(it.who, it.text); if (it.art && it.art.kind === 'list') arr(it.art.rows).forEach((r) => note(r.who, r.text)); });
+  });
+  bd.team.innerHTML = '';
+  const fs = h('span', 'bd-faces');
+  cur.clones = clones;
+  PEOPLE.forEach((w) => {
+    const on = day >= 1 || spoke[w]; const f = panel.face(w, on ? '' : 'is-off'); fs.appendChild(f);
+    if (on) { cur.on[w] = 1; if (!was.on[w]) { move(f, [{ scale: '.4', opacity: .28 }, { scale: '1', opacity: 1 }], { delay: lag, easing: BACK }); lag += 140; } }
+    if (clones) { const c = panel.face(w + "'s agent"); fs.appendChild(c); if (!was.clones) { move(c, [{ scale: '0' }, { scale: '1' }], { delay: lag, easing: BACK }); lag += 140; } }
+  });
+  bd.team.appendChild(fs);
+  const online = PEOPLE.filter((w) => day >= 1 || spoke[w]).length, nAg = agents.length + (clones ? PEOPLE.length : 0);
+  bd.team.appendChild(h('span', 'bd-count', online + (online === 1 ? ' person' : ' people') + ' online · ' + nAg + (nAg === 1 ? ' agent' : ' agents')));
+  /* stages */
+  const si = STG.findIndex((s) => s.name === b.stage);
+  cur.stage = si; if (si !== was.stage && bd.stg[si]) move(bd.stg[si], [{ scale: '.94' }, { scale: '1' }], { easing: BACK });
+  bd.stg.forEach((e, n) => { e.classList.toggle('is-on', n === si); e.classList.toggle('is-done', n < si); if (n === si && e.scrollIntoView && bd.strip.scrollWidth > bd.strip.clientWidth) bd.strip.scrollTo({ left: e.offsetLeft - 24 }); });
+  /* channel tiles */
+  bd.tiles.innerHTML = '';
+  CHN.forEach((cn) => {
+    const mine = past.filter((x) => x.chan === cn.name), open = b.chan === cn.name;
+    const t = h('div', 'bd-tile' + (open ? ' is-on' : mine.length ? ' is-done' : ''));
+    const hd = h('div', 'bd-th'); hd.appendChild(h('b', null, cn.name)); hd.appendChild(h('span', null, open ? 'Open now' : mine.length ? 'Done' : 'Next')); t.appendChild(hd);
+    let last = null; const who = [];
+    (mine.length ? mine : []).forEach((x) => arr(x.thread).forEach((it) => { if (it.text) last = it; if (it.who && who.indexOf(it.who) < 0) who.push(it.who); }));
+    if (!mine.length) B.filter((x) => x.chan === cn.name).forEach((x) => arr(x.thread).forEach((it) => { if (it.who && who.indexOf(it.who) < 0) who.push(it.who); }));
+    if (last) t.appendChild(h('p', null, clip2(last.who + ': ' + last.text, 74)));
+    const ft = h('div', 'bd-tf'); who.slice(0, 4).forEach((w) => ft.appendChild(panel.face(w))); t.appendChild(ft);
+    bd.tiles.appendChild(t);
+  });
+  /* now */
+  bd.mid.innerHTML = '';
+  const now = h('div', 'bd-now');
+  const nh = h('div', 'bd-nh'); nh.appendChild(h('span', null, 'Now · ' + str(b.when))); nh.appendChild(h('span', null, 'Stage ' + (si + 1) + ' of ' + STG.length)); now.appendChild(nh);
+  const nb = h('div', 'bd-nb'); const pi = IMG('product'); if (pi && day >= 21) nb.appendChild(img(pi, 'bd-np')); else if (IMG('sketch_ink') || IMG('sketch')) nb.appendChild(img(str(IMG('sketch_ink'), IMG('sketch')), 'bd-np is-sk'));
+  const nt = h('div'); nt.appendChild(h('b', null, str(b.stage) + ' · ' + str(b.chan))); nt.appendChild(h('p', null, str(b.label).replace(/^#\d+\s*·\s*/, ''))); nb.appendChild(nt); now.appendChild(nb);
+  bd.mid.appendChild(now);
+  /* tasks: the newest list of work, ticked as its days pass (agent rows tick when their beat settles) */
+  let list = null, listBeat = null;
+  past.forEach((x) => arr(x.thread).forEach((it) => { if (it.art && it.art.kind === 'list' && arr(it.art.rows).length) { list = it.art; listBeat = x; } }));
+  let tlag = 200;
+  const tk = h('div', 'bd-card'); tk.appendChild(h('span', 'bd-h', 'Tasks and decisions'));
+  if (!list) tk.appendChild(h('p', 'bd-empty', 'Nothing yet'));
+  else arr(list.rows).forEach((r) => {
+    const due = /Day (\d+)/.exec(str(r.due)), done = due ? day >= +due[1] : (listBeat !== b || settled);
+    const row = h('div', 'bd-task' + (done ? ' is-done' : '')); const box = h('i'); row.appendChild(box);
+    cur.tasks[r.text] = 1; if (done) cur.done[r.text] = 1;
+    if (!was.tasks[r.text]) { move(row, [{ translate: '0 12px' }, { translate: '0 0' }], { delay: tlag }); tlag += 110; }
+    else if (done && !was.done[r.text]) { move(box, [{ scale: '.3' }, { scale: '1' }], { delay: tlag, easing: BACK }); tlag += 160; }
+    const tx = h('div'); tx.appendChild(h('b', null, r.text)); const o = h('span'); o.appendChild(panel.face(r.who)); o.appendChild(document.createTextNode(str(r.who) + (r.due ? ' · ' + r.due : ''))); tx.appendChild(o); row.appendChild(tx);
+    tk.appendChild(row);
+  });
+  bd.mid.appendChild(tk);
+  const ag = h('div', 'bd-card'); ag.appendChild(h('span', 'bd-h', 'Agents at work'));
+  if (!agents.length) ag.appendChild(h('p', 'bd-empty', 'None yet'));
+  let alag = 300;
+  agents.slice(-4).forEach((a) => {
+    const row = h('div', 'bd-ag'); row.appendChild(panel.face(a.who));
+    cur.agents[a.who] = a.live && !settled ? 2 : 1;
+    if (!was.agents[a.who]) { move(row, [{ translate: '0 12px' }, { translate: '0 0' }], { delay: alag }); alag += 110; }
+    const working = a.live && !settled;
+    const tx = h('div'); const top = h('b', null, a.who); tx.appendChild(top); tx.appendChild(h('p', null, clip2(a.last, 58))); row.appendChild(tx);
+    const tag = h('span', 'bd-tag' + (working ? ' is-work' : ''), working ? 'working' : a.live ? 'done' : 'ready'); row.appendChild(tag);
+    if (was.agents[a.who] === 2 && !working) move(tag, [{ scale: '.7' }, { scale: '1' }], { easing: BACK });
+    ag.appendChild(row);
+  });
+  bd.mid.appendChild(ag);
+  bd.was = cur;
+}
+
+function next() {
+  /* a waiting interaction comes first: Next and scroll take the decision or send the note, then the story moves */
+  if (panel && panel.asking) { panel.answer(); return; }
+  if (ui.sceneAct) { const f = ui.sceneAct; ui.sceneAct = null; f(); return; }
+  if (i < B.length - 1) show(i + 1);
+}
 function prev() { if (i > 0) show(i - 1, 'seek'); }
 function setPlay(on) {
   playing = on; setPlayBtn();
@@ -471,8 +600,8 @@ function build() {
   const mount = document.getElementById('app') || document.body; mount.innerHTML = '';
   const r = h('section', 'v'); r.setAttribute('aria-label', str(V.title, 'Coco')); ui.root = r;
   /* top bar */
-  const top = h('header', 'v-top');
-  const wm = h('p', 'v-wm'); wm.appendChild(h('i', 'mk')); wm.appendChild(h('b', null, str(V.wordmark, 'Coco'))); wm.appendChild(h('span', null, str(V.lockup, 'chief of staff OS'))); top.appendChild(wm);
+  const top = h('header', 'v-top'); ui.top = top;
+  const wm = h('p', 'v-wm'); wm.appendChild(h('b', null, str(V.wordmark, 'Coco'))); wm.appendChild(h('span', null, str(V.lockup, 'chief of staff OS'))); top.appendChild(wm);
   const nav = h('nav', 'v-chs'); nav.setAttribute('aria-label', 'Chapters'); ui.chs = [];
   CH.forEach((c, j) => { const e = h('button', 'v-ch', c.name); e.type = 'button'; if (c.quiet) e.hidden = true; e.addEventListener('click', (ev) => { ev.stopPropagation(); unlock(); show(c.first, 'seek'); }); nav.appendChild(e); ui.chs.push(e); });
   top.appendChild(nav); ui.chNow = h('span', 'v-chnow'); top.appendChild(ui.chNow);
@@ -489,16 +618,19 @@ function build() {
   /* bottom bar */
   const bot = h('footer', 'v-bot');
   ui.line = h('p', 'v-line'); ui.line.setAttribute('aria-live', 'polite'); bot.appendChild(ui.line);
-  const side = h('div', 'v-side'); ui.when = h('span', 'v-when'); side.appendChild(ui.when);
-  const ctl = h('div', 'v-ctl'); ui.play = btn('is-play', 'Pause', ICONS.play); ui.next = btn('is-next', 'Next', ICONS.next); ui.sound = btn('is-sound', 'Sound on', ICONS.sound);
-  [ui.play, ui.next, ui.sound].forEach((x) => ctl.appendChild(x)); if (MUTED) ui.sound.hidden = true;
+  const side = h('div', 'v-side'); ui.when = h('span', 'v-when'); side.appendChild(ui.when); ui.hint = h('span', 'v-hint'); side.appendChild(ui.hint);
+  const ctl = h('div', 'v-ctl'); ui.play = btn('is-play', 'Pause', ICONS.play); ui.back = btn('is-back', 'Back', ICONS.next); ui.next = btn('is-next', 'Next', ICONS.next); ui.next.insertBefore(h('span', null, 'Next'), ui.next.firstChild); ui.sound = btn('is-sound', 'Sound on', ICONS.sound);
+  [ui.play, ui.back, ui.next, ui.sound].forEach((x) => ctl.appendChild(x)); if (MUTED) ui.sound.hidden = true; if (!AUTO) ui.play.hidden = true;
   side.appendChild(ctl); bot.appendChild(side);
   const pg = h('div', 'v-prog'); ui.prog = h('i'); pg.appendChild(ui.prog); bot.appendChild(pg);
   r.appendChild(bot);
   ui.offer = h('div', 'v-offer'); r.appendChild(ui.offer);
   mount.appendChild(r);
   panel = createPanel(cfg, ui.panelHost, { img: IMG, sfx: (k) => { if (SFX[k]) SFX[k](); }, open: openView });
+  top.appendChild(ctl);   /* the controls live in the top bar: nothing sits under the picture */
+  boardData(); buildBoard();
   ui.next.addEventListener('click', (e) => { e.stopPropagation(); unlock(); next(); });
+  ui.back.addEventListener('click', (e) => { e.stopPropagation(); prev(); });
   ui.play.addEventListener('click', (e) => { e.stopPropagation(); unlock(); setPlay(!playing); });
   ui.sound.addEventListener('click', (e) => { e.stopPropagation(); if (SOUND) { SOUND = false; stopClip(); setSound(); } else unlock(); });
   addEventListener('pointerdown', () => unlock(), { once: true, capture: true });
@@ -506,8 +638,22 @@ function build() {
     if (ui.root.classList.contains('is-offer')) return;
     if (e.key === 'Escape' && viewOpen) { closeView(); return; }
     if (e.target.closest && e.target.closest('button, a, input')) return;
-    if (e.key === 'ArrowRight') { unlock(); next(); } else if (e.key === 'ArrowLeft') prev(); else if (e.key === ' ') { e.preventDefault(); unlock(); setPlay(!playing); }
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !AUTO)) { e.preventDefault(); unlock(); next(); }
+    else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp') { e.preventDefault(); prev(); }
+    else if (k === ' ') { e.preventDefault(); unlock(); setPlay(!playing); }
   });
+  /* scroll and swipe step the story one beat at a time (a short lock so one flick is one beat) */
+  let stepLock = 0;
+  const step = (d) => { const t = performance.now(); if (t < stepLock || viewOpen || ui.root.classList.contains('is-offer')) return; stepLock = t + 850; unlock(); if (d > 0) next(); else prev(); };
+  /* an inner scroller keeps the gesture only while it can still move that way; at its end the story steps */
+  const own = (el, d) => { for (let n = el; n && n !== ui.root; n = n.parentElement) { if (n.scrollHeight > n.clientHeight + 2 && /(auto|scroll)/.test(getComputedStyle(n).overflowY)) { if (d == null) return true; if (d > 0 ? n.scrollTop + n.clientHeight < n.scrollHeight - 2 : n.scrollTop > 0) return true; } } return false; };
+  /* one flick is one step: after a step the wheel is ignored until the gesture (and its inertia) has gone quiet */
+  let wheelBusy = false, wheelT = 0;
+  addEventListener('wheel', (e) => { if (e.target.closest && own(e.target, e.deltaY)) return; e.preventDefault(); clearTimeout(wheelT); wheelT = setTimeout(() => { wheelBusy = false; }, 160); if (wheelBusy || Math.abs(e.deltaY) < 8) return; wheelBusy = true; step(e.deltaY); }, { passive: false });
+  let ty = null, tx = null;
+  addEventListener('touchstart', (e) => { const t = e.touches[0]; ty = t.clientY; tx = t.clientX; }, { passive: true });
+  addEventListener('touchend', (e) => { if (ty == null) return; const t = e.changedTouches[0], dy = ty - t.clientY, dx = tx - t.clientX; ty = null; if (e.target.closest && own(e.target, dy)) return; if (Math.abs(dy) > 48 && Math.abs(dy) > Math.abs(dx)) step(dy); else if (Math.abs(dx) > 60) step(dx); }, { passive: true });
   let rz = 0; addEventListener('resize', () => { sizeBox(); clearTimeout(rz); rz = setTimeout(() => { panel.fit(); }, 120); });
   setSound(); setPlayBtn();
 }
@@ -519,7 +665,10 @@ function flatten() {
     CH.push({ id: str(c.id, 'c' + j), name: str(c.name), quiet: !!c.quiet, first: B.length });
     let firstPanel = true;
     arr(c.beats).forEach((b) => {
+      if (b.skip) return;   /* kept in the config, left out of the story (easy to bring back) */
       const x = Object.assign({}, b, { ch: j });
+      /* a config without stages/channels (the private one, until it is rebuilt) still gets a working board */
+      if (x.type === 'panel') { if (!x.stage) { const m = /^#\d+\s*\u00b7\s*([^\u00b7]+)/.exec(str(x.label)); x.stage = m ? m[1].trim() : str(c.name, 'Stage'); } if (!x.chan) x.chan = '#' + str(c.id, 'c' + j); }
       if (x.type === 'panel' && firstPanel) { x.div = str(c.div, c.name); firstPanel = false; }
       B.push(x);
     });

@@ -235,14 +235,29 @@ export function createPanel(cfg, host, env) {
     if (PHONE()) { root.style.removeProperty('--sk'); return; }
     const w = ui.cv.clientWidth, hh = ui.cv.clientHeight;
     if (!w || !hh) return;
-    root.style.setProperty('--sk', Math.max(0.5, Math.min(1.12, (w - 96) / 860, (hh - 120) / 500)).toFixed(4));
+    const board = !!root.querySelector('.bd-mid');   /* inside the board the canvas is one column of four: it scales further down */
+    root.style.setProperty('--sk', Math.max(board ? 0.3 : 0.5, Math.min(1.12, (w - (board ? 36 : 96)) / 860, (hh - (board ? 90 : 120)) / 500)).toFixed(4));
   }
   addEventListener('resize', fit);
 
   let T = [], token = 0, cur = null;
   const later = (ms, fn) => { const t = token; T.push(setTimeout(() => { if (t === token) fn(); }, REDUCED ? Math.min(ms, 40) : ms)); };
   const wait = (ms) => new Promise((r) => later(ms, r));
-  function stop() { T.forEach(clearTimeout); T = []; token++; ui.list.querySelectorAll('.is-typing').forEach((e) => e.remove()); }
+  let asking = null;
+  function stop() { T.forEach(clearTimeout); T = []; token++; asking = null; ui.list.querySelectorAll('.is-typing').forEach((e) => e.remove()); ui.cv.querySelectorAll('.p-call').forEach((e) => e.remove()); }
+  /* a decision is the viewer's: the story holds on a button until they take it (Next and scroll take it too) */
+  function askCall(it) {
+    return new Promise((res) => {
+      const my = token, bar = h('div', 'p-call');
+      bar.appendChild(h('span', null, 'Your call, as ' + str(it.who)));
+      const b = h('button', 'p-call-b', str(it.call, 'Approve')); b.type = 'button'; bar.appendChild(b);
+      ui.cv.appendChild(bar);
+      if (!REDUCED) bar.animate([{ translate: '0 14px' }, { translate: '0 0' }], { duration: 420, easing: EZ });
+      const done = () => { if (asking !== done) return; asking = null; bar.remove(); if (my === token) res(); };
+      asking = done;
+      b.addEventListener('click', (ev) => { ev.stopPropagation(); done(); });
+    });
+  }
 
   /* the canvas shows exactly one artefact: a hard cut, then the card settles a few px (position only) */
   function show(a, o) {
@@ -323,8 +338,9 @@ export function createPanel(cfg, host, env) {
     await wait(o.landing ? 300 : 600); if (!live()) return;
     for (let j = 0; j < items.length; j++) {
       const it = items[j];
-      const ty = it.instant ? null : typing(it.who);
-      await wait(it.instant ? 0 : 650); if (!live()) return; if (ty) ty.remove();
+      if (it.decide) { await askCall(it); if (!live()) return; }
+      const ty = it.instant || it.decide ? null : typing(it.who);
+      await wait(it.instant || it.decide ? 0 : 650); if (!live()) return; if (ty) ty.remove();
       add(it);
       if (it.art) {
         if (!(shown && shown._a === it.art)) { shown = show(it.art, { rise: true }); }
@@ -348,6 +364,6 @@ export function createPanel(cfg, host, env) {
   }
   return {
     el: root, play, stop, show, label, history, estimate, assets, art, fit, voiceBubble, shipLabel, face,
-    get cur() { return cur; }, mediaOf: (e) => (e ? e.querySelector('.a-media') : null)
+    get cur() { return cur; }, get asking() { return !!asking; }, answer: () => { if (asking) asking(); }, mediaOf: (e) => (e ? e.querySelector('.a-media') : null)
   };
 }
