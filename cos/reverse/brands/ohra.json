@@ -5246,6 +5246,12 @@
         6.38,
         7.9
        ]
+      ],
+      "guide": [
+       {
+        "at": "phone",
+        "text": "1:32 am. The founder has an idea and tells Coco in a voice note."
+       }
       ]
      },
      {
@@ -5288,7 +5294,19 @@
        }
       ],
       "stage": "Idea",
-      "chan": "#ideas"
+      "chan": "#ideas",
+      "guide": [
+       {
+        "on": "end",
+        "at": "thread",
+        "text": "Coco is the team's chief of staff. It heard the note and opened a project."
+       },
+       {
+        "on": "end",
+        "at": "canvas",
+        "text": "Whatever the chat is about opens here, one thing at a time."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -5405,7 +5423,14 @@
          }
         ]
        }
-      }
+      },
+      "guide": [
+       {
+        "on": "work",
+        "at": "task",
+        "text": "A task appears. The agents working on it sit inside it."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -5449,7 +5474,18 @@
         "due": "Day 58"
        }
       ],
-      "clones": true
+      "clones": true,
+      "guide": [
+       {
+        "at": "team",
+        "text": "Next morning the team is online. Each person has their own agent."
+       },
+       {
+        "on": "end",
+        "at": "tasks",
+        "text": "The project, as tasks. Each has an owner, their agent and a due day."
+       }
+      ]
      },
      {
       "id": "agents",
@@ -5634,7 +5670,18 @@
          "hit": true
         }
        ]
-      }
+      },
+      "guide": [
+       {
+        "at": "stage",
+        "text": "Stages run along the top. The lit one is where the project is now."
+       },
+       {
+        "on": "work",
+        "at": "task",
+        "text": "Tanvi asked. Her agent does the legwork inside her task."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -5749,7 +5796,14 @@
          "hit": true
         }
        ]
-      }
+      },
+      "guide": [
+       {
+        "on": "end",
+        "at": "thread",
+        "text": "Agents prepare the options. A person makes the call."
+       }
+      ]
      },
      {
       "type": "panel",
@@ -6738,6 +6792,12 @@
           ]
          ]
         }
+       }
+      ],
+      "guide": [
+       {
+        "at": "tabs",
+        "text": "The Dashboard tab holds the numbers for the whole project."
        }
       ]
      },

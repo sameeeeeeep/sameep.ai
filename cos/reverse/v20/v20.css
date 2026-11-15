@@ -896,3 +896,16 @@ html.is-v20 .sbo, html.is-v20 .sbo * { font-family: "Clash Display", system-ui, 
   .ph-b.is-text { font-size: 13.5px; padding: 7px 10px; } .ph-b.is-voice .vb { width: 184px; }
   .ph-tr { font-size: 14px; min-height: 54px; } .ph-recw, .ph-in { margin-bottom: 18px; }
 }
+
+/* ---------- the guide: a pointer and a caption that names each new thing ---------- */
+.v-guide { position: fixed; left: 0; top: 0; z-index: 60; box-sizing: border-box; width: min(300px, calc(100vw - 24px)); padding: 14px 16px 16px; border-radius: 16px; background: var(--k); color: var(--w); cursor: pointer; overflow: hidden; visibility: hidden; }
+.v-guide.is-on { visibility: visible; animation: v-gin .32s cubic-bezier(.2,.8,.2,1); }
+@keyframes v-gin { from { translate: 0 10px; scale: .96; } }
+.v-guide p { margin: 0; font-size: 17px; font-weight: 500; line-height: 1.32; text-wrap: pretty; }
+.v-gbar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--w); transform-origin: 0 50%; scale: 0 1; }
+.v-gcur { position: fixed; left: 0; top: 0; z-index: 61; width: 20px; height: 31px; pointer-events: none; visibility: hidden; transition: transform .8s cubic-bezier(.45,.05,.25,1); }
+.v-gcur.is-on { visibility: visible; }
+.is-guided { outline: 2px solid var(--k) !important; outline-offset: 4px; border-radius: 14px; }
+.ph.is-guided { outline: 0 !important; }
+@media (max-width: 760px) { .v-guide { width: calc(100vw - 24px); padding: 12px 14px 14px; } .v-guide p { font-size: 15.5px; } .is-guided { outline-offset: 2px; } }
+@media (prefers-reduced-motion: reduce) { .v-guide.is-on { animation: none; } .v-gcur { transition: none; } }

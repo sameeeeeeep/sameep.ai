@@ -5,7 +5,7 @@
    chapter; everything else is a hard cut. Nothing advances by itself: the viewer steps through with scroll, swipe, Next
    or the arrow keys (?autoplay brings the timed run back for recordings). Every artefact and task opens when clicked.
    Everything comes from config.v20 (names live in the private config). */
-import { createPanel, EZ, read } from './v20-app.js?v=v21p';
+import { createPanel, EZ, read } from './v20-app.js?v=v21q';
 
 const Q = new URLSearchParams(location.search);
 const MUTED = Q.has('mute');
@@ -363,12 +363,55 @@ function grab() {
 function wrapFly(c) { const d = h('div', 'el-fly is-dom'); d.appendChild(c); return d; }
 
 /* ---------- show a beat ---------- */
+/* ---------- the guide: a pointer and a caption that names each new thing as it first appears (the sameep.ai guide, here) ---------- */
+const GSEL = { phone: '.ph', team: '.bd-team', strip: '.bd-strip', stage: '.bd-st.is-on', side: '.bd-tiles', thread: '.p-thr', now: '.bd-now', tasks: '.bd-tasks', task: '.bd-tc.is-active', canvas: '.p-stage', tabs: '.p-tabs' };
+const GARROW = '<svg viewBox="0 0 12 19" width="20" height="31" aria-hidden="true"><path d="M1 1v15l3.6-3.4 2.6 5.6 2.4-1.1-2.6-5.5H12L1 1z" fill="#0B0B0C" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
+let G = null;
+function guideOff() { if (!G) return; const g = G; G = null; clearTimeout(g.t); if (g.lit) g.lit.classList.remove('is-guided'); g.cap.remove(); if (g.cur) g.cur.remove(); g.res(); }
+function guide(list, k) {
+  list = arr(list); if (!list.length || ui.seek || !AUTO || Q.has('noguide')) return Promise.resolve();
+  guideOff();
+  return new Promise((res) => {
+    const cap = h('div', 'v-guide'), tx = h('p'), bar = h('i', 'v-gbar'); cap.appendChild(tx); cap.appendChild(bar); cap.setAttribute('role', 'status');
+    const cur = PHONE() || REDUCED ? null : h('div', 'v-gcur'); if (cur) cur.innerHTML = GARROW;
+    ui.root.appendChild(cap); if (cur) ui.root.appendChild(cur);
+    const g = G = { cap, cur, lit: null, t: 0, res }; let n = -1;
+    const step = () => {
+      if (G !== g) return; n++;
+      if (n >= list.length || i !== k || !playing) return guideOff();
+      const it = list[n], el = document.querySelector(GSEL[it.at] || it.at), vis = el && el.getClientRects().length ? el : null;
+      if (g.lit) g.lit.classList.remove('is-guided'); g.lit = vis; if (vis) vis.classList.add('is-guided');
+      tx.textContent = it.text; cap.classList.remove('is-on'); void cap.offsetWidth;
+      const W = innerWidth, H = innerHeight, cw = cap.offsetWidth, ch = cap.offsetHeight, r = vis ? vis.getBoundingClientRect() : null;
+      let x, y, px, py;
+      if (PHONE() || !r) { x = (W - cw) / 2; y = H - ch - 18; }
+      else {
+        /* beside the thing it is naming: right, else left, else under; never on top of it */
+        py = clamp(r.top + Math.min(r.height / 2, 60), 70, H - 60);
+        if (r.width > W * 0.36) { x = r.left + 24; y = r.bottom - ch - 24; px = x + 18; py = y - 12; }   /* a wide area: the caption sits in its own corner */
+        else if (r.right + cw + 44 < W) { x = r.right + 26; px = r.right - 6; }
+        else if (r.left - cw - 44 > 0) { x = r.left - cw - 26; px = r.left + 6; }
+        else { x = clamp(r.left + r.width / 2 - cw / 2, 12, W - cw - 12); px = r.left + r.width / 2; py = Math.min(r.bottom - 6, H - ch - 60); }
+        if (y === undefined) y = px === r.left + r.width / 2 ? py + 30 : clamp(py - ch / 2, 12, H - ch - 12);
+      }
+      cap.style.left = Math.round(x) + 'px'; cap.style.top = Math.round(y) + 'px'; cap.classList.add('is-on');
+      if (cur && r) { cur.style.transform = 'translate(' + Math.round(px - 2) + 'px,' + Math.round(py - 2) + 'px)'; cur.classList.add('is-on'); } else if (cur) cur.classList.remove('is-on');
+      const ms = clamp(1500 + String(it.text).split(/\s+/).length * 240, 3000, 5600);
+      bar.getAnimations().forEach((a) => a.cancel()); bar.animate([{ scale: '0 1' }, { scale: '1 1' }], { duration: ms, easing: 'linear', fill: 'forwards' });
+      SFX.pop(); g.t = setTimeout(step, ms);
+    };
+    cap.addEventListener('click', (e) => { e.stopPropagation(); clearTimeout(g.t); step(); });
+    g.t = setTimeout(step, 350);
+  });
+}
+const guideFor = (b, on) => arr(b && b.guide).filter((x) => (x.on || 'pre') === on);
+
 function show(k, how) {
   k = clamp(k, 0, B.length - 1);
   const b = B[k], from = i, seq = (k === from + 1 && how !== 'seek') || how === 'replay';
   i = k; ui.seek = !seq && how !== 'first';
   clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearInterval(ui.recI); stopClip(); ui.sceneAct = null;
-  closeView(true);
+  closeView(true); guideOff();
   const ch = b.ch;
   ui.root.dataset.ch = CH[ch].id; ui.root.dataset.type = b.type; ui.root.dataset.scene = b.scene || '';
   chapters(ch);
@@ -391,7 +434,9 @@ function show(k, how) {
       if (!seq) { panel.label(b.label); if (H.art && !b.art && !b.enter) panel.show(H.art); }
     }
     const po = { onCue: () => { if (B[i] === b) setLine(b); } }; if (src) po.landing = (card) => travel(src, card).then(buildAround);
-    const go = () => { if (i !== k) return; Promise.resolve(panel.play(b, po)).then(() => { if (i === k && AUTO && started && playing) { clearTimeout(timer); timer = setTimeout(autoNext, 1600); } }); };
+    const go0 = () => { if (i !== k) return; Promise.resolve(panel.play(b, po)).then(() => (seq && i === k && playing ? guide(guideFor(b, 'end'), k) : null)).then(() => { if (i === k && AUTO && started && playing) { clearTimeout(timer); timer = setTimeout(autoNext, 1600); } }); };
+    /* the guide names what is new before the conversation starts, so nobody reads two things at once */
+    const go = () => { if (i !== k) return; const pre = seq && !src ? guideFor(b, 'pre') : []; if (pre.length) guide(pre, k).then(go0); else go0(); };
     if (seq && !src && ui.bd && ui.bd.stageChanged && !REDUCED) { clearTimeout(ui.stT); ui.stT = setTimeout(go, 900); } else go();
   } else {
     panel.stop(); ui.panelHost.classList.remove('is-on');
@@ -404,6 +449,7 @@ function show(k, how) {
     ui.scene.className = 'v-scene' + (built ? ' is-on' : '');
     if (built) ui.scene.appendChild(built);
     if (b.scene === 'end') endCard(b);
+    if (seq && b.guide && started) setTimeout(() => { if (i === k && playing) guide(guideFor(b, 'pre'), k); }, 900);
   }
   ui.next.disabled = k === B.length - 1;
   window.__beatT0 = performance.now();
@@ -644,7 +690,7 @@ function setPlay(on) {
     show(i, 'replay');
   } else {
     /* pause stops everything: the timers, the chat, the voice, the scene */
-    clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearTimeout(ui.bdT); clearInterval(ui.recI); cancelAnimationFrame(raf); stopClip(); if (panel) panel.stop(); runProgress(0);
+    guideOff(); clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearTimeout(ui.bdT); clearInterval(ui.recI); cancelAnimationFrame(raf); stopClip(); if (panel) panel.stop(); runProgress(0);
   }
 }
 /* resume after a pause on a panel beat restarts the beat from its history (nothing replays twice) */
@@ -738,9 +784,12 @@ function build() {
       ui.workOn = true;
       if (!n || ui.seek || REDUCED) { ui.workDone = n; board(k, false); return res(); }
       ui.workDone = 0; board(k, false);
-      if (wa) panel.showWork(wa, 1300 + n * 1100);
-      let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 800); else setTimeout(tick, 1100); };
-      setTimeout(tick, 1700);
+      guide(guideFor(b, 'work'), k).then(() => {
+        if (i !== k || !playing) return res();
+        if (wa) panel.showWork(wa, 1300 + n * 1100);
+        let c = 0; const tick = () => { if (i !== k) return res(); c++; ui.workDone = c; board(k, false); if (c >= n) setTimeout(res, 800); else setTimeout(tick, 1100); };
+        setTimeout(tick, 1700);
+      });
     }) });
   top.appendChild(ctl);   /* the controls live in the top bar: nothing sits under the picture */
   boardData(); buildBoard();
