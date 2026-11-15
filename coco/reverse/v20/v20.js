@@ -397,6 +397,13 @@ function grab() {
 function wrapFly(c) { const d = h('div', 'el-fly is-dom'); d.appendChild(c); return d; }
 
 /* ---------- show a beat ---------- */
+/* ---------- who watched, how far, who opened the pricing (sameep.ai/api/admin, Coco). Only on the live site; no brand or names are sent ---------- */
+const TQ = []; let TRK = (t, d) => { if (TQ.length < 80) TQ.push([t, d]); };
+const TV = () => (window.__V20L && window.__V20L.priv ? 'private' : 'public');
+if (/(^|\.)sameep\.ai$/.test(location.hostname)) import('/js/analytics.js').then((m) => { TRK = m.track; TQ.splice(0).forEach((x) => m.track(x[0], x[1])); }).catch(() => {});
+addEventListener('coco:track', (e) => { const x = e.detail || []; if (x[0]) TRK(x[0], Object.assign({ v: TV() }, x[1] || {})); });
+let TBEAT = -1;
+
 /* ---------- the guide: a pointer and a caption that names each new thing as it first appears (the sameep.ai guide, here) ---------- */
 const GSEL = { phone: '.ph', team: '.bd-team', strip: '.bd-strip', stage: '.bd-st.is-on', side: '.bd-tiles', thread: () => { const l = document.querySelectorAll('.p-list .p-m'); return l[l.length - 1] || document.querySelector('.p-thr'); }, now: '.bd-now', tasks: '.bd-tasks', task: '.bd-tc.is-active', canvas: () => document.querySelector('.p-stage .a') || document.querySelector('.p-inline:last-of-type .a') || document.querySelector('.p-stage'), tabs: '.p-tabs' };
 const GARROW = '<svg viewBox="0 0 12 19" width="20" height="31" aria-hidden="true"><path d="M1 1v15l3.6-3.4 2.6 5.6 2.4-1.1-2.6-5.5H12L1 1z" fill="#0B0B0C" stroke="#fff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
@@ -451,6 +458,7 @@ function show(k, how) {
   k = clamp(k, 0, B.length - 1);
   const b = B[k], from = i, seq = (k === from + 1 && how !== 'seek') || how === 'replay';
   i = k; ui.seek = !seq && how !== 'first';
+  if (started && k > TBEAT) { TBEAT = k; TRK('coco_beat', { i: k + 1, n: B.length, v: TV() }); if (b.scene === 'end') TRK('coco_end', { v: TV() }); }
   clearTimeout(timer); clearTimeout(ui.sceneT); clearTimeout(ui.stT); clearInterval(ui.recI); stopClip(); ui.sceneAct = null;
   closeView(true); guideOff();
   const ch = b.ch;
@@ -713,7 +721,7 @@ function board(k, settled) {
 
 /* autoplay never takes a decision or sends the note for the viewer: it holds until they do */
 function autoNext() { if (!playing || viewOpen) return; if ((panel && panel.asking) || ui.sceneAct) { timer = setTimeout(autoNext, 600); return; } if (i < B.length - 1) show(i + 1); }
-function begin() { if (started) return false; started = true; playing = true; setPlayBtn(); ui.root.classList.add('is-started'); if (ui.startB) { ui.startB.remove(); ui.startB = null; } unlock(); B.forEach((x) => arr(x.thread).forEach((it) => { const u = it.voice && (cfg.audio || {})[it.voice]; if (u && !MUTED) clip(u); })); if (i === 0) show(1); else show(i, 'seek'); return true; }
+function begin() { if (started) return false; started = true; TRK('coco_play', { v: TV() }); playing = true; setPlayBtn(); ui.root.classList.add('is-started'); if (ui.startB) { ui.startB.remove(); ui.startB = null; } unlock(); B.forEach((x) => arr(x.thread).forEach((it) => { const u = it.voice && (cfg.audio || {})[it.voice]; if (u && !MUTED) clip(u); })); if (i === 0) show(1); else show(i, 'seek'); return true; }
 function next() {
   if (begin()) return;
   /* a waiting interaction comes first: Next and scroll take the decision or send the note, then the story moves */
@@ -771,6 +779,7 @@ function closeView(silent) {
 
 /* ---------- the offer (sb-offer.js), or the CTA link ---------- */
 function offer() {
+  TRK('coco_scope', { v: TV(), at: 'landing' });
   playing = false; clearTimeout(timer); setPlayBtn(); runProgress(0);
   ui.root.classList.add('is-offer');
   const close = () => { ui.root.classList.remove('is-offer'); ui.offer.innerHTML = ''; };

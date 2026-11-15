@@ -17,6 +17,8 @@
     setup: { name: 'Subscription + set-up', line: '₹75,000 upfront, then ₹10,000 a month. Updates included.' },
     all: { name: 'Everything, monthly', line: '₹50,000 a month. Strategy support is billed separately.' }
   };
+  var say = function () {}; try { import('../../js/analytics.js').then(function (m) { say = m.track; }, function () {}); } catch (e) { /* no modules */ }
+  var NAME = { build: 'custom-build', product: 'subscription', setup: 'subscription-set-up', all: 'everything-monthly' };
   var lead = $('lead');
   var fbox = function (n) { return lead.elements[n]; };
   function chosen() { var r = lead.querySelector('input[name="option"]:checked'); return r ? r.value : 'setup'; }
@@ -27,7 +29,7 @@
   document.querySelectorAll('[data-choose]').forEach(function (b) {
     b.addEventListener('click', function () {
       var r = lead.querySelector('input[name="option"][value="' + b.getAttribute('data-choose') + '"]'); if (r) r.checked = true;
-      sync(); $('enquire').scrollIntoView({ block: 'start' });
+      sync(); say('coco_option', { opt: NAME[b.getAttribute('data-choose')], at: 'plans', v: 'public' }); $('enquire').scrollIntoView({ block: 'start' });
     });
   });
 
@@ -88,7 +90,7 @@
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { status: r.status, data: d }; }); })
       .then(function (r) {
         if (r.status === 200 && r.data && r.data.ok) {
-          lead.hidden = true; var d = $('done'); d.hidden = false; d.focus(); return;
+          say('coco_lead', { opt: NAME[v.plan.option], v: 'public' }); lead.hidden = true; var d = $('done'); d.hidden = false; d.focus(); return;
         }
         if (r.status === 400 && r.data && r.data.fields) { showErrors(r.data.fields); throw { quiet: true }; }
         if (r.status === 429) { fe.textContent = (r.data && r.data.error) || 'Too many enquiries right now.'; fe.hidden = false; throw { quiet: true }; }

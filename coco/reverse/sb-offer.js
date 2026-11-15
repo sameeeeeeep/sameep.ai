@@ -24,6 +24,10 @@
     meetings: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3"/>',
     instagram: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><path d="M17 7h.01"/>',
     shopify: '<path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
+    'meta ads': '<path d="M4 10v4h3l7 4.5v-13L7 10z"/><path d="M17.5 9.5a3.5 3.5 0 0 1 0 5"/>',
+    razorpay: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/>',
+    shiprocket: '<path d="M3 6h11v10H3z"/><path d="M14 9.5h4l3 3.5v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/>',
+    sheets: '<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M4 9h16M4 14.5h16M10 9v11.5"/>',
     marketplaces: '<path d="M4 9.5L5.5 4h13L20 9.5"/><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M5.5 12v8h13v-8"/>'
   };
   var MOD_ICON = {
@@ -33,7 +37,11 @@
     warehouse: '<path d="M3 20V9l9-5 9 5v11"/><path d="M7 20v-7h10v7M7 16.5h10"/>',
     listing: '<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/>',
     marketing: '<path d="M4 10v4h3l7 4.5v-13L7 10z"/><path d="M17.5 9.5a3.5 3.5 0 0 1 0 5"/>',
-    crm: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>'
+    crm: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>',
+    sourcing: '<path d="M4 7h16l-1.5 9h-13z"/><path d="M8 7l1-3h6l1 3"/><path d="M9 20h.01M15 20h.01"/>',
+    finance: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/>',
+    people: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5a6 6 0 0 1 12 0"/><circle cx="17" cy="9.5" r="2.4"/><path d="M16 14.6a4.6 4.6 0 0 1 5 4.9"/>',
+    dashboard: '<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>'
   };
   var LOCK = '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/>';
 
@@ -46,7 +54,7 @@
     var O = cfg.offer; if (!O || !host) return null;
     var S = O.scope || {}, C = O.calc || {}, I = O.interested || {}, R = O.running || {};
     var brand = str((cfg.brand || {}).name), TX = str(O.tax, '+ GST');
-    var mods = arr((cfg.story || {}).modules);
+    var mods = arr((O.scope || {}).module_list).length ? arr(O.scope.module_list) : arr((cfg.story || {}).modules);
     var F = cfg.faces || {};
 
     function face(name, cls) {
@@ -112,6 +120,14 @@
       team.forEach(function (m) { var li = h('li'); li.appendChild(face(m.name)); var t = h('div'); t.appendChild(h('b', null, m.name)); t.appendChild(h('span', null, m.role)); li.appendChild(t); pl.appendChild(li); });
       pp.appendChild(pl); sc.appendChild(pp);
     }
+    /* everything it covers, end to end */
+    if (arr(O.covers).length) {
+      var cv = h('div', 'sbo-covers');
+      var cvh = h('div', 'sbo-people-hd'); cvh.appendChild(h('h3', 'sbo-h3', str(O.covers_title, 'What it covers'))); if (O.covers_note) cvh.appendChild(h('p', null, O.covers_note)); cv.appendChild(cvh);
+      var cvl = h('ul', 'sbo-cov');
+      O.covers.forEach(function (c, k) { var li = h('li'); li.appendChild(h('span', 'sbo-cov-n', String(k + 1).padStart(2, '0'))); var t = h('div'); t.appendChild(h('b', null, c[0])); t.appendChild(h('span', null, c[1])); li.appendChild(t); cvl.appendChild(li); });
+      cv.appendChild(cvl); sc.appendChild(cv);
+    }
     page.appendChild(sc);
 
     /* ---------- 2. pricing ---------- */
@@ -128,7 +144,7 @@
       if (p.unit) c.appendChild(h('p', 'sbo-price-u', p.unit));
       if (p.note) c.appendChild(h('p', 'sbo-price-note', p.note));
       if (arr(p.points).length) { var pl = h('ul', 'sbo-price-pts'); p.points.forEach(function (t) { pl.appendChild(h('li', null, t)); }); c.appendChild(pl); }
-      if (O.choose) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-pressed', k === pick ? 'true' : 'false'); var choose = function () { pick = k; cards.forEach(function (x, j) { x.classList.toggle('is-feat', j === k); x.setAttribute('aria-pressed', j === k ? 'true' : 'false'); }); if (typeof refresh === 'function') refresh(false); }; c.addEventListener('click', choose); c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } }); }
+      if (O.choose) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-pressed', k === pick ? 'true' : 'false'); var choose = function () { pick = k; try { window.dispatchEvent(new CustomEvent('coco:track', { detail: ['coco_option', { opt: String(p.item || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40), at: 'landing' }] })); } catch (e) { /* */ } cards.forEach(function (x, j) { x.classList.toggle('is-feat', j === k); x.setAttribute('aria-pressed', j === k ? 'true' : 'false'); }); if (typeof refresh === 'function') refresh(false); }; c.addEventListener('click', choose); c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } }); }
       cards.push(c); pg.appendChild(c);
     });
     pr.appendChild(pg);
@@ -277,7 +293,11 @@
     drawCal(); refresh(false);
 
     /* ---------- open, close ---------- */
+    var say = function (t, d) { try { window.dispatchEvent(new CustomEvent('coco:track', { detail: [t, d] })); } catch (e) { /* old browser */ } };
+    var optKey = function () { var p = prices[pick] || {}; return O.choose ? String(p.item || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) : 'offer'; };
+    send.addEventListener('click', function () { if (ST.date) say('coco_send', { opt: optKey() }); });
     go.addEventListener('click', function () {
+      say('coco_interested', { opt: optKey() });
       st.hidden = false; go.closest('.sbo-cta').classList.add('is-gone');
       requestAnimationFrame(function () { st.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); });
     });
