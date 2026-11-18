@@ -141,7 +141,7 @@
     curls: function (x, y) { return dd(x, y, 6, 5, 2.2, 2.4) && y >= 3.5 ? 'S' : dd(x, y, 6, 4.2, 4.6, 4) && y <= 7 ? 'H' : 0; },
     long: function (x, y) { return hd(x, y) ? (y < 3 ? 'H' : 'S') : y >= 3 && y <= 9 && [2, 3, 9, 10].indexOf(x) >= 0 ? 'H' : 0; },
     bun: function (x, y) { return hd(x, y) ? (y <= 2 ? 'H' : 'S') : dd(x, y, 6, 0.6, 1.4) ? 'H' : 0; },
-    buzz: function (x, y) { return hd(x, y) ? (y <= 1.9 ? 'H' : 'S') : 0; }
+    buzz: function (x, y) { return hd(x, y) ? (y <= 2 ? 'H' : 'S') : 0; }
   };
   var ACC = {
     none: function () { return 0; },
