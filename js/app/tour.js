@@ -22,6 +22,7 @@ const clear = (...sels) => () => {
 // the step's action opens an icon: past the hover card's "first tap shows the card" on a phone
 const openEl = (g, el) => { g.end(); if (el) { el.dataset.cardOpen = '1'; el.click(); } };
 const cocoEl = () => drawn(document.querySelector('.is-coco .icon'));
+const cocoWin = () => [...document.querySelectorAll('.win--coco:not(.is-closing)')].find(drawn) || null;
 const GAMES = ['.is-moto .icon', '.is-snake .icon', '.is-breakout .icon', '.is-roadrash .icon'];
 // wait (briefly) for something a step needs, like a folder's icons after its window opens
 const until = async (fn, ms = 3000) => { for (let t = 0; t < ms; t += 100) { if (fn()) return true; await new Promise((r) => setTimeout(r, 100)); } return false; };
@@ -54,8 +55,8 @@ export function installGuides({ area, cards, ctx }) {
     steps: () => [
       { at: null, say: 'Welcome to 1999. A quick tour: my work, then the show. Skip whenever you like.' },
       // Coco, the newest thing: pointed at first (the default version only)
-      { at: cocoEl, when: () => !isWispr, card: true, say: 'Check this first: Coco, my latest. The OS I run my work and my life on.',
-        action: { label: 'Open Coco', run: (g) => openEl(g, cocoEl()) } },
+      { at: () => cocoWin()?.querySelector('.coco__reel') || cocoEl(), when: () => !isWispr, say: 'Check this first: Coco, my latest. The OS I run my work and my life on. The waitlist is right here.',
+        enter: async (g) => { await borrow('coco', cocoWin, async () => { if (g.active) openEl({ end() {} }, cocoEl()); }); await until(() => cocoWin()?.querySelector('.coco__reel'), 3000); } },
       // the work, then the Wispr folder, opened for them and shut again after
       { at: () => workWin()?.querySelector('.work__list'), say: 'First, my work: everything I’ve made, in one list, each with its video and links.',
         enter: async (g) => { await borrow('work', workWin, async () => { if (g.active) ctx.open('work'); }); await until(() => workWin()?.querySelector('.work__item'), 4000); }, leave: () => giveBack('work') },

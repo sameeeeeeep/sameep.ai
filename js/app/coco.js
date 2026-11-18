@@ -57,13 +57,33 @@ export function openCoco(wm, { from = 'desktop', at } = {}) {
   try { joined = localStorage.getItem(DONE_KEY); } catch { /* storage blocked */ }
   w.body.append(h('div.coco',
     h('p.coco__mark', { 'aria-label': 'Coco' }, 'coco'),
-    h('p.coco__lede', 'The OS Sameep runs his work and his life on. Agents do the work. You just pick.'),
-    h('p.coco__sub', 'Mail, WhatsApp and meetings come in. Coco turns them into tasks, does them, and asks you only when it needs a call.'),
-    h('a.coco__see', { href: 'coco/', target: '_blank', rel: 'noopener', onclick: () => track('link', { to: 'coco/' }) }, 'See it ↗'),
-    h('hr.coco__hr'),
+    panelReel(),
+    h('p.coco__lede', 'Agents do the work. You just pick.'),
+    h('a.coco__see', { href: 'coco/', target: '_blank', rel: 'noopener', onclick: () => track('link', { to: 'coco/' }) }, 'See the full demo ↗'),
     joined ? thanks(joined, true) : form));
   if (at === 'form') requestAnimationFrame(() => email.focus({ preventScroll: true }));
   return w;
+}
+
+// one short run of the panel at work, played once and left on its last frame: a message comes in, an agent turns it into
+// a task and does it, the one call waits for you, a tap, done. Names and figures are made up (the public demo's).
+function panelReel() {
+  const face = (name) => { const c = h('canvas.coco__face', { width: 56, height: 56, 'aria-hidden': 'true' }); drawAgent(c, name); return c; };
+  const msg = h('div.coco__r.is-msg', h('span.coco__src', 'WhatsApp · Tanvi'), h('span', 'Blush is at 40 units. Reorder?'));
+  const task = h('div.coco__r.is-task', face('supplier'), h('span', h('b', 'Reorder blush · 500 units'), h('em.coco__work', 'Supplier agent is on it', h('i'), h('i'), h('i'))));
+  const ok = h('span.coco__btn.is-go', 'Approve');
+  const call = h('div.coco__r.is-call', h('span.coco__src', 'Your call'), h('b', 'PO to Kalpa Studios · ₹1.2L · ready Friday'), h('span.coco__acts', ok, h('span.coco__btn', 'Not now')));
+  const done = h('div.coco__r.is-done', h('span', '✓ Sent. Kalpa confirmed Friday.'));
+  const reel = h('div.coco__reel', { role: 'img', 'aria-label': 'A message comes in, an agent turns it into a task and does it, and you approve the one call' }, msg, task, call, done);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = reduce ? [0, 0, 0, 0, 0] : [300, 1500, 3300, 4600, 5200];
+  const at = (ms, fn) => setTimeout(fn, ms);
+  at(T[0], () => msg.classList.add('is-on'));
+  at(T[1], () => task.classList.add('is-on'));
+  at(T[2], () => { task.classList.add('is-did'); call.classList.add('is-on'); });
+  at(T[3], () => ok.classList.add('is-tap'));
+  at(T[4], () => { call.classList.add('is-did'); done.classList.add('is-on'); });
+  return reel;
 }
 
 function thanks(name, already) {

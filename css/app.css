@@ -1652,6 +1652,27 @@ a.icon { text-decoration: none; }
 .coco__sub { margin: 0; color: #b9b3a7; font-size: 13px; }
 .coco__see { display: inline-block; margin-top: 14px; color: #f4f1ea; font-weight: 600; text-decoration: none; border-bottom: 1px solid #5c5850; padding-bottom: 1px; }
 .coco__see:hover { border-color: #f4f1ea; }
+.coco__reel { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 14px; padding: 10px; border: 1px solid #2a2826; border-radius: 12px; background: #141312; min-height: 210px; }
+.coco__r { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: #1c1b19; font-size: 13px; line-height: 1.35; opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .35s ease; }
+.coco__r.is-on { opacity: 1; transform: none; }
+.coco__r b { font-weight: 600; }
+.coco__r.is-msg, .coco__r.is-call { flex-direction: column; align-items: flex-start; gap: 3px; }
+.coco__src { color: #8f8a81; font-size: 11px; }
+.coco__face { width: 28px; height: 28px; border-radius: 50%; flex: none; }
+.coco__r.is-task > span { display: flex; flex-direction: column; }
+.coco__work { color: #8f8a81; font-style: normal; font-size: 12px; }
+.coco__work i { display: inline-block; width: 3px; height: 3px; margin-left: 3px; border-radius: 50%; background: currentColor; animation: cocoDot 1.1s infinite; }
+.coco__work i:nth-child(2) { animation-delay: .18s; } .coco__work i:nth-child(3) { animation-delay: .36s; }
+.coco__r.is-did .coco__work { font-size: 0; } .coco__r.is-did .coco__work::after { content: 'Done: quote picked, PO drafted'; font-size: 12px; }
+.coco__r.is-did .coco__work i { display: none; }
+@keyframes cocoDot { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+.coco__acts { display: flex; gap: 6px; margin-top: 4px; }
+.coco__btn { padding: 4px 10px; border: 1px solid #45423d; border-radius: 999px; font-size: 12px; color: #d9d3c7; transition: transform .15s ease, background .15s ease; }
+.coco__btn.is-go { background: #f4f1ea; border-color: #f4f1ea; color: #0b0b0b; }
+.coco__btn.is-tap { transform: scale(.92); }
+.coco__r.is-call.is-did { opacity: .45; }
+.coco__r.is-done { color: #9fe1cb; }
+@media (prefers-reduced-motion: reduce) { .coco__r { transition: none; } .coco__work i { animation: none; } }
 .coco__hr { border: 0; border-top: 1px solid #2a2826; margin: 18px 0 14px; }
 .coco__q { margin: 0 0 8px; font-weight: 600; font-size: 14px; }
 .coco__chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
