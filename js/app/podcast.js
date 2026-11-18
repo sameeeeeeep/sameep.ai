@@ -681,7 +681,7 @@ export class Podcast {
     return (this.node?.choices || []).filter((c) => c.demo).map((c) => {
       const d = c.demo;
       const link = d.type === 'link';
-      return { label: link ? 'Open it ↗' : 'Show me here', link, run: () => {
+      return { label: d.label ? d.label + (link ? ' ↗' : '') : link ? 'Open it ↗' : 'Show me here', link, run: () => {
         this.#stopAuto(true);
         if (link) { const url = safeUrl(String(d.url || '').replace(/\{[a-z]+\}/g, ''), this.base); if (url) window.open(url, '_blank', 'noopener'); }
         else this.#demo(d);
@@ -1167,6 +1167,13 @@ export class Podcast {
   #pick(choice, said, gesture = false, ack = true) {
     coach.done();
     track('choice', { from: this.nodeId, to: choice.to, how: said && (said !== choice.label || !this.node?.choices?.includes(choice)) ? 'voice' : gesture ? 'tap' : 'auto' });
+    // a choice can open a desktop app (Coco's waitlist): the app opens over the show, which holds at this fork until they pick on
+    if (choice.app) {
+      window.dispatchEvent(new CustomEvent('otcv:app', { detail: { id: choice.app, from: 'episode' } }));
+      this.#stopAuto();
+      sound.tick('pick');
+      return;
+    }
     // a choice can carry a demo ("Open it" / "Show me here")
     if (choice.demo) {
       const d = choice.demo;

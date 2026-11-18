@@ -104,6 +104,8 @@ export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = fal
     },
   };
   const apps = buildApps(ctx);
+  // an episode choice can open a desktop app (episode.json choice.app): the Coco sponsor bit's "Join the waitlist"
+  window.addEventListener('otcv:app', (e) => { if (e.detail?.id === 'coco') openCoco(wm, { from: 'episode', at: 'form' }); });
   const pick = (ids) => ids.map((id) => apps.find((a) => a.id === id)).filter(Boolean);
   // left: the work. Folders in the first column (Growth OS adds itself above them), the best of them out on
   // the desktop in the second, so nothing good hides in a folder. right: the system (HD up top, Trash at the

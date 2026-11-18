@@ -12,7 +12,8 @@
  },
  "start": "cold-open",
  "starts": {
-  "wispr": "builders"
+  "wispr": "builders",
+  "default": "coco"
  },
  "specials": [
   {
@@ -124,6 +125,133 @@
   }
  ],
  "nodes": {
+  "coco": {
+   "chapter": "Coco",
+   "title": "Coco",
+   "blurb": "Sameep's latest: the OS he runs his work and his life on.",
+   "only": "default",
+   "next": "cold-open",
+   "ask": "would you like a look at Coco?",
+   "lines": [
+    {
+     "id": "coco-01",
+     "who": "host",
+     "text": "Before the show, darling, a word from tonight's sponsor. There is no sponsor. There is Sameep, and the OS he runs his work and his life on. It is called Coco.",
+     "audio": "audio/clips/coco-01.mp3",
+     "only": "default",
+     "look": "front",
+     "h": {
+      "gus": {
+       "text": "Before kick-off, a word from tonight's sponsor! There is no sponsor! It's Sameep, and the OS he runs his work and his whole life on! It's called Coco!",
+       "audio": "audio/clips/coco-01-gus.mp3"
+      },
+      "k56": {
+       "text": "Before the show, a word from tonight's sponsor. Correction: there is no sponsor. There is Sameep, and the operating system he runs his work and his life on. It is called Coco.",
+       "audio": "audio/clips/coco-01-k56.mp3"
+      },
+      "kimmy": {
+       "text": "Okay, before we start, a word from tonight's sponsor! There is no sponsor! Ha! It's Sameep, and the OS he runs his work and his life on. It's called Coco, folks!",
+       "audio": "audio/clips/coco-01-kimmy.mp3"
+      }
+     }
+    },
+    {
+     "id": "coco-02",
+     "who": "host",
+     "text": "Agents do the work, and you just pick. He runs Nailinit on it, and his own day too.",
+     "audio": "audio/clips/coco-02.mp3",
+     "only": "default",
+     "look": "front",
+     "h": {
+      "gus": {
+       "text": "The agents do the running, and you just pick the play! He runs Nailinit on it, and his own day too!",
+       "audio": "audio/clips/coco-02-gus.mp3"
+      },
+      "k56": {
+       "text": "Agents do the work, and you simply pick. He runs Nailinit on it, and his own day as well. Very efficient.",
+       "audio": "audio/clips/coco-02-k56.mp3"
+      },
+      "kimmy": {
+       "text": "The agents do all the work, and you just pick! He runs Nailinit on it, and his whole day too. Can I get one of those?",
+       "audio": "audio/clips/coco-02-kimmy.mp3"
+      }
+     }
+    },
+    {
+     "id": "coco-03",
+     "who": "host",
+     "text": "Have a look, or on with the show.",
+     "audio": "audio/clips/coco-03.mp3",
+     "only": "default",
+     "look": "front",
+     "h": {
+      "gus": {
+       "text": "Have a look, or let's get this show kicked off!",
+       "audio": "audio/clips/coco-03-gus.mp3"
+      },
+      "k56": {
+       "text": "You may have a look, or we may proceed with the show.",
+       "audio": "audio/clips/coco-03-k56.mp3"
+      },
+      "kimmy": {
+       "text": "Have a look, or on with the show!",
+       "audio": "audio/clips/coco-03-kimmy.mp3"
+      }
+     }
+    }
+   ],
+   "choices": [
+    {
+     "label": "Show me Coco",
+     "to": "cold-open",
+     "demo": {
+      "type": "link",
+      "url": "coco/",
+      "label": "Show me Coco"
+     },
+     "title": "Show me Coco",
+     "blurb": "The story of Coco, in a new tab. The show carries on here.",
+     "say": [
+      "show me",
+      "show me coco",
+      "coco",
+      "have a look",
+      "look",
+      "yes",
+      "see it"
+     ]
+    },
+    {
+     "label": "Join the waitlist",
+     "to": "cold-open",
+     "app": "coco",
+     "title": "Join the waitlist",
+     "blurb": "Opens Coco on the desktop. The show waits for you.",
+     "say": [
+      "join",
+      "waitlist",
+      "join the waitlist",
+      "sign me up",
+      "sign up"
+     ]
+    },
+    {
+     "label": "On with the show",
+     "to": "cold-open",
+     "title": "On with the show",
+     "blurb": "The cold open: a CV, shredded and burned onto a CD.",
+     "say": [
+      "no",
+      "skip",
+      "on with the show",
+      "the show",
+      "later",
+      "not now"
+     ],
+     "primary": true
+    }
+   ]
+  },
   "builders": {
    "chapter": "Wispr for Builders",
    "title": "Wispr for Builders",
@@ -998,7 +1126,48 @@
        "img/objects/cd-blank.webp"
       ],
       "title": "The CV, burned onto a CD",
-      "cue": {"cold-open-01.mp3": [[0, 0], [13.6, 1]], "cold-open-01-k56.mp3": [[0, 0], [9.0, 1]], "cold-open-01-gus.mp3": [[0, 0], [10.2, 1]], "cold-open-01-kimmy.mp3": [[0, 0], [11.6, 1]]}
+      "cue": {
+       "cold-open-01.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         13.6,
+         1
+        ]
+       ],
+       "cold-open-01-k56.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         9.0,
+         1
+        ]
+       ],
+       "cold-open-01-gus.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         10.2,
+         1
+        ]
+       ],
+       "cold-open-01-kimmy.mp3": [
+        [
+         0,
+         0
+        ],
+        [
+         11.6,
+         1
+        ]
+       ]
+      }
      }
     },
     {
