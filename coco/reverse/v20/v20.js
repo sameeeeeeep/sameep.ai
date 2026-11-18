@@ -565,7 +565,9 @@ function endCard(b) {
   const a = h('div', 'v-end is-modal'), m = h('div', 'v-modal');
   m.appendChild(h('b', 'v-mw', str(V.wordmark, 'Coco')));
   m.appendChild(h('p', 'v-mt', str(b.tag, 'The chief of staff OS for consumer brands')));
-  const go = h('button', 'v-go', str(b.cta, 'View project scope')); go.type = 'button';
+  /* the waitlist form (coco/waitlist.js) is the main thing to do here; the scope stays one tap away */
+  const wl = window.cocoWaitlist && window.cocoWaitlist.mount(m);
+  const go = h('button', wl ? 'v-again' : 'v-go', str(b.cta, 'View project scope')); go.type = 'button';
   go.addEventListener('click', (e) => { e.stopPropagation(); unlock(); offer(); });
   const again = h('button', 'v-again', 'Watch again'); again.type = 'button';
   again.addEventListener('click', (e) => { e.stopPropagation(); playing = true; setPlayBtn(); show(0, 'seek'); started = false; begin(); });

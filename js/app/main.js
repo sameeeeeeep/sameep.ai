@@ -16,6 +16,7 @@ import { installGuides, guideOn, endGuide } from './tour.js';
 import { loadWork } from './work.js';
 import { WISPR, openWisprFolder } from './wisprfolder.js';
 import { MORE_CARDS } from './cards.js';
+import { openCoco } from './coco.js';
 import { isWispr, withVersion } from '../version.js';
 import { clearResume, markStage } from '../resume.js';
 
@@ -115,7 +116,7 @@ export async function mountApp(root, { episodeUrl, resume, fast: skipIntro = fal
   desk.renderProjects([...(isWispr ? [wispr] : []), ...FOLDERS.map(folderApp), ...(isWispr ? [] : [wispr]), ...carded(pick(['work']))],
     // the application extras: the Wispr version only (the pages stay reachable by URL)
     [...STARS, ...(isWispr ? [{ id: 'brewbot', card: 'brewbot', label: 'Brew-bot', url: 'brewbot/' }, { id: 'recording', card: 'recording', label: 'Recording', url: 'recording/' }] : [])]);
-  desk.renderIcons(carded([...pick(['offthecv', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
+  desk.renderIcons(carded([...pick(['offthecv', 'coco', 'hd', 'wispr', 'jukebox', 'styleguide', 'builtwith', 'readme', 'resume', 'sayhi', 'switchboard', 'claude', 'chatgpt']),
     { id: 'emergent', label: 'Emergent', icon: 'proj-emergent', url: 'https://emergent.sh/' }, { id: 'games', label: 'More games', icon: 'proj-games', open: () => openGames(wm, { reduced }) }, ...pick(['trash'])]),
   // the games column: mine (in a window), then the classics (a new tab each)
   carded([...MY_GAMES.map((g) => ({ ...g, open: () => openGame(wm, g.id, { reduced }) })), ...CLASSICS]));
@@ -326,7 +327,9 @@ function buildDesktop(screen, persona) {
       // the way into Switchboard: always one click from anywhere in the app
       const make = h('a.menubar__make', { href: MAKE_URL, target: '_blank', rel: 'noopener', title: MAKE_SAY }, h('span', 'Make your own'), h('span', { 'aria-hidden': 'true' }, '↗'));
       // the Wispr version keeps the menu bar about Wispr: Make your own stays in Special › Make your own sameep.ai…
-      menubar.append(left, h('div.menubar__right', isWispr ? null : make, h('span.menubar__app', persona.showName), soundBtn, help, clock));
+      // Coco, Sameep's latest: one click from anywhere too (the default version only)
+      const coco = h('button.menubar__coco', { type: 'button', title: 'Coco: join the waitlist', onclick: () => openCoco(ctx.wm, { from: 'menu', at: 'form' }) }, h('span', 'coco'), h('span', { 'aria-hidden': 'true' }, '↗'));
+      menubar.append(left, h('div.menubar__right', isWispr ? null : coco, isWispr ? null : make, h('span.menubar__app', persona.showName), soundBtn, help, clock));
     },
   };
 }

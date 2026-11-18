@@ -6,6 +6,7 @@ const HERE = 'Opens here, in a window';
 const IA = 'Plays in your browser on the Internet Archive';
 export const MORE_CARDS = {
   offthecv: { title: 'OFF THE CV', what: 'A podcast about my work, in my voice, that you steer', proof: 'Pick a host; at every fork you choose what plays next', opens: 'Opens the show', icon: 'offthecv' },
+  coco: { title: 'Coco', what: 'An OS where agents do the work and you just pick', proof: 'Sameep’s latest. The waitlist is inside.', opens: HERE, icon: 'coco' },
   work: { title: 'Work', what: 'Every project in one window, with videos and links', proof: 'The portfolio without the podcast', opens: HERE, icon: 'folder' },
   hd: { title: 'Macintosh HD', what: 'About this computer, and the source code', proof: 'Built by voice with Wispr Flow, Emergent and Claude', opens: HERE, icon: 'hd' },
   wispr: { title: 'Wispr Flow', what: 'Type the way you talk, and watch it clean up', proof: 'This whole site was built by talking into the real one', opens: HERE, icon: 'wispr' },

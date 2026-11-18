@@ -21,6 +21,7 @@ const clear = (...sels) => () => {
 };
 // the step's action opens an icon: past the hover card's "first tap shows the card" on a phone
 const openEl = (g, el) => { g.end(); if (el) { el.dataset.cardOpen = '1'; el.click(); } };
+const cocoEl = () => drawn(document.querySelector('.is-coco .icon'));
 const GAMES = ['.is-moto .icon', '.is-snake .icon', '.is-breakout .icon', '.is-roadrash .icon'];
 // wait (briefly) for something a step needs, like a folder's icons after its window opens
 const until = async (fn, ms = 3000) => { for (let t = 0; t < ms; t += 100) { if (fn()) return true; await new Promise((r) => setTimeout(r, 100)); } return false; };
@@ -52,6 +53,9 @@ export function installGuides({ area, cards, ctx }) {
     start: { label: 'Start the show', run: () => ctx.startShow() },
     steps: () => [
       { at: null, say: 'Welcome to 1999. A quick tour: my work, then the show. Skip whenever you like.' },
+      // Coco, the newest thing: pointed at first (the default version only)
+      { at: cocoEl, when: () => !isWispr, card: true, say: 'Check this first: Coco, my latest. The OS I run my work and my life on.',
+        action: { label: 'Open Coco', run: (g) => openEl(g, cocoEl()) } },
       // the work, then the Wispr folder, opened for them and shut again after
       { at: () => workWin()?.querySelector('.work__list'), say: 'First, my work: everything I’ve made, in one list, each with its video and links.',
         enter: async (g) => { await borrow('work', workWin, async () => { if (g.active) ctx.open('work'); }); await until(() => workWin()?.querySelector('.work__item'), 4000); }, leave: () => giveBack('work') },
@@ -81,6 +85,7 @@ export function installGuides({ area, cards, ctx }) {
       { at: q('.win--folder [data-card="wispr-wrapped"]'), card: true, enter: () => until(q('.win--folder [data-card="wispr-wrapped"]'), 1500), say: 'Beside it, the things I built for Wispr. That’s all from me; the desktop’s yours.' },
     ] : [
       { at: null, say: 'Thanks for listening. A few places to wander, then I’ll leave you be.' },
+      { at: cocoEl, card: true, say: 'First, my latest: Coco. The waitlist is inside.', action: { label: 'Open Coco', run: (g) => openEl(g, cocoEl()) } },
       { at: q('[data-card="folder-growth"]'), card: true, say: 'Every folder on the left opens onto real projects.' },
       { at: q('.is-switchboard .icon'), card: true, say: 'Want one of these? It takes one sentence to your Claude or Emergent.' },
       { at: clear(...GAMES), card: true, say: 'Or play one of mine. The desktop’s yours.' },

@@ -6,6 +6,7 @@ import { renderSubtitle } from './subtitle.js';
 import { openDemo, fillUrl } from './demos.js';
 import { isWispr } from '../version.js';
 import { PLAYER } from './era.js';
+import { openCoco } from './coco.js';
 
 const FILLERS = /\b(um+|uh+|erm|like|you know|i mean|basically|kind of|sort of|actually|literally|so yeah|right\?)\b[,]?\s*/gi;
 
@@ -121,6 +122,7 @@ export function buildApps(ctx) {
 
   return [
     { id: 'offthecv', label: 'OFF THE CV', icon: 'offthecv', open: () => ctx.openPodcast() },
+    { id: 'coco', label: 'Coco', icon: 'coco', open: () => openCoco(wm, { from: 'desktop' }) },
     { id: 'work', label: 'Work', icon: 'folder', open: () => openWork(wm, P) },
     { id: 'wispr', label: 'Wispr Flow', icon: 'wispr', className: 'icon--wispr', open() {
       const w = wm.win('wispr', { title: 'Wispr Flow', width: 460, className: 'win--wispr' });
