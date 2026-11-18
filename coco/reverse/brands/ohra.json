@@ -2,9 +2,9 @@
  "id": "ohra",
  "brand": {
   "name": "Ohra",
-  "category": "lip colour",
+  "category": "cheek and lip colour",
   "city": "Delhi",
-  "product": "Brick Dust lip oil tint",
+  "product": "Brick Dust liquid blush",
   "founder": "Aditi"
  },
  "palette": {
@@ -20,7 +20,7 @@
   "accent": "#c8664a"
  },
  "intro": {
-  "line": "One Brick Dust lip oil tint, delivered in Saket at 6:08 pm.",
+  "line": "One Brick Dust liquid blush, delivered in Saket at 6:08 pm.",
   "sub": "Seven months of work behind it. People tapped 8 times, 32 seconds in all. Scroll back."
  },
  "assets": {
@@ -144,7 +144,7 @@
     "monitoring": [
      "Care-note opens, hourly",
      "Clay liner adds from care notes, daily",
-     "New Brick Dust tint reviews, hourly"
+     "New Brick Dust blush reviews, hourly"
     ]
    },
    "flow": [
@@ -191,7 +191,7 @@
     {
      "t": "done",
      "s": "feed",
-     "text": "One lip oil tint: voice note to doorstep",
+     "text": "One liquid blush: voice note to doorstep",
      "desc": "7 months · 8 taps · 32 sec"
     }
    ],
@@ -367,8 +367,8 @@
    "mode": "dusk",
    "object": "phone",
    "line": "She asked where her order was at 10:05 am. Answered from the 9:52 am warehouse scan in 40 seconds: packed, on the 11:20 am pickup.",
-   "ask": "is it sticky like a gloss? i hate gloss",
-   "answer": "No. It's 60% tint, 40% oil, so it sinks in like an oil and leaves real colour. Testers gave it 4.5 for comfort.",
+   "ask": "does it go cakey like powder? i hate cakey",
+   "answer": "No. It's 60% pigment, 40% base, so it melts in like a tint and leaves real colour. Testers gave it 4.5 for comfort.",
    "tap": null,
    "tags": [
     {
@@ -511,7 +511,7 @@
    "when": "2 days before, 9:50 am",
    "mode": "top",
    "object": "parcel_top",
-   "line": "Packed OH-20418 first in Okhla's morning batch at 118 g, saw six days of Brick Dust tint left at this pace, and drafted repeat PO-0151 on Sethi's terms under Aditi's standing approval.",
+   "line": "Packed OH-20418 first in Okhla's morning batch at 118 g, saw six days of Brick Dust blush left at this pace, and drafted repeat PO-0151 on Sethi's terms under Aditi's standing approval.",
    "tap": {
     "who": "Anjali",
     "what": "scanned the packed box",
@@ -551,7 +551,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "9:53 am",
-      "text": "The whole batch goes on the 11:20 am pickup, not the 2 pm van. Delhi hits 41°C by afternoon, and oil hates a hot van."
+      "text": "The whole batch goes on the 11:20 am pickup, not the 2 pm van. Delhi hits 41°C by afternoon, and the formula separates in a hot van."
      }
     ],
     "os": {
@@ -609,7 +609,7 @@
    "presence": {
     "running": [
      "Weighing every box vs the kit",
-     "Brick Dust tint: 6 days of stock left",
+     "Brick Dust blush: 6 days of stock left",
      "PO-0151 drafted · Sethi · repeat"
     ],
     "managing": [
@@ -643,7 +643,7 @@
     {
      "t": "raised",
      "s": "feed",
-     "text": "86 in the Okhla batch today. tint ones first",
+     "text": "86 in the Okhla batch today. blush ones first",
      "desc": "OH-20418 first out",
      "via": "meeting",
      "where": "9:30 warehouse huddle",
@@ -680,7 +680,7 @@
     {
      "t": "auto",
      "s": "hub",
-     "text": "Brick Dust tint: 6 days of stock left",
+     "text": "Brick Dust blush: 6 days of stock left",
      "media": {
       "type": "chart",
       "kind": "bar",
@@ -712,7 +712,7 @@
      "type": "toast",
      "where": "OS",
      "title": "Stock alert",
-     "text": "Brick Dust tint: 6 days left. Reorder drafted."
+     "text": "Brick Dust blush: 6 days left. Reorder drafted."
     }
    ]
   },
@@ -740,7 +740,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "11:42 pm",
-      "text": "New order from ad cut B. Brick Dust lip oil tint, ₹899, prepaid. Address matches 110017. First in the morning batch."
+      "text": "New order from ad cut B. Brick Dust liquid blush, ₹899, prepaid. Address matches 110017. First in the morning batch."
      },
      {
       "who": "Anjali",
@@ -757,7 +757,7 @@
      "rows": [
       [
        "Item",
-       "Brick Dust lip oil tint, 4 ml"
+       "Brick Dust liquid blush, 4 ml"
       ],
       [
        "Total",
@@ -818,7 +818,7 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "OH-20418 · Brick Dust tint · ₹899 · prepaid",
+     "text": "OH-20418 · Brick Dust blush · ₹899 · prepaid",
      "desc": "Ad cut B · 11:42 pm",
      "via": "email",
      "where": "[Ohra] Order #OH-20418 placed"
@@ -1063,7 +1063,7 @@
     {
      "t": "q",
      "s": "chat",
-     "text": "is the tint launch paying for itself?",
+     "text": "is the blush launch paying for itself?",
      "who": "Aditi",
      "answer": "Yes. ₹2.10 back per ₹1, last 7 days.",
      "ch": "growth"
@@ -1094,7 +1094,7 @@
    "object": "hero",
    "line": "Studio Pell changed the hero line. Naina's agent caught it in 40 seconds, checked it against 41 reviews, and put up the line customers actually use.",
    "card": {
-    "title": "Brick Dust lip oil tint, 4 ml",
+    "title": "Brick Dust liquid blush, 4 ml",
     "price": "₹899",
     "rating": 4.6
    },
@@ -1143,7 +1143,7 @@
      "rows": [
       [
        "First line",
-       "Glossy colour, every day",
+       "Flushed colour, every day",
        "Real colour. Never sticky."
       ],
       [
@@ -1210,7 +1210,7 @@
       "recommended": true
      },
      {
-      "label": "Keep \"Glossy colour, every day\""
+      "label": "Keep \"Flushed colour, every day\""
      }
     ],
     "by": "Naina",
@@ -1223,7 +1223,7 @@
     {
      "t": "raised",
      "s": "chat",
-     "text": "new hero line is live: glossy colour, every day",
+     "text": "new hero line is live: flushed colour, every day",
      "who": "Studio Pell",
      "ch": "studio-pell",
      "media": {
@@ -1286,7 +1286,7 @@
      "type": "text",
      "screen": "listing",
      "sel": ".scr-big",
-     "to": "Glossy colour, every day"
+     "to": "Flushed colour, every day"
     },
     {
      "beat": 4,
@@ -1309,7 +1309,7 @@
    "when": "5 weeks before",
    "mode": "dusk",
    "object": "hero",
-   "line": "The test shot blew the gloss out to white glare under a ring light. Moved the shoot to a north-light studio on Saturday and sent a ten-shot list.",
+   "line": "The test shot blew the dewy finish out to white glare under a ring light. Moved the shoot to a north-light studio on Saturday and sent a ten-shot list.",
    "tap": {
     "who": "Kavya, the creator",
     "what": "confirmed Saturday",
@@ -1362,7 +1362,7 @@
      "rows": [
       [
        "1",
-       "Tube and wand, side-on",
+       "Tube and cushion wand, side-on",
        "Product page"
       ],
       [
@@ -1382,7 +1382,7 @@
       ],
       [
        "5 to 10",
-       "Lip close-ups",
+       "Cheek close-ups",
        "Ads, social"
       ]
      ]
@@ -1446,7 +1446,7 @@
     {
      "t": "raised",
      "s": "chat",
-     "text": "test shot attached. bhai the gloss is just white glare",
+     "text": "test shot attached. bhai the dewy bit is just white glare",
      "who": "Kavya",
      "ch": "content",
      "media": {
@@ -1472,7 +1472,7 @@
        "#8b3a2e",
        "#c0562f"
       ],
-      "label": "tint vs test shot"
+      "label": "blush vs test shot"
      },
      "caught": "From Kavya in the content group"
     },
@@ -1498,7 +1498,7 @@
      "text": "42 photos in. Colour and shine both read"
     }
    ],
-   "summary": "The ring light turns the gloss into glare. The light gets fixed, not the photo.",
+   "summary": "The ring light turns the dew into glare. The light gets fixed, not the photo.",
    "live": [
     {
      "beat": 4,
@@ -1593,7 +1593,7 @@
     "hub": {
      "metrics": [
       {
-       "label": "Tube + wand per lip oil",
+       "label": "Tube + cushion wand per blush",
        "value": "₹38",
        "source": "PO-0142",
        "fetched": "2:15 pm"
@@ -1962,7 +1962,7 @@
     "hub": {
      "metrics": [
       {
-       "label": "Tube + wand per lip oil",
+       "label": "Tube + cushion wand per blush",
        "value": "₹38",
        "source": "PO-0142",
        "fetched": "2:15 pm"
@@ -2110,7 +2110,7 @@
    "when": "5 months before",
    "mode": "dusk",
    "object": "trials5",
-   "line": "Ritika made five tint-to-oil ratios. Heat and wear tests on all five: ratio 2 split at 45°C, 9 of 20, and went back to Kesar Labs with the log. Ratio 3, 60:40, won.",
+   "line": "Ritika made five pigment-to-base ratios. Heat and wear tests on all five: ratio 2 split at 45°C, 9 of 20, and went back to Kesar Labs with the log. Ratio 3, 60:40, won.",
    "tap": null,
    "tags": [
     {
@@ -2135,18 +2135,18 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "9:30 am",
-      "text": "Wear test is set. Five tint-to-oil ratios coded 1 to 5, eight people, eight hours each. Nobody knows which is which."
+      "text": "Wear test is set. Five pigment-to-base ratios coded 1 to 5, eight people, eight hours each. Nobody knows which is which."
      },
      {
       "who": "Tanvi",
       "time": "5:48 pm",
-      "text": "Ratio 1 feels tight by hour three. That's just liquid lipstick again."
+      "text": "Ratio 1 streaks by hour three. That's just a stain again."
      },
      {
       "who": "Chief of staff",
       "agent": true,
       "time": "6:20 pm",
-      "text": "Results: ratio 3, 60 tint to 40 oil, scored 4.4 on colour and 4.5 on comfort, 5 of 8 votes. Ratio 5 is pretty but sheer."
+      "text": "Results: ratio 3, 60 pigment to 40 base, scored 4.4 on colour and 4.5 on comfort, 5 of 8 votes. Ratio 5 is pretty but fades."
      }
     ],
     "os": {
@@ -2231,7 +2231,7 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "5 tint/oil ratios in, 80:20 to 40:60",
+     "text": "5 pigment/base ratios in, 80:20 to 40:60",
      "desc": "Step 2 · owner: Ritika",
      "via": "meeting",
      "where": "4 pm lab review",
@@ -2328,7 +2328,7 @@
    "when": "6 months before",
    "mode": "dusk",
    "object": "maker_tool",
-   "line": "Wrote the role for a chemist who has shipped oil-based tints, screened 37 applicants to four, and booked interviews around Aditi's and the lab's calendars.",
+   "line": "Wrote the role for a chemist who has shipped liquid blushes, screened 37 applicants to four, and booked interviews around Aditi's and the lab's calendars.",
    "tap": {
     "who": "Vidhi",
     "what": "made the offer to Ritika",
@@ -2350,7 +2350,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "10:12 am",
-      "text": "Chemist role: 37 applicants in nine days. Four have shipped oil-based tints, pigment that stays put in an oil."
+      "text": "Chemist role: 37 applicants in nine days. Four have shipped liquid blushes, pigment that stays put without going patchy."
      },
      {
       "who": "Vidhi",
@@ -2365,7 +2365,7 @@
      }
     ],
     "os": {
-     "title": "Hiring: oil-tint chemist",
+     "title": "Hiring: blush chemist",
      "cols": [
       "Candidate",
       "Stage",
@@ -2444,7 +2444,7 @@
    },
    "card": {
     "area": "People",
-    "ask": "Make the oil-tint chemist offer. Ritika S. scored 4.5 of 5.",
+    "ask": "Make the blush chemist offer. Ritika S. scored 4.5 of 5.",
     "options": [
      {
       "label": "Ritika S., 4.5 / 5",
@@ -2464,7 +2464,7 @@
     {
      "t": "raised",
      "s": "os",
-     "text": "need an oil-tint chemist in 4 wks. can u start?",
+     "text": "need a blush chemist in 4 wks. can u start?",
      "desc": "Owner: Vidhi · due in 4 wks",
      "via": "whatsapp",
      "where": "Ohra hiring",
@@ -2490,7 +2490,7 @@
     {
      "t": "ask",
      "s": "chat",
-     "text": "Ritika 4.5/5, made 3 lip oil tints at a Baddi lab. Send offer?",
+     "text": "Ritika 4.5/5, made 3 liquid blushes at a Baddi lab. Send offer?",
      "who": "Vidhi",
      "options": [
       "send offer",
@@ -2500,7 +2500,7 @@
      "media": {
       "type": "doc",
       "name": "ritika_cv.pdf",
-      "note": "4 yrs, oil tints"
+      "note": "4 yrs, liquid blushes"
      }
     },
     {
@@ -2509,7 +2509,7 @@
      "text": "Ritika signed. Starts Monday, 3 days early"
     }
    ],
-   "summary": "Nobody on the team can get real colour to sit in an oil. Ritika has done it three times.",
+   "summary": "Nobody on the team can get real colour to melt in without streaking. Ritika has done it three times.",
    "live": [
     {
      "beat": 5,
@@ -2525,7 +2525,7 @@
    "when": "7 months before, 10:00 am",
    "mode": "wire",
    "object": "wireframe",
-   "line": "Played Aditi's voice note as item 1 at standup, took Naina's search numbers and Anjali's heat warning, and shaped it into one product: liquid lipstick colour with a lip oil feel.",
+   "line": "Played Aditi's voice note as item 1 at standup, took Naina's search numbers and Anjali's heat warning, and shaped it into one product: cream-blush colour with a liquid-tint melt.",
    "tap": {
     "who": "Aditi",
     "what": "said go on the hybrid",
@@ -2533,7 +2533,7 @@
    },
    "tags": [
     {
-     "text": "Project: Brick Dust lip oil tint",
+     "text": "Project: Brick Dust liquid blush",
      "at": [
       0.54,
       0.38
@@ -2553,22 +2553,22 @@
      {
       "who": "Aditi",
       "time": "4:02 pm",
-      "text": "That voice note. They want an oil, but with real colour."
+      "text": "That voice note. They want a tint, but with real colour."
      },
      {
       "who": "Naina",
       "time": "4:03 pm",
-      "text": "Sheer oils get 1-star reviews for 'no colour'. 46 of them."
+      "text": "Powder blushes get 1-star reviews for looking cakey. 46 of them."
      },
      {
       "who": "Chief of staff",
       "agent": true,
       "time": "4:05 pm",
-      "text": "So not an oil. A hybrid: liquid lipstick colour, lip oil feel. Project opened: Brick Dust lip oil tint. Step one, a chemist. Vidhi has it."
+      "text": "So not a powder. A hybrid: cream-blush colour, liquid-tint melt. Project opened: Brick Dust liquid blush. Step one, a chemist. Vidhi has it."
      }
     ],
     "os": {
-     "title": "Project: Brick Dust lip oil tint",
+     "title": "Project: Brick Dust liquid blush",
      "cols": [
       "Step",
       "Owner",
@@ -2577,13 +2577,13 @@
      ],
      "rows": [
       [
-       "Hire an oil-tint chemist",
+       "Hire a blush chemist",
        "Vidhi",
        "In 4 weeks",
        "Open"
       ],
       [
-       "Tint-to-oil ratio brief",
+       "Pigment-to-base ratio brief",
        "Aditi",
        "In 2 weeks",
        "Open"
@@ -2599,13 +2599,13 @@
     "hub": {
      "metrics": [
       {
-       "label": "Lip oil searches, 12 months",
+       "label": "Liquid blush searches, 12 months",
        "value": "Up 3.2x",
        "source": "Shopify, last 90 days",
        "fetched": "4:06 pm"
       },
       {
-       "label": "Reviews saying sheer oils show no colour",
+       "label": "Reviews calling powder blush cakey",
        "value": "46",
        "source": "Judge.me",
        "fetched": "4:06 pm"
@@ -2649,7 +2649,7 @@
     {
      "t": "raised",
      "s": "chat",
-     "text": "oil searches 3x in a year. but sheer ones get '1 star, no colour'",
+     "text": "liquid blush searches 3x in a year. but powder gets '1 star, cakey'",
      "who": "Naina",
      "ch": "standup",
      "via": "meeting",
@@ -2659,7 +2659,7 @@
     {
      "t": "raised",
      "s": "chat",
-     "text": "bhai oil leaks in a june van. 45° inside. needs a proper tube",
+     "text": "bhai liquid separates in a june van. 45° inside. needs a proper tube",
      "who": "Anjali",
      "ch": "standup",
      "via": "meeting",
@@ -2669,7 +2669,7 @@
     {
      "t": "ask",
      "s": "chat",
-     "text": "Hybrid: liquid lipstick colour, lip oil feel. ₹899, 4 ml. Go?",
+     "text": "Hybrid: cream-blush colour, liquid-tint melt. ₹899, 4 ml. Go?",
      "who": "Aditi",
      "options": [
       "ok go",
@@ -2695,7 +2695,7 @@
      }
     }
    ],
-   "summary": "Her note says oil. The standup says colour too. The answer is both, in one tube.",
+   "summary": "Her note says not powder. The standup says colour too. The answer is both, in one tube.",
    "live": [
     {
      "beat": 4,
@@ -2705,7 +2705,7 @@
       0.5,
       0.78
      ],
-     "text": "Tint + oil, Rs 899",
+     "text": "Cream + tint, Rs 899",
      "badge": "Go"
     }
    ]
@@ -2724,7 +2724,7 @@
      {
       "who": "Aditi",
       "time": "12:52 am",
-      "text": "Okay... can't sleep. Fourth girl in our DMs today asking for a lip oil. Not lipstick. My cousin's nineteen and she hasn't bought a bullet in a year, it's all balms and oils now. But they still want colour, right? Like, real colour that doesn't feel like lipstick. Check if it's just my DMs or if it's actually happening.",
+      "text": "Okay... can't sleep. Fourth girl in our DMs today asking for a liquid blush. Not powder. My cousin's nineteen and she hasn't bought a compact in a year, it's all creams and tints now. But they still want colour, right? Like, real colour that looks like skin, not powder. Check if it's just my DMs or if it's actually happening.",
       "voice": true,
       "length": "0:22"
      },
@@ -2732,7 +2732,7 @@
       "who": "Chief of staff",
       "agent": true,
       "time": "12:53 am",
-      "text": "Saved to Ideas as Lip oils. 64 DMs asked for one since June, so not just you. It's on tomorrow's 10 am standup."
+      "text": "Saved to Ideas as Liquid blush. 64 DMs asked for one since June, so not just you. It's on tomorrow's 10 am standup."
      }
     ],
     "os": {
@@ -2745,7 +2745,7 @@
      ],
      "rows": [
       [
-       "Lip oils, with real colour",
+       "Liquid blush, with real colour",
        "Aditi, voice note",
        "12:53 am",
        "Standup, 10 am"
@@ -2755,19 +2755,19 @@
     "hub": {
      "metrics": [
       {
-       "label": "Searches for lip oil, India",
+       "label": "Searches for liquid blush, India",
        "value": "Up 3.2x in a year",
        "source": "Google Trends",
        "fetched": "12:53 am"
       },
       {
-       "label": "DMs asking for a lip oil",
+       "label": "DMs asking for a liquid blush",
        "value": "64",
        "source": "Website chat, last 6 months",
        "fetched": "12:53 am"
       },
       {
-       "label": "Lip oils in the range today",
+       "label": "Blushes in the range today",
        "value": "0",
        "source": "Shopify catalogue",
        "fetched": "12:53 am"
@@ -2778,7 +2778,7 @@
    "presence": {
     "running": [
      "On it. Checking if it's just your DMs",
-     "Not just you. 1,240 searches/mo for lip oil"
+     "Not just you. 1,240 searches/mo for liquid blush"
     ],
     "managing": [
      "Nobody needed for this one"
@@ -2786,14 +2786,14 @@
     "monitoring": [
      "Website chat, every 15 min",
      "Judge.me reviews, hourly",
-     "Searches for lip oils, daily"
+     "Searches for liquid blush, daily"
     ]
    },
    "flow": [
     {
      "t": "raised",
      "s": "chat",
-     "text": "can't sleep. 4th DM today asking for a lip oil, not lipstick",
+     "text": "can't sleep. 4th DM today asking for a liquid blush, not powder",
      "who": "Aditi",
      "media": {
       "type": "voice",
@@ -2807,14 +2807,14 @@
      "t": "assign",
      "s": "feed",
      "text": "On it. Checking if it's just your DMs",
-     "desc": "Saved as idea #41: Lip oils",
+     "desc": "Saved as idea #41: Liquid blush",
      "caught": "From Aditi's 12:52 am voice note"
     },
     {
      "t": "auto",
      "s": "hub",
-     "text": "Not just you. 1,240 searches/mo for lip oil",
-     "desc": "Lipstick searches down 18%. 64 DMs",
+     "text": "Not just you. 1,240 searches/mo for liquid blush",
+     "desc": "Powder blush searches down 18%. 64 DMs",
      "media": {
       "type": "chart",
       "kind": "bar",
@@ -2824,9 +2824,9 @@
        380
       ],
       "labels": [
-       "lip oil",
-       "tinted balm",
-       "lipstick"
+       "liquid blush",
+       "cream blush",
+       "powder blush"
       ],
       "unit": "/mo"
      }
@@ -2837,14 +2837,14 @@
      "text": "On tomorrow's 10 am standup. Go sleep"
     }
    ],
-   "summary": "12:52 am. Girls want lip oil, not lipstick. Is it just her DMs?",
+   "summary": "12:52 am. Girls want liquid blush, not powder. Is it just her DMs?",
    "live": [
     {
      "beat": 3,
      "type": "toast",
      "where": "Hub",
      "title": "Overnight demand check",
-     "text": "Lip oil: 1,240 searches a month. 64 DMs."
+     "text": "Liquid blush: 1,240 searches a month. 64 DMs."
     }
    ]
   }
@@ -2854,7 +2854,7 @@
   "time": "12:52 am",
   "when": "7 months before",
   "lead": "Before any of it, at 12:52 am, Aditi left herself a voice note.",
-  "words": "Okay... can't sleep. Fourth girl in our DMs today asking for a lip oil. Not lipstick. My cousin's nineteen and she hasn't bought a bullet in a year, it's all balms and oils now. But they still want colour, right? Like, real colour that doesn't feel like lipstick. Check if it's just my DMs or if it's actually happening.",
+  "words": "Okay... can't sleep. Fourth girl in our DMs today asking for a liquid blush. Not powder. My cousin's nineteen and she hasn't bought a compact in a year, it's all creams and tints now. But they still want colour, right? Like, real colour that looks like skin, not powder. Check if it's just my DMs or if it's actually happening.",
   "audio": null,
   "length": "0:22"
  },
@@ -2896,7 +2896,7 @@
  },
  "page": {
   "title": "Coco · the chief of staff OS for consumer brands",
-  "description": "Coco, the chief of staff OS for consumer brands, by sameep.ai. Watch its Chief of Staff agent take one lip oil tint from a 12:52 am voice note to a doorstep in Saket, with 8 taps from people.",
+  "description": "Coco, the chief of staff OS for consumer brands, by sameep.ai. Watch its Chief of Staff agent take one liquid blush from a 12:52 am voice note to a doorstep in Saket, with 8 taps from people.",
   "rewind_hint": "Scroll to rewind seven months",
   "strip_label": "Chief of staff, on now",
   "strip_modes": {
@@ -2922,7 +2922,7 @@
   "awb": "2841 7730 1962"
  },
  "audio": {
-  "voice-note": "assets/ohra/audio/voice-note.mp3",
+  "voice-note": "assets/ohra/audio/voice-note.mp3?v=blush1",
   "hire-ask": "assets/ohra/audio/hire-ask.mp3",
   "hire-reply": "assets/ohra/audio/hire-reply.mp3",
   "po-ask": "assets/ohra/audio/po-ask.mp3",
@@ -2938,17 +2938,17 @@
   "support-q": "assets/ohra/audio/support-q.mp3",
   "support-a": "assets/ohra/audio/support-a.mp3",
   "listing-reply": "assets/ohra/audio/listing-reply.mp3",
-  "ad-q": "assets/ohra/audio/ad-q.mp3",
+  "ad-q": "assets/ohra/audio/ad-q.mp3?v=blush1",
   "ad-a": "assets/ohra/audio/ad-a.mp3",
-  "standup-1": "assets/ohra/audio/voice-note.mp3",
+  "standup-1": "assets/ohra/audio/voice-note.mp3?v=blush1",
   "packed-ask": "assets/ohra/audio/packed-ask.mp3",
   "packed-reply": "assets/ohra/audio/packed-reply.mp3",
   "shoot-agency": "assets/ohra/audio/shoot-agency.mp3",
   "packaging-agency": "assets/ohra/audio/packaging-agency.mp3",
   "vendor-ask": "assets/ohra/audio/vendor-ask.mp3",
   "vendor-reply": "assets/ohra/audio/vendor-reply.mp3",
-  "standup-2": "assets/ohra/audio/standup-2.mp3",
-  "standup-3": "assets/ohra/audio/standup-3.mp3",
+  "standup-2": "assets/ohra/audio/standup-2.mp3?v=blush1",
+  "standup-3": "assets/ohra/audio/standup-3.mp3?v=blush1",
   "standup-ask": "assets/ohra/audio/standup-ask.mp3",
   "standup-reply": "assets/ohra/audio/standup-reply.mp3",
   "delivered-agency": "assets/ohra/audio/delivered-agency.mp3",
@@ -2971,7 +2971,7 @@
   "hv-approve": "assets/ohra/audio/hv-approve.mp3",
   "hv-hero": "assets/ohra/audio/hv-hero.mp3",
   "hv-packed": "assets/ohra/audio/hv-packed.mp3",
-  "vn-founder": "assets/ohra/audio/vn-founder.mp3"
+  "vn-founder": "assets/ohra/audio/vn-founder.mp3?v=blush1"
  },
  "channels": {
   "voice": "aditi-notes",
@@ -3146,10 +3146,10 @@
   }
  },
  "story": {
-  "title": "One lip oil tint, from a 12:52 am voice note to her door.",
+  "title": "One liquid blush, from a 12:52 am voice note to her door.",
   "line": "Every module, the team and its agents, in one flow.",
   "product": {
-   "name": "Brick Dust lip oil tint",
+   "name": "Brick Dust liquid blush",
    "img": "hero"
   },
   "os_keys": [
@@ -3168,8 +3168,8 @@
   ],
   "products": [
    {
-    "name": "Brick Dust lip oil tint",
-    "cat": "Lips",
+    "name": "Brick Dust liquid blush",
+    "cat": "Cheeks",
     "img": "hero",
     "follow": true
    },
@@ -3298,18 +3298,18 @@
            },
            {
             "via": "dm",
-            "name": "\"a lip oil, not a lipstick\"",
+            "name": "\"a liquid blush, not a powder\"",
             "note": "Instagram DM · 11:40 pm",
             "value": "4th today"
            },
            {
             "via": "dm",
-            "name": "\"oil but with real colour?\"",
+            "name": "\"a tint but with real colour?\"",
             "note": "Instagram DM · 10:05 pm"
            },
            {
             "via": "dm",
-            "name": "\"balms are too sheer for me\"",
+            "name": "\"cream ones are too sheer for me\"",
             "note": "Instagram DM · 8:30 pm"
            }
           ]
@@ -3321,9 +3321,9 @@
          "slot": "a",
          "at": "cue",
          "counter": {
-          "label": "searches a month for lip oil",
+          "label": "searches a month for liquid blush",
           "to": 1240,
-          "sub": "lipstick searches down 18%"
+          "sub": "powder blush searches down 18%"
          }
         },
         {
@@ -3342,7 +3342,7 @@
            1240
           ],
           "big": "3x",
-          "label": "lip oil searches, 12 months"
+          "label": "liquid blush searches, 12 months"
          }
         },
         {
@@ -3352,7 +3352,7 @@
          "rot": 2,
          "idea": {
           "kind": "Idea #41 · from Aditi",
-          "title": "A lip oil with real colour",
+          "title": "A liquid blush with real colour",
           "rows": [
            [
             "Why",
@@ -3360,7 +3360,7 @@
            ],
            [
             "Want",
-            "Colour of a lipstick, feel of an oil"
+            "Colour of a cream blush, melt of a tint"
            ],
            [
             "Price",
@@ -3379,7 +3379,7 @@
        {
         "k": "msg",
         "who": "Aditi",
-        "text": "Okay... can't sleep. Fourth girl in our DMs today asking for a lip oil. Not lipstick. My cousin's nineteen and she hasn't bought a bullet in a year, it's all balms and oils now. But they still want colour, right? Like, real colour that doesn't feel like lipstick. Check if it's just my DMs or if it's actually happening.",
+        "text": "Okay... can't sleep. Fourth girl in our DMs today asking for a liquid blush. Not powder. My cousin's nineteen and she hasn't bought a compact in a year, it's all creams and tints now. But they still want colour, right? Like, real colour that looks like skin, not powder. Check if it's just my DMs or if it's actually happening.",
         "via": "app",
         "voice": "voice-note",
         "where": "Voice note",
@@ -3401,7 +3401,7 @@
        {
         "k": "cos",
         "agent": "Research agent",
-        "text": "Not just your DMs. Lip oil searches are up 3x in a year; lipstick is down 18%.",
+        "text": "Not just your DMs. Liquid blush searches are up 3x in a year; powder blush is down 18%.",
         "desc": "Google Trends, Instagram",
         "land": "split",
         "via": "dm",
@@ -3412,7 +3412,7 @@
        {
         "k": "msg",
         "who": "Naina",
-        "text": "oil searches 3x in a year. but sheer ones get '1 star, no colour'",
+        "text": "liquid blush searches 3x in a year. but powder gets '1 star, cakey'",
         "via": "meeting",
         "voice": "standup-2",
         "where": "10 am standup",
@@ -3427,7 +3427,7 @@
           "label": "Open in #npd",
           "ai": true,
           "land": "idea",
-          "reason": "Demand is real and growing; nobody makes a coloured oil under ₹1,000.",
+          "reason": "Demand is real and growing; nobody makes a liquid blush that doesn't streak under ₹1,000.",
           "os": {
            "Idea": "#41 · score 79"
           }
@@ -3472,7 +3472,7 @@
       "day": 3,
       "when": "Concept",
       "board": "Concept board",
-      "title": "Her note says oil. The standup says colour too. The answer is both.",
+      "title": "Her note says not powder. The standup says colour too. The answer is both.",
       "scene": {
        "layout": "quad",
        "objs": [
@@ -3481,12 +3481,12 @@
          "slot": "hero",
          "rot": -1,
          "doc": {
-          "title": "Concept: Brick Dust lip oil tint",
+          "title": "Concept: Brick Dust liquid blush",
           "sub": "v1 · #npd",
           "rows": [
            [
             "What",
-            "Liquid lipstick colour, oil feel"
+            "Cream-blush colour, tint melt"
            ],
            [
             "Pack",
@@ -3529,7 +3529,7 @@
            "name": "40:60"
           }
          ],
-         "title": "5 tint : oil ratios"
+         "title": "5 pigment : base ratios"
         },
         {
          "id": "heat",
@@ -3575,7 +3575,7 @@
        {
         "k": "msg",
         "who": "Anjali",
-        "text": "bhai oil leaks in a june van. 45° inside. needs a proper tube",
+        "text": "bhai liquid separates in a june van. 45° inside. needs a proper tube",
         "via": "meeting",
         "voice": "standup-3",
         "where": "10 am standup"
@@ -3617,7 +3617,7 @@
           "reason": "Holds at 45°C and reads as real colour.",
           "land": "tube",
           "os": {
-           "Format": "Tint 60:40, tube + wand"
+           "Format": "Pigment 60:40, tube + cushion wand"
           }
          },
          {
@@ -3630,7 +3630,7 @@
           "delay": 6,
           "land": "tube",
           "os": {
-           "Format": "Tint 60:40 (after a re-run)"
+           "Format": "Pigment 60:40 (after a re-run)"
           },
           "then": [
            {
@@ -3648,7 +3648,7 @@
         "k": "task",
         "text": "Spec sheet v1 from the pick",
         "owner": "Spec agent",
-        "done": "Tint 60:40, 4 ml, tube + wand"
+        "done": "Pigment 60:40, 4 ml, tube + cushion wand"
        }
       ]
      }
@@ -4137,7 +4137,7 @@
        {
         "k": "msg",
         "who": "Anjali",
-        "text": "86 in the Okhla batch today. tint ones first",
+        "text": "86 in the Okhla batch today. blush ones first",
         "via": "meeting",
         "where": "9:30 huddle"
        },
@@ -4276,7 +4276,7 @@
        {
         "k": "msg",
         "who": "Studio Pell",
-        "text": "new hero line is live: glossy colour, every day",
+        "text": "new hero line is live: flushed colour, every day",
         "via": "email",
         "voice": "listing-agency",
         "where": "Re: product page"
@@ -4304,10 +4304,10 @@
           }
          },
          {
-          "label": "\"Glossy colour, every day\"",
+          "label": "\"Flushed colour, every day\"",
           "bar": 4,
           "barLabel": "agency line",
-          "line": "Glossy colour, every day",
+          "line": "Flushed colour, every day",
           "os": {
            "Channels": "5 live · switched day 2"
           },
@@ -4345,7 +4345,7 @@
       "day": 166,
       "when": "Launch week",
       "board": "Ads",
-      "title": "The ring light turns the gloss into glare. Then one ad cut wins.",
+      "title": "The ring light turns the dew into glare. Then one ad cut wins.",
       "scene": {
        "layout": "quad",
        "objs": [
@@ -4353,7 +4353,7 @@
          "id": "shot",
          "media": {
           "src": "hero",
-          "caption": "Test shot: the ring light turns the gloss to glare"
+          "caption": "Test shot: the ring light turns the dew to glare"
          },
          "slot": "d",
          "at": "cue"
@@ -4418,7 +4418,7 @@
            {
             "who": "Kavya",
             "name": "Test shot · ring light",
-            "note": "gloss reads as glare",
+            "note": "dew reads as glare",
             "value": "redo",
             "tone": "warn"
            },
@@ -4486,7 +4486,7 @@
        {
         "k": "msg",
         "who": "Kavya",
-        "text": "test shot attached. bhai the gloss is just white glare",
+        "text": "test shot attached. bhai the dewy bit is just white glare",
         "via": "whatsapp",
         "where": "Content",
         "land": "shot"
@@ -4513,7 +4513,7 @@
        {
         "k": "msg",
         "who": "Aditi",
-        "text": "is the tint launch paying for itself?",
+        "text": "is the blush launch paying for itself?",
         "via": "app",
         "voice": "ad-q",
         "where": "#marketing"
@@ -4917,7 +4917,7 @@
   "tagline": "the chief of staff OS for consumer brands, by sameep.ai",
   "box": {
    "name": "Ohra",
-   "product": "Charm lip oil",
+   "product": "Charm liquid blush",
    "shade": "No. 04",
    "size": "4.5 ml",
    "productColor": "#BF5B3C",
@@ -4990,7 +4990,7 @@
     "pop_at": 1800,
     "when": "1:16 am",
     "hl": "It becomes a project.",
-    "cos": "Opened it as a project. 64 people have asked us for a lip oil like this.",
+    "cos": "Opened it as a project. 64 people have asked us for a liquid blush like this.",
     "st": "done",
     "dur": 8200,
     "open": "sketch",
@@ -5222,32 +5222,32 @@
       "photo_at": "1:31 am",
       "line": "",
       "when": "Day 0 · 1:32 am",
-      "words": "Fourth girl in our DMs today, asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs.",
+      "words": "Fourth girl in our DMs today, asking for a liquid blush. Not powder. But real colour. Check if it's just my DMs.",
       "cues": [
        [
         "Fourth girl in our DMs today,",
-        0.1,
-        1.78
+        0.08,
+        2.22
        ],
        [
-        "asking for a lip oil.",
-        2.19,
-        3.45
+        "asking for a liquid blush.",
+        2.22,
+        4.24
        ],
        [
-        "Not lipstick.",
-        3.97,
-        4.83
+        "Not powder.",
+        4.24,
+        5.4
        ],
        [
         "But real colour.",
-        5.27,
-        6.29
+        5.4,
+        7.0
        ],
        [
         "Check if it's just my DMs.",
-        6.93,
-        8.56
+        7.0,
+        8.4
        ]
       ],
       "guide": [
@@ -5272,7 +5272,7 @@
          "kind": "card",
          "media": {
           "voice": "0:09",
-          "words": "Fourth girl in our DMs today, asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
+          "words": "Fourth girl in our DMs today, asking for a liquid blush. Not powder. But real colour. Check if it's just my DMs."
          },
          "lab": "Voice note",
          "title": "Aditi, 1:32 am"
@@ -5286,10 +5286,10 @@
          "kind": "card",
          "media": {
           "voice": "0:09",
-          "words": "Fourth girl in our DMs today, asking for a lip oil. Not lipstick. But real colour. Check if it's just my DMs."
+          "words": "Fourth girl in our DMs today, asking for a liquid blush. Not powder. But real colour. Check if it's just my DMs."
          },
          "lab": "New project",
-         "title": "Charm lip oil",
+         "title": "Charm liquid blush",
          "n": "#41",
          "sub": "Owner Aditi · from her 1:32 am note"
         },
@@ -5348,14 +5348,14 @@
           ],
           [
            "3x",
-           "lip oil searches in a year"
+           "liquid blush searches in a year"
           ],
           [
            "₹899",
            "where the best sellers sit"
           ]
          ],
-         "foot": "Sheer oils get one star for no colour. Nobody does real colour as an oil."
+         "foot": "Powder blush gets one-star reviews for looking cakey. Nobody sells real colour that melts in."
         },
         "after": "work",
         "voice": "cv-findings",
@@ -5381,7 +5381,7 @@
         },
         {
          "who": "Pricing agent",
-         "text": "Studying every lip oil under ₹1,500",
+         "text": "Studying every liquid blush under ₹1,500",
          "done": "31 found"
         }
        ],
@@ -5391,7 +5391,7 @@
         "title": "Searching six months of DMs",
         "count": {
          "to": 64,
-         "label": "people asked for a lip oil"
+         "label": "people asked for a liquid blush"
         },
         "rows": [
          {
@@ -5399,7 +5399,7 @@
           "tag": "DM · May"
          },
          {
-          "t": "\"do you have a lip oil??\"",
+          "t": "\"do you have a liquid blush??\"",
           "tag": "DM · Jun",
           "hit": true
          },
@@ -5408,12 +5408,12 @@
           "tag": "DM · Jun"
          },
          {
-          "t": "\"lip oil but with actual colour pls\"",
+          "t": "\"liquid blush but with actual colour pls\"",
           "tag": "DM · Jul",
           "hit": true
          },
          {
-          "t": "\"not a lipstick, an oil. make it\"",
+          "t": "\"not a powder, a liquid. make it\"",
           "tag": "DM · Aug",
           "hit": true
          },
@@ -5422,17 +5422,17 @@
           "tag": "DM · Aug"
          },
          {
-          "t": "\"any tinted lip oil coming?\"",
+          "t": "\"any liquid blush coming?\"",
           "tag": "DM · Sep",
           "hit": true
          },
          {
-          "t": "\"need a lip oil that shows up\"",
+          "t": "\"need a blush that shows up\"",
           "tag": "DM · Oct",
           "hit": true
          },
          {
-          "t": "\"lip oil. real colour. please.\"",
+          "t": "\"liquid blush. real colour. please.\"",
           "tag": "DM · today",
           "hit": true
          }
@@ -6371,7 +6371,7 @@
           "fit": "cover"
          },
          "lab": "Product page · ohra.in",
-         "title": "Brick Dust lip oil",
+         "title": "Brick Dust liquid blush",
          "n": "₹899",
          "sub": "Hero photo, 5 pictures, shade story, reviews switched on"
         },
@@ -6390,7 +6390,7 @@
           "fit": "cover"
          },
          "lab": "Marketplace · Nykaa",
-         "title": "Brick Dust lip oil",
+         "title": "Brick Dust liquid blush",
          "n": "₹899",
          "sub": "Approved in 40 minutes · in stock"
         }
@@ -6762,7 +6762,7 @@
           "fit": "cover"
          },
          "lab": "New order · ohra.in",
-         "title": "Brick Dust lip oil",
+         "title": "Brick Dust liquid blush",
          "n": "₹899",
          "sub": "Order OH-20418 · Saket, New Delhi · paid"
         }
@@ -7036,7 +7036,7 @@
        "product": {
         "k": "Product",
         "tag": "Live",
-        "name": "Charm lip oil",
+        "name": "Charm liquid blush",
         "sub": "6 shades · live in 5 places",
         "stages": [
          "Idea",
@@ -7282,7 +7282,7 @@
         "art": {
          "kind": "stats",
          "lab": "Week one",
-         "title": "Charm lip oil, launched",
+         "title": "Charm liquid blush, launched",
          "nums": [
           [
            "233",
@@ -7333,7 +7333,7 @@
   ]
  },
  "audio_len": {
-  "voice-note": 21.76,
+  "voice-note": 22.71,
   "cv-heard": 2.6,
   "cv-research": 2.83,
   "cv-findings": 2.55,
@@ -7349,6 +7349,6 @@
   "hv-approve": 2.56,
   "hv-hero": 3.12,
   "hv-packed": 2.64,
-  "vn-founder": 8.88
+  "vn-founder": 8.81
  }
 }
