@@ -115,10 +115,10 @@
     var n = h('div', 'cw-nudge cw-sheet'); n.setAttribute('role', 'dialog'); n.setAttribute('aria-label', 'Join the Coco waitlist'); fence(n);
     var x = h('button', 'cw-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Close');
     x.addEventListener('click', function () { n.classList.remove('is-in'); setTimeout(function () { n.remove(); }, 400); if (pill) pill.hidden = false; });
-    n.appendChild(x); n.appendChild(h('p', 'cw-q', 'Want this for your brand? Join the waitlist.')); n.appendChild(form('panel'));
+    n.appendChild(x); n.appendChild(h('p', 'cw-q', 'Want this for your brand? Join the waitlist.')); n.appendChild(form('minute'));
     document.body.appendChild(n); if (pill) pill.hidden = true;
     requestAnimationFrame(function () { requestAnimationFrame(function () { n.classList.add('is-in'); }); });
-    track('coco_open', { from: 'panel' });
+    track('coco_open', { from: 'minute' });
   }
   function mount(host) { var b = h('div', 'cw-in'); fence(b); b.appendChild(form('end')); host.appendChild(b); return b; }
 

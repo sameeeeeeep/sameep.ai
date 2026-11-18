@@ -504,7 +504,6 @@ function show(k, how) {
     ui.root.classList.remove('is-3d');
     ui.scene.innerHTML = ''; ui.scene.className = 'v-scene';
     ui.panelHost.classList.add('is-on');
-    if (seq && window.cocoWaitlist && window.cocoWaitlist.nudge) setTimeout(() => { if (i === k) window.cocoWaitlist.nudge(); }, 2500);   /* the waitlist card slides up once, the first time the panel shows */
     ui.root.classList.toggle('bd-build', !!src && !REDUCED);
     ui.root.dataset.focus = b.tasks ? 'tasks' : '';   /* on a phone, a beat that hands out tasks shows the task cards where the canvas is */
     ui.workDone = seq ? 0 : 99; ui.workOn = !seq; ui.tasksOn = !seq || !b.tasks; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k && ui.tasksOn) board(k, true); }, dur);
@@ -755,6 +754,9 @@ function board(k, settled) {
 
 /* autoplay never takes a decision or sends the note for the viewer: it holds until they do */
 function autoNext() { if (!playing || viewOpen) return; if ((panel && panel.asking) || ui.sceneAct) { timer = setTimeout(autoNext, 600); return; } if (i < B.length - 1) show(i + 1); }
+/* the waitlist card slides up once, a minute into the demo (counted only while the story is started and the tab is in view; the end card carries its own form) */
+let wlSecs = 0;
+setInterval(() => { if (!started || document.hidden || i <= 0 || !window.cocoWaitlist || document.querySelector('.v-end.is-modal')) return; if (++wlSecs === 60) window.cocoWaitlist.nudge(); }, 1000);
 function begin() { if (started) return false; started = true; TRK('coco_play', { v: TV() }); playing = true; setPlayBtn(); ui.root.classList.add('is-started'); if (ui.startB) { ui.startB.remove(); ui.startB = null; } unlock(); if (i === 0) show(1); else show(i, 'seek'); return true; }
 function next() {
   if (begin()) return;
