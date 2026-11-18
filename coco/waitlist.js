@@ -32,6 +32,7 @@
     '.cw-chip:hover{border-color:#8c877e}.cw-chip[aria-pressed="true"]{background:#f4f1ea;border-color:#f4f1ea;color:#0b0b0b}' +
     '.cw-row{display:flex;gap:8px}.cw-email{box-sizing:border-box;flex:1;min-width:0;height:44px;padding:0 12px;border:1px solid #45423d;border-radius:10px;background:#141312;color:#f4f1ea;font:400 16px Inter,-apple-system,system-ui,sans-serif}' +
     '.cw-email::placeholder{color:#77726a}.cw-go{box-sizing:border-box;height:44px;padding:0 16px;border:0;border-radius:10px;background:#f4f1ea;color:#0b0b0b;font:700 14px Inter,-apple-system,system-ui,sans-serif;cursor:pointer;white-space:nowrap}' +
+    '.cw-nudge{position:fixed;z-index:2147483000;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;transition:transform .35s ease,opacity .35s ease;width:min(420px,calc(100% - 24px));box-sizing:border-box;background:#0b0b0b;color:#f4f1ea;border:1px solid #2c2a27;border-radius:16px;padding:14px 14px 10px;font:400 14px/1.45 Inter,-apple-system,system-ui,sans-serif}.cw-nudge.is-in{transform:translate(-50%,0);opacity:1}.cw-nudge .cw-q{margin:0 36px 10px 0}.cw-nudge .cw-x{top:8px;right:8px;width:30px;height:30px;font-size:16px}' +
     '.cw-go:disabled{opacity:.6}.cw-err{min-height:18px;margin:6px 0 0;color:#ff9b85;font-size:13px}' +
     '.cw-chip:focus-visible,.cw-go:focus-visible,.cw-email:focus-visible,.cw-x:focus-visible{outline:2px solid #f4f1ea;outline-offset:2px}' +
     '.cw-done{display:flex;gap:16px;align-items:center}.cw-agent{width:96px;height:96px;border-radius:50%;flex:none}' +
@@ -59,8 +60,6 @@
       return row;
     }
     var f = h('form'); f.noValidate = true;
-    f.appendChild(h('p', 'cw-q', 'What would you hand Coco first?')); f.appendChild(chips(PICKS, true));
-    f.appendChild(h('p', 'cw-q', 'You are…')); f.appendChild(chips(ROLES, false));
     var row = h('div', 'cw-row'), em = h('input', 'cw-email'), go = h('button', 'cw-go', 'Join the waitlist'), err = h('p', 'cw-err');
     em.type = 'email'; em.autocomplete = 'email'; em.inputMode = 'email'; em.placeholder = 'you@yourbrand.com'; em.setAttribute('aria-label', 'Your email');
     go.type = 'submit'; err.setAttribute('role', 'alert');
@@ -76,7 +75,7 @@
       fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: v, picks: chosen, role: role, source: 'landing', website: trap.value }) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw new Error(d.error || ''); return d; }); })
         .then(function (d) {
-          track('coco_join', { from: where === 'end' ? 'end' : 'landing', role: role || 'none', n: chosen.length });
+          track('coco_join', { from: where, role: role || 'none', n: chosen.length });
           var name = v.split('@')[0]; ls(name);
           wrap.replaceChildren(thanks(name, d.already));
         })
@@ -100,15 +99,27 @@
     back = h('div', 'cw-back'); fence(back);
     var s = h('div', 'cw-sheet'); s.setAttribute('role', 'dialog'); s.setAttribute('aria-modal', 'true'); s.setAttribute('aria-label', 'Join the Coco waitlist');
     var x = h('button', 'cw-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', close);
-    s.appendChild(x); s.appendChild(h('p', 'cw-t', 'Join the waitlist')); s.appendChild(h('p', 'cw-s', 'Coco is in private use. Tell us what you’d hand it first and we’ll write when it’s your turn.'));
+    s.appendChild(x); s.appendChild(h('p', 'cw-t', 'Join the waitlist')); s.appendChild(h('p', 'cw-s', 'Coco is in private use. Leave your email and we’ll write when it’s your turn.'));
     s.appendChild(form('pill')); back.appendChild(s);
     back.addEventListener('click', function (e) { if (e.target === back) close(); });
     back.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
     document.body.appendChild(back); if (pill) pill.hidden = true;
     track('coco_open', { from: 'landing' });
-    setTimeout(function () { var c = s.querySelector('.cw-chip') || x; c.focus({ preventScroll: true }); }, 30);
+    setTimeout(function () { var c = s.querySelector('.cw-email') || x; c.focus({ preventScroll: true }); }, 30);
   }
   function close() { if (!back) return; back.remove(); back = null; if (pill) { pill.hidden = false; pill.focus({ preventScroll: true }); } }
+  var nudged = false;
+  function nudge() {
+    if (nudged || back || ls()) return; nudged = true;
+    try { if (localStorage.getItem(KEY + '-nudge')) return; localStorage.setItem(KEY + '-nudge', '1'); } catch (e) {}
+    var n = h('div', 'cw-nudge cw-sheet'); n.setAttribute('role', 'dialog'); n.setAttribute('aria-label', 'Join the Coco waitlist'); fence(n);
+    var x = h('button', 'cw-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Close');
+    x.addEventListener('click', function () { n.classList.remove('is-in'); setTimeout(function () { n.remove(); }, 400); if (pill) pill.hidden = false; });
+    n.appendChild(x); n.appendChild(h('p', 'cw-q', 'Want this for your brand? Join the waitlist.')); n.appendChild(form('panel'));
+    document.body.appendChild(n); if (pill) pill.hidden = true;
+    requestAnimationFrame(function () { requestAnimationFrame(function () { n.classList.add('is-in'); }); });
+    track('coco_open', { from: 'panel' });
+  }
   function mount(host) { var b = h('div', 'cw-in'); fence(b); b.appendChild(form('end')); host.appendChild(b); return b; }
 
   function boot() {
@@ -116,7 +127,7 @@
     pill = h('button', 'cw-pill', 'Join the waitlist'); pill.type = 'button'; fence(pill); pill.addEventListener('click', open);
     document.body.appendChild(pill);
   }
-  window.cocoWaitlist = { open: open, mount: mount };
+  window.cocoWaitlist = { open: open, mount: mount, nudge: nudge };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
   /* a dot person from a name (13 x 13), the same as the desktop's (site/js/app/coco.js) */

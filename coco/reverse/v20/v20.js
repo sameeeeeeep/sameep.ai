@@ -504,6 +504,7 @@ function show(k, how) {
     ui.root.classList.remove('is-3d');
     ui.scene.innerHTML = ''; ui.scene.className = 'v-scene';
     ui.panelHost.classList.add('is-on');
+    if (seq && window.cocoWaitlist && window.cocoWaitlist.nudge) setTimeout(() => { if (i === k) window.cocoWaitlist.nudge(); }, 2500);   /* the waitlist card slides up once, the first time the panel shows */
     ui.root.classList.toggle('bd-build', !!src && !REDUCED);
     ui.root.dataset.focus = b.tasks ? 'tasks' : '';   /* on a phone, a beat that hands out tasks shows the task cards where the canvas is */
     ui.workDone = seq ? 0 : 99; ui.workOn = !seq; ui.tasksOn = !seq || !b.tasks; clearTimeout(ui.bdT); board(k, !seq); if (seq) ui.bdT = setTimeout(() => { if (i === k && ui.tasksOn) board(k, true); }, dur);

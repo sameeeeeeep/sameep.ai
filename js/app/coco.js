@@ -50,8 +50,7 @@ export function openCoco(wm, { from = 'desktop', at } = {}) {
       send.disabled = false; send.textContent = 'Join the waitlist';
     }
   } },
-  h('p.coco__q', 'What would you hand Coco first?'), pickRow,
-  h('p.coco__q', 'You are…'), roleRow,
+
   h('div.coco__row', email, send), trap, err);
 
   let joined = null;
